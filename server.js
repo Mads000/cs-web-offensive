@@ -22,6 +22,11 @@ const rooms = new Map();
 wss.on('connection', ws => {
  ws.on('message', raw => {
  let m; try { m = JSON.parse(raw) } catch { return }
+ if (m.type === 'rooms') {
+ const list = [...rooms.entries()].map(([name, r]) => ({ name, n: r.clients.length, st: r.started ? 1 : 0 })).filter(r => r.n > 0);
+ ws.send(JSON.stringify({ type: 'rooms', rooms: list }));
+ return;
+ }
  if (m.type === 'join') {
  ws.room = m.room; ws.pid = m.pid;
  if (!rooms.has(m.room)) rooms.set(m.room, { clients: [], hostPid: null });
@@ -30,8 +35,9 @@ wss.on('connection', ws => {
  if (isHost) r.hostPid = m.pid;
  ws.send(JSON.stringify({ type: 'joined', host: isHost }));
  r.clients.push(ws);
- } else if (ws.room) {
+  } else if (ws.room) {
  const r = rooms.get(ws.room);
+ if (r && (m.type === 'start' || m.type === 'glstart')) r.started = true;
  for (const c of (r ? r.clients : []))
  if (c !== ws && c.readyState === 1) c.send(raw.toString());
  }

@@ -2345,6 +2345,15 @@ body.edit #hud > :not(#touch){ visibility:hidden; }
 body.edit #touch{ display:block !important; visibility:visible; }
 body.edit .tb, body.edit #tstick{ outline:2px dashed #e8c98a; }
 body.edit #tlook{ pointer-events:none; }
+
+/* ───── LOBBY-BROWSER ───── */
+#roomlist{ width:100%; max-width:680px; margin:8px 0; display:flex; flex-direction:column; gap:6px; }
+.lobrow{ display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.05); border:1px solid var(--line); border-left:3px solid var(--acc); padding:8px 14px; }
+.lobrow b{ flex:1; text-align:left; color:#fff; font:700 15px Rajdhani; letter-spacing:.06em; }
+.lobrow span{ color:#8fa3b8; font-size:12px; }
+#overlay .lobrow button{ margin:0; font-size:12px; padding:6px 12px; }
+.lobhead{ display:flex; justify-content:space-between; align-items:center; color:#8fa3b8; font:600 11px Rajdhani; letter-spacing:.25em; }
+#overlay .lobhead button{ margin:0; font-size:11px; padding:4px 10px; }
     </style>
 </head>
 
@@ -3910,7 +3919,32 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('cfgBack').onclick = showMenu;
         }
         function navBack() { NET.inLobby ? renderLobby() : showMenu(); }
-        const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; function showMenu() {
+        const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; 
+        
+
+         function fetchRooms() {
+ const el = $('roomlist'); if (!el) return;
+ el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div><span style="color:#8fa3b8;font-size:12px">Suche Lobbys…</span>';
+ let ws; try { ws = new WebSocket(($('srv') && $('srv').value.trim()) || DEF_WS); } catch (e) { el.innerHTML += ' <span style="color:#c66">Ungültige Adresse</span>'; return; }
+ const to = setTimeout(() => { try { ws.close(); } catch (e) { } el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div><span style="color:#c66;font-size:12px">Server nicht erreichbar</span>'; }, 4000);
+ ws.onopen = () => ws.send(JSON.stringify({ type: 'rooms' }));
+ ws.onmessage = ev => {
+ let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+ if (m.type !== 'rooms') return;
+ clearTimeout(to); ws.close();
+ const max = CFG.teamSize * 2;
+ const rows = m.rooms.length
+ ? m.rooms.map(r => { const nm = String(r.name).replace(/[<>&"]/g, ''); const st = r.st ? '<span style="color:#ffb076">🎮 Im Spiel</span>' : '<span style="color:#9fe08a">🟢 Lobby</span>'; return `<div class="lobrow" style="border-left-color:${r.st ? '#ffb076' : '#9fe08a'}"><b>${nm}</b>${st}<span>👥 ${r.n}/${max}</span><button class="bct" data-jct="${nm}">Beitreten: CT</button><button class="bt" data-jt="${nm}">Beitreten: T</button></div>`; }).join('') : '<span style="color:#8fa3b8;font-size:12px">Keine offenen Lobbys – gib unten einen Raumnamen ein und erstelle die erste!</span>';
+ el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div>' + rows;
+ const go = (nm, team) => { $('room').value = nm; const gr = $('glroom'); if (gr) gr.value = nm; startMP(team); };
+ el.querySelectorAll('[data-jct]').forEach(b => b.onclick = () => go(b.dataset.jct, 'CT'));
+ el.querySelectorAll('[data-jt]').forEach(b => b.onclick = () => go(b.dataset.jt, 'T'));
+ };
+ ws.onerror = () => { clearTimeout(to); el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div><span style="color:#c66;font-size:12px">Server nicht erreichbar</span>'; };
+ }
+ window.fetchRooms = fetchRooms;
+
+        function showMenu() {
             $('hud').style.display = 'none'; setupMenuScene();
             const savedName = localStorage.getItem('pname') || '';
             const mapCards = Object.keys(MAPS).map(m => {
@@ -3936,7 +3970,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="font:700 50px Rajdhani;line-height:1;color:var(--text);text-transform:uppercase">CS Web<br><span style="color:var(--acc)">Offensive</span></div>
  <div style="width:64px;height:3px;background:var(--acc);margin-top:10px"></div>
  </div> <div id="csplayview">
-<div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b><b id="modeGl">⚔️ GAUNTLET</b></div> <div id="mapgrid">${mapCards}</div>
+<div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b><b id="modeGl">⚔️ GAUNTLET</b></div>  <div id="mapgrid">${mapCards}</div>
+ <div id="roomlist" style="display:none"></div>
  <div id="glpanel" style="display:none;gap:16px;justify-content:center;margin:14px 0;flex-wrap:wrap">
  <div class="mcard" style="min-width:270px">
  <h2>🤖 SOLO + BOTS</h2>
@@ -4050,8 +4085,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 $('modeOff').classList.toggle('on', m === 0); $('modeOn').classList.toggle('on', m === 1); $('modeGl').classList.toggle('on', m === 2);
                 $('barOff').style.display = m === 0 ? 'inline-flex' : 'none';
                 $('barOn').style.display = m === 1 ? 'inline-flex' : 'none';
-                $('mapgrid').style.display = m === 2 ? 'none' : 'flex';
-                $('glpanel').style.display = m === 2 ? 'flex' : 'none';
+                 $('mapgrid').style.display = m === 2 ? 'none' : 'flex';
+ $('glpanel').style.display = m === 2 ? 'flex' : 'none';
+ $('roomlist').style.display = m === 1 ? 'flex' : 'none';
+ if (m === 1) fetchRooms();
                 sessionStorage.setItem('playmode', m);
             };
             $('modeOff').onclick = () => setMode(0);
