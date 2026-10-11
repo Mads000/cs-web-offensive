@@ -1885,6 +1885,7 @@
             height: 46px;
         }
 
+        #tBoard{ right:16px; top:126px; width:46px; height:46px; }
         /* ───── MOBILE OVERRIDES ───── */
 .mob #radar{ width:100px; height:100px; opacity:.75; }
 .mob #msg{ font-size:22px; top:12%; }
@@ -1912,6 +1913,8 @@
 .mob #tUse{ right:196px; bottom:84px; }
 .mob #tNext{ right:60px; bottom:214px; }
 .mob #tBuy{ right:max(14px, env(safe-area-inset-right)); top:10px; width:42px; height:42px; }
+.mob #tBoard{ right:max(14px, env(safe-area-inset-right)); top:62px; width:42px; height:42px; }
+.mob #board{ max-width:94vw; max-height:80vh; overflow-y:auto; -webkit-overflow-scrolling:touch; font-size:12px; }
 
 /* ───── MOBILE: MENÜ / LOBBY ───── */
 .mob #overlay .panel, .mob .cspanel, .mob .gldraft{ max-width:94vw; max-height:86vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
@@ -1996,7 +1999,8 @@
             <div class="tb" id="tScope">⊕</div>
             <div class="tb" id="tAbil">F</div>
             <div class="tb" id="tNext">⇄</div>
-            <div class="tb" id="tBuy">$</div>
+ <div class="tb" id="tBuy">$</div>
+ <div class="tb" id="tBoard">☰</div>
         </div>
         <div id="buy" class="panel"></div>
         <div id="board" class="panel"></div>
@@ -3112,8 +3116,8 @@
             hold('tScope', () => toggleScope());
             hold('tAbil', () => glUseAbility());
             hold('tNext', () => { const o = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); if (o.length) { const n = o[(o.indexOf(player.slot) + 1) % o.length]; n === 4 && player.slot === 4 ? cycleNade() : selectSlot(n); } });
-            hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
-        } const ACCEL = 55, FRICTION = 9, AIR_ACCEL = 10;
+ hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
+ hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });        } const ACCEL = 55, FRICTION = 9, AIR_ACCEL = 10;
         function updatePlayer(dt) {
             const p = player; if (p.vx === undefined) { p.vx = 0; p.vz = 0; }
             const canMove = p.alive && G.state !== 'freeze';
