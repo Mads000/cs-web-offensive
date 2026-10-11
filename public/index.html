@@ -1943,14 +1943,25 @@
 .mob .card b{ font-size:12px; }
 .mob .cprice{ font-size:11px; }
 .mob .bfoot{ display:none; }
+
+/* ───── ALIVE-LEISTE OBEN ───── */
+#aliveL, #aliveR{ position:absolute; top:12px; display:flex; gap:3px; pointer-events:none; }
+#aliveL{ right:calc(50% + 72px); }
+#aliveR{ left:calc(50% + 72px); }
+.pv{ width:24px; height:28px; background:rgba(0,0,0,.5); border-top:3px solid; display:flex; align-items:center; justify-content:center; font:700 12px Rajdhani, sans-serif; color:#fff; text-shadow:0 1px 2px #000; }
+.pv.dd{ opacity:.22; }
+.mob #aliveL{ right:calc(50% + 54px); top:8px; gap:2px; }
+.mob #aliveR{ left:calc(50% + 54px); top:8px; gap:2px; }
+.mob .pv{ width:18px; height:22px; font-size:10px; border-top-width:2px; }
     </style>
 </head>
 
 <body>
     <div id="hud">
         <canvas id="radar" width="170" height="170"></canvas>
-        <div id="top">
-            <div id="timer">1:55</div>
+ <div id="aliveL"></div>
+ <div id="aliveR"></div>
+ <div id="top">            <div id="timer">1:55</div>
             <div id="score"></div>
             <div id="roundlbl"></div>
         </div>
@@ -3283,8 +3294,16 @@
             $('hpbar').style.width = Math.min(100, hpv / hpm * 100) + '%';
             $('arbar').style.width = Math.min(100, p.armor) + '%';
             $('hpwrap').classList.toggle('low', p.alive && hpv < 30); setT('money', `$ ${p.money}`); setT('wname', !w ? '' : (GL.on && w.def.nade) ? `${w.def.name} Lv.${player.glN[w.def.key] || 1}${player.glG && player.glG[w.def.key] ? ' ⚡' + GL_GLITCH[w.def.key][player.glG[w.def.key]] : ''}` : (skinOf(w.def.key) ? skinOf(w.def.key).n : w.def.name)); setT('ammo', !w ? '' : w.def.melee ? '—' : w.def.plant ? 'C4' : w.def.nade ? '×' + p.nades[w.def.key] : `${w.ammo}<span style="font-size:22px;opacity:.7">| ${w.res}</span>`);
-            const sec = Math.max(0, Math.ceil(G.timer)); setT('timer', G.bomb.state === 'planted' ? '💣' : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`);
-            if (GL.on) {
+ const sec = Math.max(0, Math.ceil(G.timer)); setT('timer', G.bomb.state === 'planted' ? '💣' : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`);
+ const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}" style="border-color:${col}">${e.isPlayer ? '★' : (e.name[0] || '?')}</div>`).join('');
+ let avL = '', avR = '';
+ if (GL.on) {
+ if (GL.duel && (GL.phase === 'duel' || GL.phase === 'duelend')) {
+ const [ta, tb] = GL.duel.teams, ac = t => `hsl(${((0.62 + t.id * 0.17) % 1) * 360},100%,60%)`;
+ avL = pvs(ta.members, ac(ta)); avR = pvs(tb.members, ac(tb));
+ }
+ } else { avL = pvs(ents.filter(e => e.team === 'CT'), '#8ab4ff'); avR = pvs(ents.filter(e => e.team === 'T'), '#ffb076'); }
+ setT('aliveL', avL); setT('aliveR', avR);            if (GL.on) {
                 const A = p.glA; if (A && A.key && GL.phase === 'duel') {
                     const max = GL_ABIL[A.key].cd[A.lv - 1] || 1, ready = A.cd <= 0;
                     const deg = Math.round((1 - clamp(A.cd / max, 0, 1)) * 360);
