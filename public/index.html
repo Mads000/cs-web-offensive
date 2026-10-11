@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="utf-8">
- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-     <title>Counter-Strike: Web Offensive – de_dusty</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Counter-Strike: Web Offensive – de_dusty</title>
 
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔫</text></svg>">
@@ -140,8 +141,13 @@
             white-space: nowrap
         }
 
-        .mob #roundmsg{ font-size:26px; }
-.mob #freeze{ font-size:14px; }
+        .mob #roundmsg {
+            font-size: 26px;
+        }
+
+        .mob #freeze {
+            font-size: 14px;
+        }
 
         #sub {
             position: absolute;
@@ -1841,7 +1847,14 @@
             background: rgba(216, 90, 60, .4);
         }
 
-        #tFire2{ left:30px; bottom:230px; width:72px; height:72px; font-size:26px; background:rgba(216,90,60,.4); }
+        #tFire2 {
+            left: 30px;
+            bottom: 230px;
+            width: 72px;
+            height: 72px;
+            font-size: 26px;
+            background: rgba(216, 90, 60, .4);
+        }
 
         #tJump {
             right: 136px;
@@ -1885,83 +1898,434 @@
             height: 46px;
         }
 
-        #tBoard{ right:16px; top:126px; width:46px; height:46px; }
+        #tBoard {
+            right: 16px;
+            top: 126px;
+            width: 46px;
+            height: 46px;
+        }
+
         /* ───── MOBILE OVERRIDES ───── */
-.mob #radar{ width:100px; height:100px; opacity:.75; }
-.mob #msg{ font-size:22px; top:12%; }
-.mob #sub{ font-size:13px; }
-.mob #bl{ transform:scale(.55); transform-origin:bottom left; left:8px; bottom:4px; gap:12px; }
-.mob #br{ transform:scale(.6); transform-origin:bottom right; right:10px; bottom:230px; }
-.mob #money{ font-size:16px; right:10px; bottom:292px; }
-.mob #abil{ transform:scale(.7); transform-origin:bottom center; bottom:8px; }
-.mob #top{ transform:scale(.72); transform-origin:top center; }
-.mob #killfeed{ font-size:11px; top:52px; }
-.mob #cross{ transform:scale(1.05); }
-/* Touch-Buttons: zwei saubere Cluster */
-/* ── Linkes Cluster: Stick höher, Buttons klar getrennt ── */
-.mob #tstick{ left:max(24px, env(safe-area-inset-left)); bottom:64px; width:110px; height:110px; }
-.mob #tFire2{ left:max(40px, env(safe-area-inset-left)); bottom:200px; width:62px; height:62px; font-size:24px; }
-.mob #tAbil{ left:160px; bottom:86px; width:52px; height:52px; }
+        .mob #radar {
+            width: 100px;
+            height: 100px;
+            opacity: .75;
+        }
 
-/* ── Rechtes Cluster: Fächer um den Fire-Button, nichts überlappt ── */
-.mob .tb{ width:48px; height:48px; font-size:17px; }
-.mob #tFire{ right:max(22px, env(safe-area-inset-right)); bottom:26px; width:84px; height:84px; font-size:30px; }
-.mob #tJump{ right:150px; bottom:168px; width:64px; height:64px; font-size:24px; }
-.mob #tScope{ right:202px; bottom:18px; }
-.mob #tCrouch{ right:34px; bottom:126px; }
-.mob #tReload{ right:120px; bottom:104px; }
-.mob #tUse{ right:196px; bottom:84px; }
-.mob #tNext{ right:60px; bottom:214px; }
-.mob #tBuy{ right:max(14px, env(safe-area-inset-right)); top:10px; width:42px; height:42px; }
-.mob #tBoard{ right:max(14px, env(safe-area-inset-right)); top:62px; width:42px; height:42px; }
-.mob #board{ max-width:94vw; max-height:80vh; overflow-y:auto; -webkit-overflow-scrolling:touch; font-size:12px; }
+        .mob #msg {
+            font-size: 22px;
+            top: 12%;
+        }
 
-/* ───── MOBILE: MENÜ / LOBBY ───── */
-.mob #overlay .panel, .mob .cspanel, .mob .gldraft{ max-width:94vw; max-height:86vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.mob #overlay button{ min-height:44px; }
-.mob #cslogo div:nth-child(2){ font-size:34px !important; }
-.mob .mapc{ width:104px; height:156px; }
-.mob .mapc .emb{ width:52px; height:52px; font-size:22px; top:46px; }
-.mob .mapc b{ font-size:12px; bottom:22px; }
-.mob .mapc span{ font-size:9px; bottom:8px; }
-.mob #csfriends{ display:none; }
-.mob #cslogo{ display:none !important; }
-.mob #csplayview{ top:48px; max-height:calc(100% - 56px); padding:6px 10px 12px; }
-.mob #mapgrid{ gap:8px; margin:6px 0; }
-.mob #playbar{ gap:6px; padding-top:8px; }
-.mob #playbar input{ width:110px; font-size:16px; min-height:36px; }
-.mob #playbar button{ min-height:40px; padding:6px 10px; }
-.mob .subnav b{ padding:6px 12px; font-size:12px; }
-.mob input, .mob select{ font-size:16px !important; min-height:42px; }
+        .mob #sub {
+            font-size: 13px;
+        }
 
-.bclose{ display:none; width:34px; height:34px; align-items:center; justify-content:center; background:rgba(0,0,0,.5); border:1px solid var(--line); border-radius:50%; font-size:15px; cursor:pointer; }
-.mob .bclose{ display:flex; }
-.mob #buy{ left:50%; top:50%; bottom:auto; transform:translate(-50%,-50%); max-width:96vw; max-height:88vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.mob .bgrid{ flex-wrap:wrap; }
-.mob .bcol{ min-width:130px; flex:1 1 30%; padding:6px; gap:5px; }
-.mob .card{ padding:5px 8px; }
-.mob .card b{ font-size:12px; }
-.mob .cprice{ font-size:11px; }
-.mob .bfoot{ display:none; }
+        .mob #bl {
+            transform: scale(.55);
+            transform-origin: bottom left;
+            left: 8px;
+            bottom: 4px;
+            gap: 12px;
+        }
 
-/* ───── ALIVE-LEISTE OBEN ───── */
-#aliveL, #aliveR{ position:absolute; top:12px; display:flex; gap:3px; pointer-events:none; }
-#aliveL{ right:calc(50% + 72px); }
-#aliveR{ left:calc(50% + 72px); }
-.pv{ width:24px; height:28px; background:rgba(0,0,0,.5); border-top:3px solid; display:flex; align-items:center; justify-content:center; font:700 12px Rajdhani, sans-serif; color:#fff; text-shadow:0 1px 2px #000; }
-.pv.dd{ opacity:.22; }
-.mob #aliveL{ right:calc(50% + 54px); top:8px; gap:2px; }
-.mob #aliveR{ left:calc(50% + 54px); top:8px; gap:2px; }
-.mob .pv{ width:18px; height:22px; font-size:10px; border-top-width:2px; }
+        .mob #br {
+            transform: scale(.6);
+            transform-origin: bottom right;
+            right: 10px;
+            bottom: 230px;
+        }
+
+        .mob #money {
+            font-size: 16px;
+            right: 10px;
+            bottom: 292px;
+        }
+
+        .mob #abil {
+            transform: scale(.7);
+            transform-origin: bottom center;
+            bottom: 8px;
+        }
+
+        .mob #top {
+            transform: scale(.72);
+            transform-origin: top center;
+        }
+
+        .mob #killfeed {
+            font-size: 11px;
+            top: 52px;
+        }
+
+        .mob #cross {
+            transform: scale(1.05);
+        }
+
+        /* Touch-Buttons: zwei saubere Cluster */
+        /* ── Linkes Cluster: Stick höher, Buttons klar getrennt ── */
+        .mob #tstick {
+            left: max(24px, env(safe-area-inset-left));
+            bottom: 64px;
+            width: 110px;
+            height: 110px;
+        }
+
+        .mob #tFire2 {
+            left: max(40px, env(safe-area-inset-left));
+            bottom: 200px;
+            width: 62px;
+            height: 62px;
+            font-size: 24px;
+        }
+
+        .mob #tAbil {
+            left: 160px;
+            bottom: 86px;
+            width: 52px;
+            height: 52px;
+        }
+
+        /* ── Rechtes Cluster: Fächer um den Fire-Button, nichts überlappt ── */
+        .mob .tb {
+            width: 48px;
+            height: 48px;
+            font-size: 17px;
+        }
+
+        .mob #tFire {
+            right: max(22px, env(safe-area-inset-right));
+            bottom: 26px;
+            width: 84px;
+            height: 84px;
+            font-size: 30px;
+        }
+
+        .mob #tJump {
+            right: 150px;
+            bottom: 168px;
+            width: 64px;
+            height: 64px;
+            font-size: 24px;
+        }
+
+        .mob #tScope {
+            right: 202px;
+            bottom: 18px;
+        }
+
+        .mob #tCrouch {
+            right: 34px;
+            bottom: 126px;
+        }
+
+        .mob #tReload {
+            right: 120px;
+            bottom: 104px;
+        }
+
+        .mob #tUse {
+            right: 196px;
+            bottom: 84px;
+        }
+
+        .mob #tNext {
+            right: 60px;
+            bottom: 214px;
+        }
+
+        .mob #tBuy {
+            right: max(14px, env(safe-area-inset-right));
+            top: 10px;
+            width: 42px;
+            height: 42px;
+        }
+
+        .mob #tBoard {
+            right: max(14px, env(safe-area-inset-right));
+            top: 62px;
+            width: 42px;
+            height: 42px;
+        }
+
+        .mob #board {
+            max-width: 94vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            font-size: 12px;
+        }
+
+        /* ───── MOBILE: MENÜ / LOBBY ───── */
+        .mob #overlay .panel,
+        .mob .cspanel,
+        .mob .gldraft {
+            max-width: 94vw;
+            max-height: 86vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mob #overlay button {
+            min-height: 44px;
+        }
+
+        .mob #cslogo div:nth-child(2) {
+            font-size: 34px !important;
+        }
+
+        .mob .mapc {
+            width: 104px;
+            height: 156px;
+        }
+
+        .mob .mapc .emb {
+            width: 52px;
+            height: 52px;
+            font-size: 22px;
+            top: 46px;
+        }
+
+        .mob .mapc b {
+            font-size: 12px;
+            bottom: 22px;
+        }
+
+        .mob .mapc span {
+            font-size: 9px;
+            bottom: 8px;
+        }
+
+        .mob #csfriends {
+            display: none;
+        }
+
+        .mob #cslogo {
+            display: none !important;
+        }
+
+        .mob #csplayview {
+            top: 48px;
+            max-height: calc(100% - 56px);
+            padding: 6px 10px 12px;
+        }
+
+        .mob #mapgrid {
+            gap: 8px;
+            margin: 6px 0;
+        }
+
+        .mob #playbar {
+            gap: 6px;
+            padding-top: 8px;
+        }
+
+        .mob #playbar input {
+            width: 110px;
+            font-size: 16px;
+            min-height: 36px;
+        }
+
+        .mob #playbar button {
+            min-height: 40px;
+            padding: 6px 10px;
+        }
+
+        .mob .subnav b {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .mob input,
+        .mob select {
+            font-size: 16px !important;
+            min-height: 42px;
+        }
+
+        .bclose {
+            display: none;
+            width: 34px;
+            height: 34px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, .5);
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .mob .bclose {
+            display: flex;
+        }
+
+        .mob #buy {
+            left: 50%;
+            top: 50%;
+            bottom: auto;
+            transform: translate(-50%, -50%);
+            max-width: 96vw;
+            max-height: 88vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mob .bgrid {
+            flex-wrap: wrap;
+        }
+
+        .mob .bcol {
+            min-width: 130px;
+            flex: 1 1 30%;
+            padding: 6px;
+            gap: 5px;
+        }
+
+        .mob .card {
+            padding: 5px 8px;
+        }
+
+        .mob .card b {
+            font-size: 12px;
+        }
+
+        .mob .cprice {
+            font-size: 11px;
+        }
+
+        .mob .bfoot {
+            display: none;
+        }
+
+        /* ───── ALIVE-LEISTE OBEN ───── */
+        #aliveL,
+        #aliveR {
+            position: absolute;
+            top: 12px;
+            display: flex;
+            gap: 3px;
+            pointer-events: none;
+        }
+
+        #aliveL {
+            right: calc(50% + 72px);
+        }
+
+        #aliveR {
+            left: calc(50% + 72px);
+        }
+
+        .pv {
+            width: 24px;
+            height: 28px;
+            background: rgba(0, 0, 0, .5);
+            border-top: 3px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font: 700 12px Rajdhani, sans-serif;
+            color: #fff;
+            text-shadow: 0 1px 2px #000;
+        }
+
+        .pv.dd {
+            opacity: .22;
+        }
+
+        .mob #aliveL {
+            right: calc(50% + 54px);
+            top: 8px;
+            gap: 2px;
+        }
+
+        .mob #aliveR {
+            left: calc(50% + 54px);
+            top: 8px;
+            gap: 2px;
+        }
+
+        .mob .pv {
+            width: 18px;
+            height: 22px;
+            font-size: 10px;
+            border-top-width: 2px;
+        }
+
+        /* ───── MOBILE: GAUNTLET-DRAFT ───── */
+        .mob #overlay,
+        .mob #buy,
+        .mob #board {
+            touch-action: pan-y;
+        }
+
+        .mob .gldraft {
+            padding: 10px 12px;
+            gap: 8px;
+        }
+
+        .mob .glhead {
+            gap: 14px;
+        }
+
+        .mob .glhead b {
+            font-size: 28px;
+        }
+
+        .mob .glhead span {
+            font-size: 9px;
+            min-width: 90px;
+        }
+
+        .mob .glsec {
+            padding-top: 6px;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .mob .glrow {
+            gap: 8px;
+        }
+
+        .mob .glw {
+            width: 112px;
+            padding: 8px;
+        }
+
+        .mob .glu {
+            width: 146px;
+            min-height: 118px;
+            padding: 8px;
+            gap: 4px;
+        }
+
+        .mob .glu .ico {
+            width: 38px;
+            height: 38px;
+            font-size: 18px;
+        }
+
+        .mob .glu b {
+            font-size: 11px;
+        }
+
+        .mob .glu i {
+            font-size: 9px;
+        }
+
+        .mob #glwait {
+            font-size: 11px !important;
+            padding: 6px 10px !important;
+        }
     </style>
 </head>
 
 <body>
     <div id="hud">
         <canvas id="radar" width="170" height="170"></canvas>
- <div id="aliveL"></div>
- <div id="aliveR"></div>
- <div id="top">            <div id="timer">1:55</div>
+        <div id="aliveL"></div>
+        <div id="aliveR"></div>
+        <div id="top">
+            <div id="timer">1:55</div>
             <div id="score"></div>
             <div id="roundlbl"></div>
         </div>
@@ -2001,17 +2365,17 @@
         <div id="touch">
             <div id="tlook"></div>
             <div id="tstick"><i id="tnub"></i></div>
- <div class="tb" id="tFire">◉</div>
- <div class="tb" id="tFire2">◉</div>
-             <div class="tb" id="tJump">⤒</div>
+            <div class="tb" id="tFire">◉</div>
+            <div class="tb" id="tFire2">◉</div>
+            <div class="tb" id="tJump">⤒</div>
             <div class="tb" id="tCrouch">⤓</div>
             <div class="tb" id="tReload">↻</div>
             <div class="tb" id="tUse">E</div>
             <div class="tb" id="tScope">⊕</div>
             <div class="tb" id="tAbil">F</div>
             <div class="tb" id="tNext">⇄</div>
- <div class="tb" id="tBuy">$</div>
- <div class="tb" id="tBoard">☰</div>
+            <div class="tb" id="tBuy">$</div>
+            <div class="tb" id="tBoard">☰</div>
         </div>
         <div id="buy" class="panel"></div>
         <div id="board" class="panel"></div>
@@ -3094,9 +3458,10 @@
         const IS_TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
         const TOUCH = { f: 0, s: 0 };
         if (IS_TOUCH) {
- renderer.domElement.requestPointerLock = () => { }; // kein Pointer-Lock auf Mobile
- document.body.classList.add('mob');
- addEventListener('touchend', () => { if (started && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => { }); }, { once: false });            document.documentElement.style.touchAction = 'none';
+            renderer.domElement.requestPointerLock = () => { }; // kein Pointer-Lock auf Mobile
+            document.exitPointerLock = () => { }; // iOS kennt die API nicht – Stub verhindert Crash
+            document.body.classList.add('mob');
+            addEventListener('touchend', () => { if (started && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => { }); }, { once: false }); document.documentElement.style.touchAction = 'none';
             let sid = null, scx = 0, scy = 0, lid = null, lx = 0, ly = 0;
             $('tstick').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; sid = t.identifier; const r = $('tstick').getBoundingClientRect(); scx = r.left + r.width / 2; scy = r.top + r.height / 2; }, { passive: false });
             $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
@@ -3119,16 +3484,17 @@
             const tEnd = e => { for (const t of e.changedTouches) { if (t.identifier === sid) { sid = null; TOUCH.f = TOUCH.s = 0; $('tnub').style.transform = ''; } if (t.identifier === lid) lid = null; } };
             addEventListener('touchend', tEnd); addEventListener('touchcancel', tEnd);
             const hold = (id, on, off) => { const el = $(id); el.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); on(); }, { passive: false }); if (off) { el.addEventListener('touchend', e => { e.preventDefault(); off(); }); el.addEventListener('touchcancel', off); } };
- hold('tFire', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);
- hold('tFire2', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);            hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
+            hold('tFire', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);
+            hold('tFire2', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false); hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
             hold('tUse', () => keys[BIND.use] = true, () => keys[BIND.use] = false);
             hold('tCrouch', () => keys[BIND.crouch] = !keys[BIND.crouch]);
             hold('tReload', () => startReload());
             hold('tScope', () => toggleScope());
             hold('tAbil', () => glUseAbility());
             hold('tNext', () => { const o = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); if (o.length) { const n = o[(o.indexOf(player.slot) + 1) % o.length]; n === 4 && player.slot === 4 ? cycleNade() : selectSlot(n); } });
- hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
- hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });        } const ACCEL = 55, FRICTION = 9, AIR_ACCEL = 10;
+            hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
+            hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
+        } const ACCEL = 55, FRICTION = 9, AIR_ACCEL = 10;
         function updatePlayer(dt) {
             const p = player; if (p.vx === undefined) { p.vx = 0; p.vz = 0; }
             const canMove = p.alive && G.state !== 'freeze';
@@ -3248,7 +3614,7 @@
         const bar = (v, m) => `<div class="bbar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div>`;
         function renderBuy() {
             const p = player;
- let h = `<div class="bhead"><h3>KAUFMENÜ</h3><div style="display:flex;gap:10px;align-items:center"><div class="bmoney">$ ${p.money}</div><div class="bclose" onclick="closeBuy()">✕</div></div></div><div class="bgrid">`;            SHOP.forEach((col, ci) => {
+            let h = `<div class="bhead"><h3>KAUFMENÜ</h3><div style="display:flex;gap:10px;align-items:center"><div class="bmoney">$ ${p.money}</div><div class="bclose" onclick="closeBuy()">✕</div></div></div><div class="bgrid">`; SHOP.forEach((col, ci) => {
                 h += `<div class="bcol"><h4>${col.name}</h4>`;
                 col.items.forEach((it, ii) => {
                     if (it.ct && p.team !== 'CT') return;
@@ -3268,7 +3634,7 @@
             h += `</div><div class="bfoot"><span>🖱️ Klicken zum Kaufen</span><span>[B] schließen</span></div>`;
             if (h !== buyCache) { buyCache = h; $('buy').innerHTML = h; }
         }
- function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); }        function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
+        function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); } function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
         function buy(it) {
             const p = player; if (!canBuy() || itemOwned(it)) return;
             const price = itemPrice(it);
@@ -3294,16 +3660,16 @@
             $('hpbar').style.width = Math.min(100, hpv / hpm * 100) + '%';
             $('arbar').style.width = Math.min(100, p.armor) + '%';
             $('hpwrap').classList.toggle('low', p.alive && hpv < 30); setT('money', `$ ${p.money}`); setT('wname', !w ? '' : (GL.on && w.def.nade) ? `${w.def.name} Lv.${player.glN[w.def.key] || 1}${player.glG && player.glG[w.def.key] ? ' ⚡' + GL_GLITCH[w.def.key][player.glG[w.def.key]] : ''}` : (skinOf(w.def.key) ? skinOf(w.def.key).n : w.def.name)); setT('ammo', !w ? '' : w.def.melee ? '—' : w.def.plant ? 'C4' : w.def.nade ? '×' + p.nades[w.def.key] : `${w.ammo}<span style="font-size:22px;opacity:.7">| ${w.res}</span>`);
- const sec = Math.max(0, Math.ceil(G.timer)); setT('timer', G.bomb.state === 'planted' ? '💣' : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`);
- const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}" style="border-color:${col}">${e.isPlayer ? '★' : (e.name[0] || '?')}</div>`).join('');
- let avL = '', avR = '';
- if (GL.on) {
- if (GL.duel && (GL.phase === 'duel' || GL.phase === 'duelend')) {
- const [ta, tb] = GL.duel.teams, ac = t => `hsl(${((0.62 + t.id * 0.17) % 1) * 360},100%,60%)`;
- avL = pvs(ta.members, ac(ta)); avR = pvs(tb.members, ac(tb));
- }
- } else { avL = pvs(ents.filter(e => e.team === 'CT'), '#8ab4ff'); avR = pvs(ents.filter(e => e.team === 'T'), '#ffb076'); }
- setT('aliveL', avL); setT('aliveR', avR);            if (GL.on) {
+            const sec = Math.max(0, Math.ceil(G.timer)); setT('timer', G.bomb.state === 'planted' ? '💣' : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`);
+            const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}" style="border-color:${col}">${e.isPlayer ? '★' : (e.name[0] || '?')}</div>`).join('');
+            let avL = '', avR = '';
+            if (GL.on) {
+                if (GL.duel && (GL.phase === 'duel' || GL.phase === 'duelend')) {
+                    const [ta, tb] = GL.duel.teams, ac = t => `hsl(${((0.62 + t.id * 0.17) % 1) * 360},100%,60%)`;
+                    avL = pvs(ta.members, ac(ta)); avR = pvs(tb.members, ac(tb));
+                }
+            } else { avL = pvs(ents.filter(e => e.team === 'CT'), '#8ab4ff'); avR = pvs(ents.filter(e => e.team === 'T'), '#ffb076'); }
+            setT('aliveL', avL); setT('aliveR', avR); if (GL.on) {
                 const A = p.glA; if (A && A.key && GL.phase === 'duel') {
                     const max = GL_ABIL[A.key].cd[A.lv - 1] || 1, ready = A.cd <= 0;
                     const deg = Math.round((1 - clamp(A.cd / max, 0, 1)) * 360);
