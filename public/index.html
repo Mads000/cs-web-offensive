@@ -2340,7 +2340,9 @@
 #editbar{ display:none; position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:60; gap:8px; align-items:center; background:rgba(10,15,20,.9); border:1px solid var(--acc); padding:8px 14px; font:700 13px Rajdhani; color:var(--text); }
 #editbar button{ font:700 13px Rajdhani; padding:8px 14px; background:#1a2430; color:#e8c98a; border:1px solid var(--line); }
 body.edit #editbar{ display:flex; }
-body.edit #touch{ display:block !important; }
+body.edit #hud{ display:block !important; }
+body.edit #hud > :not(#touch){ visibility:hidden; }
+body.edit #touch{ display:block !important; visibility:visible; }
 body.edit .tb, body.edit #tstick{ outline:2px dashed #e8c98a; }
 body.edit #tlook{ pointer-events:none; }
     </style>
