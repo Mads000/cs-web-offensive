@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Counter-Strike: Web Offensive – de_dusty</title>
+ <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+     <title>Counter-Strike: Web Offensive – de_dusty</title>
 
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔫</text></svg>">
@@ -1889,7 +1889,7 @@
 .mob #radar{ width:100px; height:100px; opacity:.75; }
 .mob #msg{ font-size:22px; top:12%; }
 .mob #sub{ font-size:13px; }
-.mob #bl{ transform:scale(.6); transform-origin:bottom left; left:12px; bottom:10px; gap:16px; }
+.mob #bl{ transform:scale(.55); transform-origin:bottom left; left:8px; bottom:4px; gap:12px; }
 .mob #br{ transform:scale(.6); transform-origin:bottom right; right:10px; bottom:230px; }
 .mob #money{ font-size:16px; right:10px; bottom:292px; }
 .mob #abil{ transform:scale(.7); transform-origin:bottom center; bottom:8px; }
@@ -1897,25 +1897,38 @@
 .mob #killfeed{ font-size:11px; top:52px; }
 .mob #cross{ transform:scale(1.05); }
 /* Touch-Buttons: zwei saubere Cluster */
-.mob #tstick{ left:max(16px, env(safe-area-inset-left)); bottom:16px; width:104px; height:104px; }
-.mob #tAbil{ left:140px; bottom:24px; width:48px; height:48px; }
-.mob .tb{ width:46px; height:46px; font-size:17px; }
-.mob #tFire{ right:max(18px, env(safe-area-inset-right)); bottom:20px; width:76px; height:76px; font-size:28px; }
-.mob #tFire2{ left:34px; bottom:140px; width:64px; height:64px; font-size:24px; background:rgba(216,90,60,.4); }
-.mob #tScope{ right:104px; bottom:16px; }
-.mob #tJump{ right:112px; bottom:82px; width:60px; height:60px; font-size:22px; }.mob #tCrouch{ right:30px; bottom:106px; }
-.mob #tReload{ right:92px; bottom:152px; }
-.mob #tUse{ right:150px; bottom:106px; }
-.mob #tNext{ right:208px; bottom:60px; }
-.mob #tBuy{ right:max(12px, env(safe-area-inset-right)); top:8px; width:40px; height:40px; }
+/* ── Linkes Cluster: Stick höher, Buttons klar getrennt ── */
+.mob #tstick{ left:max(24px, env(safe-area-inset-left)); bottom:64px; width:110px; height:110px; }
+.mob #tFire2{ left:max(40px, env(safe-area-inset-left)); bottom:200px; width:62px; height:62px; font-size:24px; }
+.mob #tAbil{ left:160px; bottom:86px; width:52px; height:52px; }
+
+/* ── Rechtes Cluster: Fächer um den Fire-Button, nichts überlappt ── */
+.mob .tb{ width:48px; height:48px; font-size:17px; }
+.mob #tFire{ right:max(22px, env(safe-area-inset-right)); bottom:26px; width:84px; height:84px; font-size:30px; }
+.mob #tJump{ right:122px; bottom:22px; width:64px; height:64px; font-size:24px; }
+.mob #tScope{ right:202px; bottom:18px; }
+.mob #tCrouch{ right:34px; bottom:126px; }
+.mob #tReload{ right:120px; bottom:104px; }
+.mob #tUse{ right:196px; bottom:84px; }
+.mob #tNext{ right:98px; bottom:170px; }
+.mob #tBuy{ right:max(14px, env(safe-area-inset-right)); top:10px; width:42px; height:42px; }
 
 /* ───── MOBILE: MENÜ / LOBBY ───── */
 .mob #overlay .panel, .mob .cspanel, .mob .gldraft{ max-width:94vw; max-height:86vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .mob #overlay button{ min-height:44px; }
 .mob #cslogo div:nth-child(2){ font-size:34px !important; }
-.mob .mapc{ width:140px; height:210px; }
+.mob .mapc{ width:104px; height:156px; }
+.mob .mapc .emb{ width:52px; height:52px; font-size:22px; top:46px; }
+.mob .mapc b{ font-size:12px; bottom:22px; }
+.mob .mapc span{ font-size:9px; bottom:8px; }
 .mob #csfriends{ display:none; }
-.mob #csplayview{ top:50px; }
+.mob #cslogo{ display:none !important; }
+.mob #csplayview{ top:48px; max-height:calc(100% - 56px); padding:6px 10px 12px; }
+.mob #mapgrid{ gap:8px; margin:6px 0; }
+.mob #playbar{ gap:6px; padding-top:8px; }
+.mob #playbar input{ width:110px; font-size:16px; min-height:36px; }
+.mob #playbar button{ min-height:40px; padding:6px 10px; }
+.mob .subnav b{ padding:6px 12px; font-size:12px; }
 .mob input, .mob select{ font-size:16px !important; min-height:42px; }
 
 .bclose{ display:none; width:34px; height:34px; align-items:center; justify-content:center; background:rgba(0,0,0,.5); border:1px solid var(--line); border-radius:50%; font-size:15px; cursor:pointer; }
