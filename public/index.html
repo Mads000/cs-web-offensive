@@ -140,6 +140,9 @@
             white-space: nowrap
         }
 
+        .mob #roundmsg{ font-size:26px; }
+.mob #freeze{ font-size:14px; }
+
         #sub {
             position: absolute;
             left: 50%;
@@ -1879,6 +1882,49 @@
             width: 46px;
             height: 46px;
         }
+
+        /* ───── MOBILE OVERRIDES ───── */
+.mob #radar{ width:100px; height:100px; opacity:.75; }
+.mob #msg{ font-size:22px; top:12%; }
+.mob #sub{ font-size:13px; }
+.mob #bl{ transform:scale(.6); transform-origin:bottom left; left:12px; bottom:10px; gap:16px; }
+.mob #br{ transform:scale(.6); transform-origin:bottom right; right:10px; bottom:230px; }
+.mob #money{ font-size:16px; right:10px; bottom:292px; }
+.mob #abil{ transform:scale(.7); transform-origin:bottom center; bottom:8px; }
+.mob #top{ transform:scale(.72); transform-origin:top center; }
+.mob #killfeed{ font-size:11px; top:52px; }
+.mob #cross{ transform:scale(1.6); }
+/* Touch-Buttons: zwei saubere Cluster */
+.mob #tstick{ left:max(16px, env(safe-area-inset-left)); bottom:16px; width:104px; height:104px; }
+.mob #tAbil{ left:140px; bottom:24px; width:48px; height:48px; }
+.mob .tb{ width:46px; height:46px; font-size:17px; }
+.mob #tFire{ right:max(18px, env(safe-area-inset-right)); bottom:20px; width:76px; height:76px; font-size:28px; }
+.mob #tScope{ right:104px; bottom:16px; }
+.mob #tJump{ right:110px; bottom:74px; }
+.mob #tCrouch{ right:30px; bottom:106px; }
+.mob #tReload{ right:88px; bottom:130px; }
+.mob #tUse{ right:150px; bottom:106px; }
+.mob #tNext{ right:208px; bottom:60px; }
+.mob #tBuy{ right:max(12px, env(safe-area-inset-right)); top:8px; width:40px; height:40px; }
+
+/* ───── MOBILE: MENÜ / LOBBY ───── */
+.mob #overlay .panel, .mob .cspanel, .mob .gldraft{ max-width:94vw; max-height:86vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.mob #overlay button{ min-height:44px; }
+.mob #cslogo div:nth-child(2){ font-size:34px !important; }
+.mob .mapc{ width:140px; height:210px; }
+.mob #csfriends{ display:none; }
+.mob #csplayview{ top:50px; }
+.mob input, .mob select{ font-size:16px !important; min-height:42px; }
+
+.bclose{ display:none; width:34px; height:34px; align-items:center; justify-content:center; background:rgba(0,0,0,.5); border:1px solid var(--line); border-radius:50%; font-size:15px; cursor:pointer; }
+.mob .bclose{ display:flex; }
+.mob #buy{ left:50%; top:50%; bottom:auto; transform:translate(-50%,-50%); max-width:96vw; max-height:88vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.mob .bgrid{ flex-wrap:wrap; }
+.mob .bcol{ min-width:130px; flex:1 1 30%; padding:6px; gap:5px; }
+.mob .card{ padding:5px 8px; }
+.mob .card b{ font-size:12px; }
+.mob .cprice{ font-size:11px; }
+.mob .bfoot{ display:none; }
     </style>
 </head>
 
@@ -3017,8 +3063,9 @@
         const IS_TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
         const TOUCH = { f: 0, s: 0 };
         if (IS_TOUCH) {
-            renderer.domElement.requestPointerLock = () => { }; // kein Pointer-Lock auf Mobile
-            document.documentElement.style.touchAction = 'none';
+ renderer.domElement.requestPointerLock = () => { }; // kein Pointer-Lock auf Mobile
+ document.body.classList.add('mob');
+ addEventListener('touchend', () => { if (started && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => { }); }, { once: false });            document.documentElement.style.touchAction = 'none';
             let sid = null, scx = 0, scy = 0, lid = null, lx = 0, ly = 0;
             $('tstick').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; sid = t.identifier; const r = $('tstick').getBoundingClientRect(); scx = r.left + r.width / 2; scy = r.top + r.height / 2; }, { passive: false });
             $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
@@ -3170,8 +3217,7 @@
         const bar = (v, m) => `<div class="bbar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div>`;
         function renderBuy() {
             const p = player;
-            let h = `<div class="bhead"><h3>KAUFMENÜ</h3><div class="bmoney">$ ${p.money}</div></div><div class="bgrid">`;
-            SHOP.forEach((col, ci) => {
+ let h = `<div class="bhead"><h3>KAUFMENÜ</h3><div style="display:flex;gap:10px;align-items:center"><div class="bmoney">$ ${p.money}</div><div class="bclose" onclick="closeBuy()">✕</div></div></div><div class="bgrid">`;            SHOP.forEach((col, ci) => {
                 h += `<div class="bcol"><h4>${col.name}</h4>`;
                 col.items.forEach((it, ii) => {
                     if (it.ct && p.team !== 'CT') return;
@@ -3191,8 +3237,7 @@
             h += `</div><div class="bfoot"><span>🖱️ Klicken zum Kaufen</span><span>[B] schließen</span></div>`;
             if (h !== buyCache) { buyCache = h; $('buy').innerHTML = h; }
         }
-        function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; $('buy').style.display = 'block'; renderBuy(); if (locked) document.exitPointerLock(); }
-        function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
+ function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); }        function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
         function buy(it) {
             const p = player; if (!canBuy() || itemOwned(it)) return;
             const price = itemPrice(it);
