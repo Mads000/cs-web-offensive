@@ -1841,6 +1841,8 @@
             background: rgba(216, 90, 60, .4);
         }
 
+        #tFire2{ left:30px; bottom:230px; width:72px; height:72px; font-size:26px; background:rgba(216,90,60,.4); }
+
         #tJump {
             right: 136px;
             bottom: 60px;
@@ -1893,16 +1895,16 @@
 .mob #abil{ transform:scale(.7); transform-origin:bottom center; bottom:8px; }
 .mob #top{ transform:scale(.72); transform-origin:top center; }
 .mob #killfeed{ font-size:11px; top:52px; }
-.mob #cross{ transform:scale(1.6); }
+.mob #cross{ transform:scale(1.05); }
 /* Touch-Buttons: zwei saubere Cluster */
 .mob #tstick{ left:max(16px, env(safe-area-inset-left)); bottom:16px; width:104px; height:104px; }
 .mob #tAbil{ left:140px; bottom:24px; width:48px; height:48px; }
 .mob .tb{ width:46px; height:46px; font-size:17px; }
 .mob #tFire{ right:max(18px, env(safe-area-inset-right)); bottom:20px; width:76px; height:76px; font-size:28px; }
+.mob #tFire2{ left:34px; bottom:140px; width:64px; height:64px; font-size:24px; background:rgba(216,90,60,.4); }
 .mob #tScope{ right:104px; bottom:16px; }
-.mob #tJump{ right:110px; bottom:74px; }
-.mob #tCrouch{ right:30px; bottom:106px; }
-.mob #tReload{ right:88px; bottom:130px; }
+.mob #tJump{ right:112px; bottom:82px; width:60px; height:60px; font-size:22px; }.mob #tCrouch{ right:30px; bottom:106px; }
+.mob #tReload{ right:92px; bottom:152px; }
 .mob #tUse{ right:150px; bottom:106px; }
 .mob #tNext{ right:208px; bottom:60px; }
 .mob #tBuy{ right:max(12px, env(safe-area-inset-right)); top:8px; width:40px; height:40px; }
@@ -1972,8 +1974,9 @@
         <div id="touch">
             <div id="tlook"></div>
             <div id="tstick"><i id="tnub"></i></div>
-            <div class="tb" id="tFire">◉</div>
-            <div class="tb" id="tJump">⤒</div>
+ <div class="tb" id="tFire">◉</div>
+ <div class="tb" id="tFire2">◉</div>
+             <div class="tb" id="tJump">⤒</div>
             <div class="tb" id="tCrouch">⤓</div>
             <div class="tb" id="tReload">↻</div>
             <div class="tb" id="tUse">E</div>
@@ -3088,8 +3091,8 @@
             const tEnd = e => { for (const t of e.changedTouches) { if (t.identifier === sid) { sid = null; TOUCH.f = TOUCH.s = 0; $('tnub').style.transform = ''; } if (t.identifier === lid) lid = null; } };
             addEventListener('touchend', tEnd); addEventListener('touchcancel', tEnd);
             const hold = (id, on, off) => { const el = $(id); el.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); on(); }, { passive: false }); if (off) { el.addEventListener('touchend', e => { e.preventDefault(); off(); }); el.addEventListener('touchcancel', off); } };
-            hold('tFire', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);
-            hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
+ hold('tFire', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);
+ hold('tFire2', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);            hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
             hold('tUse', () => keys[BIND.use] = true, () => keys[BIND.use] = false);
             hold('tCrouch', () => keys[BIND.crouch] = !keys[BIND.crouch]);
             hold('tReload', () => startReload());
