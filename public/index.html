@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Counter-Strike: Web Offensive – de_dusty</title>
 
     <link rel="icon"
@@ -1769,6 +1770,115 @@
         .glsec {
             color: var(--mut);
         }
+
+        #touch {
+            position: absolute;
+            inset: 0;
+            display: none;
+        }
+
+        #tlook {
+            position: absolute;
+            left: 35%;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: auto;
+        }
+
+        #tstick {
+            position: absolute;
+            left: 26px;
+            bottom: 90px;
+            width: 124px;
+            height: 124px;
+            border: 2px solid rgba(255, 255, 255, .25);
+            border-radius: 50%;
+            background: rgba(0, 0, 0, .25);
+            pointer-events: auto;
+        }
+
+        #tnub {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 54px;
+            height: 54px;
+            margin: -27px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .3);
+        }
+
+        .tb {
+            position: absolute;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, .45);
+            border: 1px solid rgba(255, 255, 255, .35);
+            color: #fff;
+            font: 700 20px Rajdhani;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            z-index: 3;
+        }
+
+        .tb:active {
+            background: rgba(232, 201, 138, .45);
+        }
+
+        #tFire {
+            right: 26px;
+            bottom: 86px;
+            width: 92px;
+            height: 92px;
+            font-size: 34px;
+            background: rgba(216, 90, 60, .4);
+        }
+
+        #tJump {
+            right: 136px;
+            bottom: 60px;
+        }
+
+        #tCrouch {
+            right: 40px;
+            bottom: 196px;
+        }
+
+        #tReload {
+            right: 136px;
+            bottom: 150px;
+        }
+
+        #tScope {
+            right: 216px;
+            bottom: 86px;
+        }
+
+        #tUse {
+            right: 120px;
+            bottom: 240px;
+        }
+
+        #tNext {
+            right: 26px;
+            bottom: 300px;
+        }
+
+        #tAbil {
+            left: 170px;
+            bottom: 100px;
+        }
+
+        #tBuy {
+            right: 16px;
+            top: 70px;
+            width: 46px;
+            height: 46px;
+        }
     </style>
 </head>
 
@@ -1812,6 +1922,19 @@
         <div id="br">
             <div id="wname"></div>
             <div class="hud-num" id="ammo"></div>
+        </div>
+        <div id="touch">
+            <div id="tlook"></div>
+            <div id="tstick"><i id="tnub"></i></div>
+            <div class="tb" id="tFire">◉</div>
+            <div class="tb" id="tJump">⤒</div>
+            <div class="tb" id="tCrouch">⤓</div>
+            <div class="tb" id="tReload">↻</div>
+            <div class="tb" id="tUse">E</div>
+            <div class="tb" id="tScope">⊕</div>
+            <div class="tb" id="tAbil">F</div>
+            <div class="tb" id="tNext">⇄</div>
+            <div class="tb" id="tBuy">$</div>
         </div>
         <div id="buy" class="panel"></div>
         <div id="board" class="panel"></div>
@@ -2006,16 +2129,16 @@
         function makeTex(w, h, fn, rx = 1, ry = 1) { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); fn(g, w, h); const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); t.anisotropy = 4; return t; }
         function speckle(g, w, h, n, a) { for (let i = 0; i < n; i++) { g.fillStyle = `rgba(${60 + Math.random() * 120 | 0},${50 + Math.random() * 90 | 0},${20 + Math.random() * 60 | 0},${a * Math.random()})`; g.fillRect(Math.random() * w, Math.random() * h, 1 + Math.random() * 2, 1 + Math.random() * 2); } }
         const texSand = makeTex(256, 256, (g, w, h) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h); speckle(g, w, h, 5000, 0.35); g.strokeStyle = 'rgba(90,70,40,.18)'; g.lineWidth = 2; for (let i = 0; i <= 4; i++) { g.beginPath(); g.moveTo(i * 64, 0); g.lineTo(i * 64, h); g.moveTo(0, i * 64); g.lineTo(w, i * 64); g.stroke(); } }, COLS * 2, ROWS * 2);
- const texWall = makeTex(128, 256, (g, w, h) => {
- g.fillStyle = `hsl(${THEME.wallHue},${THEME.wallSat * 0.4}%,${THEME.wallLight * 0.72}%)`; g.fillRect(0, 0, w, h);
- const pw = 64, ph = 52;
- for (let y = 0; y < h; y += ph) { const off = ((y / ph) % 2) * pw / 2; for (let x = -pw; x < w + pw; x += pw) { g.fillStyle = `hsl(${THEME.wallHue},${THEME.wallSat * 0.45}%,${THEME.wallLight + 8 + Math.random() * 9}%)`; g.fillRect(x + off + 1.5, y + 1.5, pw - 3, ph - 3); } }
- });
- const texBrick = makeTex(128, 64, (g, w, h) => {
- g.fillStyle = '#a89088'; g.fillRect(0, 0, w, h);
- const bw = 32, bh = 16;
- for (let y = 0; y < h; y += bh) { const off = ((y / bh) % 2) * bw / 2; for (let x = -bw; x < w + bw; x += bw) { g.fillStyle = `hsl(${8 + Math.random() * 12},${16 + Math.random() * 14}%,${58 + Math.random() * 14}%)`; g.fillRect(x + off + 1, y + 1, bw - 2, bh - 2); } }
- });        const texCrate = makeTex(128, 128, (g, w, h) => { for (let i = 0; i < 8; i++) { g.fillStyle = `hsl(${THEME.crateHue + Math.random() * 8},${THEME.crateSat + Math.random() * 10}%,${THEME.crateLight + Math.random() * 12}%)`; g.fillRect(0, i * 16, w, 16); } speckle(g, w, h, 800, 0.3); g.strokeStyle = '#4a2d12'; g.lineWidth = 7; g.strokeRect(4, 4, w - 8, h - 8); g.beginPath(); g.moveTo(8, 8); g.lineTo(w - 8, h - 8); g.moveTo(w - 8, 8); g.lineTo(8, h - 8); g.stroke(); });
+        const texWall = makeTex(128, 256, (g, w, h) => {
+            g.fillStyle = `hsl(${THEME.wallHue},${THEME.wallSat * 0.4}%,${THEME.wallLight * 0.72}%)`; g.fillRect(0, 0, w, h);
+            const pw = 64, ph = 52;
+            for (let y = 0; y < h; y += ph) { const off = ((y / ph) % 2) * pw / 2; for (let x = -pw; x < w + pw; x += pw) { g.fillStyle = `hsl(${THEME.wallHue},${THEME.wallSat * 0.45}%,${THEME.wallLight + 8 + Math.random() * 9}%)`; g.fillRect(x + off + 1.5, y + 1.5, pw - 3, ph - 3); } }
+        });
+        const texBrick = makeTex(128, 64, (g, w, h) => {
+            g.fillStyle = '#a89088'; g.fillRect(0, 0, w, h);
+            const bw = 32, bh = 16;
+            for (let y = 0; y < h; y += bh) { const off = ((y / bh) % 2) * bw / 2; for (let x = -bw; x < w + bw; x += bw) { g.fillStyle = `hsl(${8 + Math.random() * 12},${16 + Math.random() * 14}%,${58 + Math.random() * 14}%)`; g.fillRect(x + off + 1, y + 1, bw - 2, bh - 2); } }
+        }); const texCrate = makeTex(128, 128, (g, w, h) => { for (let i = 0; i < 8; i++) { g.fillStyle = `hsl(${THEME.crateHue + Math.random() * 8},${THEME.crateSat + Math.random() * 10}%,${THEME.crateLight + Math.random() * 12}%)`; g.fillRect(0, i * 16, w, 16); } speckle(g, w, h, 800, 0.3); g.strokeStyle = '#4a2d12'; g.lineWidth = 7; g.strokeRect(4, 4, w - 8, h - 8); g.beginPath(); g.moveTo(8, 8); g.lineTo(w - 8, h - 8); g.moveTo(w - 8, 8); g.lineTo(8, h - 8); g.stroke(); });
         const flashTex = makeTex(64, 64, (g, w, h) => { const r = g.createRadialGradient(32, 32, 2, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,220,1)'); r.addColorStop(0.4, 'rgba(255,200,80,.8)'); r.addColorStop(1, 'rgba(255,120,0,0)'); g.fillStyle = r; g.fillRect(0, 0, w, h); });
 
         // =====================================================================
@@ -2023,11 +2146,11 @@
         // =====================================================================
         const aabbs = [], mapMeshes = [], openCells = [], siteCells = { A: [], B: [] }, spawnCells = { T: [], CT: [] };
         const wallEnd = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.wallBase) });
- const wallTop = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.wallBase).multiplyScalar(1.18) });
- const trimMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.wallBase).multiplyScalar(0.45) });
- const glassMat = new THREE.MeshLambertMaterial({ color: 0x9fc0d4 });
- function sideMat(len) { const t = texWall.clone(); t.needsUpdate = true; t.repeat.set(len, 1); return new THREE.MeshLambertMaterial({ map: t }); }
- function brickMat(len) { const t = texBrick.clone(); t.needsUpdate = true; t.repeat.set(len * 2, 1); return new THREE.MeshLambertMaterial({ map: t }); }        const crateMat = new THREE.MeshLambertMaterial({ color: new THREE.Color().setHSL(THEME.crateHue / 360, THEME.crateSat / 100, THEME.crateLight / 100) });
+        const wallTop = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.wallBase).multiplyScalar(1.18) });
+        const trimMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.wallBase).multiplyScalar(0.45) });
+        const glassMat = new THREE.MeshLambertMaterial({ color: 0x9fc0d4 });
+        function sideMat(len) { const t = texWall.clone(); t.needsUpdate = true; t.repeat.set(len, 1); return new THREE.MeshLambertMaterial({ map: t }); }
+        function brickMat(len) { const t = texBrick.clone(); t.needsUpdate = true; t.repeat.set(len * 2, 1); return new THREE.MeshLambertMaterial({ map: t }); } const crateMat = new THREE.MeshLambertMaterial({ color: new THREE.Color().setHSL(THEME.crateHue / 360, THEME.crateSat / 100, THEME.crateLight / 100) });
         const stepMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.floor).multiplyScalar(0.82) });
         const stegMat = new THREE.MeshLambertMaterial({ color: 0x4a5058 });
         const halfMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.wallBase).multiplyScalar(0.88) });
@@ -2044,53 +2167,62 @@
                 if (ch === 'h') addBox(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, halfMat);
                 if (ch === '=') addBox(x - S / 2, x + S / 2, 2.45, 2.8, z - S / 2, z + S / 2, stegMat);
             }
- let c = 0; while (c < COLS) {
- if (cell(r, c) === '#') {
- const s = c; while (c < COLS && cell(r, c) === '#') c++;
- const len = c - s, hv = WALL_H + ((r * 7 + s * 13) % 3) * 0.9;
- const sm = sideMat(len);
- addBox(s * S, c * S, 0, hv, r * S, (r + 1) * S, [wallEnd, wallEnd, wallTop, wallEnd, sm, sm]);
- const deco = (w2, h2, d2, x2, y2, z2, m2) => { const mm = new THREE.Mesh(new THREE.BoxGeometry(w2, h2, d2), m2); mm.position.set(x2, y2, z2); mm.castShadow = mm.receiveShadow = true; scene.add(mm); };
- deco(len * S + 0.1, 1.05, S + 0.12, (s + c) / 2 * S, 0.525, (r + 0.5) * S, brickMat(len));
- deco(len * S + 0.16, 0.22, S + 0.16, (s + c) / 2 * S, hv + 0.11, (r + 0.5) * S, trimMat);
- if (len >= 3 && hv > WALL_H) for (const zz of [r * S - 0.02, (r + 1) * S + 0.02]) {
- const win = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.5), glassMat);
- win.position.set((s + len / 2) * S, hv - 1.4, zz);
- if (zz < (r + 0.5) * S) win.rotation.y = Math.PI;
- scene.add(win);
- }
- } else c++;
- }        }
+            let c = 0; while (c < COLS) {
+                if (cell(r, c) === '#') {
+                    const s = c; while (c < COLS && cell(r, c) === '#') c++;
+                    const len = c - s, hv = WALL_H + ((r * 7 + s * 13) % 3) * 0.9;
+                    const sm = sideMat(len);
+                    addBox(s * S, c * S, 0, hv, r * S, (r + 1) * S, [wallEnd, wallEnd, wallTop, wallEnd, sm, sm]);
+                    const deco = (w2, h2, d2, x2, y2, z2, m2) => { const mm = new THREE.Mesh(new THREE.BoxGeometry(w2, h2, d2), m2); mm.position.set(x2, y2, z2); mm.castShadow = mm.receiveShadow = true; scene.add(mm); };
+                    deco(len * S + 0.1, 1.05, S + 0.12, (s + c) / 2 * S, 0.525, (r + 0.5) * S, brickMat(len));
+                    deco(len * S + 0.16, 0.22, S + 0.16, (s + c) / 2 * S, hv + 0.11, (r + 0.5) * S, trimMat);
+                    if (len >= 3 && hv > WALL_H) for (const zz of [r * S - 0.02, (r + 1) * S + 0.02]) {
+                        const win = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.5), glassMat);
+                        win.position.set((s + len / 2) * S, hv - 1.4, zz);
+                        if (zz < (r + 0.5) * S) win.rotation.y = Math.PI;
+                        scene.add(win);
+                    }
+                } else c++;
+            }
+        }
         const floor = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W, WORLD_D), new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.floor) })); floor.rotation.x = -Math.PI / 2; floor.position.set(WORLD_W / 2, 0, WORLD_D / 2); floor.receiveShadow = true; scene.add(floor); mapMeshes.push(floor);
         function siteMarker(cells, letter) {
             let minR = 99, maxR = -1, minC = 99, maxC = -1; cells.forEach(({ r, c }) => { minR = Math.min(minR, r); maxR = Math.max(maxR, r); minC = Math.min(minC, c); maxC = Math.max(maxC, c); }); const w = (maxC - minC + 1) * S, d = (maxR - minR + 1) * S;
             const tex = makeTex(256, 256, g => { g.fillStyle = 'rgba(200,120,40,0.35)'; g.fillRect(0, 0, 256, 256); g.strokeStyle = 'rgba(255,230,180,.8)'; g.lineWidth = 8; g.strokeRect(6, 6, 244, 244); g.fillStyle = 'rgba(255,240,200,.85)'; g.font = 'bold 170px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(letter, 128, 135); });
             const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(minC * S + w / 2, 0.02, minR * S + d / 2); scene.add(m);
         }
- siteMarker(siteCells.A, 'A'); siteMarker(siteCells.B, 'B');
- // ── Props (rein dekorativ, keine Kollision – hugging walls) ──
- {
- const M = c2 => new THREE.MeshLambertMaterial({ color: c2 });
- const wallDir = (r, c) => { for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (cell(r + dr, c + dc) === '#') return [dc, dr]; return null; };
- const cand = shuffle(openCells.filter(o => cell(o.r, o.c) === '.' && wallDir(o.r, o.c)));
- let pi = 0;
- const place = g2 => { const o = cand[pi++]; if (!o) return; const [dx2, dz2] = wallDir(o.r, o.c); g2.position.set(cx(o.c) + dx2 * 1.25, 0, cx(o.r) + dz2 * 1.25); g2.rotation.y = Math.random() * Math.PI * 2; g2.traverse(m2 => { if (m2.isMesh) m2.castShadow = true; }); scene.add(g2); };
- for (let n = 0; n < 4; n++) { const g2 = new THREE.Group();
- const tr2 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.17, 2.2, 6), M(0x6e5440)); tr2.position.y = 1.1; g2.add(tr2);
- const cr2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.15, 0), M(0xb3ad5c)); cr2.position.y = 2.65; cr2.scale.set(1, 0.72, 1); g2.add(cr2);
- place(g2); }
- for (let n = 0; n < 5; n++) { const g2 = new THREE.Group();
- const pal = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.14, 1.1), M(0x9a7b52)); pal.position.y = 0.07; g2.add(pal);
- const b1 = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 0.8), M(0xe8e4da)); b1.position.set(-0.15, 0.5, 0); g2.add(b1);
- const b2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.45, 0.5), M(0xd8d2c4)); b2.position.set(0.45, 0.37, 0.15); g2.add(b2);
- place(g2); }
- for (let n = 0; n < 5; n++) { const g2 = new THREE.Group();
- const k2 = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.16, 0.5, 8), M(0xd86a2a)); k2.position.y = 0.26; g2.add(k2);
- const f2 = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.03, 0.34), M(0xb5531d)); f2.position.y = 0.015; g2.add(f2);
- place(g2); }
- for (let n = 0; n < 9; n++) { const g2 = new THREE.Group();
- for (let b3 = 0; b3 < 3; b3++) { const bl = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.4 + Math.random() * 0.25, 4), M(0x7a8f4a)); bl.position.set((Math.random() - 0.5) * 0.4, 0.2, (Math.random() - 0.5) * 0.4); bl.rotation.z = (Math.random() - 0.5) * 0.4; g2.add(bl); } place(g2); }
- }        scene.add(new THREE.HemisphereLight(0xdbeaff, 0x9a7b4f, 0.7));
+        siteMarker(siteCells.A, 'A'); siteMarker(siteCells.B, 'B');
+        // ── Props (rein dekorativ, keine Kollision – hugging walls) ──
+        {
+            const M = c2 => new THREE.MeshLambertMaterial({ color: c2 });
+            const wallDir = (r, c) => { for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (cell(r + dr, c + dc) === '#') return [dc, dr]; return null; };
+            const cand = shuffle(openCells.filter(o => cell(o.r, o.c) === '.' && wallDir(o.r, o.c)));
+            let pi = 0;
+            const place = g2 => { const o = cand[pi++]; if (!o) return; const [dx2, dz2] = wallDir(o.r, o.c); g2.position.set(cx(o.c) + dx2 * 1.25, 0, cx(o.r) + dz2 * 1.25); g2.rotation.y = Math.random() * Math.PI * 2; g2.traverse(m2 => { if (m2.isMesh) m2.castShadow = true; }); scene.add(g2); };
+            for (let n = 0; n < 4; n++) {
+                const g2 = new THREE.Group();
+                const tr2 = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.17, 2.2, 6), M(0x6e5440)); tr2.position.y = 1.1; g2.add(tr2);
+                const cr2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.15, 0), M(0xb3ad5c)); cr2.position.y = 2.65; cr2.scale.set(1, 0.72, 1); g2.add(cr2);
+                place(g2);
+            }
+            for (let n = 0; n < 5; n++) {
+                const g2 = new THREE.Group();
+                const pal = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.14, 1.1), M(0x9a7b52)); pal.position.y = 0.07; g2.add(pal);
+                const b1 = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 0.8), M(0xe8e4da)); b1.position.set(-0.15, 0.5, 0); g2.add(b1);
+                const b2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.45, 0.5), M(0xd8d2c4)); b2.position.set(0.45, 0.37, 0.15); g2.add(b2);
+                place(g2);
+            }
+            for (let n = 0; n < 5; n++) {
+                const g2 = new THREE.Group();
+                const k2 = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.16, 0.5, 8), M(0xd86a2a)); k2.position.y = 0.26; g2.add(k2);
+                const f2 = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.03, 0.34), M(0xb5531d)); f2.position.y = 0.015; g2.add(f2);
+                place(g2);
+            }
+            for (let n = 0; n < 9; n++) {
+                const g2 = new THREE.Group();
+                for (let b3 = 0; b3 < 3; b3++) { const bl = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.4 + Math.random() * 0.25, 4), M(0x7a8f4a)); bl.position.set((Math.random() - 0.5) * 0.4, 0.2, (Math.random() - 0.5) * 0.4); bl.rotation.z = (Math.random() - 0.5) * 0.4; g2.add(bl); } place(g2);
+            }
+        } scene.add(new THREE.HemisphereLight(0xdbeaff, 0x9a7b4f, 0.7));
         const sun = new THREE.DirectionalLight(0xfff2d8, 1.0); sun.position.set(WORLD_W / 2 + 50, 90, WORLD_D / 2 + 35); sun.target.position.set(WORLD_W / 2, 0, WORLD_D / 2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
         Object.assign(sun.shadow.camera, { left: -80, right: 80, top: 80, bottom: -80, near: 20, far: 260 }); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -0.0005; scene.add(sun, sun.target);
 
@@ -2799,8 +2931,8 @@
         function stopFreecam() { FC.on = false; }
         function updateFreecam(dt) {
             const spd = (down('crouch') && down('jump') ? 0 : 1) * 14 * dt;
-            const f = (down('fwd') ? 1 : 0) - (down('back') ? 1 : 0);
-            const s = (down('right') ? 1 : 0) - (down('left') ? 1 : 0);
+            const f = (down('fwd') ? 1 : 0) - (down('back') ? 1 : 0) + TOUCH.f;
+            const s = (down('right') ? 1 : 0) - (down('left') ? 1 : 0) + TOUCH.s;
             const cy = Math.cos(FC.yaw), sy = Math.sin(FC.yaw), cp = Math.cos(FC.pitch);
             FC.x += (-sy * cp * f + cy * s) * spd;
             FC.z += (-cy * cp * f - sy * s) * spd;
@@ -2881,15 +3013,51 @@
         function keyName(c) { if (c === 'Space') return 'Leertaste'; if (c === 'Tab') return 'Tab'; if (c.startsWith('Key')) return c.slice(3); if (c.startsWith('Digit')) return c.slice(5); if (c.startsWith('Control')) return 'Strg ' + (c.includes('Left') ? '(links)' : '(rechts)'); if (c.startsWith('Shift')) return 'Shift ' + (c.includes('Left') ? '(links)' : '(rechts)'); if (c.startsWith('Alt')) return 'Alt'; if (c.startsWith('Arrow')) return { ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→' }[c]; return c; }
         const down = a => !!keys[BIND[a]];
         const keys = {}; let mouseDown = false, clickQueued = false, buyOpen = false, specTarget = null; function curDef() { const w = player.weapons[player.slot]; return w ? w.def : W.knife; }
-        const ACCEL = 55, FRICTION = 9, AIR_ACCEL = 10;
+        // ───── TOUCH-STEUERUNG ─────
+        const IS_TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
+        const TOUCH = { f: 0, s: 0 };
+        if (IS_TOUCH) {
+            renderer.domElement.requestPointerLock = () => { }; // kein Pointer-Lock auf Mobile
+            document.documentElement.style.touchAction = 'none';
+            let sid = null, scx = 0, scy = 0, lid = null, lx = 0, ly = 0;
+            $('tstick').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; sid = t.identifier; const r = $('tstick').getBoundingClientRect(); scx = r.left + r.width / 2; scy = r.top + r.height / 2; }, { passive: false });
+            $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
+            addEventListener('touchmove', e => {
+                for (const t of e.changedTouches) {
+                    if (t.identifier === sid) {
+                        let dx = (t.clientX - scx) / 48, dy = (t.clientY - scy) / 48;
+                        const L = Math.hypot(dx, dy); if (L > 1) { dx /= L; dy /= L; }
+                        TOUCH.s = dx; TOUCH.f = -dy;
+                        $('tnub').style.transform = `translate(${dx * 34}px,${dy * 34}px)`;
+                    } else if (t.identifier === lid) {
+                        const k = 0.0045 * OPT.sens * (player.scoped ? 0.4 : 1);
+                        if (FC.on) { FC.yaw -= (t.clientX - lx) * k; FC.pitch = clamp(FC.pitch - (t.clientY - ly) * k, -1.5, 1.5); }
+                        else { player.yaw -= (t.clientX - lx) * k; player.pitch = clamp(player.pitch - (t.clientY - ly) * k, -1.5, 1.5); }
+                        lx = t.clientX; ly = t.clientY;
+                    }
+                }
+                if (sid !== null || lid !== null) e.preventDefault();
+            }, { passive: false });
+            const tEnd = e => { for (const t of e.changedTouches) { if (t.identifier === sid) { sid = null; TOUCH.f = TOUCH.s = 0; $('tnub').style.transform = ''; } if (t.identifier === lid) lid = null; } };
+            addEventListener('touchend', tEnd); addEventListener('touchcancel', tEnd);
+            const hold = (id, on, off) => { const el = $(id); el.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); on(); }, { passive: false }); if (off) { el.addEventListener('touchend', e => { e.preventDefault(); off(); }); el.addEventListener('touchcancel', off); } };
+            hold('tFire', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);
+            hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
+            hold('tUse', () => keys[BIND.use] = true, () => keys[BIND.use] = false);
+            hold('tCrouch', () => keys[BIND.crouch] = !keys[BIND.crouch]);
+            hold('tReload', () => startReload());
+            hold('tScope', () => toggleScope());
+            hold('tAbil', () => glUseAbility());
+            hold('tNext', () => { const o = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); if (o.length) { const n = o[(o.indexOf(player.slot) + 1) % o.length]; n === 4 && player.slot === 4 ? cycleNade() : selectSlot(n); } });
+            hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
+        } const ACCEL = 55, FRICTION = 9, AIR_ACCEL = 10;
         function updatePlayer(dt) {
             const p = player; if (p.vx === undefined) { p.vx = 0; p.vz = 0; }
             const canMove = p.alive && G.state !== 'freeze';
-            const f = canMove ? ((down('fwd') ? 1 : 0) - (down('back') ? 1 : 0)) : 0;
-            const s = canMove ? ((down('right') ? 1 : 0) - (down('left') ? 1 : 0)) : 0;
+            const f = canMove ? ((down('fwd') ? 1 : 0) - (down('back') ? 1 : 0) + TOUCH.f) : 0;
+            const s = canMove ? ((down('right') ? 1 : 0) - (down('left') ? 1 : 0) + TOUCH.s) : 0;
             const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
-            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 0) { wx /= wl; wz /= wl; }
-            p.crouch = canMove && down('crouch'); let max = (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1); if (p.crouch) max *= 0.45; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - FRICTION * dt); p.vx *= fr; p.vz *= fr; }
+            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); let max = (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1); if (p.crouch) max *= 0.45; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - FRICTION * dt); p.vx *= fr; p.vz *= fr; }
             const acc = p.onGround ? ACCEL : AIR_ACCEL;
             p.vx += wx * acc * dt; p.vz += wz * acc * dt;
             const vl = Math.hypot(p.vx, p.vz); if (vl > max) { p.vx *= max / vl; p.vz *= max / vl; }
@@ -3520,26 +3688,26 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const aCell = (r, c) => (r < 0 || c < 0 || r >= R || c >= C) ? '#' : (rows[r][c] || '.');
             const box = (x0, x1, y0, y1, z0, z1, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), mat); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); m.castShadow = m.receiveShadow = true; grp.add(m); info.meshes.push(m); info.aabbs.push({ minX: x0, maxX: x1, minZ: z0, maxZ: z1, top: y1, bot: y0 }); };
             const aCrateM = new THREE.MeshLambertMaterial({ color: new THREE.Color().setHSL(th.crateHue / 360, th.crateSat / 100, th.crateLight / 100) });
- const aStepM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.floor).multiplyScalar(0.82) });
- const aStegM = new THREE.MeshLambertMaterial({ color: 0x4a5058 });
- const aHalfM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(0.88) });
- const aTexWall = makeTex(128, 256, (g, w, h) => {
- g.fillStyle = `hsl(${th.wallHue},${th.wallSat * 0.4}%,${th.wallLight * 0.72}%)`; g.fillRect(0, 0, w, h);
- const pw = 64, ph = 52;
- for (let y = 0; y < h; y += ph) { const off = ((y / ph) % 2) * pw / 2; for (let x = -pw; x < w + pw; x += pw) { g.fillStyle = `hsl(${th.wallHue},${th.wallSat * 0.45}%,${th.wallLight + 8 + Math.random() * 9}%)`; g.fillRect(x + off + 1.5, y + 1.5, pw - 3, ph - 3); } }
- });
- const aTexBrick = makeTex(128, 64, (g, w, h) => {
- g.fillStyle = '#a89088'; g.fillRect(0, 0, w, h);
- const bw = 32, bh = 16;
- for (let y = 0; y < h; y += bh) { const off = ((y / bh) % 2) * bw / 2; for (let x = -bw; x < w + bw; x += bw) { g.fillStyle = `hsl(${8 + Math.random() * 12},${16 + Math.random() * 14}%,${58 + Math.random() * 14}%)`; g.fillRect(x + off + 1, y + 1, bw - 2, bh - 2); } }
- });
- const aEndM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase) });
- const aTopM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(1.18) });
- const aTrimM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(0.45) });
- const aGlassM = new THREE.MeshLambertMaterial({ color: 0x9fc0d4 });
- const aSideMat = len => { const t = aTexWall.clone(); t.needsUpdate = true; t.repeat.set(len, 1); return new THREE.MeshLambertMaterial({ map: t }); };
- const aBrickMat = len => { const t = aTexBrick.clone(); t.needsUpdate = true; t.repeat.set(len * 2, 1); return new THREE.MeshLambertMaterial({ map: t }); };
- const solidDeco = (w2, h2, d2, x2, y2, z2, m2) => { const mm = new THREE.Mesh(new THREE.BoxGeometry(w2, h2, d2), m2); mm.position.set(x2, y2, z2); mm.castShadow = mm.receiveShadow = true; grp.add(mm); };
+            const aStepM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.floor).multiplyScalar(0.82) });
+            const aStegM = new THREE.MeshLambertMaterial({ color: 0x4a5058 });
+            const aHalfM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(0.88) });
+            const aTexWall = makeTex(128, 256, (g, w, h) => {
+                g.fillStyle = `hsl(${th.wallHue},${th.wallSat * 0.4}%,${th.wallLight * 0.72}%)`; g.fillRect(0, 0, w, h);
+                const pw = 64, ph = 52;
+                for (let y = 0; y < h; y += ph) { const off = ((y / ph) % 2) * pw / 2; for (let x = -pw; x < w + pw; x += pw) { g.fillStyle = `hsl(${th.wallHue},${th.wallSat * 0.45}%,${th.wallLight + 8 + Math.random() * 9}%)`; g.fillRect(x + off + 1.5, y + 1.5, pw - 3, ph - 3); } }
+            });
+            const aTexBrick = makeTex(128, 64, (g, w, h) => {
+                g.fillStyle = '#a89088'; g.fillRect(0, 0, w, h);
+                const bw = 32, bh = 16;
+                for (let y = 0; y < h; y += bh) { const off = ((y / bh) % 2) * bw / 2; for (let x = -bw; x < w + bw; x += bw) { g.fillStyle = `hsl(${8 + Math.random() * 12},${16 + Math.random() * 14}%,${58 + Math.random() * 14}%)`; g.fillRect(x + off + 1, y + 1, bw - 2, bh - 2); } }
+            });
+            const aEndM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase) });
+            const aTopM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(1.18) });
+            const aTrimM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(0.45) });
+            const aGlassM = new THREE.MeshLambertMaterial({ color: 0x9fc0d4 });
+            const aSideMat = len => { const t = aTexWall.clone(); t.needsUpdate = true; t.repeat.set(len, 1); return new THREE.MeshLambertMaterial({ map: t }); };
+            const aBrickMat = len => { const t = aTexBrick.clone(); t.needsUpdate = true; t.repeat.set(len * 2, 1); return new THREE.MeshLambertMaterial({ map: t }); };
+            const solidDeco = (w2, h2, d2, x2, y2, z2, m2) => { const mm = new THREE.Mesh(new THREE.BoxGeometry(w2, h2, d2), m2); mm.position.set(x2, y2, z2); mm.castShadow = mm.receiveShadow = true; grp.add(mm); };
             for (let r = 0; r < R; r++) {
                 for (let c = 0; c < C; c++) {
                     const ch = aCell(r, c), x = ox + cx(c), z = cx(r);
@@ -3551,38 +3719,45 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     if (ch === 'h') box(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, aHalfM);
                     if (ch === '=') box(x - S / 2, x + S / 2, 2.45, 2.8, z - S / 2, z + S / 2, aStegM);
                 }
- let c = 0; while (c < C) {
- if (aCell(r, c) === '#') {
- const s0 = c; while (c < C && aCell(r, c) === '#') c++;
- const len = c - s0, hv = WALL_H + ((r * 7 + s0 * 13) % 3) * 0.9;
- const sm = aSideMat(len);
- box(ox + s0 * S, ox + c * S, 0, hv, r * S, (r + 1) * S, [aEndM, aEndM, aTopM, aEndM, sm, sm]);
- solidDeco(len * S + 0.1, 1.05, S + 0.12, ox + (s0 + c) / 2 * S, 0.525, (r + 0.5) * S, aBrickMat(len));
- solidDeco(len * S + 0.16, 0.22, S + 0.16, ox + (s0 + c) / 2 * S, hv + 0.11, (r + 0.5) * S, aTrimM);
- if (len >= 3 && hv > WALL_H) for (const zz of [r * S - 0.02, (r + 1) * S + 0.02]) {
- const win = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.5), aGlassM);
- win.position.set(ox + (s0 + len / 2) * S, hv - 1.4, zz);
- if (zz < (r + 0.5) * S) win.rotation.y = Math.PI;
- grp.add(win);
- }
-} else c++;
- }            }
- {
- const M2 = c2 => new THREE.MeshLambertMaterial({ color: c2 });
- const wd = (r, c) => { for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (aCell(r + dr, c + dc) === '#') return [dc, dr]; return null; };
- const cand = shuffle(info.cells.filter(o => aCell(o.r, o.c) === '.' && wd(o.r, o.c)));
- let pi = 0;
- const place = g2 => { const o = cand[pi++]; if (!o) return; const [dx2, dz2] = wd(o.r, o.c); g2.position.set(ox + cx(o.c) + dx2 * 1.25, 0, cx(o.r) + dz2 * 1.25); g2.rotation.y = Math.random() * Math.PI * 2; g2.traverse(m2 => { if (m2.isMesh) m2.castShadow = true; }); grp.add(g2); };
- for (let n = 0; n < 2; n++) { const g2 = new THREE.Group();
- const pal = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.14, 1.1), M2(0x9a7b52)); pal.position.y = 0.07; g2.add(pal);
- const b1 = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 0.8), M2(0xe8e4da)); b1.position.set(-0.15, 0.5, 0); g2.add(b1);
- place(g2); }
- for (let n = 0; n < 2; n++) { const g2 = new THREE.Group();
- const k2 = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.16, 0.5, 8), M2(0xd86a2a)); k2.position.y = 0.26; g2.add(k2);
- place(g2); }
- for (let n = 0; n < 4; n++) { const g2 = new THREE.Group();
- for (let b3 = 0; b3 < 3; b3++) { const bl = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.4 + Math.random() * 0.25, 4), M2(0x7a8f4a)); bl.position.set((Math.random() - 0.5) * 0.4, 0.2, (Math.random() - 0.5) * 0.4); bl.rotation.z = (Math.random() - 0.5) * 0.4; g2.add(bl); } place(g2); }
- }            const fl = new THREE.Mesh(new THREE.PlaneGeometry(C * S, R * S), new THREE.MeshLambertMaterial({ color: new THREE.Color(th.floor) })); fl.rotation.x = -Math.PI / 2; fl.position.set(ox + C * S / 2, 0.01, R * S / 2); fl.receiveShadow = true; grp.add(fl); info.meshes.push(fl);
+                let c = 0; while (c < C) {
+                    if (aCell(r, c) === '#') {
+                        const s0 = c; while (c < C && aCell(r, c) === '#') c++;
+                        const len = c - s0, hv = WALL_H + ((r * 7 + s0 * 13) % 3) * 0.9;
+                        const sm = aSideMat(len);
+                        box(ox + s0 * S, ox + c * S, 0, hv, r * S, (r + 1) * S, [aEndM, aEndM, aTopM, aEndM, sm, sm]);
+                        solidDeco(len * S + 0.1, 1.05, S + 0.12, ox + (s0 + c) / 2 * S, 0.525, (r + 0.5) * S, aBrickMat(len));
+                        solidDeco(len * S + 0.16, 0.22, S + 0.16, ox + (s0 + c) / 2 * S, hv + 0.11, (r + 0.5) * S, aTrimM);
+                        if (len >= 3 && hv > WALL_H) for (const zz of [r * S - 0.02, (r + 1) * S + 0.02]) {
+                            const win = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.5), aGlassM);
+                            win.position.set(ox + (s0 + len / 2) * S, hv - 1.4, zz);
+                            if (zz < (r + 0.5) * S) win.rotation.y = Math.PI;
+                            grp.add(win);
+                        }
+                    } else c++;
+                }
+            }
+            {
+                const M2 = c2 => new THREE.MeshLambertMaterial({ color: c2 });
+                const wd = (r, c) => { for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (aCell(r + dr, c + dc) === '#') return [dc, dr]; return null; };
+                const cand = shuffle(info.cells.filter(o => aCell(o.r, o.c) === '.' && wd(o.r, o.c)));
+                let pi = 0;
+                const place = g2 => { const o = cand[pi++]; if (!o) return; const [dx2, dz2] = wd(o.r, o.c); g2.position.set(ox + cx(o.c) + dx2 * 1.25, 0, cx(o.r) + dz2 * 1.25); g2.rotation.y = Math.random() * Math.PI * 2; g2.traverse(m2 => { if (m2.isMesh) m2.castShadow = true; }); grp.add(g2); };
+                for (let n = 0; n < 2; n++) {
+                    const g2 = new THREE.Group();
+                    const pal = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.14, 1.1), M2(0x9a7b52)); pal.position.y = 0.07; g2.add(pal);
+                    const b1 = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 0.8), M2(0xe8e4da)); b1.position.set(-0.15, 0.5, 0); g2.add(b1);
+                    place(g2);
+                }
+                for (let n = 0; n < 2; n++) {
+                    const g2 = new THREE.Group();
+                    const k2 = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.16, 0.5, 8), M2(0xd86a2a)); k2.position.y = 0.26; g2.add(k2);
+                    place(g2);
+                }
+                for (let n = 0; n < 4; n++) {
+                    const g2 = new THREE.Group();
+                    for (let b3 = 0; b3 < 3; b3++) { const bl = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.4 + Math.random() * 0.25, 4), M2(0x7a8f4a)); bl.position.set((Math.random() - 0.5) * 0.4, 0.2, (Math.random() - 0.5) * 0.4); bl.rotation.z = (Math.random() - 0.5) * 0.4; g2.add(bl); } place(g2);
+                }
+            } const fl = new THREE.Mesh(new THREE.PlaneGeometry(C * S, R * S), new THREE.MeshLambertMaterial({ color: new THREE.Color(th.floor) })); fl.rotation.x = -Math.PI / 2; fl.position.set(ox + C * S / 2, 0.01, R * S / 2); fl.receiveShadow = true; grp.add(fl); info.meshes.push(fl);
             info.grp = grp; grp.visible = false;
             GA.built[key] = info; return info;
         }
@@ -4284,6 +4459,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 camera.lookAt(WORLD_W / 2, 1, WORLD_D / 2);
                 if (menuChar) menuChar.group.visible = false;
             }
+            if (IS_TOUCH) { const want = started && !gameEnded ? 'block' : 'none'; if ($('touch').style.display !== want) $('touch').style.display = want; }
             if (started && !paused && !gameEnded) {
                 if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
