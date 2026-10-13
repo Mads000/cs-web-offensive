@@ -2383,148 +2383,153 @@ body.edit #tlook{ pointer-events:none; }
     <script>
         'use strict';
         // =====================================================================
-        //  KARTE  (# Wand, c Kiste, C hohe Kiste, A/B Bombsites, T/K Spawns)
+        //  KARTE  (# Wand, c Kiste, C hohe Kiste, h Halbwand, 1–6 Treppe, = Steg, A/B Bombsites, T/K Spawns)
         // =====================================================================
-        const MAPS = {
-            de_dusty: [
-                "############################",
-                "#T..T.......#.......#......#",
-                "#..T...cc...#..c....#..cc..#",
-                "#T..T..cc...#..c....#..cc..#",
-                "#...........#.......#......#",
-                "#....####...##.###..#..##..#",
-                "#....#...hh....#...........#",
-                "#....#..cc.....#....C......#",
-                "#.####..cc.....#...........#",
-                "#.#BBBB........#....####...#",
-                "#.#BBBB...######....#......#",
-                "#.#BBBB...#.........#..c...#",
-                "#.#BBBB...#..cc.....#..c...#",
-                "#.........#..cc.....#......#",
-                "#....C....#.........###.####",
-                "#.........#.1234======4321.#",
-                "#.######..####.####........#",
-                "#.#...........#.....#.AAAA.#",
-                "#.#..cc.......#..cc.#.AAAA.#",
-                "#.#..cc.......#..cc.#.AAAA.#",
-                "#.#...........#.....#.AAAA.#",
-                "#.####........#.....#......#",
-                "#....hh.......#.....###.##.#",
-                "#.....c.......######.......#",
-                "#.....c....................#",
-                "#..K.....K......C..........#",
-                "#...K...K......K...........#",
-                "############################"],
-            de_bazaar: [
-                "############################",
-                "#KKKK.........##...........#",
-                "#KKKK..c......##....AAAA...#",
-                "#KKKK..c............AAAA...#",
-                "#..............##...AAAA...#",
-                "#...####..##...##...1233...#",
-                "#...#......#...##...####...#",
-                "#...#..cc..#......hh.......#",
-                "#...#..cc..####..c.........#",
-                "#..........#.....c.........#",
-                "#..C.......#......####.....#",
-                "#..........#......#........#",
-                "####..#####.......#..cc....#",
-                "#..123.....#......#..cc....#",
-                "#...cc.....#...C..#........#",
-                "#...cc.....#......####..####",
-                "#..........####1234====4321#",
-                "#.....#...1234=#....C......#",
-                "#.....#..BBBB..#...........#",
-                "#.....#c.BBBB.c#....##..##.#",
-                "#.....#..BBBB..#....##..##.#",
-                "#.....#...h....#..c.....c..#",
-                "#..##....##....#..c.....c..#",
-                "#....hh..........hh........#",
-                "#...TTTT.......C...........#",
-                "#...TTTT...................#",
-                "############################"],
-        };
+        // Layout-Regeln: CT erreicht beide Sites deutlich schneller als T, je 3 Routen pro Map, Treppen (1–4) nur längs begehbar (Seiten zu), Stege (=) auf 2,8 m
+        const MAPS = {};
+        MAPS.de_dusty = [
+            "############################",
+            "#.........#.KKKKKK.#......c#",
+            "#..BBBB...#.KKKKKK.#.AAAA..#",
+            "#..BBBB.c............AAAAC.#",
+            "#.CBBBB...#........#.AAAA..#",
+            "#..BBBB...#..c..c..#.AAAA..#",
+            "#......hh.##......##..hh...#",
+            "##..####.#####..####..##..##",
+            "#....#....#..c..c..#==#....#",
+            "#.c..#.##.#........#==#..C.#",
+            "#.c..#..c.#..##....#44#.##.#",
+            "#....#....#...C....#33#....#",
+            "#.#..#.............#22#h...#",
+            "#..cc######..#.....#11#....#",
+            "#..cc######..#..........##.#",
+            "#.........#..cc....######..#",
+            "#....#..c....cc....####....#",
+            "#C...#....##.......####..c.#",
+            "##...######....C...####....#",
+            "#..h.######...##...####.c..#",
+            "##..#########....#######..##",
+            "#....c..#....hh....#..c....#",
+            "#..##...#..........#...##..#",
+            "#...C......TTTTTT......C...#",
+            "#..#.......TTTTTT.......#..#",
+            "#....c..##.TTTTTT.##..c....#",
+            "#.......#..........#.......#",
+            "############################"];
+        MAPS.de_bazaar = [
+            "############################",
+            "#......#.........C#.#......#",
+            "#...C....c.c#..............#",
+            "#.BBBB.......c.c...h..#.#..#",
+            "#.BBBB.#.....c.c....#.#C...#",
+            "#.BBBB.########.#####.c...c#",
+            "#.BBBB.#.....##...###......#",
+            "#.....h#.#...##...###......#",
+            "#...c.h..#.c.##..c#####..###",
+            "#......#.....##...###....#.#",
+            "###.########.###.####......#",
+            "#.....##.........#..#..TTT.#",
+            "#KK....#............#..TTT.#",
+            "#KK...c#.c#..##c.c...h.TTT.#",
+            "#KK.......#C...c.c.#.h.TTT.#",
+            "#KK...............C#...TTT.#",
+            "#KK...c#.c.............TTT.#",
+            "#KK....#............#......#",
+            "#.....##............#....#.#",
+            "###.##########.########..###",
+            "#.......==4321.######......#",
+            "#.AAAA..==4321.######......#",
+            "#.AAAAh#######.######.c...c#",
+            "#.AAAAh#....h..#....#.#C...#",
+            "#.AAAA....#...##....c.#.#..#",
+            "#..C.....C#...#...c........#",
+            "#.c....#............#......#",
+            "############################"];
         MAPS.de_frost = [
             "############################",
-            "#KKKK.....#........#......##",
-            "#KKKK..c..#..AAAA..#..c....#",
-            "#......c..#..AAAA..#..c....#",
-            "#..........#.1221.#...C....#",
-            "#...####...##..##...####...#",
-            "#......1234====4321........#",
-            "#..cc...C.....##.....C..cc.#",
-            "#..cc.........##........cc.#",
-            "#..........1234====4321....#",
-            "####...####......####...####",
-            "#..........#.1221.#........#",
-            "#...cc.....#123321#....cc..#",
-            "#...cc..C..#123321#.C..cc..#",
-            "#..........#.1221.#........#",
-            "##.####..####..####..####.##",
-            "#.....hh..........hh.......#",
-            "#..BBBB...C.....cc.....c...#",
-            "#..BBBB.........cc.....c...#",
-            "#..BBBB..h.............h...#",
-            "#...........####...........#",
-            "#..c....c...#..#...c....c..#",
-            "#...........#..#...........#",
-            "#..TTTT....................#",
-            "#..TTTT........C...........#",
+            "#.c......#...c.#...#.KKKKK.#",
+            "#.AAAAA..............KKKKK.#",
+            "#.AAAAA....#..c......KKKKK.#",
+            "#.AAAAAC.####...####.......#",
+            "#.AAAAA..####...#####.....##",
+            "#....hh..####...#####..c..##",
+            "##..###..####...#####.....##",
+            "#....#..==....c...###.....##",
+            "#.c..#..==..###...###.....##",
+            "###..#..==..C.....#........#",
+            "#..C.#c.==........#.BBBBB..#",
+            "#....#..==....cc#...BBBBB.c#",
+            "#..###..==....cc....BBBBB..#",
+            "#.h..#..==........#.BBBBBC.#",
+            "#.......==..c.....#...#....#",
+            "#....#.#44#.......##....#.##",
+            "#..c.#.#33#...C##.##.c....##",
+            "#....#.#22#.......####....##",
+            "#..###.#11##.c....##...c..##",
+            "#....#............##......##",
+            "##..#######...#######...####",
+            "#....c...#........#........#",
+            "#..##......TTTTTT......#...#",
+            "#...C......TTTTTT.....hh...#",
+            "#........##TTTTTT##........#",
+            "#......c.....#........c....#",
             "############################"];
         MAPS.de_moisty = [
             "############################",
-            "#......#....K......#.......#",
-            "#..K............K......K...#",
-            "#......#.K...#####.#.......#",
-            "#......#.....#.....#.......#",
-            "###.####.....#.....####.####",
-            "#.AAAA.#.....#.............#",
-            "#.AAAA.#####.#........c....#",
-            "#.AAAA.#.....#.1234====4321#",
-            "#.AAAA.#..cc.#######...#####",
-            "#...C..#..cc.#.........C...#",
-            "#..c...#..####...C.BBBB....#",
-            "#..c...#..#......c.BBBB....#",
-            "#......#.....######BBBB#####",
-            "####.###..####.#...BBBB....#",
-            "#..C...#.......#.C..123=...#",
-            "#...c..##12344##...#########",
-            "#...c..##.....######.......#",
-            "#1234======4321#.....#.....#",
-            "#..............#.....#..c..#",
-            "######.#########.....#.....#",
-            "#..............#.....#.c...#",
-            "#..c...........#.....#.....#",
-            "#..c......hh.......hh......#",
-            "#......#...................#",
-            "#..T...#...T...#.....T.....#",
-            "#..T...#.......#.....T.....#",
+            "#......c..#...#..c...###...#",
+            "#.....#..........AAAAA.#.#.#",
+            "#...hh#..........AAAAA.#...#",
+            "#.......c.##..#.CAAAAA.....#",
+            "#..#..........##.AAAAA.....#",
+            "##..####..########..####...#",
+            "#....#...........#....#....#",
+            "#.#..#..c..##...C.....#..#.#",
+            "#....#.....#..........#....#",
+            "#TTTT#.....c......c...#KKKK#",
+            "#TTTT#..############..#KKKK#",
+            "#TTTT...1234====4321...KKKK#",
+            "#TTTT...1234====4321...KKKK#",
+            "#TTTT#..############..#KKKK#",
+            "#TTTT#...c......c.....#KKKK#",
+            "#....#.........#......#....#",
+            "#..#.#...##C......c...#.#..#",
+            "#....#...#......##....#....#",
+            "#....#................#....#",
+            "##..####..########..####...#",
+            "#.........#...##.BBBBB.....#",
+            "#...##.c......#.CBBBBB.....#",
+            "#........hh#.....BBBBB.#...#",
+            "#..c....#........BBBBB.#.#.#",
+            "#....C........#.....c#.#...#",
             "############################"];
         MAPS.de_foundry = [
             "############################",
-            "#TTTT....#.........#.......#",
-            "#TTTT.c..#..cc.....#.AAAA..#",
-            "#......c.#..cc.....h.AAAA..#",
-            "#........#.........#.AAAA..#",
-            "#..hh....##.####.###.......#",
-            "#........#.............C...#",
-            "###.###..#...cc....####.####",
-            "#........#...cc....#.......#",
-            "#...C....#.........#..cc...#",
-            "#.........h.......h........#",
-            "#..1234==========4321......#",
-            "#.........h.......h........#",
-            "#....##...#.......#....##..#",
-            "#.........#..cc...#........#",
-            "#..BBBB...#..cc...#....C...#",
-            "#..BBBB...#.......#........#",
-            "#..BBBB......hh............#",
-            "#.........####.####........#",
-            "#..cc.....#.......#...cc...#",
-            "#..cc.....#...C...#...cc...#",
-            "#.........#.......#........#",
-            "#..KKKK....................#",
-            "#..KKKK........C...........#",
+            "#........#..#....#.........#",
+            "#.BBBBB............KKKKKKK.#",
+            "#.BBBBB.c...c......KKKKKKK.#",
+            "#CBBBBB..#.....#.#..#....#.#",
+            "#.BBBBB..####.#######...####",
+            "#......hh####.#######...####",
+            "##..###.#####.#######...####",
+            "#....#....#......#..#......#",
+            "#.c......c#.....C...#.AAAA.#",
+            "###..#........##....#.AAAA.#",
+            "#..C.#....c.....c.....AAAAC#",
+            "#....#####......#####.AAAA.#",
+            "#.....1234======4321....#..#",
+            "#.....1234======4321...c...#",
+            "#..#######......#####......#",
+            "#.h..#..c..##...c...##....##",
+            "#....#......C.......##.c..##",
+            "##...#.........##...##....##",
+            "#..c.#.#.c.....c....##..#.##",
+            "##..######......######....##",
+            "#....c..#......hh..#..c....#",
+            "#...##................##...#",
+            "#..C.......TTTTTTT......C..#",
+            "#.......#..TTTTTTT.#.......#",
+            "##....c....TTTTTTT....c....#",
+            "#............#.............#",
             "############################"];
         const THEMES = {
             de_dusty: { sky: 0xa9c8e8, fog: 0xcbbd9c, floor: '#c6a872', wallBase: '#b9a078', wallHue: 34, wallSat: 30, wallLight: 58, crateHue: 26, crateSat: 45, crateLight: 32 },
@@ -3128,10 +3133,12 @@ body.edit #tlook{ pointer-events:none; }
             e.z += dz; for (const b of activeAabbs()) { if (!blockedBy(e, b)) continue; if (e.x + r > b.minX && e.x - r < b.maxX && e.z + r > b.minZ && e.z - r < b.maxZ) { const l = e.z + r - b.minZ, rt = b.maxZ - (e.z - r); e.z = l < rt ? b.minZ - r : b.maxZ + r; } }
         }
         function groundAt(e) { let g = 0; const rr = e.r * 0.6, y = e.y || 0; for (const b of activeAabbs()) { if (y < b.top - STEP_H - 0.05) continue; if (e.x + rr > b.minX && e.x - rr < b.maxX && e.z + rr > b.minZ && e.z - rr < b.maxZ) g = Math.max(g, b.top); } return g; }
-        function bfs(sr, sc, tr, tc) {
-            if (solid(cell(tr, tc)) || solid(cell(sr, sc))) return null; const N = ROWS * COLS, prev = new Int16Array(N).fill(-1), q = new Int16Array(N); let qh = 0, qt = 0; const s = sr * COLS + sc, t = tr * COLS + tc; prev[s] = s; q[qt++] = s;
-            while (qh < qt) { const cur = q[qh++]; if (cur === t) break; const r = (cur / COLS) | 0, c = cur % COLS; const nb = [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]; if (Math.random() < 0.5) nb.reverse(); for (const [nr, nc] of nb) { if (solid(cell(nr, nc))) continue; const ni = nr * COLS + nc; if (prev[ni] !== -1) continue; prev[ni] = cur; q[qt++] = ni; } }
-            if (prev[t] === -1) return null; const path = []; let cur = t; while (cur !== s) { path.push({ r: (cur / COLS) | 0, c: cur % COLS }); cur = prev[cur]; } return path.reverse();
+        function bfs(sr, sc, tr, tc, onTop) {
+            if (solid(cell(tr, tc)) || solid(cell(sr, sc))) return null; const N = ROWS * COLS, prev = new Int32Array(N * 2).fill(-1), q = new Int32Array(N * 2); let qh = 0, qt = 0, end = -1;
+            // Zustand = Zelle*2 + (oben auf Steg ? 1 : 0); Aufstieg max. 1 Stufe, Herunterfallen immer erlaubt
+            const lv = (ch, top) => ch >= '1' && ch <= '6' ? +ch : (ch === '=' && top) ? 4 : 0, t = tr * COLS + tc, s = (sr * COLS + sc) * 2 + (onTop && cell(sr, sc) === '=' ? 1 : 0); prev[s] = s; q[qt++] = s;
+            while (qh < qt) { const cur = q[qh++]; if (cur >> 1 === t) { end = cur; break; } const ci = cur >> 1, r = (ci / COLS) | 0, c = ci % COLS, hh = lv(cell(r, c), cur & 1); const nb = [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]; if (Math.random() < 0.5) nb.reverse(); for (const [nr, nc] of nb) { const ch = cell(nr, nc); if (solid(ch)) continue; const top = ch === '=' && hh >= 3 ? 1 : 0; if (lv(ch, top) - hh > 1) continue; const ni = (nr * COLS + nc) * 2 + top; if (prev[ni] !== -1) continue; prev[ni] = cur; q[qt++] = ni; } }
+            if (end < 0) return null; const path = []; let cur = end; while (cur !== s) { const ci = cur >> 1; path.push({ r: (ci / COLS) | 0, c: ci % COLS }); cur = prev[cur]; } return path.reverse();
         }
         function aCellCur(r, c) { const A = GA.cur; return (r < 0 || c < 0 || r >= A.R || c >= A.C) ? '#' : (A.rows[r][c] || '.'); }
         function bfsArena(sr, sc, tr, tc) {
@@ -3144,7 +3151,7 @@ body.edit #tlook{ pointer-events:none; }
         function setGoal(b, r, c) {
             b.goal = { r, c };
             if (GA.cur) { b.path = (bfsArena(cr(b.z), cr(b.x - GA.cur.ox), r, c) || []).map(p => ({ r: p.r, c: p.c, ax: GA.cur.ox + cx(p.c), az: cx(p.r) })); }
-            else b.path = bfs(cr(b.z), cr(b.x), r, c) || [];
+            else b.path = bfs(cr(b.z), cr(b.x), r, c, (b.y || 0) > 2) || [];
         } function randomNear(r, c, rad) { for (let i = 0; i < 12; i++) { const rr = r + Math.round((Math.random() * 2 - 1) * rad), cc = c + Math.round((Math.random() * 2 - 1) * rad); if (!solid(cell(rr, cc))) return { r: rr, c: cc }; } return { r, c }; }
         function botMoveToward(b, tx, tz, dt, spd) { const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz); if (d < 0.05) return; const s = Math.min(spd * (b.spdMul || 1) * dt, d); collideMove(b, dx / d * s, dz / d * s); if (!b.target) b.yaw = lerpAngle(b.yaw, Math.atan2(dx, dz), Math.min(1, dt * 12)); b.moving = true; b.wantMove = true; }
         function followPath(b, dt) { if (!b.path.length) return false; const wp = b.path[0], tx = wp.ax !== undefined ? wp.ax : cx(wp.c), tz = wp.az !== undefined ? wp.az : cx(wp.r); if (Math.hypot(tx - b.x, tz - b.z) < 0.6) { b.path.shift(); return followPath(b, dt); } botMoveToward(b, tx, tz, dt, BOT_SPEED); return true; } function separate() { const all = ents.filter(e => e.alive); for (let i = 0; i < all.length; i++)for (let j = i + 1; j < all.length; j++) { const a = all[i], b = all[j]; const dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz); if (d < 0.85 && d > 0.001) { const p = (0.85 - d) / 2, nx = dx / d, nz = dz / d; if (!a.isPlayer) collideMove(a, -nx * p, -nz * p); if (!b.isPlayer) collideMove(b, nx * p, nz * p); if (a.isPlayer) collideMove(a, -nx * p, -nz * p); if (b.isPlayer) collideMove(b, nx * p, nz * p); } } }
@@ -3166,22 +3173,23 @@ body.edit #tlook{ pointer-events:none; }
         const boomMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), new THREE.MeshBasicMaterial({ color: 0xffb040, transparent: true, opacity: 0.9 })); boomMesh.visible = false; scene.add(boomMesh);
         let boomT = 0, whiteFlash = 0, dmgFlash = 0, hitT = 0, hitHS = false, shake = 0;
         function applyDamage(e, dmg, att, w, hs) {
-            if (!e.alive) return;
+            if (!e.alive || (DM.on && e.dmProt > now)) return;
             if (e.armor > 0 && !(hs && !e.helmet)) { const a = Math.min(e.armor, dmg * 0.5); e.armor -= a; dmg -= a; }
             dmg = Math.round(dmg); e.health -= dmg;
             if (e.isPlayer) { dmgFlash = 1; sfx('hurt'); } else burst(e.x, e.y + (hs ? 1.65 : 1.0), e.z, 0x8a0000, 8, 3);
             if (att && att.isPlayer && att !== e) { hitT = 0.12; hitHS = !!hs; sfx('hit'); } if (e.health <= 0) { e.health = 0; kill(e, att, w, hs); }
         }
         function kill(e, att, w, hs) {
-            e.alive = false; e.deaths++;
+            e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
             if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
             else if (!e.remote && e.weapon && e.weapon.slot === 1) { const dd = dropWeapon(e.weapon, e.x, e.z, e.weapon.mag, 0, null); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } }
-            if (att && att !== e) { if (att.team !== e.team || GL.on) { att.kills++; att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
+            if (att && att !== e) { if (att.team !== e.team || GL.on || DM.on) { att.kills++; att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
             if (NET.on && (e.isPlayer || (NET.host && !e.remote))) netSend({ type: 'kf', ap: att ? (att.isPlayer ? NET.pid : att.pid || null) : null, an: att ? att.name : null, at: att ? att.team : '', vn: e.name, vt: e.team, w: w ? w.name : null, hs: !!hs, rw: w && (w.key === 'knife' || w.name === 'Butterfly') ? 1500 : w && (w.key === 'awp' || w.name === 'AWP') ? 100 : 300 }); if (G.bomb.carrier === e && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); if (e.isPlayer) e.weapons[5] = null; }
             if (e.isPlayer) playerDie(att); else { e.mesh.rotation.x = -Math.PI / 2; e.mesh.scale.y = 1; e.crouch = false; e.mesh.position.set(e.x, 0.3, e.z); e.target = null; e.flash.visible = false; } checkRoundEnd();
         }
-        function playerDie(att) { const p = player; p.scoped = false; setScoped(false); p.weapons[5] = null; if (GL.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> eliminiert` : 'Eliminiert') + '<div style="font-size:13px;color:#aaa;margin-top:8px">🚁 Freecam: WASD fliegen · Leertaste/Strg hoch/runter</div>'; startFreecam(); return; } $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Du wurdest von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Du bist gestorben') + '<div id="specname" style="font-size:16px;margin-top:10px;color:#e8c98a"></div><div style="font-size:13px;color:#aaa">Linksklick: nächsten Spieler beobachten</div>'; closeBuy(); specTarget = null; cycleSpec(); }
+        function playerDie(att) { const p = player; p.scoped = false; setScoped(false); p.weapons[5] = null; if (DM.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Gestorben') + '<div id="dmresp" style="font-size:16px;margin-top:10px;color:#e8c98a">Respawn in 3</div>'; closeBuy(); return; } if (GL.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> eliminiert` : 'Eliminiert') + '<div style="font-size:13px;color:#aaa;margin-top:8px">🚁 Freecam: WASD fliegen · Leertaste/Strg hoch/runter</div>'; startFreecam(); return; } $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Du wurdest von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Du bist gestorben') + '<div id="specname" style="font-size:16px;margin-top:10px;color:#e8c98a"></div><div style="font-size:13px;color:#aaa">Linksklick: nächsten Spieler beobachten</div>'; closeBuy(); specTarget = null; cycleSpec(); }
         function cycleSpec() {
+            if (DM.on) { specTarget = null; return; }
             const mates = ents.filter(e => e !== player && e.alive && e.team === player.team);
             if (!mates.length) { specTarget = null; return; }
             specTarget = mates[(mates.indexOf(specTarget) + 1) % mates.length];
@@ -3201,6 +3209,38 @@ body.edit #tlook{ pointer-events:none; }
         //  RUNDEN / BOMBE / ECONOMY
         // =====================================================================
         const G = { state: 'menu', t: 0, round: 1, score: { CT: 0, T: 0 }, loss: { CT: 0, T: 0 }, timer: ROUND_TIME, bomb: { state: 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }, beepT: 0, site: 'A', msgT: 0, spotted: new Map() };
+        // ================= DEATHMATCH (Jeder gegen jeden) =================
+        const DM = { on: false, limit: 30, time: 600 };
+        function foe(a, b) { return DM.on ? a !== b : a.team !== b.team; }
+        function dmSpot(self) {
+            const ok = openCells.filter(o => '.ABTK'.includes(cell(o.r, o.c))), others = ents.filter(e => e !== self && e.alive); let best = null, bd = -1;
+            for (let i = 0; i < 24; i++) { const o = rnd(ok), x = cx(o.c), z = cx(o.r); const d = others.reduce((m, e) => Math.min(m, Math.hypot(e.x - x, e.z - z)), 1e9); if (d > bd) { bd = d; best = { x, z }; } }
+            return best;
+        }
+        function dmRespawn(e) {
+            const s = dmSpot(e); e.x = s.x + (Math.random() - 0.5); e.z = s.z + (Math.random() - 0.5); e.y = 0; e.vy = 0; e.alive = true; e.health = 100; e.armor = 100; e.helmet = true; e.dmT = 0; e.dmProt = now + 1.5; e.yaw = Math.random() * Math.PI * 2;
+            if (e.isPlayer) {
+                e.vx = e.vz = 0; e.money = 16000; e.weapons[5] = null; if (e.dmLast) e.weapons[1] = mkWeapon(e.dmLast); if (!e.weapons[2]) e.weapons[2] = mkWeapon(e.team === 'T' ? W.glock : W.usp);
+                for (const k of [1, 2]) { const w = e.weapons[k]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } }
+                e.slot = e.weapons[1] ? 1 : 2; e.pitch = 0; setScoped(false); specTarget = null; $('dead').style.display = 'none'; updateVM();
+            } else {
+                e.money = 16000; e.weapon = e.team === 'T' ? W.glock : W.usp; botBuy(e); e.target = null; e.path = []; e.goal = null; e.waitT = 0; e.fireT = 0.5; e.reloadT = 0; e.stuckT = 0; e.lastX = e.x; e.lastZ = e.z;
+                e.mesh.rotation.set(0, e.yaw, 0); e.mesh.scale.y = 1; e.mesh.position.set(e.x, 0, e.z);
+            }
+        }
+        function dmDeadTick(e, dt) { if (e.alive || !(e.dmT > 0)) return; e.dmT -= dt; if (e.isPlayer) { const el = $('dmresp'); if (el) el.textContent = 'Respawn in ' + Math.max(1, Math.ceil(e.dmT)); } if (e.dmT <= 0) dmRespawn(e); }
+        function dmBotRoam(b, dt) {
+            const mv = followPath(b, dt); if (!mv) b.waitT -= dt;
+            if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 0.5 + Math.random() * 1.5; const fs = ents.filter(e => e !== b && e.alive), f = fs.length && Math.random() < 0.6 ? rnd(fs) : null; const c = f ? randomNear(cr(f.z), cr(f.x), 3) : rnd(openCells); setGoal(b, c.r, c.c); }
+        }
+        function dmRank() { return ents.slice().sort((a, b) => b.kills - a.kills || a.deaths - b.deaths); }
+        function dmReport() {
+            const rk = dmRank(), win = rk[0], me = rk.indexOf(player) + 1;
+            showOverlay(`<h1 style="color:${win === player ? 'var(--acc)' : '#8da0b5'}">${win === player ? 'SIEG' : 'PLATZ ' + me}<small>DEATHMATCH BEENDET · ${win ? win.name + ' gewinnt mit ' + win.kills + ' Kills' : ''}</small></h1>
+<div class="panel" style="min-width:320px;text-align:left"><div class="psub">RANGLISTE · ${MAPNAME.toUpperCase()}</div>
+${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e === player ? 'color:var(--acc);font-weight:bold' : ''}"><span>${i + 1}. ${e.name}${e === player ? ' (Du)' : ''}</span><b>${e.kills} / ${e.deaths}</b></div>`).join('')}
+<div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div></div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button>`);
+        }
         function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .35s ease-out'; } function placeTeam(team) { const cells = shuffle(spawnCells[team].slice()); let i = 0; for (const e of ents) { if (e.team !== team) continue; const c = cells[i++ % cells.length]; e.x = cx(c.c) + (Math.random() - 0.5); e.z = cx(c.r) + (Math.random() - 0.5); e.y = 0; e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
         function botBuy(b) {
             const rifle = b.team === 'T' ? W.ak47 : W.m4a1;
@@ -3215,13 +3255,14 @@ body.edit #tlook{ pointer-events:none; }
             b.ammo = b.weapon.mag;
         }
         function startRound() {
-            clearDrops(); clearNades(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear();
+            clearDrops(); clearNades(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear();
             const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } p.weapons[5] = null; p.alive = true; p.health = 100;
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); }
             placeTeam('T'); placeTeam('CT');
             bots.forEach(b => { b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; b.lastX = b.x; b.lastZ = b.z; });
-            const car = rnd(ents.filter(e => e.team === 'T')); G.bomb.carrier = car; if (car.isPlayer) p.weapons[5] = mkWeapon(W.c4);
-            msg(`Runde ${G.round}`, p.team === 'T' ? `Taktik: Angriff auf Bombsite ${G.site}${car.isPlayer ? ' – Du trägst die Bombe!' : ''}` : 'Verteidigt die Bombsites A und B', 4); sfx('start');
+            if (DM.on) for (const e of ents) if (!e.remote) dmRespawn(e);
+            const car = DM.on ? null : rnd(ents.filter(e => e.team === 'T')); G.bomb.carrier = car; if (car && car.isPlayer) p.weapons[5] = mkWeapon(W.c4);
+            if (DM.on) msg('💀 Deathmatch', `Jeder gegen jeden · ${DM.limit} Kills oder 10 Min · Waffen gratis`, 4); else msg(`Runde ${G.round}`, p.team === 'T' ? `Taktik: Angriff auf Bombsite ${G.site}${car.isPlayer ? ' – Du trägst die Bombe!' : ''}` : 'Verteidigt die Bombsites A und B', 4); sfx('start');
             openBuy(true); updateVM();
             if (NET.on && NET.host) { netSend({ type: 'round', rd: G.round, site: G.site }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); }
         }
@@ -3233,7 +3274,7 @@ body.edit #tlook{ pointer-events:none; }
             if (NET.on && NET.host) netSend({ type: 'end', w: winner, rs: reason });
         }
         function nextRound() { if (G.score.CT >= WIN_SCORE || G.score.T >= WIN_SCORE || G.round >= MAX_ROUNDS) gameOver(); else { G.round++; startRound(); } }
-        function checkRoundEnd() { if (GL.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; if (aCT === 0) endRound('T', 'Alle Counter-Terroristen eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Terroristen eliminiert'); }
+        function checkRoundEnd() { if (GL.on || DM.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; if (aCT === 0) endRound('T', 'Alle Counter-Terroristen eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Terroristen eliminiert'); }
         function plantBomb(e) {
             if (G.state !== 'live') return; G.bomb.state = 'planted'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.t = BOMB_TIME; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); bombMesh.rotation.set(0, 0, 0); e.plantT = 0; e.money = Math.min(16000, e.money + 300);
             if (e.isPlayer) { e.weapons[5] = null; e.slot = e.weapons[1] ? 1 : 2; e.switchT = 1; updateVM(); }
@@ -3246,7 +3287,7 @@ body.edit #tlook{ pointer-events:none; }
             for (const e of ents) { if (!e.alive || e.remote) continue; const d = Math.hypot(e.x - G.bomb.x, e.z - G.bomb.z); if (d < 16) applyDamage(e, 400 * (1 - d / 16), null, null, false); }
         }
         function gameOver() {
-            if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); store.cases++; saveStore(); const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
+            if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); store.cases++; saveStore(); if (DM.on) { dmReport(); return; } const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
             showOverlay(`<h1 style="color:${won ? 'var(--acc)' : '#8da0b5'}">${won ? 'SIEG' : 'NIEDERLAGE'}<small>SPIEL BEENDET</small></h1>
 <div class="panel" style="min-width:320px;text-align:left">
 <div class="psub">MATCH-REPORT · ${MAPNAME.toUpperCase()}</div>
@@ -3258,6 +3299,7 @@ body.edit #tlook{ pointer-events:none; }
 </div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button>`);
         }
         function updateRound(dt) {
+            if (DM.on && G.state === 'live') { G.timer -= dt; for (const b of bots) dmDeadTick(b, dt); if (G.timer <= 0 || ents.some(e => e.kills >= DM.limit)) { gameOver(); return; } if (G.msgT > 0) { G.msgT -= dt; if (G.msgT <= 0) { $('msg').textContent = ''; $('sub').textContent = ''; } } return; }
             if (G.state === 'freeze') { G.t -= dt; if (G.t <= 0) G.state = 'live'; }
             else if (G.state === 'live') {
                 if (G.bomb.state === 'planted') { G.bomb.t -= dt; G.beepT -= dt; if (G.beepT <= 0) { sfx('beep', G.bomb.x, G.bomb.z); G.beepT = 0.15 + (G.bomb.t / BOMB_TIME) * 0.85; bombLed.material.color.setHex(0xff2020); setTimeout(() => bombLed.material.color.setHex(0x400000), 90); } if (G.bomb.t <= 0) explode(); }
@@ -3277,10 +3319,10 @@ body.edit #tlook{ pointer-events:none; }
             for (const e of ents) {
                 if (e === b || !e.alive) continue;
                 if (GL.on) { const bt = GL.teams.find(t => t.members.includes(b)); if (!bt || bt.members.includes(e) || !GL.duel || !GL.duel.teams.flatMap(t => t.members).includes(e)) continue; }
-                else if (e.team === b.team) continue; const dx = e.x - ex, dz = e.z - ez, d = Math.hypot(dx, dz); if (d > 55) continue;
+                else if (!foe(e, b)) continue; const dx = e.x - ex, dz = e.z - ez, d = Math.hypot(dx, dz); if (d > 55) continue;
                 const heard = (now - e.lastShotT) < 1.2 && d < 35; if (!heard) { const dot = (dx * Math.sin(b.yaw) + dz * Math.cos(b.yaw)) / d; if (dot < -0.2) continue; }
                 const eyeY = e.isPlayer ? e.y + e.eyeH : e.y + 1.6;
-                if (hasLOS(ex, ey, ez, e.x, eyeY, e.z)) { if (b.team === player.team) G.spotted.set(e, now); if (d < bd) { best = e; bd = d; } }
+                if (hasLOS(ex, ey, ez, e.x, eyeY, e.z)) { if (!DM.on && b.team === player.team) G.spotted.set(e, now); if (d < bd) { best = e; bd = d; } }
             }
             return best;
         }
@@ -3320,7 +3362,7 @@ body.edit #tlook{ pointer-events:none; }
             if (t) {
                 const d = Math.hypot(t.x - b.x, t.z - b.z);
                 if (d < 9 || d > 28) return;
-                for (const m of ents) if (m !== b && m.alive && m.team === b.team && Math.hypot(m.x - t.x, m.z - t.z) < 6) return;
+                for (const m of ents) if (m !== b && m.alive && !foe(m, b) && Math.hypot(m.x - t.x, m.z - t.z) < 6) return;
                 if (botThrowAt(b, 'he', t.x, t.z)) return;
                 if (botThrowAt(b, 'molly', t.x, t.z)) return;
             } else if (b.team === 'T' && G.bomb.state === 'carried') {
@@ -3349,7 +3391,7 @@ body.edit #tlook{ pointer-events:none; }
             b.helpT = 1.5 + Math.random() * 2;
             if (G.bomb.carrier === b) return;
             for (const m of ents) {
-                if (m === b || m.team !== b.team || !m.alive) continue;
+                if (m === b || foe(m, b) || !m.alive) continue;
                 const fighting = m.isPlayer || m.remote ? (now - m.lastShotT) < 2 : !!m.target;
                 if (!fighting) continue;
                 const d = Math.hypot(m.x - b.x, m.z - b.z);
@@ -3419,7 +3461,7 @@ body.edit #tlook{ pointer-events:none; }
                     }
                 }
                 b.path = []; b.goal = null;
-            } else { b.crouch = false; if (GL.on) { glBotHunt(b, dt); } else if (!botPickup(b, dt)) { botHelp(b, dt); botObjective(b, dt); } } b.speed = Math.hypot(b.x - ox, b.z - oz) / Math.max(dt, 0.001);
+            } else { b.crouch = false; if (GL.on) { glBotHunt(b, dt); } else if (DM.on) { if (!botPickup(b, dt)) dmBotRoam(b, dt); } else if (!botPickup(b, dt)) { botHelp(b, dt); botObjective(b, dt); } } b.speed = Math.hypot(b.x - ox, b.z - oz) / Math.max(dt, 0.001);
             if (b.moving) { b.stepT -= dt; if (b.stepT <= 0) { b.stepT = 0.4; sfx('step', b.x, b.z); } }
             b.stuckT += dt; if (b.stuckT > 0.7) { if (b.wantMove && Math.hypot(b.x - b.lastX, b.z - b.lastZ) < 0.25) { b.goal = null; b.path = []; b.waitT = 0; collideMove(b, (Math.random() - 0.5), (Math.random() - 0.5)); } b.lastX = b.x; b.lastZ = b.z; b.stuckT = 0; }
             b.y = groundAt(b);
@@ -3549,7 +3591,7 @@ body.edit #tlook{ pointer-events:none; }
         function tryShoot() {
             const p = player; if (!p.alive || G.state === 'freeze' || buyOpen) { clickQueued = false; return; } const w = p.weapons[p.slot]; if (!w) return; const d = w.def; if (d.plant) { clickQueued = false; return; } if (d.nade) { const c = clickQueued; clickQueued = false; if (c) throwNade(d); return; } if (w.reloading) { clickQueued = false; return; }
             const want = d.auto ? mouseDown : clickQueued; clickQueued = false; if (!want) return; if (now - w.last < d.rate) return; w.last = now;
-            if (d.melee) { sfx('knife'); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: 'knife', x: p.x, z: p.z }); p.kick = 1; const h = castShot(0); if (h && h.distance < 2.3) { const ud = h.object.userData; if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : ud.ent.team !== p.team)) { const dmg = d.dmg * (ud.part === 'head' ? 2 : 1); if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else applyDamage(ud.ent, dmg, p, d, false); } else if (!ud.ent) { addDecal(h.point, h.face.normal); } } return; } if (w.ammo <= 0) { sfx('empty'); startReload(); return; }
+            if (d.melee) { sfx('knife'); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: 'knife', x: p.x, z: p.z }); p.kick = 1; const h = castShot(0); if (h && h.distance < 2.3) { const ud = h.object.userData; if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) { const dmg = d.dmg * (ud.part === 'head' ? 2 : 1); if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else applyDamage(ud.ent, dmg, p, d, false); } else if (!ud.ent) { addDecal(h.point, h.face.normal); } } return; } if (w.ammo <= 0) { sfx('empty'); startReload(); return; }
             w.ammo--; p.lastShotT = now;
             let spread = d.spread; if (d.scope) spread = p.scoped ? d.scopedSpread : d.spread; else { spread *= (1 + p.recoil * 0.9); if (p.speed > 3) spread *= 2.5; else if (p.speed > 0) spread *= 1.5; if (p.crouch) spread *= 0.7; if (!p.onGround) spread *= 4; }
             for (let pi = 0; pi < (d.pellets || 1); pi++) {
@@ -3557,7 +3599,7 @@ body.edit #tlook{ pointer-events:none; }
                 if (!h) continue;
                 const ud = h.object.userData;
                 if (ud.ent && ud.ent.decoy) { ud.ent.hp -= d.dmg; burst(h.point.x, h.point.y, h.point.z, 0x7dffb0, 4, 2); hitT = 0.12; hitHS = false; sfx('hit'); }
-                else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : ud.ent.team !== p.team)) {
+                else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) {
                     const hs = ud.part === 'head';
                     const dmg = d.key === 'awp' ? 9999 : Math.round(d.dmg * (hs ? (d.pellets ? 1.8 : 4) : ud.part === 'legs' ? 0.75 : 1) * Math.max(d.pellets ? 0.2 : 0.6, 1 - h.distance * (d.pellets ? 0.025 : 0.004)));
                     if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx('hit'); }
@@ -3610,7 +3652,7 @@ body.edit #tlook{ pointer-events:none; }
                     { g: 'ammo', label: 'Munition auffüllen', price: 100 }]
             }
         ];
-        function canBuy() { if (GL.on) return false; return player.alive && (G.state === 'freeze' || (G.state === 'live' && G.timer > ROUND_TIME - 15)); } let buyCache = '';
+        function canBuy() { if (GL.on) return false; if (DM.on) return player.alive; return player.alive && (G.state === 'freeze' || (G.state === 'live' && G.timer > ROUND_TIME - 15)); } let buyCache = '';
         function itemPrice(it) { if (it.w) return W[it.w].price; return it.g === 'helm' && player.armor >= 100 ? 350 : it.price; }
         function itemOwned(it) {
             const p = player;
@@ -3685,7 +3727,7 @@ body.edit #tlook{ pointer-events:none; }
                     setT('abil', `<div class="abw ${ready ? 'rdy' : ''}" style="--f:${deg}deg"><div class="abr"><span>${GL_ABIL[A.key].ico}</span></div><b>${ready ? '[' + keyName(BIND.abil) + ']' + (A.g ? ' ⚡' : '') : Math.ceil(A.cd) + 's'}</b></div>`);
                 } else setT('abil', ''); const tm = GL.myTeam, L = Math.max(0, tm.lives); setT('score', GL.duel && !GL.duel.over ? `${GL.duel.teams[0].name} vs. ${GL.duel.teams[1].name}` : '⚔️ GAUNTLET'); setT('roundlbl', `Stage ${GL.stage} · Dein Team: ${'❤'.repeat(L)}${'🖤'.repeat(GL_LIVES - L)}`);
             }
-            else { setT('abil', ''); setT('score', `<span class="ct">CT ${G.score.CT}</span> | <span class="t">${G.score.T} T</span>`); setT('roundlbl', `Runde ${G.round} / ${MAX_ROUNDS}${G.state === 'freeze' ? ' – Freeze ' + Math.ceil(G.t) : ''}`); } const be = $('bomb'); be.style.display = G.bomb.state === 'planted' ? 'block' : 'none'; if (G.bomb.state === 'planted') be.style.opacity = Math.sin(now * 8) > 0 ? 1 : 0.35;
+            else { setT('abil', ''); if (DM.on) { setT('score', `💀 ${player.kills} / ${DM.limit} Kills`); setT('roundlbl', `Deathmatch · Platz ${dmRank().indexOf(player) + 1} / ${ents.length}${G.state === 'freeze' ? ' – Start in ' + Math.ceil(G.t) : ''}`); } else { setT('score', `<span class="ct">CT ${G.score.CT}</span> | <span class="t">${G.score.T} T</span>`); setT('roundlbl', `Runde ${G.round} / ${MAX_ROUNDS}${G.state === 'freeze' ? ' – Freeze ' + Math.ceil(G.t) : ''}`); } } const be = $('bomb'); be.style.display = G.bomb.state === 'planted' ? 'block' : 'none'; if (G.bomb.state === 'planted') be.style.opacity = Math.sin(now * 8) > 0 ? 1 : 0.35;
             $('cross').style.display = (p.alive && !p.scoped) ? 'block' : 'none';
             const g = Math.max(0, OPT.chGap + (OPT.chDyn ? p.recoil * 3 + (p.speed > 3 ? 8 : p.speed > 0 ? 3 : 0) + (!p.onGround ? 12 : 0) - (p.crouch ? 2 : 0) : 0)), L = OPT.chLen, T = OPT.chThick, hT = T / 2, bg = `;background:${OPT.chCol}`;
             crossEls[0].style.cssText = `left:${-hT}px;top:${-(g + L)}px;width:${T}px;height:${L}px${bg}`; crossEls[1].style.cssText = `left:${-hT}px;top:${g}px;width:${T}px;height:${L}px${bg}`; crossEls[2].style.cssText = `left:${-(g + L)}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[3].style.cssText = `left:${g}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[4].style.cssText = `display:${OPT.chDot ? "block" : "none"};left:${-hT}px;top:${-hT}px;width:${T}px;height:${T}px${bg}`;
@@ -3696,6 +3738,7 @@ body.edit #tlook{ pointer-events:none; }
         function killfeed(att, vic, w, hs) { const nm = e => `<span class="${e.team === 'CT' ? 'ct' : 't'}">${e.name}</span>`; const d = document.createElement('div'); d.innerHTML = `${att ? nm(att) : '💣'} <span style="color:#fff">[${w ? w.name : 'Bombe'}${hs ? ' ☠' : ''}]</span> ${nm(vic)}`; const f = $('killfeed'); f.prepend(d); while (f.children.length > 6) f.lastChild.remove(); setTimeout(() => d.remove(), 6000); }
         function renderBoard() {
             if (GL.on) { $('board').innerHTML = glBoard(); return; }
+            if (DM.on) { $('board').innerHTML = `<h3 style="margin:0 0 8px">💀 Deathmatch – ${MAPNAME}</h3><table><tr><th>Spieler</th><th>K</th><th>T</th></tr>${dmRank().map((e, i) => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${i + 1}. ${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td></tr>`).join('')}</table>${IS_TOUCH ? '<p style="font-size:11px;color:#8fa3b8">Doppeltipp: Einstellungen</p>' : ''}`; return; }
             const rows = t => ents.filter(e => e.team === t).sort((a, b) => b.kills - a.kills).map(e => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td><td>$ ${e.money}</td></tr>`).join('');
             $('board').innerHTML = `<h3 style="margin:0 0 8px">${MAPNAME} – Runde ${G.round}</h3><table><tr><th class="ct">Counter-Terrorists (${G.score.CT})</th><th>K</th><th>T</th><th>$</th></tr>${rows('CT')}<tr><th class="t" style="padding-top:12px">Terroristen (${G.score.T})</th><th>K</th><th>T</th><th>$</th></tr>${rows('T')}</table>`;
         }
@@ -3723,7 +3766,7 @@ body.edit #tlook{ pointer-events:none; }
             rctx.drawImage(GA.cur && RB ? arenaBase : radarBase, 0, 0);
             const dot = (e, col, r) => { const [x, y] = radarXY(e.x, e.z); rctx.fillStyle = col; rctx.beginPath(); rctx.arc(x, y, r, 0, Math.PI * 2); rctx.fill(); };
             if (!GA.cur && (G.bomb.state === 'planted' || G.bomb.state === 'dropped')) { rctx.fillStyle = G.bomb.state === 'planted' && Math.sin(now * 10) > 0 ? '#ff3030' : '#ffd040'; const [bx, bz] = radarXY(G.bomb.x, G.bomb.z); rctx.fillRect(bx - 3, bz - 3, 6, 6); }
-            for (const b of bots) { if (!b.alive) continue; const mate = GL.on ? (GL.myTeam && GL.myTeam.members.includes(b)) : b.team === player.team; if (mate) dot(b, '#6fa8ff', 3); else { const sp = G.spotted.get(b); if (GA.cur || (sp && now - sp < 2) || (now - b.lastShotT < 1.5 && Math.hypot(b.x - player.x, b.z - player.z) < 40)) dot(b, '#ff3b3b', 3); } }
+            for (const b of bots) { if (!b.alive) continue; const mate = GL.on ? (GL.myTeam && GL.myTeam.members.includes(b)) : !DM.on && b.team === player.team; if (mate) dot(b, '#6fa8ff', 3); else { const sp = G.spotted.get(b); if (GA.cur || (sp && now - sp < 2) || (now - b.lastShotT < 1.5 && Math.hypot(b.x - player.x, b.z - player.z) < 40)) dot(b, '#ff3b3b', 3); } }
             if (player.alive || !GL.on) {
                 const [px, pz] = radarXY(player.x, player.z), fx = -Math.sin(player.yaw), fz = -Math.cos(player.yaw), rx = Math.cos(player.yaw), rz = -Math.sin(player.yaw);
                 rctx.fillStyle = '#fff'; rctx.beginPath(); rctx.moveTo(px + fx * 7, pz + fz * 7); rctx.lineTo(px - fx * 4 + rx * 4, pz - fz * 4 + rz * 4); rctx.lineTo(px - fx * 4 - rx * 4, pz - fz * 4 - rz * 4); rctx.closePath(); rctx.fill();
@@ -4026,6 +4069,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <span id="barOff">
  <button id="btnCT">Start: Counter-Terrorists</button>
  <button id="btnT">Start: Terroristen</button>
+ <button id="btnDM">💀 Deathmatch</button>
  </span>
  <span id="barOn" style="display:none">
  <input id="srv" value="${DEF_WS}" placeholder="wss://…">
@@ -4132,7 +4176,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             setMode(+(sessionStorage.getItem('playmode') || 0));
             $('btnGl').onclick = () => glStart(+$('glTeams').value);
             $('btnGlOn').onclick = () => { $('srv').value = $('glsrv').value.trim(); $('room').value = $('glroom').value.trim(); startMP('CT'); }; $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); $('profName').textContent = v || 'Spieler'; document.querySelector('#cschar b').textContent = v || 'Spieler'; };
-            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T');
+            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); };
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = showGameSettings;
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navOff').onclick = () => location.reload();
@@ -4147,7 +4191,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             for (const rp of NET.players.values()) humans[rp.team]++;
             for (let i = humans.CT; i < CFG.teamSize; i++) createBot(ctN[i - humans.CT], 'CT');
             for (let i = humans.T; i < CFG.teamSize; i++) createBot(tN[i - humans.T], 'T');
-            ents = [player, ...bots, ...NET.players.values()];
+            ents = [player, ...bots, ...NET.players.values()]; if (NET.on && NET.host) netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) });
             started = true; $('overlay').style.display = 'none';
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
             renderer.domElement.requestPointerLock(); startRound();
@@ -4849,13 +4893,13 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     netSend({ type: 'hello', pid: NET.pid, name: player.name, team: player.team }); break;
                 case 'hello': addRemote(m.pid, m.name, m.team);
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team });
-                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cfg: CFG }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); if (NET.inLobby) renderLobby(); break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team); if (NET.inLobby) renderLobby(); } break;
+                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); if (NET.inLobby) renderLobby(); break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team); if (NET.inLobby) renderLobby(); } break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
                 case 'plant': if (NET.host) plantBomb({ x: m.x, z: m.z, isPlayer: false, money: 0, plantT: 0 }); break;
                 case 'defuse': if (NET.host && G.bomb.state === 'planted') defuseBomb({ isPlayer: false, money: 0, defuseT: 0 }); break;
                 case 'c4': if (!NET.host && m.pid === NET.pid) { player.weapons[5] = mkWeapon(W.c4); msg('Du trägst die Bombe!', `Angriff auf Bombsite ${G.site}`, 4); } break;
                 case 'nade': { const ow = m.ap ? (m.ap === NET.pid ? player : NET.players.get(m.ap)) : null; launchNade(m.k, m.x, m.y, m.z, m.dx, m.dy, m.dz, ow || { name: m.on, team: m.ot, isPlayer: false }, m.lv || 1, m.g || null); break; } case 'wdrop': { const d = dropWeapon(W[m.w], m.x, m.z, m.a ?? (W[m.w].mag || 0), m.rs ?? 0, m.sk ?? null); if (d) d.did = m.did; break; } case 'wtake': { const i = drops.findIndex(d => d.did === m.did); if (i >= 0) { scene.remove(drops[i].mesh); drops.splice(i, 1); } break; }
-                case 'start':
+                case 'start': if (m.dm) DM.on = true;
                     if (m.cfg && !NET.host) { Object.assign(CFG, m.cfg); applyCfg(); if (!started) player.money = CFG.money; }
                     if (m.map && m.map !== MAPNAME) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
                     if (!NET.host && !started) { NET.inLobby = false; $('overlay').style.display = 'none'; startGameClient(); } break; case 'roster': if (!NET.host && bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); ents = [player, ...bots, ...NET.players.values()]; } break;
@@ -4880,7 +4924,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'dmg': if (m.to === NET.pid && player.alive) applyDamage(player, m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
                 case 'kf': {
                     killfeed(m.an ? { name: m.an, team: m.at } : null, { name: m.vn, team: m.vt }, m.w ? { name: m.w } : null, m.hs);
-                    if (m.ap === NET.pid) { if (m.at !== m.vt || GL.on) { player.kills++; player.money = Math.min(16000, player.money + m.rw); sfx('kill'); killPop(m.vn, m.hs); if (GL.on && player.glP && player.glP.vamp && player.alive) player.health = Math.min(player.maxHP || 100, player.health + 10 * player.glP.vamp); } else player.kills--; } break;
+                    if (NET.host && !m.ap && m.an && (DM.on || m.at !== m.vt)) { const kb = bots.find(x => x.name === m.an); if (kb) kb.kills++; }
+                    if (m.ap === NET.pid) { if (m.at !== m.vt || GL.on || DM.on) { player.kills++; player.money = Math.min(16000, player.money + m.rw); sfx('kill'); killPop(m.vn, m.hs); if (GL.on && player.glP && player.glP.vamp && player.alive) player.health = Math.min(player.maxHP || 100, player.health + 10 * player.glP.vamp); } else player.kills--; } break;
                 }
 
                 case 'botdmg2': if (m.to === NET.pid && player.alive) applyDamage(player, m.d, { name: m.bn, team: m.bt, isPlayer: false }, { name: m.w, key: '' }, m.hs); break; case 'botdmg': if (NET.host && bots[m.id] && bots[m.id].alive) applyDamage(bots[m.id], m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
@@ -4961,14 +5006,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="display:flex;flex-direction:column;gap:6px;max-height:290px;overflow-y:auto">${rows}</div>
  ${IS_TOUCH ? glAsgHTML() : ''}
  ${NET.host
-                    ? '<div class="csbtns" style="margin-top:14px"><button id="btnStart" style="border-color:#9fe08a;color:#9fe08a">▶ SPIEL STARTEN</button></div><div class="csbtns" style="margin-top:8px"><select id="glTeamsMp" style="flex:0 0 90px">' + [4, 6, 8].map(n => `<option value="${n}" ${(NET.glN || 4) === n ? 'selected' : ''}>${n} Teams</option>`).join('') + '</select><button id="btnGlMp">⚔️ GAUNTLET</button></div><p style="font-size:11px;color:#8fa3b8;margin:8px 0 0">Du bist Host – warte, bis alle da sind, und starte dann.</p>' : '<p style="font-size:13px;color:#8fa3b8;margin-top:14px">⏳ Warte, bis der Host das Spiel startet…</p>'}
+                    ? '<div class="csbtns" style="margin-top:14px"><button id="btnStart" style="border-color:#9fe08a;color:#9fe08a">▶ SPIEL STARTEN</button><button id="btnDMMp" style="border-color:#ff6b6b;color:#ff6b6b">💀 DEATHMATCH</button></div><div class="csbtns" style="margin-top:8px"><select id="glTeamsMp" style="flex:0 0 90px">' + [4, 6, 8].map(n => `<option value="${n}" ${(NET.glN || 4) === n ? 'selected' : ''}>${n} Teams</option>`).join('') + '</select><button id="btnGlMp">⚔️ GAUNTLET</button></div><p style="font-size:11px;color:#8fa3b8;margin:8px 0 0">Du bist Host – warte, bis alle da sind, und starte dann.</p>' : '<p style="font-size:13px;color:#8fa3b8;margin-top:14px">⏳ Warte, bis der Host das Spiel startet…</p>'}
  <div class="csbtns" style="margin-top:10px"><button id="lobInv">🎒 Inventar</button><button id="lobCases">📦 Cases (${store.cases})</button><button id="lobLeave" style="border-color:#c66;color:#c66">Verlassen</button></div>
  </div>
  ${IS_TOUCH ? '' : `<div class="cspanel" id="gltpanel"><h3>⚔️ GAUNTLET-TEAMS</h3>${glAsgHTML()}</div>`}
  <div id="cschar"><b>${player.name}</b></div>
  <div id="csver">LOBBY | ${MAPNAME} | ${NET.srv}</div>
  </div>`, true);
-            if (NET.host) { $('btnStart').onclick = () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cfg: CFG }); startGame(player.team); }; $('btnGlMp').onclick = () => glStartMP(+$('glTeamsMp').value); $('glTeamsMp').onchange = e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); }; }
+            if (NET.host) { $('btnStart').onclick = () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); }; $('btnGlMp').onclick = () => glStartMP(+$('glTeamsMp').value); $('btnDMMp').onclick = () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cfg: CFG, dm: 1 }); startGame(player.team); }; $('glTeamsMp').onchange = e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); }; }
             document.querySelectorAll('[data-glk]').forEach(el => el.onclick = () => { const k = +el.dataset.glk; if (glAsg()[NET.pid] === k || el.classList.contains('full')) return; glAsg()[NET.pid] = k; glAsgSend({ a: { [NET.pid]: k } }); }); $('lobInv').onclick = showInventory;
             $('lobCases').onclick = showCases;
             $('lobLeave').onclick = leaveGame; $('lobLeaveTop').onclick = leaveGame;
@@ -4986,8 +5031,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } }
             p.alive = true; p.health = 100; p.vx = p.vz = 0; p.vy = 0; p.pitch = 0; setScoped(false); p.weapons[5] = null; if (!p.weapons[2]) p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp);
             p.slot = p.weapons[1] ? 1 : 2; updateVM();
-            const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = 0; $('dead').style.display = 'none';
-            G.state = FREEZE_TIME > 0 ? 'freeze' : 'live'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; msg('Runde ' + G.round, '', 3); openBuy(true);
+            if (DM.on) dmRespawn(p); else { const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = 0; } $('dead').style.display = 'none';
+            G.state = FREEZE_TIME > 0 ? 'freeze' : 'live'; G.t = FREEZE_TIME; G.timer = DM.on ? DM.time : ROUND_TIME; msg(DM.on ? '💀 Deathmatch' : 'Runde ' + G.round, DM.on ? 'Jeder gegen jeden · Waffen gratis' : '', 3); openBuy(true);
         }
         function applySnap(m) {
             const prev = G.bomb.state;
@@ -4997,7 +5042,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (m.bs === 'exploded' && prev !== 'exploded') { sfx('explosion'); whiteFlash = 1; shake = 1; boomMesh.position.set(m.bx, 1, m.bz); boomMesh.visible = true; boomT = 0.7; if (player.alive) { const d = Math.hypot(player.x - m.bx, player.z - m.bz); if (d < 16) applyDamage(player, 400 * (1 - d / 16), null, null, false); } } bombMesh.visible = (m.bs === 'planted' || m.bs === 'dropped'); bombMesh.position.set(m.bx, 0, m.bz);
             m.b.forEach((a, i) => {
                 const b = bots[i]; if (!b) return; const was = b.alive;
-                b.x = a[0]; b.z = a[1]; b.yaw = a[2]; b.alive = !!a[3]; b.health = a[4];
+                b.x = a[0]; b.z = a[1]; b.yaw = a[2]; b.alive = !!a[3]; b.health = a[4]; if (a[7] !== undefined) { b.kills = a[7]; b.deaths = a[8]; }
                 if (a[5]) { b.lastShotT = now; sfx(b.weapon ? b.weapon.snd : 'rifle', b.x, b.z); }
                 if (was && !b.alive) b.mesh.rotation.x = -Math.PI / 2;
                 if (!was && b.alive) b.mesh.rotation.set(0, 0, 0);
@@ -5014,7 +5059,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     NET.snapT = 0.1;
                     netSend({
                         type: 'snap', gs: G.state, gt: +G.t.toFixed(1), rd: G.round, tm: G.timer, sc: G.score, bs: G.bomb.state, bx: G.bomb.x, bz: G.bomb.z,
-                        b: bots.map(b => [+b.x.toFixed(1), +b.z.toFixed(1), +b.yaw.toFixed(2), b.alive ? 1 : 0, b.health, (now - b.lastShotT) < 0.15 ? 1 : 0, b.crouch ? 1 : 0])
+                        b: bots.map(b => [+b.x.toFixed(1), +b.z.toFixed(1), +b.yaw.toFixed(2), b.alive ? 1 : 0, b.health, (now - b.lastShotT) < 0.15 ? 1 : 0, b.crouch ? 1 : 0, b.kills, b.deaths])
                     });
                 }
             }
@@ -5049,7 +5094,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (started && !paused && !gameEnded) {
                 if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
-                updatePlayer(dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
+                updatePlayer(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
                 separate(); updateFX(dt); updateHUD(); if ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2) drawRadar(); if (buyOpen) renderBuy();
             }
             renderer.render(scene, camera);
