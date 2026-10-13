@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>Counter-Strike: Web Offensive – de_dusty</title>
 
     <link rel="icon"
@@ -140,8 +141,13 @@
             white-space: nowrap
         }
 
-        .mob #roundmsg{ font-size:26px; }
-.mob #freeze{ font-size:14px; }
+        .mob #roundmsg {
+            font-size: 26px;
+        }
+
+        .mob #freeze {
+            font-size: 14px;
+        }
 
         #sub {
             position: absolute;
@@ -1841,6 +1847,15 @@
             background: rgba(216, 90, 60, .4);
         }
 
+        #tFire2 {
+            left: 30px;
+            bottom: 230px;
+            width: 72px;
+            height: 72px;
+            font-size: 26px;
+            background: rgba(216, 90, 60, .4);
+        }
+
         #tJump {
             right: 136px;
             bottom: 60px;
@@ -1883,54 +1898,404 @@
             height: 46px;
         }
 
+        #tBoard {
+            right: 16px;
+            top: 126px;
+            width: 46px;
+            height: 46px;
+        }
+
         /* ───── MOBILE OVERRIDES ───── */
-.mob #radar{ width:100px; height:100px; opacity:.75; }
-.mob #msg{ font-size:22px; top:12%; }
-.mob #sub{ font-size:13px; }
-.mob #bl{ transform:scale(.6); transform-origin:bottom left; left:12px; bottom:10px; gap:16px; }
-.mob #br{ transform:scale(.6); transform-origin:bottom right; right:10px; bottom:230px; }
-.mob #money{ font-size:16px; right:10px; bottom:292px; }
-.mob #abil{ transform:scale(.7); transform-origin:bottom center; bottom:8px; }
-.mob #top{ transform:scale(.72); transform-origin:top center; }
-.mob #killfeed{ font-size:11px; top:52px; }
-.mob #cross{ transform:scale(1.6); }
-/* Touch-Buttons: zwei saubere Cluster */
-.mob #tstick{ left:max(16px, env(safe-area-inset-left)); bottom:16px; width:104px; height:104px; }
-.mob #tAbil{ left:140px; bottom:24px; width:48px; height:48px; }
-.mob .tb{ width:46px; height:46px; font-size:17px; }
-.mob #tFire{ right:max(18px, env(safe-area-inset-right)); bottom:20px; width:76px; height:76px; font-size:28px; }
-.mob #tScope{ right:104px; bottom:16px; }
-.mob #tJump{ right:110px; bottom:74px; }
-.mob #tCrouch{ right:30px; bottom:106px; }
-.mob #tReload{ right:88px; bottom:130px; }
-.mob #tUse{ right:150px; bottom:106px; }
-.mob #tNext{ right:208px; bottom:60px; }
-.mob #tBuy{ right:max(12px, env(safe-area-inset-right)); top:8px; width:40px; height:40px; }
+        .mob #radar {
+            width: 100px;
+            height: 100px;
+            opacity: .75;
+        }
 
-/* ───── MOBILE: MENÜ / LOBBY ───── */
-.mob #overlay .panel, .mob .cspanel, .mob .gldraft{ max-width:94vw; max-height:86vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.mob #overlay button{ min-height:44px; }
-.mob #cslogo div:nth-child(2){ font-size:34px !important; }
-.mob .mapc{ width:140px; height:210px; }
-.mob #csfriends{ display:none; }
-.mob #csplayview{ top:50px; }
-.mob input, .mob select{ font-size:16px !important; min-height:42px; }
+        .mob #msg {
+            font-size: 22px;
+            top: 12%;
+        }
 
-.bclose{ display:none; width:34px; height:34px; align-items:center; justify-content:center; background:rgba(0,0,0,.5); border:1px solid var(--line); border-radius:50%; font-size:15px; cursor:pointer; }
-.mob .bclose{ display:flex; }
-.mob #buy{ left:50%; top:50%; bottom:auto; transform:translate(-50%,-50%); max-width:96vw; max-height:88vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.mob .bgrid{ flex-wrap:wrap; }
-.mob .bcol{ min-width:130px; flex:1 1 30%; padding:6px; gap:5px; }
-.mob .card{ padding:5px 8px; }
-.mob .card b{ font-size:12px; }
-.mob .cprice{ font-size:11px; }
-.mob .bfoot{ display:none; }
+        .mob #sub {
+            font-size: 13px;
+        }
+
+        .mob #bl {
+            transform: scale(.55);
+            transform-origin: bottom left;
+            left: 8px;
+            bottom: 4px;
+            gap: 12px;
+        }
+
+        .mob #br {
+            transform: scale(.6);
+            transform-origin: bottom right;
+            right: 10px;
+            bottom: 230px;
+        }
+
+        .mob #money {
+            font-size: 16px;
+            right: 10px;
+            bottom: 292px;
+        }
+
+        .mob #abil {
+            transform: scale(.7);
+            transform-origin: bottom center;
+            bottom: 8px;
+        }
+
+        .mob #top {
+            transform: scale(.72);
+            transform-origin: top center;
+        }
+
+        .mob #killfeed {
+            font-size: 11px;
+            top: 52px;
+        }
+
+        .mob #cross {
+            transform: scale(1.05);
+        }
+
+        /* Touch-Buttons: zwei saubere Cluster */
+        /* ── Linkes Cluster: Stick höher, Buttons klar getrennt ── */
+      /* ── Linkes Cluster: Stick mittig-links, Zweitfeuer darüber ── */
+.mob #tstick{ left:max(72px, env(safe-area-inset-left)); bottom:100px; width:110px; height:110px; }
+.mob #tFire2{ left:90px; bottom:228px; width:66px; height:66px; font-size:25px; }
+
+/* ── Rechtes Cluster: Fächer wie im Referenz-Layout ── */
+.mob .tb{ width:48px; height:48px; font-size:17px; }
+.mob #tFire{ right:max(44px, env(safe-area-inset-right)); bottom:28px; width:92px; height:92px; font-size:32px; }
+.mob #tJump{ right:132px; bottom:118px; width:64px; height:64px; font-size:24px; }
+.mob #tCrouch{ right:max(8px, env(safe-area-inset-right)); bottom:134px; }
+.mob #tReload{ right:72px; bottom:166px; }
+.mob #tNext{ right:42px; bottom:224px; }
+.mob #tUse{ right:188px; bottom:58px; width:56px; height:56px; font-size:20px; }
+.mob #tScope{ right:148px; bottom:4px; }
+.mob #tAbil{ right:244px; bottom:16px; width:56px; height:56px; font-size:20px; }
+
+/* ── Oben rechts: ☰ links neben $ ── */
+.mob #tBuy{ right:max(14px, env(safe-area-inset-right)); top:10px; width:42px; height:42px; }
+.mob #tBoard{ right:76px; top:10px; width:42px; height:42px; }
+        .mob #board {
+            max-width: 94vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            font-size: 12px;
+        }
+
+        /* ───── MOBILE: MENÜ / LOBBY ───── */
+        .mob #overlay .panel,
+        .mob .cspanel,
+        .mob .gldraft {
+            max-width: 94vw;
+            max-height: 86vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mob #overlay button {
+            min-height: 44px;
+        }
+
+        .mob #cslogo div:nth-child(2) {
+            font-size: 34px !important;
+        }
+
+        .mob .mapc {
+            width: 104px;
+            height: 156px;
+        }
+
+        .mob .mapc .emb {
+            width: 52px;
+            height: 52px;
+            font-size: 22px;
+            top: 46px;
+        }
+
+        .mob .mapc b {
+            font-size: 12px;
+            bottom: 22px;
+        }
+
+        .mob .mapc span {
+            font-size: 9px;
+            bottom: 8px;
+        }
+
+        .mob #csfriends {
+            display: none;
+        }
+
+        .mob #cslogo {
+            display: none !important;
+        }
+
+        .mob #csplayview {
+            top: 48px;
+            max-height: calc(100% - 56px);
+            padding: 6px 10px 12px;
+        }
+
+        .mob #mapgrid {
+            gap: 8px;
+            margin: 6px 0;
+        }
+
+        .mob #playbar {
+            gap: 6px;
+            padding-top: 8px;
+        }
+
+        .mob #playbar input {
+            width: 110px;
+            font-size: 16px;
+            min-height: 36px;
+        }
+
+        .mob #playbar button {
+            min-height: 40px;
+            padding: 6px 10px;
+        }
+
+        .mob .subnav b {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .mob input,
+        .mob select {
+            font-size: 16px !important;
+            min-height: 42px;
+        }
+
+        .bclose {
+            display: none;
+            width: 34px;
+            height: 34px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, .5);
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .mob .bclose {
+            display: flex;
+        }
+
+        .mob #buy {
+            left: 50%;
+            top: 50%;
+            bottom: auto;
+            transform: translate(-50%, -50%);
+            max-width: 96vw;
+            max-height: 88vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mob .bgrid {
+            flex-wrap: wrap;
+        }
+
+        .mob .bcol {
+            min-width: 130px;
+            flex: 1 1 30%;
+            padding: 6px;
+            gap: 5px;
+        }
+
+        .mob .card {
+            padding: 5px 8px;
+        }
+
+        .mob .card b {
+            font-size: 12px;
+        }
+
+        .mob .cprice {
+            font-size: 11px;
+        }
+
+        .mob .bfoot {
+            display: none;
+        }
+
+        /* ───── ALIVE-LEISTE OBEN ───── */
+        #aliveL,
+        #aliveR {
+            position: absolute;
+            top: 12px;
+            display: flex;
+            gap: 3px;
+            pointer-events: none;
+        }
+
+        #aliveL {
+            right: calc(50% + 72px);
+        }
+
+        #aliveR {
+            left: calc(50% + 72px);
+        }
+
+        .pv {
+            width: 24px;
+            height: 28px;
+            background: rgba(0, 0, 0, .5);
+            border-top: 3px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font: 700 12px Rajdhani, sans-serif;
+            color: #fff;
+            text-shadow: 0 1px 2px #000;
+        }
+
+        .pv.dd {
+            opacity: .22;
+        }
+
+        .mob #aliveL {
+            right: calc(50% + 54px);
+            top: 8px;
+            gap: 2px;
+        }
+
+        .mob #aliveR {
+            left: calc(50% + 54px);
+            top: 8px;
+            gap: 2px;
+        }
+
+        .mob .pv {
+            width: 18px;
+            height: 22px;
+            font-size: 10px;
+            border-top-width: 2px;
+        }
+
+        /* ───── MOBILE: GAUNTLET-DRAFT ───── */
+        .mob #overlay,
+        .mob #buy,
+        .mob #board {
+            touch-action: pan-y;
+        }
+
+        .mob .gldraft {
+            padding: 10px 12px;
+            gap: 8px;
+        }
+
+        .mob .glhead {
+            gap: 14px;
+        }
+
+        .mob .glhead b {
+            font-size: 28px;
+        }
+
+        .mob .glhead span {
+            font-size: 9px;
+            min-width: 90px;
+        }
+
+        .mob .glsec {
+            padding-top: 6px;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .mob .glrow {
+            gap: 8px;
+        }
+
+        .mob .glw {
+            width: 112px;
+            padding: 8px;
+        }
+
+        .mob .glu {
+            width: 146px;
+            min-height: 118px;
+            padding: 8px;
+            gap: 4px;
+        }
+
+        .mob .glu .ico {
+            width: 38px;
+            height: 38px;
+            font-size: 18px;
+        }
+
+        .mob .glu b {
+            font-size: 11px;
+        }
+
+        .mob .glu i {
+            font-size: 9px;
+        }
+
+        .mob #glwait {
+            font-size: 11px !important;
+            padding: 6px 10px !important;
+        }
+
+        /* ───── MOBILE: OVERLAY-SCREENS SCROLLBAR (Sieg/Niederlage etc.) ───── */
+.mob #overlay{ overflow-y:auto; -webkit-overflow-scrolling:touch; justify-content:flex-start; padding:16px 0 40px; box-sizing:border-box; }
+.mob #overlay > *{ flex-shrink:0; }
+.mob #overlay h1{ font-size:30px; }
+.mob #overlay h1 small{ font-size:12px; letter-spacing:3px; }
+.mob #overlay p{ font-size:13px; max-width:90vw; }
+/* Hauptmenü/Lobby nutzen #csmenu (fixed) – dort kein Scroll-Offset nötig */
+.mob #csmenu{ position:fixed; inset:0; }
+
+/* ───── MOBILE: SCROLLING GLOBAL ERLAUBEN, NUR SPIELFLÄCHE SPERREN ───── */
+.mob canvas{ touch-action:none; }
+.mob #touch, .mob #touch *{ touch-action:none; }
+/* Alle Panels & Scroll-Container ausdrücklich freigeben */
+.mob #overlay, .mob #overlay *{ touch-action:pan-y; }
+.mob #buy, .mob #board, .mob .invwrap, .mob #csnews, .mob .cspanel, .mob #csplayview{ touch-action:pan-y; }
+
+.mob .invwrap{ max-height:46vh; }
+.mob #reelbox{ width:94vw; }
+
+/* ───── MOBILE: BUTTON-EDITOR ───── */
+#editbar{ display:none; position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:60; gap:8px; align-items:center; background:rgba(10,15,20,.9); border:1px solid var(--acc); padding:8px 14px; font:700 13px Rajdhani; color:var(--text); }
+#editbar button{ font:700 13px Rajdhani; padding:8px 14px; background:#1a2430; color:#e8c98a; border:1px solid var(--line); }
+body.edit #editbar{ display:flex; }
+body.edit #hud{ display:block !important; }
+body.edit #hud > :not(#touch){ visibility:hidden; }
+body.edit #touch{ display:block !important; visibility:visible; }
+body.edit .tb, body.edit #tstick{ outline:2px dashed #e8c98a; }
+body.edit #tlook{ pointer-events:none; }
+
+/* ───── LOBBY-BROWSER ───── */
+#roomlist{ width:100%; max-width:680px; margin:8px 0; display:flex; flex-direction:column; gap:6px; }
+.lobrow{ display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.05); border:1px solid var(--line); border-left:3px solid var(--acc); padding:8px 14px; }
+.lobrow b{ flex:1; text-align:left; color:#fff; font:700 15px Rajdhani; letter-spacing:.06em; }
+.lobrow span{ color:#8fa3b8; font-size:12px; }
+#overlay .lobrow button{ margin:0; font-size:12px; padding:6px 12px; }
+.lobhead{ display:flex; justify-content:space-between; align-items:center; color:#8fa3b8; font:600 11px Rajdhani; letter-spacing:.25em; }
+#overlay .lobhead button{ margin:0; font-size:11px; padding:4px 10px; }
     </style>
 </head>
 
 <body>
     <div id="hud">
         <canvas id="radar" width="170" height="170"></canvas>
+        <div id="aliveL"></div>
+        <div id="aliveR"></div>
         <div id="top">
             <div id="timer">1:55</div>
             <div id="score"></div>
@@ -1973,6 +2338,7 @@
             <div id="tlook"></div>
             <div id="tstick"><i id="tnub"></i></div>
             <div class="tb" id="tFire">◉</div>
+            <div class="tb" id="tFire2">◉</div>
             <div class="tb" id="tJump">⤒</div>
             <div class="tb" id="tCrouch">⤓</div>
             <div class="tb" id="tReload">↻</div>
@@ -1981,12 +2347,13 @@
             <div class="tb" id="tAbil">F</div>
             <div class="tb" id="tNext">⇄</div>
             <div class="tb" id="tBuy">$</div>
+            <div class="tb" id="tBoard">☰</div>
         </div>
         <div id="buy" class="panel"></div>
         <div id="board" class="panel"></div>
     </div>
-    <div id="overlay"></div>
-
+ <div id="overlay"></div>
+ <div id="editbar"><b>Buttons ziehen & ablegen</b><button id="editDone">✓ Fertig</button><button id="editReset">↺ Reset</button></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         'use strict';
@@ -3063,11 +3430,22 @@
         const IS_TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
         const TOUCH = { f: 0, s: 0 };
         if (IS_TOUCH) {
- renderer.domElement.requestPointerLock = () => { }; // kein Pointer-Lock auf Mobile
- document.body.classList.add('mob');
- addEventListener('touchend', () => { if (started && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => { }); }, { once: false });            document.documentElement.style.touchAction = 'none';
+            renderer.domElement.requestPointerLock = () => { }; // kein Pointer-Lock auf Mobile
+            document.exitPointerLock = () => { }; // iOS kennt die API nicht – Stub verhindert Crash
+            document.body.classList.add('mob');
+             // ── Button-Layout-Editor ──
+ const EDITB = { on: false, drag: null };
+ const BTN_IDS = ['tstick', 'tFire', 'tFire2', 'tJump', 'tCrouch', 'tReload', 'tUse', 'tScope', 'tAbil', 'tNext', 'tBuy', 'tBoard'];
+ function applyBtnLayout() { const L = JSON.parse(localStorage.getItem('btnlayout') || '{}'); for (const id of BTN_IDS) { const p = L[id], el = $(id); if (!p || !el) continue; el.style.left = clamp(p.x, 0, innerWidth - 50) + 'px'; el.style.top = clamp(p.y, 0, innerHeight - 50) + 'px'; el.style.right = 'auto'; el.style.bottom = 'auto'; } } function saveBtnLayout() { const L = {}; for (const id of BTN_IDS) { const el = $(id); if (el.style.left) L[id] = { x: parseInt(el.style.left) || 0, y: parseInt(el.style.top) || 0 }; } localStorage.setItem('btnlayout', JSON.stringify(L)); } window.btnEditStart = () => { EDITB.on = true; document.body.classList.add('edit'); $('overlay').style.display = 'none'; $('touch').style.display = 'block'; };
+ function btnEditEnd() { EDITB.on = false; saveBtnLayout(); document.body.classList.remove('edit'); if (!started) { $('touch').style.display = 'none'; showSettings(); } } $('editDone').addEventListener('touchstart', e => { e.preventDefault(); btnEditEnd(); }, { passive: false });
+ $('editReset').addEventListener('touchstart', e => { e.preventDefault(); localStorage.removeItem('btnlayout'); for (const id of BTN_IDS) { const el = $(id); el.style.left = el.style.top = el.style.right = el.style.bottom = ''; } }, { passive: false });
+ for (const id of BTN_IDS) { $(id).addEventListener('touchstart', e => { if (!EDITB.on) return; e.preventDefault(); e.stopPropagation(); const t = e.changedTouches[0], r = $(id).getBoundingClientRect(); EDITB.drag = { el: $(id), tid: t.identifier, dx: t.clientX - r.left, dy: t.clientY - r.top }; }, { passive: false }); }
+ addEventListener('touchmove', e => { if (!EDITB.on || !EDITB.drag) return; for (const t of e.changedTouches) { if (t.identifier !== EDITB.drag.tid) continue; const el = EDITB.drag.el, r = el.getBoundingClientRect(); el.style.left = clamp(t.clientX - EDITB.drag.dx, 0, innerWidth - r.width) + 'px'; el.style.top = clamp(t.clientY - EDITB.drag.dy, 0, innerHeight - r.height) + 'px'; el.style.right = 'auto'; el.style.bottom = 'auto'; } e.preventDefault(); }, { passive: false });
+ addEventListener('touchend', e => { if (EDITB.drag) for (const t of e.changedTouches) if (t.identifier === EDITB.drag.tid) EDITB.drag = null; });
+ applyBtnLayout();
+            addEventListener('touchend', () => { if (started && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => { }); }, { once: false }); // touchAction nicht global sperren – nur Canvas & Touch-Controls (per CSS), sonst ist nirgends Scrollen möglich
             let sid = null, scx = 0, scy = 0, lid = null, lx = 0, ly = 0;
-            $('tstick').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; sid = t.identifier; const r = $('tstick').getBoundingClientRect(); scx = r.left + r.width / 2; scy = r.top + r.height / 2; }, { passive: false });
+             $('tstick').addEventListener('touchstart', e => { if (EDITB.on) return; e.preventDefault(); const t = e.changedTouches[0]; sid = t.identifier; const r = $('tstick').getBoundingClientRect(); scx = r.left + r.width / 2; scy = r.top + r.height / 2; }, { passive: false });
             $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
             addEventListener('touchmove', e => {
                 for (const t of e.changedTouches) {
@@ -3087,9 +3465,8 @@
             }, { passive: false });
             const tEnd = e => { for (const t of e.changedTouches) { if (t.identifier === sid) { sid = null; TOUCH.f = TOUCH.s = 0; $('tnub').style.transform = ''; } if (t.identifier === lid) lid = null; } };
             addEventListener('touchend', tEnd); addEventListener('touchcancel', tEnd);
-            const hold = (id, on, off) => { const el = $(id); el.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); on(); }, { passive: false }); if (off) { el.addEventListener('touchend', e => { e.preventDefault(); off(); }); el.addEventListener('touchcancel', off); } };
-            hold('tFire', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);
-            hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
+ const hold = (id, on, off) => { const el = $(id); el.addEventListener('touchstart', e => { if (EDITB.on) return; e.preventDefault(); e.stopPropagation(); on(); }, { passive: false }); if (off) { el.addEventListener('touchend', e => { if (EDITB.on) return; e.preventDefault(); off(); }); el.addEventListener('touchcancel', off); } };            hold('tFire', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);
+            hold('tFire2', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false); hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
             hold('tUse', () => keys[BIND.use] = true, () => keys[BIND.use] = false);
             hold('tCrouch', () => keys[BIND.crouch] = !keys[BIND.crouch]);
             hold('tReload', () => startReload());
@@ -3097,6 +3474,7 @@
             hold('tAbil', () => glUseAbility());
             hold('tNext', () => { const o = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); if (o.length) { const n = o[(o.indexOf(player.slot) + 1) % o.length]; n === 4 && player.slot === 4 ? cycleNade() : selectSlot(n); } });
             hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
+            hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
         } const ACCEL = 55, FRICTION = 9, AIR_ACCEL = 10;
         function updatePlayer(dt) {
             const p = player; if (p.vx === undefined) { p.vx = 0; p.vz = 0; }
@@ -3217,7 +3595,7 @@
         const bar = (v, m) => `<div class="bbar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div>`;
         function renderBuy() {
             const p = player;
- let h = `<div class="bhead"><h3>KAUFMENÜ</h3><div style="display:flex;gap:10px;align-items:center"><div class="bmoney">$ ${p.money}</div><div class="bclose" onclick="closeBuy()">✕</div></div></div><div class="bgrid">`;            SHOP.forEach((col, ci) => {
+            let h = `<div class="bhead"><h3>KAUFMENÜ</h3><div style="display:flex;gap:10px;align-items:center"><div class="bmoney">$ ${p.money}</div><div class="bclose" onclick="closeBuy()">✕</div></div></div><div class="bgrid">`; SHOP.forEach((col, ci) => {
                 h += `<div class="bcol"><h4>${col.name}</h4>`;
                 col.items.forEach((it, ii) => {
                     if (it.ct && p.team !== 'CT') return;
@@ -3237,7 +3615,7 @@
             h += `</div><div class="bfoot"><span>🖱️ Klicken zum Kaufen</span><span>[B] schließen</span></div>`;
             if (h !== buyCache) { buyCache = h; $('buy').innerHTML = h; }
         }
- function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); }        function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
+        function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); } function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
         function buy(it) {
             const p = player; if (!canBuy() || itemOwned(it)) return;
             const price = itemPrice(it);
@@ -3264,7 +3642,15 @@
             $('arbar').style.width = Math.min(100, p.armor) + '%';
             $('hpwrap').classList.toggle('low', p.alive && hpv < 30); setT('money', `$ ${p.money}`); setT('wname', !w ? '' : (GL.on && w.def.nade) ? `${w.def.name} Lv.${player.glN[w.def.key] || 1}${player.glG && player.glG[w.def.key] ? ' ⚡' + GL_GLITCH[w.def.key][player.glG[w.def.key]] : ''}` : (skinOf(w.def.key) ? skinOf(w.def.key).n : w.def.name)); setT('ammo', !w ? '' : w.def.melee ? '—' : w.def.plant ? 'C4' : w.def.nade ? '×' + p.nades[w.def.key] : `${w.ammo}<span style="font-size:22px;opacity:.7">| ${w.res}</span>`);
             const sec = Math.max(0, Math.ceil(G.timer)); setT('timer', G.bomb.state === 'planted' ? '💣' : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`);
+            const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}" style="border-color:${col}">${e.isPlayer ? '★' : (e.name[0] || '?')}</div>`).join('');
+            let avL = '', avR = '';
             if (GL.on) {
+                if (GL.duel && (GL.phase === 'duel' || GL.phase === 'duelend')) {
+                    const [ta, tb] = GL.duel.teams, ac = t => `hsl(${((0.62 + t.id * 0.17) % 1) * 360},100%,60%)`;
+                    avL = pvs(ta.members, ac(ta)); avR = pvs(tb.members, ac(tb));
+                }
+            } else { avL = pvs(ents.filter(e => e.team === 'CT'), '#8ab4ff'); avR = pvs(ents.filter(e => e.team === 'T'), '#ffb076'); }
+            setT('aliveL', avL); setT('aliveR', avR); if (GL.on) {
                 const A = p.glA; if (A && A.key && GL.phase === 'duel') {
                     const max = GL_ABIL[A.key].cd[A.lv - 1] || 1, ready = A.cd <= 0;
                     const deg = Math.round((1 - clamp(A.cd / max, 0, 1)) * 360);
@@ -3423,8 +3809,8 @@
  <table style="border-collapse:collapse">${rows}</table>
  <p style="font-size:12px;color:#999">Klicke auf eine Taste und drücke die neue Belegung · <kbd>Esc</kbd> bricht ab
 Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
- <div><button id="setReset" style="border-color:#c66;color:#c66">Zurücksetzen</button><button id="setBack">Zurück</button></div>`);
-            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
+ <div>${IS_TOUCH ? '<button id="btnEditGo">📱 Buttons anpassen</button>' : ''}<button id="setReset" style="border-color:#c66;color:#c66">Zurücksetzen</button><button id="setBack">Zurück</button></div>`);
+ const beg = $('btnEditGo'); if (beg) beg.onclick = () => btnEditStart();            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
             $('sensSlider').oninput = e => { OPT.sens = +e.target.value; $('sensval').textContent = OPT.sens.toFixed(2); saveOpts(); };
             $('volSlider').oninput = e => { OPT.vol = +e.target.value; $('volval').textContent = Math.round(OPT.vol * 100) + '%'; saveOpts(); initAudio(); sfx('hit'); };
             $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); }; $('setBack').onclick = () => { rebindKey = null; showMenu(); };
@@ -3464,7 +3850,32 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('cfgBack').onclick = showMenu;
         }
         function navBack() { NET.inLobby ? renderLobby() : showMenu(); }
-        const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; function showMenu() {
+        const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; 
+        
+
+         function fetchRooms() {
+ const el = $('roomlist'); if (!el) return;
+ el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div><span style="color:#8fa3b8;font-size:12px">Suche Lobbys…</span>';
+ let ws; try { ws = new WebSocket(($('srv') && $('srv').value.trim()) || DEF_WS); } catch (e) { el.innerHTML += ' <span style="color:#c66">Ungültige Adresse</span>'; return; }
+ const to = setTimeout(() => { try { ws.close(); } catch (e) { } el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div><span style="color:#c66;font-size:12px">Server nicht erreichbar</span>'; }, 4000);
+ ws.onopen = () => ws.send(JSON.stringify({ type: 'rooms' }));
+ ws.onmessage = ev => {
+ let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+ if (m.type !== 'rooms') return;
+ clearTimeout(to); ws.close();
+ const max = CFG.teamSize * 2;
+ const rows = m.rooms.length
+ ? m.rooms.map(r => { const nm = String(r.name).replace(/[<>&"]/g, ''); const st = r.st ? '<span style="color:#ffb076">🎮 Im Spiel</span>' : '<span style="color:#9fe08a">🟢 Lobby</span>'; return `<div class="lobrow" style="border-left-color:${r.st ? '#ffb076' : '#9fe08a'}"><b>${nm}</b>${st}<span>👥 ${r.n}/${max}</span><button class="bct" data-jct="${nm}">Beitreten: CT</button><button class="bt" data-jt="${nm}">Beitreten: T</button></div>`; }).join('') : '<span style="color:#8fa3b8;font-size:12px">Keine offenen Lobbys – gib unten einen Raumnamen ein und erstelle die erste!</span>';
+ el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div>' + rows;
+ const go = (nm, team) => { $('room').value = nm; const gr = $('glroom'); if (gr) gr.value = nm; startMP(team); };
+ el.querySelectorAll('[data-jct]').forEach(b => b.onclick = () => go(b.dataset.jct, 'CT'));
+ el.querySelectorAll('[data-jt]').forEach(b => b.onclick = () => go(b.dataset.jt, 'T'));
+ };
+ ws.onerror = () => { clearTimeout(to); el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div><span style="color:#c66;font-size:12px">Server nicht erreichbar</span>'; };
+ }
+ window.fetchRooms = fetchRooms;
+
+        function showMenu() {
             $('hud').style.display = 'none'; setupMenuScene();
             const savedName = localStorage.getItem('pname') || '';
             const mapCards = Object.keys(MAPS).map(m => {
@@ -3490,7 +3901,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="font:700 50px Rajdhani;line-height:1;color:var(--text);text-transform:uppercase">CS Web<br><span style="color:var(--acc)">Offensive</span></div>
  <div style="width:64px;height:3px;background:var(--acc);margin-top:10px"></div>
  </div> <div id="csplayview">
-<div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b><b id="modeGl">⚔️ GAUNTLET</b></div> <div id="mapgrid">${mapCards}</div>
+<div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b><b id="modeGl">⚔️ GAUNTLET</b></div>  <div id="mapgrid">${mapCards}</div>
+ <div id="roomlist" style="display:none"></div>
  <div id="glpanel" style="display:none;gap:16px;justify-content:center;margin:14px 0;flex-wrap:wrap">
  <div class="mcard" style="min-width:270px">
  <h2>🤖 SOLO + BOTS</h2>
@@ -3604,8 +4016,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 $('modeOff').classList.toggle('on', m === 0); $('modeOn').classList.toggle('on', m === 1); $('modeGl').classList.toggle('on', m === 2);
                 $('barOff').style.display = m === 0 ? 'inline-flex' : 'none';
                 $('barOn').style.display = m === 1 ? 'inline-flex' : 'none';
-                $('mapgrid').style.display = m === 2 ? 'none' : 'flex';
-                $('glpanel').style.display = m === 2 ? 'flex' : 'none';
+                 $('mapgrid').style.display = m === 2 ? 'none' : 'flex';
+ $('glpanel').style.display = m === 2 ? 'flex' : 'none';
+ $('roomlist').style.display = m === 1 ? 'flex' : 'none';
+ if (m === 1) fetchRooms();
                 sessionStorage.setItem('playmode', m);
             };
             $('modeOff').onclick = () => setMode(0);
