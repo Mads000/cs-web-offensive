@@ -406,8 +406,17 @@
             flex-direction: column;
             color: #e8c98a;
             text-align: center;
-            z-index: 10
+            z-index: 10;
+            overflow-y: auto;
+            justify-content: safe center;
+            padding: 16px 0;
+            box-sizing: border-box
         }
+
+        #overlay>* { flex-shrink: 0; max-width: 100vw }
+        #overlay table, #reelbox { max-width: 96vw }
+        @media (max-width: 700px), (max-height: 600px) { #overlay h1 { font-size: 30px !important } }
+        .cspanel { max-height: calc(100vh - 140px); max-width: calc(100vw - 150px); overflow-y: auto }
 
         #overlay h1 {
             font: bold 56px 'Arial Black', Impact, sans-serif;
@@ -2314,7 +2323,7 @@ body.edit #tlook{ pointer-events:none; }
         <div id="killfeed"></div>
         <div id="msg"></div>
         <div id="sub"></div>
-        <div id="cross"><i></i><i></i><i></i><i></i></div>
+        <div id="cross"><i></i><i></i><i></i><i></i><i></i></div>
         <div id="hitm"><i style="transform:rotate(45deg)"></i><i style="transform:rotate(-45deg)"></i></div>
         <div id="killpop"></div>
         <div id="dmg"></div>
@@ -3177,7 +3186,7 @@ body.edit #tlook{ pointer-events:none; }
             const ey = b.y + (b.crouch ? 1.05 : 1.5), ty = t.isPlayer ? t.y + t.eyeH - 0.4 : t.y + (t.crouch ? 0.75 : 1.0);
             let chance = w.acc * BOT_SKILL * Math.max(0.25, 1 - d / 70); if (t.speed > 3 || t.moving) chance *= 0.75; if (t.crouch) chance *= 0.7; if (b.crouch) chance *= 1.2;
             let end;
-            if (Math.random() < chance) { const hs = Math.random() < 0.12, dmg = w.dmg * (w.pellets ? 4 : 1) * (hs ? (w.pellets ? 1.5 : 3.5) : 1) * Math.max(w.pellets ? 0.15 : 0.6, 1 - d * (w.pellets ? 0.03 : 0.004)); if (t.decoy) t.hp -= dmg; else if (t.remote) netSend({ type: 'botdmg2', to: t.pid, d: Math.round(dmg), bn: b.name, bt: b.team, w: w.name, hs }); else applyDamage(t, dmg, b, w, hs); end = new THREE.Vector3(t.x, hs ? ty + 0.5 : ty, t.z); } else { const miss = 0.6 + Math.random() * 1.5; end = new THREE.Vector3(t.x + (Math.random() - 0.5) * miss * 2, ty + (Math.random() - 0.5) * miss, t.z + (Math.random() - 0.5) * miss * 2); const o = new THREE.Vector3(b.x, ey, b.z); const dir = end.clone().sub(o); const L = dir.length(); dir.normalize(); _ray.set(o, dir); _ray.far = L + 30; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; if (h) { end = h.point; addDecal(h.point, h.face.normal); burst(h.point.x, h.point.y, h.point.z, 0xd8c8a0, 3, 2); } else end = o.clone().add(dir.multiplyScalar(L + 30)); }
+            if (Math.random() < chance) { const hs = Math.random() < 0.12, dmg = w.key === 'awp' ? 9999 : w.dmg * (w.pellets ? 4 : 1) * (hs ? (w.pellets ? 1.5 : 3.5) : 1) * Math.max(w.pellets ? 0.15 : 0.6, 1 - d * (w.pellets ? 0.03 : 0.004)); if (t.decoy) t.hp -= dmg; else if (t.remote) netSend({ type: 'botdmg2', to: t.pid, d: Math.round(dmg), bn: b.name, bt: b.team, w: w.name, hs }); else applyDamage(t, dmg, b, w, hs); end = new THREE.Vector3(t.x, hs ? ty + 0.5 : ty, t.z); } else { const miss = 0.6 + Math.random() * 1.5; end = new THREE.Vector3(t.x + (Math.random() - 0.5) * miss * 2, ty + (Math.random() - 0.5) * miss, t.z + (Math.random() - 0.5) * miss * 2); const o = new THREE.Vector3(b.x, ey, b.z); const dir = end.clone().sub(o); const L = dir.length(); dir.normalize(); _ray.set(o, dir); _ray.far = L + 30; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; if (h) { end = h.point; addDecal(h.point, h.face.normal); burst(h.point.x, h.point.y, h.point.z, 0xd8c8a0, 3, 2); } else end = o.clone().add(dir.multiplyScalar(L + 30)); }
             tracer(b.x + Math.sin(b.yaw) * 0.5, ey, b.z + Math.cos(b.yaw) * 0.5, end);
         }
 
@@ -3419,7 +3428,7 @@ body.edit #tlook{ pointer-events:none; }
         // =====================================================================
         const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)' };
         const BIND = Object.assign({}, BIND_DEF, JSON.parse(localStorage.getItem('cs_binds') || '{}'));
-        const OPT = Object.assign({ sens: 1, vol: 1, gfx: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
+        const OPT = Object.assign({ sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
         function applyGfx() {
             const g = OPT.gfx;
             renderer.setPixelRatio(g === 0 ? 1 : g === 1 ? Math.min(devicePixelRatio, 1.5) : Math.min(devicePixelRatio, 2));
@@ -3540,7 +3549,7 @@ body.edit #tlook{ pointer-events:none; }
                 if (ud.ent && ud.ent.decoy) { ud.ent.hp -= d.dmg; burst(h.point.x, h.point.y, h.point.z, 0x7dffb0, 4, 2); hitT = 0.12; hitHS = false; sfx('hit'); }
                 else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : ud.ent.team !== p.team)) {
                     const hs = ud.part === 'head';
-                    const dmg = Math.round(d.dmg * (hs ? (d.pellets ? 1.8 : 4) : ud.part === 'legs' ? 0.75 : 1) * Math.max(d.pellets ? 0.2 : 0.6, 1 - h.distance * (d.pellets ? 0.025 : 0.004)));
+                    const dmg = d.key === 'awp' ? 9999 : Math.round(d.dmg * (hs ? (d.pellets ? 1.8 : 4) : ud.part === 'legs' ? 0.75 : 1) * Math.max(d.pellets ? 0.2 : 0.6, 1 - h.distance * (d.pellets ? 0.025 : 0.004)));
                     if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx('hit'); }
                     else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx('hit'); }
                     else applyDamage(ud.ent, dmg, p, d, hs);
@@ -3668,8 +3677,8 @@ body.edit #tlook{ pointer-events:none; }
             }
             else { setT('abil', ''); setT('score', `<span class="ct">CT ${G.score.CT}</span> | <span class="t">${G.score.T} T</span>`); setT('roundlbl', `Runde ${G.round} / ${MAX_ROUNDS}${G.state === 'freeze' ? ' – Freeze ' + Math.ceil(G.t) : ''}`); } const be = $('bomb'); be.style.display = G.bomb.state === 'planted' ? 'block' : 'none'; if (G.bomb.state === 'planted') be.style.opacity = Math.sin(now * 8) > 0 ? 1 : 0.35;
             $('cross').style.display = (p.alive && !p.scoped) ? 'block' : 'none';
-            const g = 4 + p.recoil * 3 + (p.speed > 3 ? 8 : p.speed > 0 ? 3 : 0) + (!p.onGround ? 12 : 0) - (p.crouch ? 2 : 0), L = 7;
-            crossEls[0].style.cssText = `left:-1px;top:${-(g + L)}px;width:2px;height:${L}px`; crossEls[1].style.cssText = `left:-1px;top:${g}px;width:2px;height:${L}px`; crossEls[2].style.cssText = `left:${-(g + L)}px;top:-1px;width:${L}px;height:2px`; crossEls[3].style.cssText = `left:${g}px;top:-1px;width:${L}px;height:2px`;
+            const g = Math.max(0, OPT.chGap + (OPT.chDyn ? p.recoil * 3 + (p.speed > 3 ? 8 : p.speed > 0 ? 3 : 0) + (!p.onGround ? 12 : 0) - (p.crouch ? 2 : 0) : 0)), L = OPT.chLen, T = OPT.chThick, hT = T / 2, bg = `;background:${OPT.chCol}`;
+            crossEls[0].style.cssText = `left:${-hT}px;top:${-(g + L)}px;width:${T}px;height:${L}px${bg}`; crossEls[1].style.cssText = `left:${-hT}px;top:${g}px;width:${T}px;height:${L}px${bg}`; crossEls[2].style.cssText = `left:${-(g + L)}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[3].style.cssText = `left:${g}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[4].style.cssText = `display:${OPT.chDot ? "block" : "none"};left:${-hT}px;top:${-hT}px;width:${T}px;height:${T}px${bg}`;
             $('dmg').style.opacity = dmgFlash * 0.9; $('flash').style.opacity = whiteFlash; $('hitm').style.opacity = hitT > 0 ? 1 : 0;
             if (hitT > 0) { const hc = hitHS ? '#ff3030' : '#fff'; for (const el of $('hitm').children) { el.style.background = hc; el.style.boxShadow = hitHS ? '0 0 6px #ff3030' : '0 0 2px #000'; } }
         }
@@ -3724,6 +3733,15 @@ body.edit #tlook{ pointer-events:none; }
         // =====================================================================
         //  EINGABE
         // =====================================================================
+        // Browser-Shortcuts im Spiel blockieren (Strg/Alt-Kombis, F1–F10); Strg+W/T/N nur im Vollbild per Keyboard-Lock (Chromium)
+        addEventListener('keydown', e => {
+            if (!started || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+            if (e.ctrlKey || e.metaKey || e.altKey || /^F([1-9]|10)$/.test(e.code)) e.preventDefault();
+        }, true);
+        addEventListener('mousedown', () => {
+            if (!started || gameEnded || IS_TOUCH || document.fullscreenElement || !document.documentElement.requestFullscreen) return;
+            document.documentElement.requestFullscreen().then(() => { if (navigator.keyboard && navigator.keyboard.lock) navigator.keyboard.lock(['KeyW', 'KeyT', 'KeyN', 'KeyQ', 'KeyR', 'KeyS', 'KeyD', 'KeyF', 'KeyP', 'KeyH', 'KeyJ', 'KeyL', 'Tab', 'F5']).catch(() => { }); }).catch(() => { });
+        });
         addEventListener('keydown', e => {
             if (!started || paused) return; keys[e.code] = true;
             if (e.code === BIND.board) { e.preventDefault(); renderBoard(); $('board').style.display = 'block'; }
@@ -3743,9 +3761,9 @@ body.edit #tlook{ pointer-events:none; }
             showOverlay(`<h1 style="font-size:36px">📦 CASES<small>ÖFFNEN & SAMMELN</small></h1>
  <p>Du hast <b style="color:#e8c98a">${store.cases}</b> Case(s) · Für jedes beendete Match gibt es eine neue</p>
  <div id="reelbox"><div id="reel"></div><div id="marker"></div></div>
- <div><button id="btnOpen" ${store.cases < 1 ? 'disabled style="opacity:.4"' : ''}>Case öffnen</button><button id="btnInvGo">🎒 Inventar</button><button id="btnBack">Zurück</button></div>
+ <div><button id="btnOpen" ${store.cases < 1 ? 'disabled style="opacity:.4"' : ''}>Case öffnen</button><button id="btnInvGo">🎒 Inventar</button><button id="btnGbGo">🎰 Gamble</button><button id="btnBack">Zurück</button></div>
  <p style="font-size:12px;color:#8fa3b8">Neue Skins landen automatisch im Inventar</p>`);
-            $('btnOpen').onclick = openCase; $('btnInvGo').onclick = showInventory; $('btnBack').onclick = navBack;
+            $('btnOpen').onclick = openCase; $('btnInvGo').onclick = showInventory; $('btnGbGo').onclick = () => showGamble(); $('btnBack').onclick = navBack;
         }
         function showInventory() {
             const ORDER = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
@@ -3772,8 +3790,8 @@ body.edit #tlook{ pointer-events:none; }
  ${free.length ? `<div style="margin-top:8px"><select id="stw" style="font:bold 14px Arial;padding:7px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px;margin:0 4px">${free.map(k => `<option value="${k}">${W[k].name}</option>`).join('')}</select><button id="stAdd" style="font-size:14px;padding:8px 14px">+ PNG hochladen…</button></div>` : ''}
  <input type="file" id="stf" accept="image/*" style="display:none">
  </div>
- <div><button id="btnCasesGo">📦 Cases (${store.cases})</button><button id="btnBack">Zurück</button></div>`);
-            $('btnCasesGo').onclick = showCases; $('btnBack').onclick = navBack;
+ <div><button id="btnCasesGo">📦 Cases (${store.cases})</button><button id="btnGbGo">🎰 Gamble</button><button id="btnBack">Zurück</button></div>`);
+            $('btnCasesGo').onclick = showCases; $('btnGbGo').onclick = () => showGamble(); $('btnBack').onclick = navBack;
             let pendKey = null;
             $('stf').onchange = e => {
                 const f = e.target.files[0]; if (!f || !pendKey) return;
@@ -3797,6 +3815,60 @@ body.edit #tlook{ pointer-events:none; }
             let ticks = 0; const tick = setInterval(() => { tone(800, 0.02, 0.06, 0, 'square'); if (++ticks > 38) clearInterval(tick); }, 120);
             setTimeout(() => { clearInterval(tick); store.inv.push(win.id); if (!store.equip[win.w]) store.equip[win.w] = win.id; saveStore(); applySkins(); sfx('win'); setTimeout(showCases, 1600); }, 5200);
         }
+        // ================= GAMBLE: UPGRADE / TRADEUP / CONTRACT =================
+        const GB = { tab: 'up', sel: [], tgt: null, busy: false }, GB_VAL = { 1: 1, 2: 4, 3: 15, 4: 60 }, GB_MAX = { up: 1, tu: 5, ct: 3 };
+        function gbSk(i) { return SKINS.find(s => s.id === store.inv[i]); }
+        function gbUpChance() { const a = gbSk(GB.sel[0]), b = SKINS.find(s => s.id === GB.tgt); return a && b ? Math.min(0.85, 0.9 * GB_VAL[a.r] / GB_VAL[b.r]) : 0; }
+        function gbCtOdds() { const sc = GB.sel.reduce((n, i) => n + GB_VAL[gbSk(i).r], 0) * 1.6, o = {}; for (let r = 1; r <= 4; r++) { const lo = r === 1 ? 0 : GB_VAL[r], hi = r === 4 ? sc : Math.min(sc, GB_VAL[r + 1]); o[r] = Math.max(0, hi - lo) / sc; } return o; }
+        function gbTake(idxs) {
+            const ids = idxs.map(i => store.inv[i]);
+            idxs.slice().sort((a, b) => b - a).forEach(i => store.inv.splice(i, 1));
+            for (const id of ids) { const s = SKINS.find(x => x.id === id); if (s && store.equip[s.w] === id && !store.inv.includes(id)) delete store.equip[s.w]; }
+        }
+        function gbGive(s) { store.inv.push(s.id); if (!store.equip[s.w]) store.equip[s.w] = s.id; }
+        function gbCard(s, extra, attr, sel) { return `<div class="inv ${sel ? 'eq' : ''}" ${attr} style="border-color:${RARITY[s.r][0]};min-width:120px${sel ? ';box-shadow:0 0 0 2px #e8c98a' : ''}"><b style="color:${RARITY[s.r][0]}">${s.n}</b><span>${RARITY[s.r][1]}${extra || ''}</span></div>`; }
+        function showGamble(res) {
+            const T = { up: ['⬆️ UPGRADE', 'Setze 1 Skin ein und wähle ein selteneres Ziel – Chance je nach Wert'], tu: ['🔁 TRADEUP', '5 Skins gleicher Seltenheit → 1 Skin der nächsten Stufe (sicher)'], ct: ['📜 CONTRACT', '3 beliebige Skins → Zufallsskin; je wertvoller der Einsatz, desto besser die Chance'] };
+            const r0 = GB.sel.length ? gbSk(GB.sel[0]).r : 0;
+            const inv = store.inv.map((id, i) => ({ s: SKINS.find(x => x.id === id), i })).filter(o => o.s).sort((a, b) => b.s.r - a.s.r);
+            const can = o => GB.tab === 'up' ? o.s.r < 4 : GB.tab === 'tu' ? o.s.r < 4 && (!r0 || o.s.r === r0) : true;
+            const cards = inv.length ? inv.map(o => { const sel = GB.sel.includes(o.i), ok = sel || can(o); return `<div style="${ok ? '' : 'opacity:.3;pointer-events:none'}">${gbCard(o.s, store.equip[o.s.w] === o.s.id ? ' · ausgerüstet' : '', `data-gbi="${o.i}"`, sel)}</div>`; }).join('') : '<p style="color:#8fa3b8">Dein Inventar ist leer – öffne zuerst Cases.</p>';
+            let act = '';
+            if (GB.tab === 'up') {
+                if (GB.sel.length) {
+                    const tg = SKINS.filter(s => s.r > r0).sort((a, b) => a.r - b.r);
+                    act = `<div style="margin:10px 0 6px;color:#8fa3b8;font-size:12px;letter-spacing:2px">ZIEL WÄHLEN</div><div class="invrow" style="justify-content:center">${tg.map(s => gbCard(s, '', `data-gbt="${s.id}"`, GB.tgt === s.id)).join('')}</div>`;
+                    if (GB.tgt) act += `<p>Chance: <b style="color:#e8c98a;font-size:18px">${Math.round(gbUpChance() * 100)} %</b></p><button id="gbGo">⬆️ UPGRADEN</button>`;
+                } else act = '<p style="color:#8fa3b8">Wähle 1 Skin aus deinem Inventar</p>';
+            } else if (GB.tab === 'tu') {
+                act = GB.sel.length === 5 ? `<p>Ergebnis: garantiert <b style="color:${RARITY[r0 + 1][0]}">${RARITY[r0 + 1][1]}</b></p><button id="gbGo">🔁 TRADEUP</button>` : `<p style="color:#8fa3b8">${GB.sel.length}/5 Skins gewählt (gleiche Seltenheit, nicht ★)</p>`;
+            } else {
+                if (GB.sel.length === 3) { const o = gbCtOdds(); act = `<p>${[1, 2, 3, 4].filter(r => o[r] > 0).map(r => `<span style="color:${RARITY[r][0]};margin:0 8px">${RARITY[r][1]}: ${Math.round(o[r] * 100)} %</span>`).join('')}</p><button id="gbGo">📜 CONTRACT UNTERSCHREIBEN</button>`; }
+                else act = `<p style="color:#8fa3b8">${GB.sel.length}/3 Skins gewählt</p>`;
+            }
+            showOverlay(`<h1 style="font-size:36px">🎰 GAMBLE<small>UPGRADE · TRADEUP · CONTRACT</small></h1>
+ <div>${Object.keys(T).map(k => `<button data-gbtab="${k}" style="${GB.tab === k ? 'background:#e8c98a;color:#111' : ''}">${T[k][0]}</button>`).join('')}</div>
+ <p style="font-size:12px;color:#8fa3b8;margin:6px 0">${T[GB.tab][1]}</p>
+ ${res ? `<div style="margin:6px 0;font:bold 18px Arial;color:${res.ok ? '#9fe08a' : '#ff6b6b'}">${res.txt}</div>` : ''}
+ <div id="gbRoll" style="font:bold 22px Arial"></div>
+ <div class="invwrap" style="max-height:34vh"><div class="invrow" style="justify-content:center">${cards}</div></div>
+ <div style="margin:8px 0">${act}</div>
+ <div><button id="btnCasesGo">📦 Cases</button><button id="btnInvGo">🎒 Inventar</button><button id="btnBack">Zurück</button></div>`);
+            document.querySelectorAll('[data-gbtab]').forEach(el => el.onclick = () => { if (GB.busy) return; GB.tab = el.dataset.gbtab; GB.sel = []; GB.tgt = null; showGamble(); });
+            document.querySelectorAll('[data-gbi]').forEach(el => el.onclick = () => { if (GB.busy) return; const i = +el.dataset.gbi, k = GB.sel.indexOf(i); if (k >= 0) GB.sel.splice(k, 1); else if (GB.tab === 'up') GB.sel = [i]; else if (GB.sel.length < GB_MAX[GB.tab]) GB.sel.push(i); GB.tgt = null; showGamble(); });
+            document.querySelectorAll('[data-gbt]').forEach(el => el.onclick = () => { if (GB.busy) return; GB.tgt = el.dataset.gbt; showGamble(); });
+            $('btnCasesGo').onclick = () => { if (!GB.busy) showCases(); }; $('btnInvGo').onclick = () => { if (!GB.busy) showInventory(); }; $('btnBack').onclick = () => { if (!GB.busy) navBack(); };
+            const go = $('gbGo'); if (go) go.onclick = gbRun;
+        }
+        function gbRun() {
+            if (GB.busy) return; GB.busy = true; initAudio(); $('gbGo').disabled = true;
+            let out, ok = true;
+            if (GB.tab === 'up') { ok = Math.random() < gbUpChance(); out = ok ? SKINS.find(s => s.id === GB.tgt) : null; }
+            else if (GB.tab === 'tu') out = rnd(SKINS.filter(s => s.r === gbSk(GB.sel[0]).r + 1));
+            else { const o = gbCtOdds(); let x = Math.random(), r = 1; for (; r < 4; r++) { if (x < o[r]) break; x -= o[r]; } out = rnd(SKINS.filter(s => s.r === r)); }
+            gbTake(GB.sel); if (out) gbGive(out); saveStore(); applySkins();
+            let n = 0; const tk = setInterval(() => { const s = rnd(SKINS), el = $('gbRoll'); if (el) { el.textContent = s.n; el.style.color = RARITY[s.r][0]; } tone(700 + n * 15, 0.02, 0.05, 0, 'square'); if (++n > 18) { clearInterval(tk); GB.busy = false; GB.sel = []; GB.tgt = null; sfx(ok ? 'win' : 'lose'); showGamble(ok ? { ok: true, txt: `✓ ${out.n}` } : { ok: false, txt: '✗ Upgrade fehlgeschlagen – Skin verloren' }); } }, 90);
+        }
         let rebindKey = null;
         function showSettings() {
             const rows = Object.keys(BIND_DEF).map(a =>
@@ -3814,6 +3886,16 @@ body.edit #tlook{ pointer-events:none; }
  <option value="1" ${OPT.gfx === 1 ? 'selected' : ''}>Mittel</option>
  <option value="2" ${OPT.gfx === 2 ? 'selected' : ''}>Hoch</option>
  </select></label>
+ <div style="margin:10px 0 4px;color:#e8c98a;font-weight:bold">➕ FADENKREUZ</div>
+ <div style="display:flex;gap:12px;align-items:center">
+ <div id="chPrev" style="position:relative;flex:0 0 90px;height:90px;background:#3a4450 linear-gradient(#55606c,#2a3038);border:1px solid rgba(232,201,138,.4);border-radius:4px"></div>
+ <div style="flex:1">
+ <label style="display:block">Farbe: <input id="chCol" type="color" value="${OPT.chCol}" style="vertical-align:middle;width:40px;height:22px;padding:0;border:0;background:none"></label>
+ <label style="display:block">Länge: <b id="chLenV">${OPT.chLen}</b><input data-ch="chLen" type="range" min="1" max="20" step="1" value="${OPT.chLen}" style="width:100%"></label>
+ <label style="display:block">Abstand: <b id="chGapV">${OPT.chGap}</b><input data-ch="chGap" type="range" min="0" max="20" step="1" value="${OPT.chGap}" style="width:100%"></label>
+ <label style="display:block">Dicke: <b id="chThickV">${OPT.chThick}</b><input data-ch="chThick" type="range" min="1" max="6" step="1" value="${OPT.chThick}" style="width:100%"></label>
+ <label><input id="chDot" type="checkbox" ${OPT.chDot ? 'checked' : ''}> Punkt</label> <label style="margin-left:10px"><input id="chDyn" type="checkbox" ${OPT.chDyn ? 'checked' : ''}> Dynamisch</label>
+ </div></div>
  </div>
  <table style="border-collapse:collapse">${rows}</table>
  <p style="font-size:12px;color:#999">Klicke auf eine Taste und drücke die neue Belegung · <kbd>Esc</kbd> bricht ab
@@ -3822,7 +3904,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  const beg = $('btnEditGo'); if (beg) beg.onclick = () => btnEditStart();            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
             $('sensSlider').oninput = e => { OPT.sens = +e.target.value; $('sensval').textContent = OPT.sens.toFixed(2); saveOpts(); };
             $('volSlider').oninput = e => { OPT.vol = +e.target.value; $('volval').textContent = Math.round(OPT.vol * 100) + '%'; saveOpts(); initAudio(); sfx('hit'); };
-            $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); }; $('setBack').onclick = () => { rebindKey = null; showMenu(); };
+            $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); };
+            const chPrev = () => { const g = OPT.chGap, L = OPT.chLen, T = OPT.chThick, c = OPT.chCol, p = (x, y, w, h) => `<i style="position:absolute;left:${45 + x}px;top:${45 + y}px;width:${w}px;height:${h}px;background:${c};box-shadow:0 0 2px #000"></i>`; $('chPrev').innerHTML = p(-T / 2, -(g + L), T, L) + p(-T / 2, g, T, L) + p(-(g + L), -T / 2, L, T) + p(g, -T / 2, L, T) + (OPT.chDot ? p(-T / 2, -T / 2, T, T) : ''); }; chPrev();
+            document.querySelectorAll('[data-ch]').forEach(el => el.oninput = () => { OPT[el.dataset.ch] = +el.value; $(el.dataset.ch + 'V').textContent = el.value; saveOpts(); chPrev(); });
+            $('chCol').oninput = e => { OPT.chCol = e.target.value; saveOpts(); chPrev(); }; $('chDot').onchange = e => { OPT.chDot = e.target.checked; saveOpts(); chPrev(); }; $('chDyn').onchange = e => { OPT.chDyn = e.target.checked; saveOpts(); }; $('setBack').onclick = () => { rebindKey = null; showMenu(); };
             $('setReset').onclick = () => { Object.assign(BIND, BIND_DEF); saveBinds(); rebindKey = null; showSettings(); };
         }
         addEventListener('keydown', e => {
