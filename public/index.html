@@ -984,6 +984,15 @@
             color: #8fa3b8
         }
 
+        #gltgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; max-height: 260px; overflow-y: auto }
+        .gltb { background: color-mix(in srgb, var(--tc) 22%, transparent); border: 1px solid color-mix(in srgb, var(--tc) 60%, transparent); border-radius: 4px; cursor: pointer; overflow: hidden; transition: background .15s }
+        .gltb:hover:not(.full) { background: color-mix(in srgb, var(--tc) 38%, transparent) }
+        .gltb.full { cursor: default }
+        .gltb>b { display: block; background: var(--tc); color: #111; font-size: 11px; letter-spacing: 1px; text-align: center; padding: 3px 0 }
+        .glts { font-size: 12px; color: #fff; padding: 5px 8px; border-top: 1px solid rgba(255, 255, 255, .1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left }
+        .glts.free { color: rgba(255, 255, 255, .45); text-align: center }
+        .glts.me { font-weight: bold; box-shadow: inset 3px 0 0 #fff }
+
         #csplayview {
             position: absolute;
             top: 58px;
@@ -3646,7 +3655,7 @@ body.edit #tlook{ pointer-events:none; }
             let avL = '', avR = '';
             if (GL.on) {
                 if (GL.duel && (GL.phase === 'duel' || GL.phase === 'duelend')) {
-                    const [ta, tb] = GL.duel.teams, ac = t => `hsl(${((0.62 + t.id * 0.17) % 1) * 360},100%,60%)`;
+                    const [ta, tb] = GL.duel.teams, ac = t => `hsl(${((0.62 + t.id * 0.125) % 1) * 360},100%,60%)`;
                     avL = pvs(ta.members, ac(ta)); avR = pvs(tb.members, ac(tb));
                 }
             } else { avL = pvs(ents.filter(e => e.team === 'CT'), '#8ab4ff'); avR = pvs(ents.filter(e => e.team === 'T'), '#ffb076'); }
@@ -4236,12 +4245,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.22, 6), new THREE.MeshBasicMaterial({ color: accent }));
             ant.position.set(0.12, 1.94, 0); e.mesh.add(ant);
         }
-        function glRoboAll() { GL.teams.forEach(t => { const acc = new THREE.Color().setHSL((0.62 + t.id * 0.17) % 1, 1, 0.6).getHex(); t.members.forEach(m => roboize(m, acc)); }); }
+        function glRoboAll() { GL.teams.forEach(t => { const acc = new THREE.Color().setHSL((0.62 + t.id * 0.125) % 1, 1, 0.6).getHex(); t.members.forEach(m => roboize(m, acc)); }); }
 
         function glBoard() {
             const phase = GL.phase === 'over' ? 'TURNIER BEENDET' : 'STAGE ' + GL.stage;
             const rows = GL.teams.slice().sort((a, b) => (b.lives > 0) - (a.lives > 0) || b.wins - a.wins || b.lives - a.lives).map(t => {
-                const acc = 'hsl(' + (((0.62 + t.id * 0.17) % 1) * 360) + ',100%,60%)';
+                const acc = 'hsl(' + (((0.62 + t.id * 0.125) % 1) * 360) + ',100%,60%)';
                 const dead = t.lives <= 0;
                 const names = t.members.map(m => {
                     const A = m.glA && m.glA.key ? GL_ABIL[m.glA.key].ico : '';
@@ -4421,23 +4430,33 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         }
         function glSer() { return { type: 'glstart', map: MAPNAME, bots: bots.map(b => ({ n: b.name, t: b.team })), teams: GL.teams.map(t => ({ id: t.id, name: t.name, members: t.members.map(m => m.remote ? { p: m.pid } : (m.isPlayer ? { p: NET.pid } : { b: bots.indexOf(m) })) })) }; }
         function glAsg() { return NET.glAsg || (NET.glAsg = {}); }
+        function glTeamCol(id, l) { return `hsl(${Math.round(((0.62 + id * 0.125) % 1) * 360)},100%,${l || 60}%)`; }
         function glAsgHTML() {
-            const hs = [{ pid: NET.pid, name: player.name + ' (Du)' }, ...[...NET.players.values()].map(rp => ({ pid: rp.pid, name: rp.name }))], a = glAsg();
-            return '<div style="margin-top:8px;font-size:12px;color:#8fa3b8">⚔️ Gauntlet-Teams (max. 2 pro Team, Rest füllen Bots):</div>' + hs.map((h, i) => `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px"><span style="font-size:13px">${h.name}</span><select data-glasg="${h.pid}" style="flex:0 0 90px">${[1, 2, 3, 4, 5, 6, 7, 8].map(n => `<option value="${n}" ${(a[h.pid] || i + 1) === n ? 'selected' : ''}>Team ${n}</option>`).join('')}</select></div>`).join('');
+            const n = NET.glN || 4, a = glAsg(), hs = [{ pid: NET.pid, name: player.name, me: true }, ...[...NET.players.values()].map(rp => ({ pid: rp.pid, name: rp.name }))];
+            const box = k => {
+                const ins = hs.filter(h => a[h.pid] === k), c = glTeamCol(k - 1);
+                const slots = [0, 1].map(s => ins[s] ? `<div class="glts ${ins[s].me ? 'me' : ''}">${ins[s].name}${ins[s].me ? ' (Du)' : ''}</div>` : '<div class="glts free">⌄</div>').join('');
+                return `<div class="gltb ${ins.length >= 2 ? 'full' : ''}" data-glk="${k}" style="--tc:${c}"><b>TEAM ${k}</b>${slots}</div>`;
+            };
+            const none = hs.filter(h => !(a[h.pid] >= 1 && a[h.pid] <= n)).map(h => h.name + (h.me ? ' (Du)' : '')).join(', ');
+            return `<div style="margin-top:12px;font-size:12px;color:#8fa3b8">⚔️ GAUNTLET-TEAMS – klicke ein Team zum Beitreten (leere Plätze füllen Bots)</div><div id="gltgrid">${Array.from({ length: n }, (_, i) => box(i + 1)).join('')}</div>${none ? `<div style="font-size:11px;color:#8fa3b8;margin-top:4px">Ohne Team: ${none}</div>` : ''}`;
         }
+        function glAsgSend(o) { netSend(Object.assign({ type: 'glasg' }, o)); renderLobby(); }
         function glStartMP(teamCount) {
             initAudio(); player.team = 'CT'; NET.inLobby = false;
             GL.on = true; GL.stage = 0; GL.teams = []; GL.phase = 'setup'; GL.rerolls = 3; const names = ['Wolf', 'Zim', 'Opie', 'Ron', 'Steel', 'Kyle', 'Minh', 'Vera', 'Nox', 'Juri', 'Finn', 'Alba', 'Gooseman', 'Cliffe', 'Vitaliy', 'Bo'];
             let ni = 0;
             const humans = [{ ent: player, name: player.name }, ...[...NET.players.values()].map(rp => ({ ent: rp, name: rp.name }))];
-            // Team-Zuweisung aus der Lobby (max. 2 pro Team, freier Platz → Bot-Partner)
-            const asg = glAsg(), groups = new Map();
-            humans.forEach((h, i) => { const k = asg[h.ent.isPlayer ? NET.pid : h.ent.pid] || i + 1; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(h); });
+            // Team-Zuweisung aus der Lobby (max. 2 pro Team, freier Platz → Bot-Partner; ohne Team → eigenes freies Team)
+            const asg = glAsg(), groups = new Map(), loose = [];
+            humans.forEach(h => { const k = asg[h.ent.isPlayer ? NET.pid : h.ent.pid]; if (k >= 1 && k <= teamCount) { if (!groups.has(k)) groups.set(k, []); groups.get(k).push(h); } else loose.push(h); });
             const full = [...groups].find(([, g]) => g.length > 2);
             if (full) { alert(`Team ${full[0]} hat ${full[1].length} Spieler – maximal 2 pro Team.`); GL.on = false; GL.phase = 'off'; NET.inLobby = true; return; }
+            loose.forEach(h => { let k = 1; while (groups.has(k)) k++; groups.set(k, [h]); });
             teamCount = Math.max(teamCount, groups.size);
-            [...groups.values()].forEach((g, i) => { const mem = g.map(h => h.ent); if (mem.length < 2) mem.push(createBot(names[ni++], mem.includes(player) ? 'CT' : 'T')); GL.teams.push({ id: i, name: 'Team ' + g.map(h => h.name).join(' & '), lives: GL_LIVES, wins: 0, members: mem, human: true }); });
-            for (let t = groups.size; t < teamCount; t++) { const a = createBot(names[ni++], 'T'), b = createBot(names[ni++], 'T'); GL.teams.push({ id: t, name: 'Team ' + a.name, lives: GL_LIVES, wins: 0, members: [a, b], human: false }); }
+            const used = new Set();
+            [...groups].sort((x, y) => x[0] - y[0]).forEach(([k, g]) => { const mem = g.map(h => h.ent); if (mem.length < 2) mem.push(createBot(names[ni++], mem.includes(player) ? 'CT' : 'T')); used.add(k - 1); GL.teams.push({ id: k - 1, name: 'Team ' + g.map(h => h.name).join(' & '), lives: GL_LIVES, wins: 0, members: mem, human: true }); });
+            for (let t = groups.size, id = 0; t < teamCount; t++) { while (used.has(id)) id++; used.add(id); const a = createBot(names[ni++], 'T'), b = createBot(names[ni++], 'T'); GL.teams.push({ id, name: 'Team ' + a.name, lives: GL_LIVES, wins: 0, members: [a, b], human: false }); }
             GL.myTeam = GL.teams.find(t => t.members.includes(player));
             for (const t of GL.teams) for (const m of t.members) { m.glN = { he: 0, flash: 0, smoke: 0, molly: 0 }; m.glP = { armor: 0, speed: 0, vamp: 0, hp: 0 }; m.glW = null; m.glG = {}; m.glA = { key: null, lv: 0, g: null, cd: 0 }; } ents = [player, ...bots, ...NET.players.values()];
             glRoboAll(); bots.forEach(b => { b.alive = false; b.mesh.visible = false; }); netSend(glSer());
@@ -4735,7 +4754,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     netSend({ type: 'hello', pid: NET.pid, name: player.name, team: player.team }); break;
                 case 'hello': addRemote(m.pid, m.name, m.team);
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team });
-                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cfg: CFG }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team); if (NET.inLobby) renderLobby(); } break;
+                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cfg: CFG }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); if (NET.inLobby) renderLobby(); break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team); if (NET.inLobby) renderLobby(); } break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
                 case 'plant': if (NET.host) plantBomb({ x: m.x, z: m.z, isPlayer: false, money: 0, plantT: 0 }); break;
                 case 'defuse': if (NET.host && G.bomb.state === 'planted') defuseBomb({ isPlayer: false, money: 0, defuseT: 0 }); break;
@@ -4845,14 +4864,16 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="cspanel" style="width:360px">
  <h3>RAUM: ${NET.room.toUpperCase()} · ${NET.players.size + 1} SPIELER</h3>
  <div style="display:flex;flex-direction:column;gap:6px;max-height:290px;overflow-y:auto">${rows}</div>
+ ${glAsgHTML()}
  ${NET.host
-                    ? '<div class="csbtns" style="margin-top:14px"><button id="btnStart" style="border-color:#9fe08a;color:#9fe08a">▶ SPIEL STARTEN</button></div><div class="csbtns" style="margin-top:8px"><select id="glTeamsMp" style="flex:0 0 90px"><option value="4">4 Teams</option><option value="6">6 Teams</option><option value="8">8 Teams</option></select><button id="btnGlMp">⚔️ GAUNTLET</button></div>' + glAsgHTML() + '<p style="font-size:11px;color:#8fa3b8;margin:8px 0 0">Du bist Host – warte, bis alle da sind, und starte dann.</p>' : '<p style="font-size:13px;color:#8fa3b8;margin-top:14px">⏳ Warte, bis der Host das Spiel startet…</p>'}
+                    ? '<div class="csbtns" style="margin-top:14px"><button id="btnStart" style="border-color:#9fe08a;color:#9fe08a">▶ SPIEL STARTEN</button></div><div class="csbtns" style="margin-top:8px"><select id="glTeamsMp" style="flex:0 0 90px">' + [4, 6, 8].map(n => `<option value="${n}" ${(NET.glN || 4) === n ? 'selected' : ''}>${n} Teams</option>`).join('') + '</select><button id="btnGlMp">⚔️ GAUNTLET</button></div><p style="font-size:11px;color:#8fa3b8;margin:8px 0 0">Du bist Host – warte, bis alle da sind, und starte dann.</p>' : '<p style="font-size:13px;color:#8fa3b8;margin-top:14px">⏳ Warte, bis der Host das Spiel startet…</p>'}
  <div class="csbtns" style="margin-top:10px"><button id="lobInv">🎒 Inventar</button><button id="lobCases">📦 Cases (${store.cases})</button><button id="lobLeave" style="border-color:#c66;color:#c66">Verlassen</button></div>
  </div>
  <div id="cschar"><b>${player.name}</b></div>
  <div id="csver">LOBBY | ${MAPNAME} | ${NET.srv}</div>
  </div>`, true);
-            if (NET.host) { $('btnStart').onclick = () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cfg: CFG }); startGame(player.team); }; $('btnGlMp').onclick = () => glStartMP(+$('glTeamsMp').value); document.querySelectorAll('[data-glasg]').forEach(s => s.onchange = () => { glAsg()[s.dataset.glasg] = +s.value; }); } $('lobInv').onclick = showInventory;
+            if (NET.host) { $('btnStart').onclick = () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cfg: CFG }); startGame(player.team); }; $('btnGlMp').onclick = () => glStartMP(+$('glTeamsMp').value); $('glTeamsMp').onchange = e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); }; }
+            document.querySelectorAll('[data-glk]').forEach(el => el.onclick = () => { const k = +el.dataset.glk; if (glAsg()[NET.pid] === k || el.classList.contains('full')) return; glAsg()[NET.pid] = k; glAsgSend({ a: { [NET.pid]: k } }); }); $('lobInv').onclick = showInventory;
             $('lobCases').onclick = showCases;
             $('lobLeave').onclick = leaveGame; $('lobLeaveTop').onclick = leaveGame;
         }
