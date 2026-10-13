@@ -23,7 +23,7 @@ wss.on('connection', ws => {
  ws.on('message', raw => {
  let m; try { m = JSON.parse(raw) } catch { return }
  if (m.type === 'rooms') {
- const list = [...rooms.entries()].map(([name, r]) => ({ name, n: r.clients.length, st: r.started ? 1 : 0 })).filter(r => r.n > 0);
+ const list = [...rooms.entries()].map(([name, r]) => ({ name, n: r.clients.length, st: r.started ? 1 : 0, mode: r.mode || null })).filter(r => r.n > 0);
  ws.send(JSON.stringify({ type: 'rooms', rooms: list }));
  return;
  }
@@ -38,6 +38,7 @@ wss.on('connection', ws => {
   } else if (ws.room) {
  const r = rooms.get(ws.room);
  if (r && (m.type === 'start' || m.type === 'glstart')) r.started = true;
+ if (r && m.type === 'lmode') r.mode = m.mode;
  for (const c of (r ? r.clients : []))
  if (c !== ws && c.readyState === 1) c.send(raw.toString());
  }
