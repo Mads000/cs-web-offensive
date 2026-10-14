@@ -4535,7 +4535,36 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 1.2 „WOLKE 7"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 1.3 „COMMUNITY"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🌍 COMMUNITY-KARTEN & -ARENEN</p>
+ <b style="color:#ffd964">Für alle veröffentlichen:</b> Eigene Karten und Arenen können jetzt mit einem Freigabe-Code veröffentlicht werden – danach sieht und spielt sie jeder, markiert mit <b>🌍 COMMUNITY</b> und dem Namen des Erstellers.<br>
+ Community-Inhalte lassen sich ohne Code spielen, als Kopie bearbeiten und teilen. Entfernen geht nur mit Code.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🏟 ARENA-EDITOR</p>
+ Baue eigene Arenen für <b>Gauntlet & 1v1</b> (11×18 Felder) – mit denselben Werkzeugen wie im Map-Editor: Wände, Kisten, Stufen, Stege, Spawns, eigene Farben und Emblem.<br>
+ Arenen teilen per Code, importieren, veröffentlichen, umbenennen und löschen. Online bekommen Mitspieler die Arena des Hosts automatisch.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🧭 NEUE TABS: MAP-EDITOR & ARENA-EDITOR</p>
+ Oben neben NEWS: alle Karten bzw. Arenen als Übersicht mit Vorschau. Ein Klick öffnet Bearbeiten, Kopie, Teilen, Veröffentlichen & mehr – oder starte mit <b>➕ Neue Karte / Neue Arena</b> bei null.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎯 ARENEN WÄHLEN</p>
+ Beim Start von Gauntlet oder 1v1 wählst Du jetzt, <b>welche Arenen gespielt werden</b> – z.B. nur Deine eigenen. Die Auswahl wird gespeichert. Online wählt der Host.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ KARTEN</p>
+ <b>de_foundry</b> und <b>de_moisty</b> komplett neu gestaltet.<br>
+ Foundry: Die Treppe zum Steg bei Bombsite A ist jetzt begehbar.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🤖 BOTS</p>
+ Bots verstehen jetzt Treppen und Stege richtig und bleiben nicht mehr hängen – auf allen Karten und <b>vor allem in den Arenen</b>, wo sie Höhen bisher komplett ignoriert haben.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">☁️ ACCOUNTS</p>
+ Accounts bleiben jetzt <b>dauerhaft gespeichert</b> – auch nach Updates und Server-Neustarts.<br>
+ Eigene Arenen und die Arena-Auswahl werden mit dem Account synchronisiert.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.2 „WOLKE 7"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">☁️ ACCOUNTS & CLOUD-SAVE</p>
@@ -4551,7 +4580,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🔄 AUTOMATISCH SYNCHRON</p>
  Jede Änderung – neuer Case, Skin, Karte oder Einstellung – wird nach wenigen Sekunden automatisch gespeichert.<br>
  Beim Start lädt das Spiel automatisch den neuesten Stand, wenn Du zwischendurch auf einem anderen Gerät gespielt hast.<br>
- Im Account-Menü: <b>☁️ Jetzt speichern</b> und <b>Logout</b>.<br><br>
+ Im Account-Menü: <b>☁️ Jetzt speichern</b> und <b>Logout</b>.<br>
+ <b>Logout:</b> Dein Stand wird vorher gesichert, danach wird das Gerät bereinigt – Gäste starten frisch, nach dem Login ist alles wieder da.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🔒 SICHERHEIT</p>
  Passwörter werden nur verschlüsselt (gehasht) gespeichert, nie im Klartext.<br>
@@ -4643,7 +4673,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.2 „Wolke 7" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
+ <div id="csver">CS:WO 1.3 „Community" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
