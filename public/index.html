@@ -2015,6 +2015,14 @@
 /* ── Oben rechts: ☰ links neben $ ── */
 .mob #tBuy{ right:max(14px, env(safe-area-inset-right)); top:10px; width:42px; height:42px; }
 .mob #tBoard{ right:76px; top:10px; width:42px; height:42px; }
+/* ── Tot: nur Zuschauer-Wechsel-Buttons ── */
+#tSpecL, #tSpecR{ display:none; top:50%; width:64px; height:64px; font-size:26px; transform:translateY(-50%); }
+#tSpecL{ left:max(20px, env(safe-area-inset-left)); } #tSpecR{ right:max(20px, env(safe-area-inset-right)); }
+#touch.dead #tSpecL, #touch.dead #tSpecR{ display:flex; }
+#touch.dead #tstick, #touch.dead .tb:not(.spec){ display:none; }
+/* ── Hochformat blockieren ── */
+#rotmsg{ display:none; }
+@media (orientation:portrait){ .mob #rotmsg{ display:flex; position:fixed; inset:0; z-index:99999; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:#0b1015; color:#e8c98a; font:700 20px Rajdhani, Arial; text-align:center; padding:20px; touch-action:none; } .mob #rotmsg span{ font-size:64px; } }
         .mob #board {
             pointer-events: auto;
             max-width: 94vw;
@@ -2382,11 +2390,14 @@ body.edit #tlook{ pointer-events:none; }
             <div class="tb" id="tNext">⇄</div>
             <div class="tb" id="tBuy">$</div>
             <div class="tb" id="tBoard">☰</div>
+            <div class="tb spec" id="tSpecL">◀</div>
+            <div class="tb spec" id="tSpecR">▶</div>
         </div>
         <div id="buy" class="panel"></div>
         <div id="board" class="panel"></div>
     </div>
  <div id="overlay"></div>
+ <div id="rotmsg"><span>📱↻</span>Bitte Handy quer halten</div>
  <div id="editbar"><b>Buttons ziehen & ablegen</b><button id="editDone">✓ Fertig</button><button id="editReset">↺ Reset</button></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
@@ -3333,11 +3344,11 @@ body.edit #tlook{ pointer-events:none; }
             if (e.isPlayer) playerDie(att); else { e.mesh.rotation.x = -Math.PI / 2; e.mesh.scale.y = 1; e.crouch = false; e.mesh.position.set(e.x, 0.3, e.z); e.target = null; e.flash.visible = false; } checkRoundEnd();
         }
         function playerDie(att) { const p = player; p.scoped = false; setScoped(false); p.weapons[5] = null; if (DM.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Gestorben') + '<div id="dmresp" style="font-size:16px;margin-top:10px;color:#e8c98a">Respawn in 3</div>'; closeBuy(); return; } if (GL.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> eliminiert` : 'Eliminiert') + '<div style="font-size:13px;color:#aaa;margin-top:8px">🚁 Freecam: WASD fliegen · Leertaste/Strg hoch/runter</div>'; startFreecam(); return; } $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Du wurdest von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Du bist gestorben') + '<div id="specname" style="font-size:16px;margin-top:10px;color:#e8c98a"></div><div style="font-size:13px;color:#aaa">Linksklick: nächsten Spieler beobachten</div>'; closeBuy(); specTarget = null; cycleSpec(); }
-        function cycleSpec() {
+        function cycleSpec(dir = 1) {
             if (DM.on) { specTarget = null; return; }
             const mates = ents.filter(e => e !== player && e.alive && e.team === player.team);
             if (!mates.length) { specTarget = null; return; }
-            specTarget = mates[(mates.indexOf(specTarget) + 1) % mates.length];
+            specTarget = mates[((mates.indexOf(specTarget) + dir) % mates.length + mates.length) % mates.length];
             const el = $('specname'); if (el) el.textContent = '👁 ' + specTarget.name;
         } function botFire(b, t, d) {
             const w = b.weapon; b.ammo--; b.fireT = w.rate * (w.auto ? 1.6 : 1.3); b.burst++;
@@ -3655,11 +3666,15 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  for (const id of BTN_IDS) { $(id).addEventListener('touchstart', e => { if (!EDITB.on) return; e.preventDefault(); e.stopPropagation(); const t = e.changedTouches[0], r = $(id).getBoundingClientRect(); EDITB.drag = { el: $(id), tid: t.identifier, dx: t.clientX - r.left, dy: t.clientY - r.top }; }, { passive: false }); }
  addEventListener('touchmove', e => { if (!EDITB.on || !EDITB.drag) return; for (const t of e.changedTouches) { if (t.identifier !== EDITB.drag.tid) continue; const el = EDITB.drag.el, r = el.getBoundingClientRect(); el.style.left = clamp(t.clientX - EDITB.drag.dx, 0, innerWidth - r.width) + 'px'; el.style.top = clamp(t.clientY - EDITB.drag.dy, 0, innerHeight - r.height) + 'px'; el.style.right = 'auto'; el.style.bottom = 'auto'; } e.preventDefault(); }, { passive: false });
  addEventListener('touchend', e => { if (EDITB.drag) for (const t of e.changedTouches) if (t.identifier === EDITB.drag.tid) EDITB.drag = null; });
- applyBtnLayout();
-            addEventListener('touchend', () => { if (started && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => { }); }, { once: false }); // touchAction nicht global sperren – nur Canvas & Touch-Controls (per CSS), sonst ist nirgends Scrollen möglich
+ applyBtnLayout(); addEventListener('resize', () => { if (!EDITB.on) applyBtnLayout(); });
+            addEventListener('touchend', () => { if (started && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); }).catch(() => { }); }, { once: false }); // touchAction nicht global sperren – nur Canvas & Touch-Controls (per CSS), sonst ist nirgends Scrollen möglich
             let sid = null, scx = 0, scy = 0, lid = null, lx = 0, ly = 0;
              $('tstick').addEventListener('touchstart', e => { if (EDITB.on) return; e.preventDefault(); const t = e.changedTouches[0]; sid = t.identifier; const r = $('tstick').getBoundingClientRect(); scx = r.left + r.width / 2; scy = r.top + r.height / 2; }, { passive: false });
-            $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
+            $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec();
+                // Doppeltipp auf die Spielfläche → Pause-Menü (wie Esc am PC)
+                const now = performance.now(); if (now - lookTap.t < 300 && Math.hypot(t.clientX - lookTap.x, t.clientY - lookTap.y) < 40) { lookTap.t = 0; mobPause(); } else { lookTap.t = now; lookTap.x = t.clientX; lookTap.y = t.clientY; } }, { passive: false });
+            const lookTap = { t: 0, x: 0, y: 0 };
+            function mobPause() { if (!started || gameEnded || paused || buyOpen || EDITB.on || (GL.on && GL.phase !== 'duel')) return; paused = true; mouseDown = false; lid = null; TOUCH.f = TOUCH.s = 0; showOverlay(`<h1>PAUSE</h1><p>Tippe auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button><button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); $('resume').onclick = () => { paused = false; $('overlay').style.display = 'none'; }; $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; }
             addEventListener('touchmove', e => {
                 for (const t of e.changedTouches) {
                     if (t.identifier === sid) {
@@ -3687,6 +3702,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             hold('tAbil', () => glUseAbility());
             hold('tNext', () => { const o = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); if (o.length) { const n = o[(o.indexOf(player.slot) + 1) % o.length]; n === 4 && player.slot === 4 ? cycleNade() : selectSlot(n); } });
             hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
+            hold('tSpecL', () => { if (!player.alive && !FC.on) cycleSpec(-1); }); hold('tSpecR', () => { if (!player.alive && !FC.on) cycleSpec(1); });
             hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
             // Doppeltipp auf die Tab-Ansicht → Einstellungen (Spiel pausiert)
             let boardTap = 0; $('board').addEventListener('touchend', e => { const t = performance.now(); if (t - boardTap < 350) { e.preventDefault(); boardTap = 0; $('board').style.display = 'none'; paused = true; showSettings(); } else boardTap = t; });
@@ -3960,10 +3976,12 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         }
         function showCases() {
             showOverlay(`<h1 style="font-size:36px">📦 CASES<small>ÖFFNEN & SAMMELN</small></h1>
- <p>Du hast <b style="color:#e8c98a">${store.cases}</b> Case(s) · Für jedes beendete Match gibt es eine neue</p>
+ <p>Du hast <b id="caseCnt" style="color:#e8c98a">${store.cases}</b> Case(s) · Für jedes beendete Match gibt es eine neue</p>
  <div id="reelbox"><div id="reel"></div><div id="marker"></div></div>
  <div><button id="btnOpen" ${store.cases < 1 ? 'disabled style="opacity:.4"' : ''}>Case öffnen</button><button id="btnInvGo">🎒 Inventar</button><button id="btnGbGo">🎰 Gamble</button><button id="btnBack">Zurück</button></div>
- <p style="font-size:12px;color:#8fa3b8">Neue Skins landen automatisch im Inventar</p>`);
+ <p style="font-size:12px;color:#8fa3b8">Neue Skins landen automatisch im Inventar</p>
+ <div><input id="caseCode" placeholder="Code eingeben" style="font:bold 14px Arial;padding:7px 10px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px;width:160px"><button id="btnCode">Einlösen</button> <span id="codeMsg" style="font-size:13px"></span></div>`);
+            $('btnCode').onclick = () => { const c = $('caseCode').value.toLowerCase().replace(/\s+/g, ''), m = $('codeMsg'); if (c === 'cases10') { store.cases += 10; saveStore(); $('caseCnt').textContent = store.cases; if ($('btnBack').style.display !== 'none') { $('btnOpen').disabled = false; $('btnOpen').style.opacity = ''; } m.style.color = '#7c7'; m.textContent = '+10 Cases!'; sfx('win'); } else { m.style.color = '#c66'; m.textContent = 'Ungültiger Code'; } $('caseCode').value = ''; };
             $('btnOpen').onclick = openCase; $('btnInvGo').onclick = showInventory; $('btnGbGo').onclick = () => showGamble(); $('btnBack').onclick = navBack;
         }
         function showInventory() {
@@ -5287,7 +5305,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 camera.lookAt(WORLD_W / 2, 1, WORLD_D / 2);
                 if (menuChar) menuChar.group.visible = false;
             }
-            if (IS_TOUCH) { const want = started && !gameEnded ? 'block' : 'none'; if ($('touch').style.display !== want) $('touch').style.display = want; }
+            if (IS_TOUCH) { const want = started && !gameEnded ? 'block' : 'none'; if ($('touch').style.display !== want) $('touch').style.display = want; $('touch').classList.toggle('dead', started && !gameEnded && !player.alive && !document.body.classList.contains('edit')); }
             if (started && !paused && !gameEnded) {
                 if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
