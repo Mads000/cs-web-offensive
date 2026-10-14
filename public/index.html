@@ -2016,7 +2016,9 @@
 .mob #tBuy{ right:max(14px, env(safe-area-inset-right)); top:10px; width:42px; height:42px; }
 .mob #tBoard{ right:76px; top:10px; width:42px; height:42px; }
 /* ── Tot: nur Zuschauer-Wechsel-Buttons ── */
-#tSpecL, #tSpecR{ display:none; top:50%; width:64px; height:64px; font-size:26px; transform:translateY(-50%); }
+#tSpecL, #tSpecR{ display:none; top:50%; width:64px; height:64px; font-size:26px; transform:translateY(-50%) scale(var(--tbs,1)); }
+/* ── Handy-Buttons: Größe & Transparenz (Einstellungen) ── */
+.mob .tb, .mob #tstick{ transform:scale(var(--tbs,1)); } #touch{ opacity:var(--tba,1); }
 #tSpecL{ left:max(20px, env(safe-area-inset-left)); } #tSpecR{ right:max(20px, env(safe-area-inset-right)); }
 #touch.dead #tSpecL, #touch.dead #tSpecR{ display:flex; }
 #touch.dead #tstick, #touch.dead .tb:not(.spec){ display:none; }
@@ -2028,6 +2030,10 @@
 #meTools{ display:grid; grid-template-columns:1fr 1fr; gap:4px; }
 #meTools button{ margin:0; font-size:13px; padding:6px 8px; text-align:left; white-space:nowrap; }
 #meTools i{ display:inline-block; width:12px; height:12px; margin-right:6px; vertical-align:middle; border:1px solid rgba(0,0,0,.4); }
+.merow{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:12px; color:#cfd8e3; }
+.merow label{ display:flex; align-items:center; gap:4px; }
+.merow input[type=color]{ width:30px; height:22px; padding:0; border:0; background:none; }
+#meTod, #meEm{ font:bold 13px Arial; padding:5px; background:#141e28; color:#e8c98a; border:1px solid rgba(232,201,138,.5); border-radius:4px; } #meEm{ width:44px; text-align:center; }
 #meMsg{ font-size:13px; min-height:16px; margin:2px 0; color:#c66; }
 .mehint{ font-size:12px; color:#8fa3b8; margin:0; }
 .mebtns{ display:flex; flex-wrap:wrap; gap:4px; } .mebtns button{ margin:0; flex:1 1 45%; font-size:14px; }
@@ -2585,10 +2591,17 @@ body.edit #tlook{ pointer-events:none; }
         };
         // Eigene Karten (Map-Editor): lokal gespeichert + ggf. vom Online-Host übertragene Karte (nur für die Sitzung)
         let CMAPS = {}; try { CMAPS = JSON.parse(localStorage.getItem('custommaps') || '{}') || {}; } catch (e) { }
-        const CMAP_INFO = {}, regMap = (k, d) => { if (!d || !Array.isArray(d.g) || d.g.length !== 28 || d.g.some(r => typeof r !== 'string' || !/^[#.cCh=1-6ABTK]{28}$/.test(r)) || !/^my_[a-z0-9_]+$/.test(k)) return; MAPS[k] = d.g; THEMES[k] = THEMES[d.th] || THEMES.de_dusty; CMAP_INFO[k] = { n: String(d.n || k).replace(/[<>"'&`]/g, '').slice(0, 20) || k, th: d.th }; };
+        const CMAP_INFO = {}, regMap = (k, d) => { if (!d || !Array.isArray(d.g) || d.g.length !== 28 || d.g.some(r => typeof r !== 'string' || !/^[#.cCh=1-6ABTK]{28}$/.test(r)) || !/^my_[a-z0-9_]+$/.test(k)) return; MAPS[k] = d.g;
+            // geprüfte Zusatzdaten: Thema, eigene Farben, Tageszeit (0 Tag, 1 Abend, 2 Nacht), Emblem
+            const HEX = /^#[0-9a-f]{6}$/i, th = /^de_/.test(d.th) && THEMES[d.th] ? d.th : 'de_dusty', c = d.col || {}, col = {}, t = Object.assign({}, THEMES[th]);
+            for (const f of ['sky', 'fog', 'floor', 'wall']) if (HEX.test(c[f])) col[f] = c[f];
+            if (col.sky) t.sky = parseInt(col.sky.slice(1), 16); if (col.fog) t.fog = parseInt(col.fog.slice(1), 16); if (col.floor) t.floor = col.floor;
+            if (col.wall) { const hsl = {}; new THREE.Color(col.wall).getHSL(hsl); t.wallBase = col.wall; t.wallHue = Math.round(hsl.h * 360); t.wallSat = Math.round(hsl.s * 100); t.wallLight = Math.round(hsl.l * 100); }
+            THEMES[k] = t; CMAP_INFO[k] = { n: String(d.n || k).replace(/[<>"'&`]/g, '').slice(0, 20) || k, th, col, tod: [0, 1, 2].includes(+d.tod) ? +d.tod : 0, em: Array.from(String(d.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(d.emc) ? d.emc : '' };
+        };
         for (const k in CMAPS) regMap(k, CMAPS[k]);
         try { const nm = JSON.parse(sessionStorage.getItem('netmap') || 'null'); if (nm && /^my_/.test(nm.k)) regMap(nm.k, nm); } catch (e) { }
-        function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? { k: MAPNAME, n: i.n, th: i.th, g: MAP } : null; }
+        function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? Object.assign({ k: MAPNAME, g: MAP }, i) : null; }
         function netMapChanged(m) { if (m.cmap) sessionStorage.setItem('netmap', JSON.stringify(m.cmap)); return !!m.map && (m.map !== MAPNAME ? !!(MAPS[m.map] || m.cmap) : !!(m.cmap && m.cmap.g.join() !== MAP.join())); }
         const MAPNAME = (k => MAPS[k] ? k : 'de_dusty')(localStorage.getItem('map') || 'de_dusty');
         const MAPLABEL = CMAP_INFO[MAPNAME] ? CMAP_INFO[MAPNAME].n : MAPNAME; // Anzeigename (eigene Karten: selbst vergebener Name)
@@ -2596,7 +2609,7 @@ body.edit #tlook{ pointer-events:none; }
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
         const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 5, CRATE_H = 1.0, TALL_H = 3;
         const WORLD_W = COLS * S, WORLD_D = ROWS * S;
-        const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800 };
+        const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
         const CFG = Object.assign({}, CFG_DEF, JSON.parse(localStorage.getItem('gamecfg') || '{}'));
         const SKILL_VAL = [0.6, 0.85, 1.05], SKILL_LBL = ['Leicht', 'Normal', 'Schwer'];
         const BOT_SPEED = 5.6;
@@ -2795,6 +2808,7 @@ body.edit #tlook{ pointer-events:none; }
             }
         } scene.add(new THREE.HemisphereLight(0xdbeaff, 0x9a7b4f, 0.7));
         const sun = new THREE.DirectionalLight(0xfff2d8, 1.0); sun.position.set(WORLD_W / 2 + 50, 90, WORLD_D / 2 + 35); sun.target.position.set(WORLD_W / 2, 0, WORLD_D / 2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+        { const tod = (CMAP_INFO[MAPNAME] || {}).tod; if (tod) { /* Tageszeit eigener Karten: Abend / Nacht */ const night = tod === 2, hemi = scene.children.find(o => o.isHemisphereLight), tint = new THREE.Color(night ? 0x0a1022 : 0xff8a4a); sun.color.set(night ? 0x8fa8ff : 0xffa060); sun.intensity = night ? 0.35 : 0.8; if (hemi) hemi.intensity = night ? 0.3 : 0.55; scene.background.lerp(tint, night ? 0.85 : 0.45); scene.fog.color.lerp(tint, night ? 0.8 : 0.35); } }
         Object.assign(sun.shadow.camera, { left: -80, right: 80, top: 80, bottom: -80, near: 20, far: 260 }); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -0.0005; scene.add(sun, sun.target);
 
         // Radar-Basis
@@ -2819,7 +2833,8 @@ body.edit #tlook{ pointer-events:none; }
         function noise(dur, f0, vol, pan, type = 'lowpass', f1) { const s = AC.createBufferSource(); s.buffer = noiseBuf; s.loop = true; const f = AC.createBiquadFilter(); f.type = type; f.frequency.setValueAtTime(f0, AC.currentTime); if (f1) f.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; s.connect(f).connect(g).connect(p).connect(OUT); s.start(); s.stop(AC.currentTime + dur); }
         function tone(fr, dur, vol, pan, type = 'sine', f1) { const o = AC.createOscillator(); o.type = type; o.frequency.setValueAtTime(fr, AC.currentTime); if (f1) o.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; o.connect(g).connect(p).connect(OUT); o.start(); o.stop(AC.currentTime + dur); }
         function sfx(n, x, z) {
-            if (!AC) return; const { vol, pan } = spatial(x, z); if (vol <= 0.01) return; switch (n) {
+            if (!AC) return; if (n === 'kill' && !OPT.killSnd) return; if (n === 'hit' || n === 'hs') { if (OPT.hitSnd === 3) return; if (OPT.hitSnd === 1) n = 'hs'; else if (OPT.hitSnd === 2) n = 'ui'; }
+            const { vol, pan } = spatial(x, z); if (vol <= 0.01) return; switch (n) {
                 case 'rifle': gun(vol, pan, [0.35, 0.12, 4200, 0.5, 500, 130, 0.12, 0.5, 45, 0.28, 0.22]); break;
                 case 'pistol': gun(vol, pan, [0.4, 0.09, 5000, 0.42, 700, 170, 0.08, 0.35, 60, 0.2, 0.15]); break;
                 case 'awp': gun(vol, pan, [0.5, 0.3, 2600, 0.75, 120, 85, 0.35, 0.75, 28, 0.7, 0.35]); setTimeout(() => { tone(900, 0.03, 0.08 * vol, pan, 'square'); setTimeout(() => noise(0.07, 2500, 0.08 * vol, pan, 'bandpass'), 130); }, 650); break;
@@ -3342,7 +3357,7 @@ body.edit #tlook{ pointer-events:none; }
             if (GA.cur) { b.path = (bfsArena(cr(b.z), cr(b.x - GA.cur.ox), r, c) || []).map(p => ({ r: p.r, c: p.c, ax: GA.cur.ox + cx(p.c), az: cx(p.r) })); }
             else b.path = bfs(cr(b.z), cr(b.x), r, c, (b.y || 0) > 2) || [];
         } function randomNear(r, c, rad) { for (let i = 0; i < 12; i++) { const rr = r + Math.round((Math.random() * 2 - 1) * rad), cc = c + Math.round((Math.random() * 2 - 1) * rad); if (!solid(cell(rr, cc))) return { r: rr, c: cc }; } return { r, c }; }
-        function botMoveToward(b, tx, tz, dt, spd) { const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz); if (d < 0.05) return; const s = Math.min(spd * (b.spdMul || 1) * dt, d); collideMove(b, dx / d * s, dz / d * s); if (!b.target) b.yaw = lerpAngle(b.yaw, Math.atan2(dx, dz), Math.min(1, dt * 12)); b.moving = true; b.wantMove = true; }
+        function botMoveToward(b, tx, tz, dt, spd) { const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz); if (d < 0.05) return; const s = Math.min(spd * (b.spdMul || 1) * CFG.speed / 100 * dt, d); collideMove(b, dx / d * s, dz / d * s); if (!b.target) b.yaw = lerpAngle(b.yaw, Math.atan2(dx, dz), Math.min(1, dt * 12)); b.moving = true; b.wantMove = true; }
         function followPath(b, dt) { if (!b.path.length) return false; const wp = b.path[0], tx = wp.ax !== undefined ? wp.ax : cx(wp.c), tz = wp.az !== undefined ? wp.az : cx(wp.r); if (Math.hypot(tx - b.x, tz - b.z) < 0.6) { b.path.shift(); return followPath(b, dt); } botMoveToward(b, tx, tz, dt, BOT_SPEED); return true; } function separate() { const all = ents.filter(e => e.alive); for (let i = 0; i < all.length; i++)for (let j = i + 1; j < all.length; j++) { const a = all[i], b = all[j]; const dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz); if (d < 0.85 && d > 0.001) { const p = (0.85 - d) / 2, nx = dx / d, nz = dz / d; if (!a.isPlayer) collideMove(a, -nx * p, -nz * p); if (!b.isPlayer) collideMove(b, nx * p, nz * p); if (a.isPlayer) collideMove(a, -nx * p, -nz * p); if (b.isPlayer) collideMove(b, nx * p, nz * p); } } }
 
         // =====================================================================
@@ -3363,6 +3378,7 @@ body.edit #tlook{ pointer-events:none; }
         let boomT = 0, whiteFlash = 0, dmgFlash = 0, hitT = 0, hitHS = false, shake = 0;
         function applyDamage(e, dmg, att, w, hs) {
             if (!e.alive || (DM.on && e.dmProt > now)) return;
+            if (CFG.hsOnly && !hs && w && (w.slot === 1 || w.slot === 2)) return; // Spaß-Modus: nur Headshots zählen
             if (e.armor > 0 && !(hs && !e.helmet)) { const a = Math.min(e.armor, dmg * 0.5); e.armor -= a; dmg -= a; }
             dmg = Math.round(dmg); e.health -= dmg;
             if (e.isPlayer) { dmgFlash = 1; sfx('hurt'); } else burst(e.x, e.y + (hs ? 1.65 : 1.0), e.z, 0x8a0000, 8, 3);
@@ -3384,13 +3400,13 @@ body.edit #tlook{ pointer-events:none; }
             specTarget = mates[((mates.indexOf(specTarget) + dir) % mates.length + mates.length) % mates.length];
             const el = $('specname'); if (el) el.textContent = '👁 ' + specTarget.name;
         } function botFire(b, t, d) {
-            const w = b.weapon; b.ammo--; b.fireT = w.rate * (w.auto ? 1.6 : 1.3); b.burst++;
+            const w = b.weapon; if (!CFG.infAmmo) b.ammo--; b.fireT = w.rate * (w.auto ? 1.6 : 1.3); b.burst++;
             if (b.burst >= (w.auto ? 3 + Math.floor(Math.random() * 4) : 1 + Math.floor(Math.random() * 2))) { b.burst = 0; b.fireT += 0.5 + Math.random() * 0.6; }
             b.lastShotT = now; sfx(w.snd, b.x, b.z); b.flashT = 0.05; b.flash.visible = true;
             const ey = b.y + (b.crouch ? 1.05 : 1.5), ty = t.isPlayer ? t.y + t.eyeH - 0.4 : t.y + (t.crouch ? 0.75 : 1.0);
             let chance = w.acc * BOT_SKILL * Math.max(0.25, 1 - d / 70); if (t.speed > 3 || t.moving) chance *= 0.75; if (t.crouch) chance *= 0.7; if (b.crouch) chance *= 1.2;
             let end;
-            if (Math.random() < chance) { const hs = Math.random() < 0.12, dmg = w.key === 'awp' ? 9999 : w.dmg * (w.pellets ? 4 : 1) * (hs ? (w.pellets ? 1.5 : 3.5) : 1) * Math.max(w.pellets ? 0.15 : 0.6, 1 - d * (w.pellets ? 0.03 : 0.004)); if (t.decoy) t.hp -= dmg; else if (t.remote) netSend({ type: 'botdmg2', to: t.pid, d: Math.round(dmg), bn: b.name, bt: b.team, w: w.name, hs }); else applyDamage(t, dmg, b, w, hs); end = new THREE.Vector3(t.x, hs ? ty + 0.5 : ty, t.z); } else { const miss = 0.6 + Math.random() * 1.5; end = new THREE.Vector3(t.x + (Math.random() - 0.5) * miss * 2, ty + (Math.random() - 0.5) * miss, t.z + (Math.random() - 0.5) * miss * 2); const o = new THREE.Vector3(b.x, ey, b.z); const dir = end.clone().sub(o); const L = dir.length(); dir.normalize(); _ray.set(o, dir); _ray.far = L + 30; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; if (h) { end = h.point; addDecal(h.point, h.face.normal); burst(h.point.x, h.point.y, h.point.z, 0xd8c8a0, 3, 2); } else end = o.clone().add(dir.multiplyScalar(L + 30)); }
+            if (Math.random() < chance) { const hs = Math.random() < 0.12, dmg = w.key === 'awp' ? 9999 : w.dmg * (w.pellets ? 4 : 1) * (hs ? (w.pellets ? 1.5 : 3.5) : 1) * Math.max(w.pellets ? 0.15 : 0.6, 1 - d * (w.pellets ? 0.03 : 0.004)); if (t.decoy) t.hp -= dmg; else if (t.remote) (hs || !CFG.hsOnly) && netSend({ type: 'botdmg2', to: t.pid, d: Math.round(dmg), bn: b.name, bt: b.team, w: w.name, hs }); else applyDamage(t, dmg, b, w, hs); end = new THREE.Vector3(t.x, hs ? ty + 0.5 : ty, t.z); } else { const miss = 0.6 + Math.random() * 1.5; end = new THREE.Vector3(t.x + (Math.random() - 0.5) * miss * 2, ty + (Math.random() - 0.5) * miss, t.z + (Math.random() - 0.5) * miss * 2); const o = new THREE.Vector3(b.x, ey, b.z); const dir = end.clone().sub(o); const L = dir.length(); dir.normalize(); _ray.set(o, dir); _ray.far = L + 30; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; if (h) { end = h.point; addDecal(h.point, h.face.normal); burst(h.point.x, h.point.y, h.point.z, 0xd8c8a0, 3, 2); } else end = o.clone().add(dir.multiplyScalar(L + 30)); }
             tracer(b.x + Math.sin(b.yaw) * 0.5, ey, b.z + Math.cos(b.yaw) * 0.5, end);
         }
 
@@ -3411,9 +3427,9 @@ body.edit #tlook{ pointer-events:none; }
             if (e.isPlayer) {
                 e.vx = e.vz = 0; e.money = 16000; e.weapons[5] = null; if (e.dmLast) e.weapons[1] = mkWeapon(e.dmLast); if (!e.weapons[2]) e.weapons[2] = mkWeapon(e.team === 'T' ? W.glock : W.usp);
                 for (const k of [1, 2]) { const w = e.weapons[k]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } }
-                e.slot = e.weapons[1] ? 1 : 2; e.pitch = 0; setScoped(false); specTarget = null; $('dead').style.display = 'none'; updateVM();
+                funLoadout(e); e.slot = e.weapons[1] ? 1 : 2; e.pitch = 0; setScoped(false); specTarget = null; $('dead').style.display = 'none'; updateVM();
             } else {
-                e.money = 16000; e.weapon = e.team === 'T' ? W.glock : W.usp; botBuy(e); e.target = null; e.path = []; e.goal = null; e.waitT = 0; e.fireT = 0.5; e.reloadT = 0; e.stuckT = 0; e.lastX = e.x; e.lastZ = e.z;
+                e.money = 16000; e.weapon = e.team === 'T' ? W.glock : W.usp; botBuy(e); funLoadout(e); e.target = null; e.path = []; e.goal = null; e.waitT = 0; e.fireT = 0.5; e.reloadT = 0; e.stuckT = 0; e.lastX = e.x; e.lastZ = e.z;
                 e.mesh.rotation.set(0, e.yaw, 0); e.mesh.scale.y = 1; e.mesh.position.set(e.x, 0, e.z);
             }
         }
@@ -3431,6 +3447,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
 <div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div></div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button>`);
         }
         function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .35s ease-out'; } function placeTeam(team) { const cells = shuffle(spawnCells[team].slice()); let i = 0; for (const e of ents) { if (e.team !== team) continue; const c = cells[i++ % cells.length]; e.x = cx(c.c) + (Math.random() - 0.5); e.z = cx(c.r) + (Math.random() - 0.5); e.y = 0; e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
+        // Spaß-Modus „Waffen": 1 = nur Pistolen (Primärwaffe weg), 2 = nur AWP (gratis für alle)
+        function funLoadout(e) { if (!CFG.wpn) return; if (e.isPlayer) e.weapons[1] = CFG.wpn === 2 ? mkWeapon(W.awp) : null; else if (!e.remote) { e.weapon = CFG.wpn === 2 ? W.awp : e.weapon.slot === 1 ? (e.team === 'T' ? W.glock : W.usp) : e.weapon; e.ammo = e.weapon.mag; } }
         function botBuy(b) {
             const rifle = b.team === 'T' ? W.ak47 : W.m4a1;
             if (b.weapon.slot !== 1) { const r = Math.random(); if (b.money >= 5400 && r < 0.15) { b.money -= 4750; b.weapon = W.awp; } else if (b.money >= rifle.price) { b.money -= rifle.price; b.weapon = rifle; } else if (b.money >= 1700 && r < 0.4) { b.money -= 1700; b.weapon = W.pump; } else if (b.money >= 1500) { b.money -= 1500; b.weapon = W.mp5; } else if (b.money >= 650 && r < 0.6) { b.money -= 650; b.weapon = W.deagle; } }
@@ -3445,8 +3463,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         }
         function startRound() {
             clearDrops(); clearNades(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear();
-            const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } p.weapons[5] = null; p.alive = true; p.health = 100;
-            for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); }
+            const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } funLoadout(p); p.weapons[5] = null; p.alive = true; p.health = 100;
+            for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); funLoadout(b); }
             placeTeam('T'); placeTeam('CT');
             bots.forEach(b => { b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; b.lastX = b.x; b.lastZ = b.z; });
             if (DM.on) for (const e of ents) if (!e.remote) dmRespawn(e);
@@ -3666,7 +3684,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // =====================================================================
         const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)' };
         const BIND = Object.assign({}, BIND_DEF, JSON.parse(localStorage.getItem('cs_binds') || '{}'));
-        const OPT = Object.assign({ sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
+        const OPT = Object.assign({ sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
+        // Ansicht-Optionen anwenden (HUD-Farbe, Radar, Killfeed, Handy-Buttons) – nur bei Änderung, nicht pro Frame
+        function applyLook() { $('hud').style.color = OPT.hudCol; const r = $('radar'); r.style.display = OPT.radar ? '' : 'none'; if (OPT.radar) r.style.width = r.style.height = Math.round((IS_TOUCH ? 100 : 170) * OPT.radar) + 'px'; $('killfeed').style.display = OPT.kf ? '' : 'none'; const ds = document.documentElement.style; ds.setProperty('--tbs', OPT.tbs); ds.setProperty('--tba', OPT.tba); }
         function applyGfx() {
             const g = OPT.gfx;
             renderer.setPixelRatio(g === 0 ? 1 : g === 1 ? Math.min(devicePixelRatio, 1.5) : Math.min(devicePixelRatio, 2));
@@ -3685,7 +3705,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // ───── TOUCH-STEUERUNG ─────
         const IS_TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
         const TOUCH = { f: 0, s: 0 };
-        function fitUI() { const u = IS_TOUCH ? 1 : Math.max(0.8, Math.min(1.8, innerWidth / 1440, innerHeight / 780)); document.documentElement.style.setProperty('--ui', u.toFixed(3)); } fitUI(); addEventListener('resize', fitUI);
+        function fitUI() { const u = IS_TOUCH ? 1 : Math.max(0.8, Math.min(1.8, innerWidth / 1440, innerHeight / 780)); document.documentElement.style.setProperty('--ui', u.toFixed(3)); } fitUI(); addEventListener('resize', fitUI); applyLook();
         if (IS_TOUCH) {
             renderer.domElement.requestPointerLock = () => { }; // kein Pointer-Lock auf Mobile
             document.exitPointerLock = () => { }; // iOS kennt die API nicht – Stub verhindert Crash
@@ -3696,7 +3716,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  function applyBtnLayout() { const L = JSON.parse(localStorage.getItem('btnlayout') || '{}'); for (const id of BTN_IDS) { const p = L[id], el = $(id); if (!p || !el) continue; el.style.left = clamp(p.x, 0, innerWidth - 50) + 'px'; el.style.top = clamp(p.y, 0, innerHeight - 50) + 'px'; el.style.right = 'auto'; el.style.bottom = 'auto'; } } function saveBtnLayout() { const L = {}; for (const id of BTN_IDS) { const el = $(id); if (el.style.left) L[id] = { x: parseInt(el.style.left) || 0, y: parseInt(el.style.top) || 0 }; } localStorage.setItem('btnlayout', JSON.stringify(L)); } window.btnEditStart = () => { EDITB.on = true; document.body.classList.add('edit'); $('overlay').style.display = 'none'; $('touch').style.display = 'block'; };
  function btnEditEnd() { EDITB.on = false; saveBtnLayout(); document.body.classList.remove('edit'); if (!started) { $('touch').style.display = 'none'; showSettings(); } } $('editDone').addEventListener('touchstart', e => { e.preventDefault(); btnEditEnd(); }, { passive: false });
  $('editReset').addEventListener('touchstart', e => { e.preventDefault(); localStorage.removeItem('btnlayout'); for (const id of BTN_IDS) { const el = $(id); el.style.left = el.style.top = el.style.right = el.style.bottom = ''; } }, { passive: false });
- for (const id of BTN_IDS) { $(id).addEventListener('touchstart', e => { if (!EDITB.on) return; e.preventDefault(); e.stopPropagation(); const t = e.changedTouches[0], r = $(id).getBoundingClientRect(); EDITB.drag = { el: $(id), tid: t.identifier, dx: t.clientX - r.left, dy: t.clientY - r.top }; }, { passive: false }); }
+ for (const id of BTN_IDS) { $(id).addEventListener('touchstart', e => { if (!EDITB.on) return; e.preventDefault(); e.stopPropagation(); const t = e.changedTouches[0], r = $(id); EDITB.drag = { el: r, tid: t.identifier, dx: t.clientX - r.offsetLeft, dy: t.clientY - r.offsetTop }; }, { passive: false }); }
  addEventListener('touchmove', e => { if (!EDITB.on || !EDITB.drag) return; for (const t of e.changedTouches) { if (t.identifier !== EDITB.drag.tid) continue; const el = EDITB.drag.el, r = el.getBoundingClientRect(); el.style.left = clamp(t.clientX - EDITB.drag.dx, 0, innerWidth - r.width) + 'px'; el.style.top = clamp(t.clientY - EDITB.drag.dy, 0, innerHeight - r.height) + 'px'; el.style.right = 'auto'; el.style.bottom = 'auto'; } e.preventDefault(); }, { passive: false });
  addEventListener('touchend', e => { if (EDITB.drag) for (const t of e.changedTouches) if (t.identifier === EDITB.drag.tid) EDITB.drag = null; });
  applyBtnLayout(); addEventListener('resize', () => { if (!EDITB.on) applyBtnLayout(); });
@@ -3743,14 +3763,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const f = canMove ? ((down('fwd') ? 1 : 0) - (down('back') ? 1 : 0) + TOUCH.f) : 0;
             const s = canMove ? ((down('right') ? 1 : 0) - (down('left') ? 1 : 0) + TOUCH.s) : 0;
             const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
-            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); let max = (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1); if (p.crouch) max *= 0.45; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - FRICTION * dt); p.vx *= fr; p.vz *= fr; }
+            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); let max = (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * CFG.speed / 100; if (p.crouch) max *= 0.45; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - FRICTION * dt); p.vx *= fr; p.vz *= fr; }
             const acc = p.onGround ? ACCEL : AIR_ACCEL;
             p.vx += wx * acc * dt; p.vz += wz * acc * dt;
             const vl = Math.hypot(p.vx, p.vz); if (vl > max) { p.vx *= max / vl; p.vz *= max / vl; }
             if (vl > 0.02) collideMove(p, p.vx * dt, p.vz * dt); else { p.vx = 0; p.vz = 0; }
             if (p.dashT > 0) { const step = Math.min(dt, p.dashT); const n = Math.ceil(step * 60); for (let s = 0; s < n; s++) collideMove(p, p.dashVX * step / n, p.dashVZ * step / n); p.dashT -= dt; if (p.dashT <= 0) { p.vx = p.dashVX * 0.12; p.vz = p.dashVZ * 0.12; } }
             p.speed = Math.hypot(p.vx, p.vz);
-            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.2; p.onGround = false; } p.vy -= 16 * dt; p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { sfx('step'); fovKick = Math.max(fovKick, 3); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
+            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.2 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 16 * CFG.grav / 100 * dt; p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { sfx('step'); fovKick = Math.max(fovKick, 3); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
             const te = p.alive ? (p.crouch ? 1.15 : 1.7) : 0.35; p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
             if (p.speed > 4 && p.onGround) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.42; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
@@ -3783,7 +3803,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const p = player; if (!p.alive || G.state === 'freeze' || buyOpen) { clickQueued = false; return; } const w = p.weapons[p.slot]; if (!w) return; const d = w.def; if (d.plant) { clickQueued = false; return; } if (d.nade) { const c = clickQueued; clickQueued = false; if (c) throwNade(d); return; } if (w.reloading) { clickQueued = false; return; }
             const want = d.auto ? mouseDown : clickQueued; clickQueued = false; if (!want) return; if (now - w.last < d.rate) return; w.last = now;
             if (d.melee) { sfx('knife'); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: 'knife', x: p.x, z: p.z }); p.kick = 1; const h = castShot(0); if (h && h.distance < 2.3) { const ud = h.object.userData; if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) { const dmg = d.dmg * (ud.part === 'head' ? 2 : 1); if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else applyDamage(ud.ent, dmg, p, d, false); } else if (!ud.ent) { addDecal(h.point, h.face.normal); } } return; } if (w.ammo <= 0) { sfx('empty'); startReload(); return; }
-            w.ammo--; p.lastShotT = now;
+            if (!CFG.infAmmo) w.ammo--; p.lastShotT = now;
             let spread = d.spread; if (d.scope) spread = p.scoped ? d.scopedSpread : d.spread; else { spread *= (1 + p.recoil * 0.9); if (p.speed > 3) spread *= 2.5; else if (p.speed > 0) spread *= 1.5; if (p.crouch) spread *= 0.7; if (!p.onGround) spread *= 4; }
             for (let pi = 0; pi < (d.pellets || 1); pi++) {
                 const h = castShot(spread);
@@ -3793,6 +3813,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) {
                     const hs = ud.part === 'head';
                     const dmg = d.key === 'awp' ? 9999 : Math.round(d.dmg * (hs ? (d.pellets ? 1.8 : 4) : ud.part === 'legs' ? 0.75 : 1) * Math.max(d.pellets ? 0.2 : 0.6, 1 - h.distance * (d.pellets ? 0.025 : 0.004)));
+                    if (CFG.hsOnly && !hs) continue;
                     if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx(hs ? 'hs' : 'hit'); }
                     else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx(hs ? 'hs' : 'hit'); }
                     else applyDamage(ud.ent, dmg, p, d, hs);
@@ -3811,7 +3832,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (curDef().key === 'knife') vmModels.knife.rotation.z = p.switchT * Math.PI * 2;
             if (flashT > 0) { flashT -= dt; if (flashT <= 0) { muzzleSprite.visible = false; muzzleLight.intensity = 0; } }
             vm.visible = p.alive && !p.scoped; const mv = p.onGround ? Math.min(1, p.speed / 5) : 0;
-            vm.position.set(0.3 + Math.cos(p.bob * 0.5) * 0.018 * mv, -0.3 + Math.abs(Math.sin(p.bob)) * 0.022 * mv - p.switchT * 0.35 - (p.onGround ? 0 : 0.035), -0.5 + p.kick * 0.08);
+            vm.position.set(0.3 + OPT.vmX + Math.cos(p.bob * 0.5) * 0.018 * mv, -0.3 + OPT.vmY + Math.abs(Math.sin(p.bob)) * 0.022 * mv - p.switchT * 0.35 - (p.onGround ? 0 : 0.035), -0.5 + OPT.vmZ + p.kick * 0.08);
             vmTilt += (((w && w.reloading) ? 0.55 : 0) - vmTilt) * Math.min(1, dt * 10);
             vm.rotation.set(p.kick * 0.12 + vmTilt, 0, vmTilt * 0.3 + Math.cos(p.bob * 0.5) * 0.012 * mv);
             const dk = Math.max(0, 1 - dt * 9); vmSwX *= dk; vmSwY *= dk; if (p.onGround && !vmWasG) vmLand = 1; vmWasG = p.onGround; vmLand = Math.max(0, vmLand - dt * 4);
@@ -3881,6 +3902,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); } function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
         function buy(it) {
             const p = player; if (!canBuy() || itemOwned(it)) return;
+            if (CFG.wpn && it.w && W[it.w].slot === 1) { sfx('empty'); return; } // Spaß-Modus: keine Primärwaffen kaufbar
             const price = itemPrice(it);
             if (p.money < price) { sfx('empty'); return; }
             if (it.w && W[it.w].nade) { const d = W[it.w]; p.money -= price; p.nades[d.key]++; syncNadeSlot(p.weapons[4] ? p.weapons[4].def.key : d.key); }
@@ -3972,7 +3994,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             blindT = Math.max(0, blindT - dt); if (blindT > 0) whiteFlash = Math.max(whiteFlash, Math.min(1, blindT / 1.2));
             whiteFlash = Math.max(0, whiteFlash - dt * 0.8); dmgFlash = Math.max(0, dmgFlash - dt * 2); hitT = Math.max(0, hitT - dt); shake = Math.max(0, shake - dt * 1.5);
             fovKick = Math.max(0, fovKick - dt * 35);
-            const wantFov = (player.scoped ? 20 : 75) + fovKick;
+            const wantFov = (player.scoped ? 20 : OPT.fov) + fovKick;
             if (Math.abs(camera.fov - wantFov) > 0.01) { camera.fov = wantFov; camera.updateProjectionMatrix(); } bombLed.visible = G.bomb.state === 'planted' || G.bomb.state === 'dropped';
         }
 
@@ -4148,12 +4170,25 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <label style="display:block">Dicke: <b id="chThickV">${OPT.chThick}</b><input data-ch="chThick" type="range" min="1" max="6" step="1" value="${OPT.chThick}" style="width:100%"></label>
  <label><input id="chDot" type="checkbox" ${OPT.chDot ? 'checked' : ''}> Punkt</label> <label style="margin-left:10px"><input id="chDyn" type="checkbox" ${OPT.chDyn ? 'checked' : ''}> Dynamisch</label>
  </div></div>
+ <div style="margin:10px 0 4px;color:#e8c98a;font-weight:bold">🎨 ANSICHT & SOUND</div>
+ <label style="display:block">Sichtfeld (FOV): <b id="fovV">${OPT.fov}</b><input data-opt="fov" type="range" min="60" max="110" step="1" value="${OPT.fov}" style="width:100%"></label>
+ <label style="display:block">Waffe links/rechts: <b id="vmXV">${OPT.vmX}</b><input data-opt="vmX" type="range" min="-0.3" max="0.2" step="0.02" value="${OPT.vmX}" style="width:100%"></label>
+ <label style="display:block">Waffe hoch/runter: <b id="vmYV">${OPT.vmY}</b><input data-opt="vmY" type="range" min="-0.2" max="0.15" step="0.02" value="${OPT.vmY}" style="width:100%"></label>
+ <label style="display:block">Waffe nah/fern: <b id="vmZV">${OPT.vmZ}</b><input data-opt="vmZ" type="range" min="-0.2" max="0.2" step="0.02" value="${OPT.vmZ}" style="width:100%"></label>
+ <label style="display:block;margin:4px 0">HUD-Farbe: <input data-opt="hudCol" type="color" value="${OPT.hudCol}" style="vertical-align:middle;width:40px;height:22px;padding:0;border:0;background:none"></label>
+ <label style="display:block;margin:4px 0">Radar: <select data-opt="radar" style="font:bold 13px Arial;padding:4px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px">${[[0, 'Aus'], [0.7, 'Klein'], [1, 'Normal'], [1.4, 'Groß']].map(([v, l]) => `<option value="${v}" ${OPT.radar === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+ <input data-opt="kf" type="checkbox" ${OPT.kf ? 'checked' : ''} style="margin-left:12px"> Killfeed</label>
+ <label style="display:block;margin:4px 0">Treffer-Sound: <select data-opt="hitSnd" style="font:bold 13px Arial;padding:4px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px">${['Standard', 'Ding', 'Klick', 'Aus'].map((l, v) => `<option value="${v}" ${OPT.hitSnd === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+ <input data-opt="killSnd" type="checkbox" ${OPT.killSnd ? 'checked' : ''} style="margin-left:12px"> Kill-Sound</label>
+ ${IS_TOUCH ? `<label style="display:block">Button-Größe: <b id="tbsV">${OPT.tbs}</b><input data-opt="tbs" type="range" min="0.6" max="1.6" step="0.05" value="${OPT.tbs}" style="width:100%"></label>
+ <label style="display:block">Button-Sichtbarkeit: <b id="tbaV">${OPT.tba}</b><input data-opt="tba" type="range" min="0.2" max="1" step="0.05" value="${OPT.tba}" style="width:100%"></label>` : ''}
  </div>
  <table style="border-collapse:collapse">${rows}</table>
  <p style="font-size:12px;color:#999">Klicke auf eine Taste und drücke die neue Belegung · <kbd>Esc</kbd> bricht ab
 Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div>${IS_TOUCH ? '<button id="btnEditGo">📱 Buttons anpassen</button>' : ''}<button id="setReset" style="border-color:#c66;color:#c66">Zurücksetzen</button><button id="setBack">Zurück</button></div>`);
- const beg = $('btnEditGo'); if (beg) beg.onclick = () => btnEditStart();            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
+ const beg = $('btnEditGo'); if (beg) beg.onclick = () => btnEditStart();
+            document.querySelectorAll('[data-opt]').forEach(el => el.oninput = el.onchange = () => { const k = el.dataset.opt; OPT[k] = el.type === 'checkbox' ? (el.checked ? 1 : 0) : el.type === 'color' ? el.value : +el.value; const v = $(k + 'V'); if (v) v.textContent = el.value; saveOpts(); applyLook(); if (k === 'hitSnd' && el.type !== 'range') { initAudio(); sfx('hit'); } });            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
             $('sensSlider').oninput = e => { OPT.sens = +e.target.value; $('sensval').textContent = OPT.sens.toFixed(2); saveOpts(); };
             $('volSlider').oninput = e => { OPT.vol = +e.target.value; $('volval').textContent = Math.round(OPT.vol * 100) + '%'; saveOpts(); initAudio(); sfx('hit'); };
             $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); };
@@ -4186,8 +4221,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  ${sel('freeze', 'Freeze-Time', [0, 3, 5, 10], v => v + ' s')}
  ${sel('bombTime', 'Bomben-Timer', [30, 40, 60], v => v + ' s')}
  ${sel('skill', 'Bot-Schwierigkeit', [0, 1, 2], v => SKILL_LBL[v])}
- ${sel('teamSize', 'Teamgröße', [2, 3, 4, 5], v => v + ' gegen ' + v)}
+ ${sel('teamSize', 'Teamgröße', [1, 2, 3, 4, 5, 6], v => v + ' gegen ' + v)}
  ${sel('money', 'Startgeld', [800, 2000, 5000, 16000], v => '$ ' + v)}
+ <tr><td colspan="2" style="padding:10px 0 4px;color:#e8c98a;font-weight:bold;text-align:left">🎉 SPASS-MODI</td></tr>
+ ${sel('hsOnly', 'Nur Headshots', [0, 1], v => v ? 'An' : 'Aus')}
+ ${sel('wpn', 'Waffen', [0, 1, 2], v => ['Alle', 'Nur Pistolen', 'Nur AWP'][v])}
+ ${sel('grav', 'Schwerkraft', [100, 60, 30], v => v === 100 ? 'Normal' : v === 60 ? 'Mond (60 %)' : 'Weltraum (30 %)')}
+ ${sel('jump', 'Sprunghöhe', [100, 140, 200], v => v + ' %')}
+ ${sel('speed', 'Lauftempo', [100, 125, 150], v => v + ' %')}
+ ${sel('infAmmo', 'Unendlich Munition', [0, 1], v => v ? 'An' : 'Aus')}
  </table>
  <p style="font-size:12px;color:#999">Wird gespeichert und gilt für das nächste Spiel · Online zählen die Regeln des Hosts</p>
  <div><button id="cfgReset" style="border-color:#c66;color:#c66">Zurücksetzen</button><button id="cfgBack">Zurück</button></div>`);
@@ -4230,11 +4272,17 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         ['1', 'Stufe 1', '#56606a'], ['2', 'Stufe 2', '#66717c'], ['3', 'Stufe 3', '#77838e'], ['4', 'Stufe 4', '#8995a0'], ['5', 'Stufe 5', '#9ba7b2'], ['6', 'Stufe 6', '#adb9c4'],
         ['A', 'Bombsite A', '#e07a2a'], ['B', 'Bombsite B', '#e0a82a'], ['T', 'Spawn T', '#d9822b'], ['K', 'Spawn CT', '#4a7fd0']];
         function saveCMaps() { localStorage.setItem('custommaps', JSON.stringify(CMAPS)); }
+        function newMapKey(n) { const base = 'my_' + (String(n).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'map'); let k = base, i = 2; while (MAPS[k]) k = base + '_' + i++; return k; }
+        // Karten teilen: Code = "CSWO:" + Base64(JSON) – lässt sich per Chat verschicken
+        function shareMap(d) { const code = 'CSWO:' + btoa(unescape(encodeURIComponent(JSON.stringify({ n: d.n, th: d.th, col: d.col, tod: d.tod, em: d.em, emc: d.emc, g: d.g })))); const ok = () => alert('Karten-Code kopiert! Freunde fügen ihn per Rechtsklick (Handy: lange drücken) auf eine Karte → „📥 Code importieren" ein.'); if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(code).then(ok, () => prompt('Code kopieren:', code)); else prompt('Code kopieren:', code); }
+        function importMap() { const s = (prompt('Karten-Code einfügen:') || '').trim(); if (!s) return; try { const d = JSON.parse(decodeURIComponent(escape(atob(s.replace(/^CSWO:/, ''))))), k = newMapKey(d.n || 'import'); regMap(k, d); if (!CMAP_INFO[k]) throw 0; CMAPS[k] = Object.assign({ g: d.g }, CMAP_INFO[k]); saveCMaps(); sessionStorage.setItem('opentab', 'play'); location.reload(); } catch (e) { alert('Ungültiger Karten-Code.'); } }
         function mapCtxMenu(k, x, y) {
             const old = $('mapctx'); if (old) old.remove();
             const own = !!CMAPS[k], d = document.createElement('div'); d.id = 'mapctx';
             d.style.cssText = `position:fixed;left:${Math.min(x, innerWidth - 220)}px;top:${Math.min(y, innerHeight - 150)}px;z-index:9999;background:#141e28;border:1px solid rgba(232,201,138,.6);border-radius:6px;padding:6px;display:flex;flex-direction:column;min-width:200px`;
             const items = own ? [['✏️ Bearbeiten', () => showMapEditor(k, k)], ['📄 Kopie erstellen', () => showMapEditor(k, null)]] : [['✏️ Bearbeiten (als Kopie)', () => showMapEditor(k, null)]];
+            if (own) items.push(['📤 Teilen (Code)', () => shareMap(Object.assign({ g: MAPS[k] }, CMAP_INFO[k]))]);
+            items.push(['📥 Code importieren', importMap]);
             if (own) items.push(['🏷️ Umbenennen', () => { const n = (prompt('Neuer Name:', CMAPS[k].n) || '').trim().slice(0, 20); if (n) { CMAPS[k].n = n; saveCMaps(); sessionStorage.setItem('opentab', 'play'); location.reload(); } }],
                 ['🗑️ Löschen', () => { if (!confirm(`Karte „${CMAPS[k].n}" wirklich löschen?`)) return; delete CMAPS[k]; saveCMaps(); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); sessionStorage.setItem('opentab', 'play'); location.reload(); }]);
             for (const [t, fn] of items) { const b = document.createElement('button'); b.textContent = t; b.style.cssText = 'margin:2px;text-align:left;font-size:14px'; b.onclick = e => { e.stopPropagation(); d.remove(); fn(); }; d.appendChild(b); }
@@ -4244,25 +4292,36 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function showMapEditor(src, editKey) {
             const grid = MAPS[src].map(r => r.split('')), N = 28; let tool = '#', name = editKey ? CMAPS[editKey].n : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace('de_', '')) + ' Kopie').slice(0, 20);
             let th = editKey ? CMAPS[editKey].th : (CMAP_INFO[src] ? CMAP_INFO[src].th : src); if (!/^de_/.test(th) || !THEMES[th]) th = 'de_dusty';
-            const col = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]]));
+            const col = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]])), inf = CMAP_INFO[src] || {}, hx = v => '#' + v.toString(16).padStart(6, '0');
+            const thCol = t => ({ sky: hx(THEMES[t].sky), fog: hx(THEMES[t].fog), floor: THEMES[t].floor, wall: THEMES[t].wallBase });
+            const cols = Object.assign(thCol(th), inf.col); let tod = inf.tod || 0;
+            const cin = (id, l) => `<label>${l}<input type="color" id="${id}"></label>`;
             showOverlay(`<h1 id="meH" style="font-size:32px">🗺️ MAP-EDITOR<small>${editKey ? 'EIGENE KARTE BEARBEITEN' : 'NEUE KARTE'}</small></h1>
  <div id="meWrap">
  <canvas id="meCv" width="560" height="560"></canvas>
  <div id="meSide">
  <input id="meName" maxlength="20" value="${name.replace(/"/g, '')}" placeholder="Name">
  <select id="meTheme">${Object.keys(THEMES).filter(t => /^de_/.test(t)).map(t => `<option value="${t}" ${t === th ? 'selected' : ''}>Thema: ${t.replace('de_', '')}</option>`).join('')}</select>
+ <div class="merow">${cin('meSky', 'Himmel')}${cin('meFog', 'Nebel')}${cin('meFloor', 'Boden')}${cin('meWall', 'Wände')}</div>
+ <div class="merow"><select id="meTod">${['☀️ Tag', '🌅 Abend', '🌙 Nacht'].map((l, i) => `<option value="${i}" ${i === tod ? 'selected' : ''}>${l}</option>`).join('')}</select>
+ <label>Emblem<input id="meEm" maxlength="4" placeholder="🛠" value="${(inf.em || '').replace(/"/g, '')}"></label><label>Farbe<input type="color" id="meEmc" value="${inf.emc || '#2b5d8a'}"></label></div>
  <div id="meTools">${ME_TOOLS.map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
  <p id="meMsg"></p>
  <p class="mehint">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT, Bombsite A & B</p>
- <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay">▶ Speichern & spielen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
+ <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay">▶ Speichern & spielen</button><button id="meShare">📤 Teilen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
  </div></div>`);
             const cv = $('meCv'), g = cv.getContext('2d'), cs = 560 / N;
-            const draw = () => { g.fillStyle = THEMES[th].floor; g.fillRect(0, 0, 560, 560); for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= N; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); g.moveTo(0, i * cs); g.lineTo(560, i * cs); } g.stroke(); };
+            const draw = () => { g.fillStyle = cols.floor; g.fillRect(0, 0, 560, 560); for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= N; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); g.moveTo(0, i * cs); g.lineTo(560, i * cs); } g.stroke(); };
             const selTool = t => { tool = t; document.querySelectorAll('#meTools button').forEach(b => b.style.background = b.dataset.t === t ? 'rgba(232,201,138,.45)' : ''); };
             document.querySelectorAll('#meTools button').forEach(b => b.onclick = () => selTool(b.dataset.t)); selTool('#');
             const paint = e => { const R = cv.getBoundingClientRect(), c = Math.floor((e.clientX - R.left) / R.width * N), r = Math.floor((e.clientY - R.top) / R.height * N); if (r < 1 || c < 1 || r > N - 2 || c > N - 2 || grid[r][c] === tool) return; grid[r][c] = tool; draw(); };
             let painting = false; cv.onpointerdown = e => { e.preventDefault(); painting = true; cv.setPointerCapture(e.pointerId); paint(e); }; cv.onpointermove = e => { if (painting) paint(e); }; cv.onpointerup = cv.onpointercancel = () => painting = false;
-            $('meTheme').onchange = e => { th = e.target.value; draw(); }; draw();
+            const CIN = { meSky: 'sky', meFog: 'fog', meFloor: 'floor', meWall: 'wall' }, syncCols = () => { for (const id in CIN) $(id).value = cols[CIN[id]]; };
+            for (const id in CIN) $(id).oninput = e => { cols[CIN[id]] = e.target.value; if (id === 'meFloor') draw(); };
+            $('meTheme').onchange = e => { th = e.target.value; Object.assign(cols, thCol(th)); syncCols(); draw(); }; syncCols(); draw(); // Thema-Wechsel setzt die Farben auf das Thema zurück
+            $('meTod').onchange = e => tod = +e.target.value;
+            const mapData = () => ({ n: $('meName').value.trim().slice(0, 20), th, col: Object.assign({}, cols), tod, em: $('meEm').value.trim(), emc: $('meEmc').value, g: grid.map(r => r.join('')) });
+            $('meShare').onclick = () => shareMap(mapData());
             let saved = false; // nach dem Speichern beim Zurückgehen neu laden, damit die Karte im Menü erscheint
             $('meBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); if (saved) location.reload(); else showMenu(); };
             $('meClear').onclick = () => { if (!confirm('Karte komplett leeren? (Nur die Außenwand bleibt)')) return; for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) grid[r][c] = (r === 0 || c === 0 || r === N - 1 || c === N - 1) ? '#' : '.'; draw(); };
@@ -4271,8 +4330,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (!n) { msgEl.textContent = 'Bitte einen Namen eingeben.'; return null; }
                 const miss = [['T', 'Spawn T'], ['K', 'Spawn CT'], ['A', 'Bombsite A'], ['B', 'Bombsite B']].filter(([ch]) => !flat.includes(ch)).map(x => x[1]);
                 if (miss.length) { msgEl.textContent = 'Es fehlt: ' + miss.join(', '); return null; }
-                let k = editKey; if (!k) { const base = 'my_' + (n.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'map'); k = base; let i = 2; while (MAPS[k]) k = base + '_' + i++; }
-                CMAPS[k] = { n, th, g: grid.map(r => r.join('')) }; saveCMaps(); regMap(k, CMAPS[k]);
+                const k = editKey || newMapKey(n);
+                regMap(k, mapData()); CMAPS[k] = Object.assign({ g: MAPS[k] }, CMAP_INFO[k]); saveCMaps();
                 editKey = k; saved = true; $('meH').querySelector('small').textContent = 'EIGENE KARTE BEARBEITEN'; msgEl.style.color = '#7c7'; msgEl.textContent = '✓ Gespeichert'; return k;
             };
             $('meSave').onclick = save;
@@ -4353,6 +4412,22 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📦 CASES</p>
  Im Cases-Menü können jetzt <b>Codes</b> eingelöst werden – halte die Augen offen!<br><br>
 
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ MAP-EDITOR: NOCH MEHR FREIHEIT</p>
+ <b>Eigene Farben:</b> Himmel, Nebel, Boden und Wände frei wählbar – das Thema dient nur als Startpunkt.<br>
+ <b>Tageszeit:</b> Jede Karte bei ☀️ Tag, 🌅 Abend oder 🌙 Nacht spielen.<br>
+ <b>Emblem:</b> Eigenes Emoji/Zeichen und Farbe für das Kartenbild im Menü.<br>
+ <b>📤 Karten teilen:</b> Karte als Code kopieren und per Chat verschicken – Freunde laden sie über Rechtsklick (Handy: lange drücken) → <b>📥 Code importieren</b>.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎨 ANSICHT & SOUND (⚙️ Einstellungen)</p>
+ Sichtfeld (FOV) und Waffenposition (links/rechts, hoch/runter, nah/fern) einstellbar.<br>
+ HUD-Farbe frei wählbar, Radar in Klein/Normal/Groß oder ganz aus (spart Leistung), Killfeed ein-/ausblendbar.<br>
+ Treffer-Sound wählbar (Standard, Ding, Klick, Aus), Kill-Sound abschaltbar.<br>
+ 📱 Handy: Größe und Sichtbarkeit der Touch-Buttons einstellbar.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎉 SPASS-MODI (🎮 Regeln)</p>
+ <b>Nur Headshots</b>, <b>Nur Pistolen</b> oder <b>Nur AWP</b> (gratis für alle), <b>Mond- und Weltraum-Schwerkraft</b>, höhere Sprünge, schnelleres Lauftempo und <b>unendlich Munition</b>.<br>
+ Teamgröße jetzt von <b>1 gegen 1 bis 6 gegen 6</b>. Online gelten wie immer die Regeln des Hosts.<br><br>
+
  <p style="margin:6px 0;color:#8fa3b8;font:bold 12px Arial">PATCH 1.0 „NEUE ARENA"</p>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎮 NEUE MODI</p>
@@ -4401,7 +4476,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
                 if (CMAP_INFO[el.dataset.map]) { // eigene Karte: Bauplan-Bild in Editor-Farben
-                    el.classList.add('custom'); el.querySelector('.emb').textContent = '🛠';
+                    const inf = CMAP_INFO[el.dataset.map], emb = el.querySelector('.emb'); el.classList.add('custom'); emb.textContent = inf.em || '🛠'; if (inf.emc) emb.style.background = `radial-gradient(circle at 35% 30%, ${inf.emc}, #0e1620)`;
                     const bg = g.createLinearGradient(0, 0, 0, 300); bg.addColorStop(0, '#16324f'); bg.addColorStop(1, '#0a1626'); g.fillStyle = bg; g.fillRect(0, 0, 200, 300);
                     g.strokeStyle = 'rgba(120,180,255,.12)'; g.beginPath(); for (let i = 0; i <= 300; i += 10) { g.moveTo(0, i); g.lineTo(200, i); g.moveTo(i, 0); g.lineTo(i, 300); } g.stroke();
                     const colr = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]])), s = 200 / 28, oy = (300 - 28 * s) / 2; g.globalAlpha = .75;
@@ -5361,6 +5436,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.armor = 0; p.helmet = false; p.kit = false; }
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } }
             p.alive = true; p.health = 100; p.vx = p.vz = 0; p.vy = 0; p.pitch = 0; setScoped(false); p.weapons[5] = null; if (!p.weapons[2]) p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp);
+            if (CFG.wpn) { funLoadout(p); p.slot = p.weapons[1] ? 1 : 2; updateVM(); }
             p.slot = p.weapons[1] ? 1 : 2; updateVM();
             if (DM.on) dmRespawn(p); else { const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = 0; } $('dead').style.display = 'none';
             G.state = FREEZE_TIME > 0 ? 'freeze' : 'live'; G.t = FREEZE_TIME; G.timer = DM.on ? DM.time : ROUND_TIME; msg(DM.on ? '💀 Deathmatch' : 'Runde ' + G.round, DM.on ? 'Jeder gegen jeden · Waffen gratis' : '', 3); openBuy(true);
@@ -5426,7 +5502,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
                 updatePlayer(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
-                separate(); updateFX(dt); updateHUD(); if ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2) drawRadar(); if (buyOpen) renderBuy();
+                separate(); updateFX(dt); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
             }
             renderer.render(scene, camera);
         }
