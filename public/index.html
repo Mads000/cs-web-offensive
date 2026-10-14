@@ -2020,6 +2020,31 @@
 #tSpecL{ left:max(20px, env(safe-area-inset-left)); } #tSpecR{ right:max(20px, env(safe-area-inset-right)); }
 #touch.dead #tSpecL, #touch.dead #tSpecR{ display:flex; }
 #touch.dead #tstick, #touch.dead .tb:not(.spec){ display:none; }
+/* ── Map-Editor ── */
+#meWrap{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; align-items:flex-start; }
+#meCv{ width:min(560px,92vw,66vh); height:auto; touch-action:none; border:1px solid rgba(232,201,138,.5); cursor:crosshair; }
+#meSide{ display:flex; flex-direction:column; gap:6px; width:290px; text-align:left; }
+#meName, #meTheme{ font:bold 14px Arial; padding:7px 10px; background:#141e28; color:#e8c98a; border:1px solid rgba(232,201,138,.5); border-radius:4px; }
+#meTools{ display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+#meTools button{ margin:0; font-size:13px; padding:6px 8px; text-align:left; white-space:nowrap; }
+#meTools i{ display:inline-block; width:12px; height:12px; margin-right:6px; vertical-align:middle; border:1px solid rgba(0,0,0,.4); }
+#meMsg{ font-size:13px; min-height:16px; margin:2px 0; color:#c66; }
+.mehint{ font-size:12px; color:#8fa3b8; margin:0; }
+.mebtns{ display:flex; flex-wrap:wrap; gap:4px; } .mebtns button{ margin:0; flex:1 1 45%; font-size:14px; }
+.mob #meH{ display:none; }
+.mob #meWrap{ flex-wrap:nowrap; gap:10px; padding:0 max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left)); }
+.mob #meCv{ width:min(calc(100vh - 40px), 56vw); flex:0 0 auto; }
+.mob #meSide{ width:auto; flex:1 1 auto; min-width:0; max-height:calc(100vh - 40px); overflow-y:auto; }
+.mob #meTools button{ font-size:14px; padding:8px; }
+.mob .mebtns button{ font-size:14px; padding:9px 6px; }
+/* ── Eigene Karten im Menü ── */
+.mapc.custom .emb{ background:radial-gradient(circle at 35% 30%, #2b5d8a, #0e2238); border-color:#e8c98a; }
+.mapc.custom::after{ content:'EIGENE KARTE'; position:absolute; top:8px; left:8px; padding:2px 6px; font:bold 10px Arial; color:#111; background:#e8c98a; border-radius:3px; }
+body.mob .mapc{ width:122px; height:176px; }
+body.mob .mapc .emb{ top:50px; }
+body.mob .mapc b{ font-size:14px; bottom:24px; padding:0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+body.mob .mapc span{ font-size:11px; }
+body.mob .mapc.custom::after{ font-size:8px; top:5px; left:5px; }
 /* ── Hochformat blockieren ── */
 #rotmsg{ display:none; }
 @media (orientation:portrait){ .mob #rotmsg{ display:flex; position:fixed; inset:0; z-index:99999; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:#0b1015; color:#e8c98a; font:700 20px Rajdhani, Arial; text-align:center; padding:20px; touch-action:none; } .mob #rotmsg span{ font-size:64px; } }
@@ -2566,6 +2591,7 @@ body.edit #tlook{ pointer-events:none; }
         function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? { k: MAPNAME, n: i.n, th: i.th, g: MAP } : null; }
         function netMapChanged(m) { if (m.cmap) sessionStorage.setItem('netmap', JSON.stringify(m.cmap)); return !!m.map && (m.map !== MAPNAME ? !!(MAPS[m.map] || m.cmap) : !!(m.cmap && m.cmap.g.join() !== MAP.join())); }
         const MAPNAME = (k => MAPS[k] ? k : 'de_dusty')(localStorage.getItem('map') || 'de_dusty');
+        const MAPLABEL = CMAP_INFO[MAPNAME] ? CMAP_INFO[MAPNAME].n : MAPNAME; // Anzeigename (eigene Karten: selbst vergebener Name)
         const MAP = MAPS[MAPNAME] || MAPS.de_dusty;
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
         const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 5, CRATE_H = 1.0, TALL_H = 3;
@@ -3400,7 +3426,7 @@ body.edit #tlook{ pointer-events:none; }
         function dmReport() {
             const rk = dmRank(), win = rk[0], me = rk.indexOf(player) + 1;
             showOverlay(`<h1 style="color:${win === player ? 'var(--acc)' : '#8da0b5'}">${win === player ? 'SIEG' : 'PLATZ ' + me}<small>DEATHMATCH BEENDET · ${win ? win.name + ' gewinnt mit ' + win.kills + ' Kills' : ''}</small></h1>
-<div class="panel" style="min-width:320px;text-align:left"><div class="psub">RANGLISTE · ${MAPNAME.toUpperCase()}</div>
+<div class="panel" style="min-width:320px;text-align:left"><div class="psub">RANGLISTE · ${MAPLABEL.toUpperCase()}</div>
 ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e === player ? 'color:var(--acc);font-weight:bold' : ''}"><span>${i + 1}. ${e.name}${e === player ? ' (Du)' : ''}</span><b>${e.kills} / ${e.deaths}</b></div>`).join('')}
 <div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div></div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button>`);
         }
@@ -3453,7 +3479,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); $('hud').style.display = 'none'; store.cases++; saveStore(); if (DM.on) { dmReport(); return; } const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
             showOverlay(`<h1 style="color:${won ? 'var(--acc)' : '#8da0b5'}">${won ? 'SIEG' : 'NIEDERLAGE'}<small>SPIEL BEENDET</small></h1>
 <div class="panel" style="min-width:320px;text-align:left">
-<div class="psub">MATCH-REPORT · ${MAPNAME.toUpperCase()}</div>
+<div class="psub">MATCH-REPORT · ${MAPLABEL.toUpperCase()}</div>
 <div style="font:700 34px Rajdhani;text-align:center;margin-bottom:10px"><span class="ct">${G.score.CT}</span> <span style="color:var(--mut)">:</span> <span class="t">${G.score.T}</span></div>
 <div class="row" style="justify-content:space-between"><span style="color:var(--mut)">KILLS</span><b>${player.kills}</b></div>
 <div class="row" style="justify-content:space-between"><span style="color:var(--mut)">TODE</span><b>${player.deaths}</b></div>
@@ -3677,10 +3703,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             addEventListener('touchend', () => { if (started && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); }).catch(() => { }); }, { once: false }); // touchAction nicht global sperren – nur Canvas & Touch-Controls (per CSS), sonst ist nirgends Scrollen möglich
             let sid = null, scx = 0, scy = 0, lid = null, lx = 0, ly = 0;
              $('tstick').addEventListener('touchstart', e => { if (EDITB.on) return; e.preventDefault(); const t = e.changedTouches[0]; sid = t.identifier; const r = $('tstick').getBoundingClientRect(); scx = r.left + r.width / 2; scy = r.top + r.height / 2; }, { passive: false });
-            $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec();
-                // Doppeltipp auf die Spielfläche → Pause-Menü (wie Esc am PC)
-                const now = performance.now(); if (now - lookTap.t < 300 && Math.hypot(t.clientX - lookTap.x, t.clientY - lookTap.y) < 40) { lookTap.t = 0; mobPause(); } else { lookTap.t = now; lookTap.x = t.clientX; lookTap.y = t.clientY; } }, { passive: false });
-            const lookTap = { t: 0, x: 0, y: 0 };
+            $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
             function mobPause() { if (!started || gameEnded || paused || buyOpen || EDITB.on || (GL.on && GL.phase !== 'duel')) return; paused = true; mouseDown = false; lid = null; TOUCH.f = TOUCH.s = 0; showOverlay(`<h1>PAUSE</h1><p>Tippe auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button><button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); $('resume').onclick = () => { paused = false; $('overlay').style.display = 'none'; }; $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; }
             addEventListener('touchmove', e => {
                 for (const t of e.changedTouches) {
@@ -3711,8 +3734,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
             hold('tSpecL', () => { if (!player.alive && !FC.on) cycleSpec(-1); }); hold('tSpecR', () => { if (!player.alive && !FC.on) cycleSpec(1); });
             hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
-            // Doppeltipp auf die Tab-Ansicht → Einstellungen (Spiel pausiert)
-            let boardTap = 0; $('board').addEventListener('touchend', e => { const t = performance.now(); if (t - boardTap < 350) { e.preventDefault(); boardTap = 0; $('board').style.display = 'none'; paused = true; showSettings(); } else boardTap = t; });
+            // Doppeltipp auf die Tab-Ansicht → Pause-Menü (wie Esc am PC)
+            let boardTap = 0; $('board').addEventListener('touchend', e => { const t = performance.now(); if (t - boardTap < 350) { e.preventDefault(); boardTap = 0; $('board').style.display = 'none'; mobPause(); } else boardTap = t; });
         } const ACCEL = 55, FRICTION = 9, AIR_ACCEL = 10;
         function updatePlayer(dt) {
             const p = player; if (p.vx === undefined) { p.vx = 0; p.vz = 0; }
@@ -3908,9 +3931,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function killfeed(att, vic, w, hs) { const nm = e => `<span class="${e.team === 'CT' ? 'ct' : 't'}">${e.name}</span>`; const d = document.createElement('div'); d.innerHTML = `${att ? nm(att) : '💣'} <span style="color:#fff">[${w ? w.name : 'Bombe'}${hs ? ' ☠' : ''}]</span> ${nm(vic)}`; const f = $('killfeed'); f.prepend(d); while (f.children.length > 6) f.lastChild.remove(); setTimeout(() => d.remove(), 6000); }
         function renderBoard() {
             if (GL.on) { $('board').innerHTML = glBoard(); return; }
-            if (DM.on) { $('board').innerHTML = `<h3 style="margin:0 0 8px">💀 Deathmatch – ${MAPNAME}</h3><table><tr><th>Spieler</th><th>K</th><th>T</th></tr>${dmRank().map((e, i) => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${i + 1}. ${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td></tr>`).join('')}</table>${IS_TOUCH ? '<p style="font-size:11px;color:#8fa3b8">Doppeltipp: Einstellungen</p>' : ''}`; return; }
+            if (DM.on) { $('board').innerHTML = `<h3 style="margin:0 0 8px">💀 Deathmatch – ${MAPLABEL}</h3><table><tr><th>Spieler</th><th>K</th><th>T</th></tr>${dmRank().map((e, i) => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${i + 1}. ${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td></tr>`).join('')}</table>${IS_TOUCH ? '<p style="font-size:11px;color:#8fa3b8">Doppeltipp: Einstellungen</p>' : ''}`; return; }
             const rows = t => ents.filter(e => e.team === t).sort((a, b) => b.kills - a.kills).map(e => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td><td>$ ${e.money}</td></tr>`).join('');
-            $('board').innerHTML = `<h3 style="margin:0 0 8px">${MAPNAME} – Runde ${G.round}</h3><table><tr><th class="ct">Counter-Terrorists (${G.score.CT})</th><th>K</th><th>T</th><th>$</th></tr>${rows('CT')}<tr><th class="t" style="padding-top:12px">Terroristen (${G.score.T})</th><th>K</th><th>T</th><th>$</th></tr>${rows('T')}</table>`;
+            $('board').innerHTML = `<h3 style="margin:0 0 8px">${MAPLABEL} – Runde ${G.round}</h3><table><tr><th class="ct">Counter-Terrorists (${G.score.CT})</th><th>K</th><th>T</th><th>$</th></tr>${rows('CT')}<tr><th class="t" style="padding-top:12px">Terroristen (${G.score.T})</th><th>K</th><th>T</th><th>$</th></tr>${rows('T')}</table>`;
         }
         const arenaBase = document.createElement('canvas'); arenaBase.width = arenaBase.height = radar.width;
         let RB = null;
@@ -4203,7 +4226,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // =====================================================================
         //  MAP-EDITOR (eigene Karten, nur lokal gespeichert)
         // =====================================================================
-        const ME_TOOLS = [['#', 'Wand', '#d8cbb0'], ['.', 'Boden', '#3a3226'], ['c', 'Kiste', '#a8743c'], ['C', 'Container', '#6b4a2a'], ['h', 'Halbe Wand', '#9c8f78'], ['=', 'Steg', '#8291a0'],
+        const ME_TOOLS = [['.', '🧽 Radierer', '#3a3226'], ['#', 'Wand', '#d8cbb0'], ['c', 'Kiste', '#a8743c'], ['C', 'Container', '#6b4a2a'], ['h', 'Halbe Wand', '#9c8f78'], ['=', 'Steg', '#8291a0'],
         ['1', 'Stufe 1', '#56606a'], ['2', 'Stufe 2', '#66717c'], ['3', 'Stufe 3', '#77838e'], ['4', 'Stufe 4', '#8995a0'], ['5', 'Stufe 5', '#9ba7b2'], ['6', 'Stufe 6', '#adb9c4'],
         ['A', 'Bombsite A', '#e07a2a'], ['B', 'Bombsite B', '#e0a82a'], ['T', 'Spawn T', '#d9822b'], ['K', 'Spawn CT', '#4a7fd0']];
         function saveCMaps() { localStorage.setItem('custommaps', JSON.stringify(CMAPS)); }
@@ -4211,8 +4234,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const old = $('mapctx'); if (old) old.remove();
             const own = !!CMAPS[k], d = document.createElement('div'); d.id = 'mapctx';
             d.style.cssText = `position:fixed;left:${Math.min(x, innerWidth - 220)}px;top:${Math.min(y, innerHeight - 150)}px;z-index:9999;background:#141e28;border:1px solid rgba(232,201,138,.6);border-radius:6px;padding:6px;display:flex;flex-direction:column;min-width:200px`;
-            const items = [['✏️ Bearbeiten (als Kopie)', () => showMapEditor(k, null)]];
-            if (own) items.unshift(['✏️ Bearbeiten', () => showMapEditor(k, k)]), items.push(['🏷️ Umbenennen', () => { const n = (prompt('Neuer Name:', CMAPS[k].n) || '').trim().slice(0, 20); if (n) { CMAPS[k].n = n; saveCMaps(); sessionStorage.setItem('opentab', 'play'); location.reload(); } }],
+            const items = own ? [['✏️ Bearbeiten', () => showMapEditor(k, k)], ['📄 Kopie erstellen', () => showMapEditor(k, null)]] : [['✏️ Bearbeiten (als Kopie)', () => showMapEditor(k, null)]];
+            if (own) items.push(['🏷️ Umbenennen', () => { const n = (prompt('Neuer Name:', CMAPS[k].n) || '').trim().slice(0, 20); if (n) { CMAPS[k].n = n; saveCMaps(); sessionStorage.setItem('opentab', 'play'); location.reload(); } }],
                 ['🗑️ Löschen', () => { if (!confirm(`Karte „${CMAPS[k].n}" wirklich löschen?`)) return; delete CMAPS[k]; saveCMaps(); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); sessionStorage.setItem('opentab', 'play'); location.reload(); }]);
             for (const [t, fn] of items) { const b = document.createElement('button'); b.textContent = t; b.style.cssText = 'margin:2px;text-align:left;font-size:14px'; b.onclick = e => { e.stopPropagation(); d.remove(); fn(); }; d.appendChild(b); }
             document.body.appendChild(d);
@@ -4222,16 +4245,17 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const grid = MAPS[src].map(r => r.split('')), N = 28; let tool = '#', name = editKey ? CMAPS[editKey].n : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace('de_', '')) + ' Kopie').slice(0, 20);
             let th = editKey ? CMAPS[editKey].th : (CMAP_INFO[src] ? CMAP_INFO[src].th : src); if (!/^de_/.test(th) || !THEMES[th]) th = 'de_dusty';
             const col = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]]));
-            showOverlay(`<h1 style="font-size:32px">🗺️ MAP-EDITOR<small>${editKey ? 'EIGENE KARTE BEARBEITEN' : 'NEUE KARTE'}</small></h1>
- <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:8px">
- <input id="meName" maxlength="20" value="${name.replace(/"/g, '')}" placeholder="Name" style="font:bold 14px Arial;padding:7px 10px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px;width:170px">
- <select id="meTheme" style="font:bold 14px Arial;padding:6px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px">${Object.keys(THEMES).filter(t => /^de_/.test(t)).map(t => `<option value="${t}" ${t === th ? 'selected' : ''}>Thema: ${t.replace('de_', '')}</option>`).join('')}</select></div>
- <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:flex-start">
- <canvas id="meCv" width="560" height="560" style="width:min(560px,92vw,62vh);height:auto;touch-action:none;border:1px solid rgba(232,201,138,.5);cursor:crosshair"></canvas>
- <div id="meTools" style="display:grid;grid-template-columns:repeat(2,auto);gap:4px;max-width:260px">${ME_TOOLS.map(t => `<button data-t="${t[0]}" style="margin:0;font-size:12px;padding:5px 8px;text-align:left"><i style="display:inline-block;width:12px;height:12px;background:${t[2]};margin-right:6px;vertical-align:middle"></i>${t[1]}</button>`).join('')}</div></div>
- <p id="meMsg" style="font-size:13px;min-height:16px;color:#c66"></p>
- <p style="font-size:12px;color:#8fa3b8;margin:0 0 6px">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT, Bombsite A & B</p>
- <div><button id="meSave">💾 Speichern & auswählen</button><button id="meBack">Abbrechen</button></div>`);
+            showOverlay(`<h1 id="meH" style="font-size:32px">🗺️ MAP-EDITOR<small>${editKey ? 'EIGENE KARTE BEARBEITEN' : 'NEUE KARTE'}</small></h1>
+ <div id="meWrap">
+ <canvas id="meCv" width="560" height="560"></canvas>
+ <div id="meSide">
+ <input id="meName" maxlength="20" value="${name.replace(/"/g, '')}" placeholder="Name">
+ <select id="meTheme">${Object.keys(THEMES).filter(t => /^de_/.test(t)).map(t => `<option value="${t}" ${t === th ? 'selected' : ''}>Thema: ${t.replace('de_', '')}</option>`).join('')}</select>
+ <div id="meTools">${ME_TOOLS.map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
+ <p id="meMsg"></p>
+ <p class="mehint">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT, Bombsite A & B</p>
+ <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay">▶ Speichern & spielen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
+ </div></div>`);
             const cv = $('meCv'), g = cv.getContext('2d'), cs = 560 / N;
             const draw = () => { g.fillStyle = THEMES[th].floor; g.fillRect(0, 0, 560, 560); for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= N; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); g.moveTo(0, i * cs); g.lineTo(560, i * cs); } g.stroke(); };
             const selTool = t => { tool = t; document.querySelectorAll('#meTools button').forEach(b => b.style.background = b.dataset.t === t ? 'rgba(232,201,138,.45)' : ''); };
@@ -4239,16 +4263,20 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const paint = e => { const R = cv.getBoundingClientRect(), c = Math.floor((e.clientX - R.left) / R.width * N), r = Math.floor((e.clientY - R.top) / R.height * N); if (r < 1 || c < 1 || r > N - 2 || c > N - 2 || grid[r][c] === tool) return; grid[r][c] = tool; draw(); };
             let painting = false; cv.onpointerdown = e => { e.preventDefault(); painting = true; cv.setPointerCapture(e.pointerId); paint(e); }; cv.onpointermove = e => { if (painting) paint(e); }; cv.onpointerup = cv.onpointercancel = () => painting = false;
             $('meTheme').onchange = e => { th = e.target.value; draw(); }; draw();
-            $('meBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
-            $('meSave').onclick = () => {
-                const n = $('meName').value.trim().slice(0, 20), flat = grid.map(r => r.join('')).join(''), msgEl = $('meMsg');
-                if (!n) { msgEl.textContent = 'Bitte einen Namen eingeben.'; return; }
+            let saved = false; // nach dem Speichern beim Zurückgehen neu laden, damit die Karte im Menü erscheint
+            $('meBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); if (saved) location.reload(); else showMenu(); };
+            $('meClear').onclick = () => { if (!confirm('Karte komplett leeren? (Nur die Außenwand bleibt)')) return; for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) grid[r][c] = (r === 0 || c === 0 || r === N - 1 || c === N - 1) ? '#' : '.'; draw(); };
+            const save = () => {
+                const n = $('meName').value.trim().slice(0, 20), flat = grid.map(r => r.join('')).join(''), msgEl = $('meMsg'); msgEl.style.color = '#c66';
+                if (!n) { msgEl.textContent = 'Bitte einen Namen eingeben.'; return null; }
                 const miss = [['T', 'Spawn T'], ['K', 'Spawn CT'], ['A', 'Bombsite A'], ['B', 'Bombsite B']].filter(([ch]) => !flat.includes(ch)).map(x => x[1]);
-                if (miss.length) { msgEl.textContent = 'Es fehlt: ' + miss.join(', '); return; }
+                if (miss.length) { msgEl.textContent = 'Es fehlt: ' + miss.join(', '); return null; }
                 let k = editKey; if (!k) { const base = 'my_' + (n.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'map'); k = base; let i = 2; while (MAPS[k]) k = base + '_' + i++; }
-                CMAPS[k] = { n, th, g: grid.map(r => r.join('')) }; saveCMaps();
-                localStorage.setItem('map', k); sessionStorage.setItem('opentab', 'play'); location.reload();
+                CMAPS[k] = { n, th, g: grid.map(r => r.join('')) }; saveCMaps(); regMap(k, CMAPS[k]);
+                editKey = k; saved = true; $('meH').querySelector('small').textContent = 'EIGENE KARTE BEARBEITEN'; msgEl.style.color = '#7c7'; msgEl.textContent = '✓ Gespeichert'; return k;
             };
+            $('meSave').onclick = save;
+            $('mePlay').onclick = () => { const k = save(); if (!k) return; localStorage.setItem('map', k); sessionStorage.setItem('opentab', 'play'); location.reload(); };
         }
         function showMenu() {
             $('hud').style.display = 'none'; setupMenuScene();
@@ -4312,14 +4340,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ MAP-EDITOR</p>
- <b style="color:#ffd964">Eigene Karten bauen:</b> Rechtsklick auf eine Karte (am Handy lange drücken) → <b>Bearbeiten (als Kopie)</b>. Male Wände, Kisten, Container, Stege, Stufen, Bombsites und Spawns auf ein 28×28-Raster und wähle ein Thema (Dusty, Bazaar, Frost …).<br>
- Eigene Karten werden lokal gespeichert und erscheinen in der Kartenauswahl – umbenennen und löschen per Rechtsklick.<br>
+ <b style="color:#ffd964">Eigene Karten bauen:</b> Rechtsklick auf eine Karte (am Handy lange drücken) → <b>Bearbeiten (als Kopie)</b>. Male Wände, Kisten, Container, Stege, Stufen, Bombsites und Spawns auf ein 28×28-Raster und wähle ein Thema (Dusty, Bazaar, Frost …). Mit dem <b>🧽 Radierer</b> entfernst Du einzelne Teile, <b>🧹 Leeren</b> startet bei null.<br>
+ Eigene Karten werden lokal gespeichert, bekommen ein eigenes Bauplan-Bild in der Kartenauswahl und lassen sich jederzeit direkt weiterbearbeiten, kopieren, umbenennen oder löschen.<br>
  <b>Online:</b> Wählt der Host eine eigene Karte, wird sie automatisch an alle Mitspieler übertragen. Gefällt sie Dir, speicherst Du sie per Rechtsklick als Kopie.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📱 MOBILE</p>
  Das Spiel läuft jetzt immer im Querformat – hochkant erscheint ein Hinweis zum Drehen, die Buttons verrutschen nicht mehr.<br>
  Tot? Alle Buttons werden ausgeblendet, mit <b>◀ ▶</b> wechselst Du zwischen Deinen Mitspielern.<br>
- <b>Doppeltipp auf das Spielfeld</b> öffnet das Pause-Menü – wie ESC am PC.<br><br>
+ <b>Doppeltipp auf das Scoreboard</b> öffnet jetzt das Pause-Menü – wie ESC am PC.<br>
+ Kartenauswahl am Handy größer und besser lesbar, Map-Editor fürs Querformat optimiert.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📦 CASES</p>
  Im Cases-Menü können jetzt <b>Codes</b> eingelöst werden – halte die Augen offen!<br><br>
@@ -4367,10 +4396,18 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.1 „Baumeister" | ${MAPNAME} | 📦 ${store.cases} Cases</div> </div>`, true);
+ <div id="csver">CS:WO 1.1 „Baumeister" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
+                if (CMAP_INFO[el.dataset.map]) { // eigene Karte: Bauplan-Bild in Editor-Farben
+                    el.classList.add('custom'); el.querySelector('.emb').textContent = '🛠';
+                    const bg = g.createLinearGradient(0, 0, 0, 300); bg.addColorStop(0, '#16324f'); bg.addColorStop(1, '#0a1626'); g.fillStyle = bg; g.fillRect(0, 0, 200, 300);
+                    g.strokeStyle = 'rgba(120,180,255,.12)'; g.beginPath(); for (let i = 0; i <= 300; i += 10) { g.moveTo(0, i); g.lineTo(200, i); g.moveTo(i, 0); g.lineTo(i, 300); } g.stroke();
+                    const colr = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]])), s = 200 / 28, oy = (300 - 28 * s) / 2; g.globalAlpha = .75;
+                    for (let r = 0; r < 28; r++) for (let c = 0; c < 28; c++) { const ch = map[r][c]; if (ch === '.') continue; g.fillStyle = colr[ch] || '#fff'; g.fillRect(c * s, oy + r * s, s, s); }
+                    g.globalAlpha = 1; return;
+                }
                 const gr = g.createLinearGradient(0, 0, 0, 300);
                 gr.addColorStop(0, '#' + th.sky.toString(16).padStart(6, '0')); gr.addColorStop(1, th.floor);
                 g.fillStyle = gr; g.fillRect(0, 0, 200, 300);
@@ -5299,7 +5336,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  ${IS_TOUCH || !isGl ? '' : `<div class="cspanel" id="gltpanel"><h3>⚔️ GAUNTLET-TEAMS</h3>${glAsgHTML()}</div>`}
  <div id="cschar"><b>${player.name}</b></div>
- <div id="csver">LOBBY | ${modeName(md)} | ${md === 'gl' || md === 'v1' ? 'Arenen' : MAPNAME} | ${NET.srv}</div>
+ <div id="csver">LOBBY | ${modeName(md)} | ${md === 'gl' || md === 'v1' ? 'Arenen' : MAPLABEL} | ${NET.srv}</div>
  </div>`, true);
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
