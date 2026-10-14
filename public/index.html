@@ -2441,6 +2441,53 @@ body.edit #tlook{ pointer-events:none; }
     <script>
         'use strict';
         // =====================================================================
+        //  ACCOUNT / CLOUD-SAVE (Server speichert in data/users.json, keine Datenbank)
+        // =====================================================================
+        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick'];
+        let ACC = null; try { ACC = JSON.parse(localStorage.getItem('cs_acc') || 'null'); } catch (e) { }
+        let accT = null, accMute = false, accReady = !ACC; // accReady: erst nach dem Abgleich beim Start hochladen (sonst überschreibt ein altes Gerät neueren Stand)
+        const accApi = (p, b) => fetch('/api/' + p, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json());
+        const accData = () => { const o = {}; for (const k of SYNC_KEYS) { const v = localStorage.getItem(k); if (v !== null) o[k] = v; } return o; };
+        const accStore = () => localStorage.setItem('cs_acc', JSON.stringify(ACC));
+        function accApply(d, ver) { accMute = true; for (const k of SYNC_KEYS) if (k in d) localStorage.setItem(k, d[k]); else localStorage.removeItem(k); ACC.ver = ver; accStore(); }
+        function accDirty() { if (!ACC || accMute) return; clearTimeout(accT); accT = setTimeout(accPush, 1500); }
+        function accPush() { if (!ACC) return; if (!accReady) { accDirty(); return; } accApi('save', { tok: ACC.tok, data: accData() }).then(r => { if (r.ok) { ACC.ver = r.ver; accStore(); } else if (r.relog) accLogout(true); }).catch(() => { }); }
+        function accLogout(silent) { if (ACC) accApi('logout', { tok: ACC.tok }).catch(() => { }); ACC = null; accReady = true; localStorage.removeItem('cs_acc'); if (!silent) showAccount(); }
+        { // jede Änderung an Spielständen automatisch hochladen
+            const ss = Storage.prototype.setItem, rm = Storage.prototype.removeItem;
+            Storage.prototype.setItem = function (k, v) { ss.call(this, k, v); if (this === localStorage && SYNC_KEYS.includes(k)) accDirty(); };
+            Storage.prototype.removeItem = function (k) { rm.call(this, k); if (this === localStorage && SYNC_KEYS.includes(k)) accDirty(); };
+        }
+        // Beim Start: neuerer Stand auf dem Server (von einem anderen Gerät)? → übernehmen und neu laden
+        if (ACC) accApi('pull', { tok: ACC.tok }).then(r => { if (r.relog) return accLogout(true); if (r.ok && r.ver > ACC.ver && !started) { accApply(r.data, r.ver); location.reload(); return; } accReady = true; }).catch(() => { accReady = true; });
+        function showAccount() {
+            if (ACC) {
+                showOverlay(`<h1 style="font-size:36px">☁️ ACCOUNT<small>EINGELOGGT</small></h1>
+ <p>Eingeloggt als <b style="color:#e8c98a">${ACC.u}</b><br><span style="font-size:12px;color:#8fa3b8">Cases, Inventar, Skins, Karten & Einstellungen werden automatisch gespeichert.</span></p>
+ <p id="accMsg" style="font-size:13px;min-height:16px;color:#7c7"></p>
+ <div><button id="accSync">☁️ Jetzt speichern</button><button id="accOut" style="border-color:#c66;color:#c66">Logout</button><button id="accBack">Zurück</button></div>`);
+                $('accSync').onclick = () => { accPush(); $('accMsg').textContent = '✓ Gespeichert'; }; $('accOut').onclick = () => accLogout(); $('accBack').onclick = showMenu; return;
+            }
+            const inp = 'font:bold 15px Arial;padding:9px 12px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px;width:240px;margin:4px';
+            showOverlay(`<h1 style="font-size:36px">👤 LOGIN<small>SPIELSTAND AUF ALLEN GERÄTEN</small></h1>
+ <input id="accU" maxlength="16" placeholder="Name" autocomplete="username" style="${inp}"><br>
+ <input id="accP" type="password" maxlength="64" placeholder="Passwort" autocomplete="current-password" style="${inp}">
+ <p id="accMsg" style="font-size:13px;min-height:16px;color:#c66"></p>
+ <div><button id="accIn">Einloggen</button><button id="accReg">Registrieren</button><button id="accBack">Zurück</button></div>
+ <p style="font-size:12px;color:#8fa3b8;max-width:360px">Beim Registrieren wird Dein aktueller Spielstand übernommen. Ohne Login bleibt alles nur auf diesem Gerät.</p>`);
+            const go = reg => {
+                const m = $('accMsg'); m.style.color = '#8fa3b8'; m.textContent = '…';
+                accApi(reg ? 'register' : 'login', { u: $('accU').value.trim(), p: $('accP').value, data: reg ? accData() : undefined }).then(r => {
+                    if (!r.ok) { m.style.color = '#c66'; m.textContent = r.err; return; }
+                    ACC = { u: r.u, tok: r.tok, ver: r.ver }; accStore(); accReady = true;
+                    if (!reg && r.data && Object.keys(r.data).length && confirm('Account-Spielstand laden?\n\nOK = Spielstand vom Account übernehmen\nAbbrechen = Spielstand von diesem Gerät hochladen')) { accApply(r.data, r.ver); location.reload(); return; }
+                    if (!reg) accPush(); showAccount();
+                }).catch(() => { m.style.color = '#c66'; m.textContent = 'Server nicht erreichbar.'; });
+            };
+            $('accIn').onclick = () => go(false); $('accReg').onclick = () => go(true); $('accBack').onclick = showMenu;
+            $('accP').onkeydown = e => { if (e.key === 'Enter') go(false); };
+        }
+        // =====================================================================
         //  KARTE  (# Wand, c Kiste, C hohe Kiste, h Halbwand, 1–6 Treppe, = Steg, A/B Bombsites, T/K Spawns)
         // =====================================================================
         // Layout-Regeln: CT erreicht beide Sites deutlich schneller als T, je 3 Routen pro Map, Treppen (1–4) nur längs begehbar (Seiten zu), Stege (=) auf 2,8 m
@@ -4362,7 +4409,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <a data-nav="store">CASES</a>
  <a data-nav="news">NEWS</a>
  </nav>
- <div class="ctprof"><b id="profName">${savedName || 'Spieler'}</b><span>👤</span></div>
+ <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}"><b id="profName">${savedName || 'Spieler'}</b><span>${ACC ? '☁️' : '👤'}</span></div>
  </div>
  <div id="csfriends">${['M', 'K', 'G', 'S', 'V', 'Z'].map(x => `<div class="fr">${x}</div>`).join('')}</div>
  <div id="cslogo" style="position:absolute;left:28px;top:90px;pointer-events:none">
@@ -4418,6 +4465,9 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📦 CASES</p>
  Im Cases-Menü können jetzt <b>Codes</b> eingelöst werden – halte die Augen offen!<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">☁️ ACCOUNTS</p>
+ Klick oben rechts auf <b>👤</b> → Registrieren oder Einloggen. Cases, Inventar, Skins, Agent, eigene Karten und Einstellungen werden automatisch gespeichert und sind auf jedem Gerät verfügbar. Ohne Login bleibt alles wie bisher lokal.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ MAP-EDITOR: NOCH MEHR FREIHEIT</p>
  <b>Eigene Farben:</b> Himmel, Nebel, Boden und Wände frei wählbar – das Thema dient nur als Startpunkt.<br>
@@ -4525,6 +4575,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (nav === 'store') { showCases(); return; }
                 setTab(nav);
             });
+            $('ctAcc').onclick = showAccount;
             document.querySelectorAll('.mapc').forEach(el => {
                 // Rechtsklick (PC) bzw. langes Drücken (Handy) → Map-Editor-Menü
                 el.addEventListener('contextmenu', e => { e.preventDefault(); mapCtxMenu(el.dataset.map, e.clientX, e.clientY); });
