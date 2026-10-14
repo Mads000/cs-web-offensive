@@ -2058,6 +2058,7 @@ body.mob .mapc .emb{ top:50px; }
 body.mob .mapc b{ font-size:14px; bottom:24px; padding:0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 body.mob .mapc span{ font-size:11px; }
 body.mob .mapc.custom::after{ font-size:8px; top:5px; left:5px; }
+.mapc.pub::after{ content:'🌍 COMMUNITY'; background:#7ec8e3; }
 /* ── Hochformat blockieren ── */
 #rotmsg{ display:none; }
 @media (orientation:portrait){ .mob #rotmsg{ display:flex; position:fixed; inset:0; z-index:99999; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:#0b1015; color:#e8c98a; font:700 20px Rajdhani, Arial; text-align:center; padding:20px; touch-action:none; } .mob #rotmsg span{ font-size:64px; } }
@@ -2654,7 +2655,7 @@ body.edit #tlook{ pointer-events:none; }
         };
         // Eigene Karten (Map-Editor): lokal gespeichert + ggf. vom Online-Host übertragene Karte (nur für die Sitzung)
         let CMAPS = {}; try { CMAPS = JSON.parse(localStorage.getItem('custommaps') || '{}') || {}; } catch (e) { }
-        const CMAP_INFO = {}, regMap = (k, d) => { if (!d || !Array.isArray(d.g) || d.g.length !== 28 || d.g.some(r => typeof r !== 'string' || !/^[#.cCh=1-6ABTK]{28}$/.test(r)) || !/^my_[a-z0-9_]+$/.test(k)) return; MAPS[k] = d.g;
+        const CMAP_INFO = {}, regMap = (k, d) => { if (!d || !Array.isArray(d.g) || d.g.length !== 28 || d.g.some(r => typeof r !== 'string' || !/^[#.cCh=1-6ABTK]{28}$/.test(r)) || !/^(my|pub)_[a-z0-9_]+$/.test(k)) return; MAPS[k] = d.g;
             // geprüfte Zusatzdaten: Thema, eigene Farben, Tageszeit (0 Tag, 1 Abend, 2 Nacht), Emblem
             const HEX = /^#[0-9a-f]{6}$/i, th = /^de_/.test(d.th) && THEMES[d.th] ? d.th : 'de_dusty', c = d.col || {}, col = {}, t = Object.assign({}, THEMES[th]);
             for (const f of ['sky', 'fog', 'floor', 'wall']) if (HEX.test(c[f])) col[f] = c[f];
@@ -2663,7 +2664,15 @@ body.edit #tlook{ pointer-events:none; }
             THEMES[k] = t; CMAP_INFO[k] = { n: String(d.n || k).replace(/[<>"'&`]/g, '').slice(0, 20) || k, th, col, tod: [0, 1, 2].includes(+d.tod) ? +d.tod : 0, em: Array.from(String(d.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(d.emc) ? d.emc : '' };
         };
         for (const k in CMAPS) regMap(k, CMAPS[k]);
-        try { const nm = JSON.parse(sessionStorage.getItem('netmap') || 'null'); if (nm && /^my_/.test(nm.k)) regMap(nm.k, nm); } catch (e) { }
+        // Community-Karten (veröffentlicht, für alle sichtbar): sofort aus dem lokalen Zwischenspeicher, danach frisch vom Server
+        let PUBC = {}; try { PUBC = JSON.parse(localStorage.getItem('pubmaps') || '{}') || {}; } catch (e) { }
+        for (const k in PUBC) regMap(k, PUBC[k]);
+        accApi('maps', {}).then(r => {
+            if (!r.ok || JSON.stringify(r.maps) === JSON.stringify(PUBC)) return;
+            PUBC = r.maps; localStorage.setItem('pubmaps', JSON.stringify(PUBC)); for (const k in PUBC) regMap(k, PUBC[k]);
+            if (!started && $('csmenu') && !$('loginPop') && !$('mapctx')) showMenu(); // Menü mit neuen Karten neu zeichnen
+        }).catch(() => { });
+        try { const nm = JSON.parse(sessionStorage.getItem('netmap') || 'null'); if (nm && /^(my|pub)_/.test(nm.k)) regMap(nm.k, nm); } catch (e) { }
         function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? Object.assign({ k: MAPNAME, g: MAP }, i) : null; }
         function netMapChanged(m) { if (m.cmap) sessionStorage.setItem('netmap', JSON.stringify(m.cmap)); return !!m.map && (m.map !== MAPNAME ? !!(MAPS[m.map] || m.cmap) : !!(m.cmap && m.cmap.g.join() !== MAP.join())); }
         const MAPNAME = (k => MAPS[k] ? k : 'de_dusty')(localStorage.getItem('map') || 'de_dusty');
@@ -4345,6 +4354,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             d.style.cssText = `position:fixed;left:${Math.min(x, innerWidth - 220)}px;top:${Math.min(y, innerHeight - 150)}px;z-index:9999;background:#141e28;border:1px solid rgba(232,201,138,.6);border-radius:6px;padding:6px;display:flex;flex-direction:column;min-width:200px`;
             const items = own ? [['✏️ Bearbeiten', () => showMapEditor(k, k)], ['📄 Kopie erstellen', () => showMapEditor(k, null)]] : [['✏️ Bearbeiten (als Kopie)', () => showMapEditor(k, null)]];
             if (own) items.push(['📤 Teilen (Code)', () => shareMap(Object.assign({ g: MAPS[k] }, CMAP_INFO[k]))]);
+            // Community: veröffentlichen / entfernen – der Code wird nur auf dem Server geprüft
+            const pubCall = (path, body, done) => { const code = prompt('Code zum ' + (path === 'publish' ? 'Veröffentlichen' : 'Entfernen') + ':'); if (!code) return; accApi(path, Object.assign({ code }, body)).then(r => { if (!r.ok) return alert(r.err); done(); sessionStorage.setItem('opentab', 'play'); location.reload(); }).catch(() => alert('Server nicht erreichbar.')); };
+            if (own) items.push(['🌍 Veröffentlichen', () => { const pk = 'pub_' + k.slice(3), map = Object.assign({ g: MAPS[k] }, CMAP_INFO[k]); pubCall('publish', { k: pk, map, by: ACC ? ACC.u : (localStorage.getItem('pname') || '') }, () => { PUBC[pk] = Object.assign({}, map, { by: ACC ? ACC.u : '' }); localStorage.setItem('pubmaps', JSON.stringify(PUBC)); alert('Karte ist jetzt für alle sichtbar!'); }); }]);
+            if (k.startsWith('pub_')) items.push(['❌ Veröffentlichung entfernen', () => pubCall('unpublish', { k }, () => { delete PUBC[k]; localStorage.setItem('pubmaps', JSON.stringify(PUBC)); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); })]);
             items.push(['📥 Code importieren', importMap]);
             if (own) items.push(['🏷️ Umbenennen', () => { const n = (prompt('Neuer Name:', CMAPS[k].n) || '').trim().slice(0, 20); if (n) { CMAPS[k].n = n; saveCMaps(); sessionStorage.setItem('opentab', 'play'); location.reload(); } }],
                 ['🗑️ Löschen', () => { if (!confirm(`Karte „${CMAPS[k].n}" wirklich löschen?`)) return; delete CMAPS[k]; saveCMaps(); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); sessionStorage.setItem('opentab', 'play'); location.reload(); }]);
@@ -4570,7 +4583,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
                 if (CMAP_INFO[el.dataset.map]) { // eigene Karte: Bauplan-Bild in Editor-Farben
-                    const inf = CMAP_INFO[el.dataset.map], emb = el.querySelector('.emb'); el.classList.add('custom'); emb.textContent = inf.em || '🛠'; if (inf.emc) emb.style.background = `radial-gradient(circle at 35% 30%, ${inf.emc}, #0e1620)`;
+                    const inf = CMAP_INFO[el.dataset.map], emb = el.querySelector('.emb'); el.classList.add('custom'); if (el.dataset.map.startsWith('pub_')) { el.classList.add('pub'); el.querySelector('span').textContent = '🌍 von ' + ((PUBC[el.dataset.map] || {}).by || 'Community'); } emb.textContent = inf.em || '🛠'; if (inf.emc) emb.style.background = `radial-gradient(circle at 35% 30%, ${inf.emc}, #0e1620)`;
                     const bg = g.createLinearGradient(0, 0, 0, 300); bg.addColorStop(0, '#16324f'); bg.addColorStop(1, '#0a1626'); g.fillStyle = bg; g.fillRect(0, 0, 200, 300);
                     g.strokeStyle = 'rgba(120,180,255,.12)'; g.beginPath(); for (let i = 0; i <= 300; i += 10) { g.moveTo(0, i); g.lineTo(200, i); g.moveTo(i, 0); g.lineTo(i, 300); } g.stroke();
                     const colr = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]])), s = 200 / 28, oy = (300 - 28 * s) / 2; g.globalAlpha = .75;
