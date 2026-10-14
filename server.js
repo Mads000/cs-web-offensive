@@ -107,7 +107,9 @@ const server = http.createServer((req, res) => {
  const file = path.join(__dirname, 'public', path.normalize(p).replace(/^(\.\.[/\\])+/, ''));
  fs.readFile(file, (err, data) => {
  if (err) { res.writeHead(404); res.end('Nicht gefunden'); return; }
- res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' });
+ // Spielseite, Service Worker & Manifest nie zwischenspeichern → Updates kommen sofort an; Icons etc. 1 Std.
+ const fresh = /\.(html|json)$|sw\.js$/.test(file);
+ res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': fresh ? 'no-cache' : 'public, max-age=3600' });
  res.end(data);
  });
 });

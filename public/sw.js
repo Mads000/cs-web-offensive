@@ -1,6 +1,6 @@
 // Service Worker: macht das Spiel installierbar und lädt es schnell / offline.
 // Spielseite: erst Netz (damit Updates sofort ankommen), sonst Zwischenspeicher. Bibliotheken & Icons: Zwischenspeicher zuerst.
-const CACHE = 'cswo-v1';
+const CACHE = 'cswo-v2'; // Version erhöhen → alter Zwischenspeicher wird beim Update gelöscht
 const CORE = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png', 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'];
 
 self.addEventListener('install', e => {
@@ -14,7 +14,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET' || url.pathname.startsWith('/api/')) return; // Accounts/Karten-API nie zwischenspeichern
   const page = req.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('.html');
   if (page) {
-    e.respondWith(fetch(req).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put('/', cp)); return r; }).catch(() => caches.match('/')));
+    e.respondWith(fetch(req.url, { cache: 'no-store', credentials: 'same-origin' }).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put('/', cp)); return r; }).catch(() => caches.match('/')));
     return;
   }
   e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
