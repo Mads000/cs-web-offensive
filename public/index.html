@@ -2793,7 +2793,7 @@ body.edit #tlook{ pointer-events:none; }
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
         const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 5, CRATE_H = 1.0, TALL_H = 3;
         const WORLD_W = COLS * S, WORLD_D = ROWS * S;
-        const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, agTheme: 0, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
+        const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, bots: 1, agTheme: 0, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
         const CFG = Object.assign({}, CFG_DEF, JSON.parse(localStorage.getItem('gamecfg') || '{}'));
         const SKILL_VAL = [0.6, 0.85, 1.05], SKILL_LBL = ['Leicht', 'Normal', 'Schwer'];
         const BOT_SPEED = 5.6;
@@ -4426,7 +4426,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // Kurzfassung der Regeln als Schilder (Spielen-Tab & Lobby)
         function ruleChips(C) {
             if (!C) return '<span>Regeln des Hosts werden geladen…</span>';
-            const L = [C.rounds + ' Runden', C.teamSize + ' gegen ' + C.teamSize, 'Bots: ' + SKILL_LBL[C.skill], '$ ' + C.money], F = [];
+            const L = [C.rounds + ' Runden', C.teamSize + ' gegen ' + C.teamSize, (C.bots === 0 ? '🚫 Keine Bots' : 'Bots: ' + SKILL_LBL[C.skill]), '$ ' + C.money], F = [];
             if (C.agTheme) F.push(C.agTheme === 1 ? '🦆 Alle Enten' : 'Alle: ' + (NONDUCK[C.agTheme - 2] || {}).n);
             if (C.hsOnly) F.push('🎯 Nur Headshots'); if (C.wpn) F.push(['', '🔫 Nur Pistolen', '🔭 Nur AWP'][C.wpn]); if (C.grav !== 100) F.push('🌙 Schwerkraft ' + C.grav + ' %');
             if (C.jump !== 100) F.push('🦘 Sprung ' + C.jump + ' %'); if (C.speed !== 100) F.push('⚡ Tempo ' + C.speed + ' %'); if (C.infAmmo) F.push('♾ Munition');
@@ -4448,7 +4448,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  ${sec('🏆 MATCH')}${sel('rounds', 'Maximale Runden', [1, 5, 9, 15, 21, 29], v => v === 1 ? '1 Runde (Showdown)' : v + ' Runden (Sieg bei ' + (Math.floor(v / 2) + 1) + ')')} ${sel('roundTime', 'Rundenzeit', [60, 115, 180, 300], min)}
  ${sel('freeze', 'Freeze-Time', [0, 3, 5, 10], v => v + ' s')}
  ${sel('bombTime', 'Bomben-Timer', [30, 40, 60], v => v + ' s')}
- ${sec('🤖 TEAMS & BOTS')}${sel('skill', 'Bot-Schwierigkeit', [0, 1, 2], v => SKILL_LBL[v])}
+ ${sec('🤖 TEAMS & BOTS')}${sel('bots', 'Bots', [1, 0], v => v ? 'An (Teams auffüllen)' : 'Aus (nur echte Spieler, online)')}${sel('skill', 'Bot-Schwierigkeit', [0, 1, 2], v => SKILL_LBL[v])}
  ${sel('teamSize', 'Teamgröße', [1, 2, 3, 4, 5, 6], v => v + ' gegen ' + v)}
  ${sel('money', 'Startgeld', [800, 2000, 5000, 16000], v => '$ ' + v)}
  ${sec('🎭 AUSSEHEN')}${sel('agTheme', 'Agenten-Thema', [0, 1, ...NONDUCK.map((a, i) => i + 2)], v => v === 0 ? 'Frei (jeder seinen)' : v === 1 ? '🦆 Alle sind Enten' : 'Alle: ' + NONDUCK[v - 2].n)}
@@ -4966,8 +4966,9 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const humans = { CT: 0, T: 0 };
             humans[player.team]++;
             for (const rp of NET.players.values()) humans[rp.team]++;
+            if (CFG.bots !== 0 || !NET.on) { // Regel „Bots: Aus“ gilt nur online – offline braucht man Gegner
             for (let i = humans.CT; i < CFG.teamSize; i++) createBot(ctN[i - humans.CT], 'CT');
-            for (let i = humans.T; i < CFG.teamSize; i++) createBot(tN[i - humans.T], 'T');
+            for (let i = humans.T; i < CFG.teamSize; i++) createBot(tN[i - humans.T], 'T'); }
             ents = [player, ...bots, ...NET.players.values()]; if (NET.on && NET.host) netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) });
             started = true; $('overlay').style.display = 'none';
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
