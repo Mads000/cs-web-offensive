@@ -3293,6 +3293,17 @@ body.edit #tlook{ pointer-events:none; }
         const NONDUCK = AGENTS.filter(a => !a.duck);
         function agentFor(team, want) { const t = CFG.agTheme | 0; if (!t) return want; if (t === 1) return AGENTS.some(a => a.duck && a.id === want) ? want : team === 'T' ? 'duck_mallard' : 'duck_rubber'; return (NONDUCK[t - 2] || {}).id || want; }
         // Modelle aller Bots/Mitspieler neu bauen (z.B. wenn das Thema erst beim Start bekannt ist)
+        // Team-Marker: leuchtendes Dreieck über Mitspielern (auch durch Wände sichtbar, wie in CS) – Gegner bekommen keinen
+        const MATE_MAT = {}; function mateMat(col) { if (MATE_MAT[col]) return MATE_MAT[col]; const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+            g.beginPath(); g.moveTo(8, 12); g.lineTo(56, 12); g.lineTo(32, 54); g.closePath(); g.fillStyle = col; g.fill(); g.lineWidth = 5; g.strokeStyle = 'rgba(255,255,255,.9)'; g.stroke();
+            return MATE_MAT[col] = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, depthWrite: false, transparent: true }); }
+        const isMate = e => !DM.on && (GL.on ? !!(GL.myTeam && GL.myTeam.members.includes(e)) : e.team === player.team);
+        function updateMates() {
+            const col = GL.on ? '#46e07a' : player.team === 'T' ? '#ff7a3d' : '#4a8dff';
+            for (const e of ents) { if (e === player || !e.mesh || e.decoy) continue;
+                if (!e.mate || e.mate.parent !== e.mesh) { e.mate = new THREE.Sprite(mateMat(col)); e.mate.scale.set(0.32, 0.32, 1); e.mate.position.set(0, 2.25, 0); e.mate.renderOrder = 999; e.mesh.add(e.mate); }
+                e.mate.material = mateMat(col); e.mate.visible = e.alive && isMate(e); }
+        }
         function remeshAll() { for (const e of [...bots, ...NET.players.values()]) { if (!e.mesh) continue; const m = makeBotMesh(e.team, e.ag); m.group.position.copy(e.mesh.position); m.group.rotation.copy(e.mesh.rotation); m.group.visible = e.mesh.visible; scene.remove(e.mesh); e.mesh = m.group; e.hit = m.hit; e.flash = m.flash; e.robo = false; m.hit.forEach(h => h.userData.ent = e); } }
         store.agent = AGENTS.some(a => a.id === localStorage.getItem('agent')) ? localStorage.getItem('agent') : 'std';
         function makeBotMesh(team, agentId, raw) {
@@ -5873,7 +5884,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
                 updatePlayer(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
-                separate(); updateFX(dt); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
+                separate(); updateFX(dt); updateMates(); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
             }
             renderer.render(scene, camera);
         }
