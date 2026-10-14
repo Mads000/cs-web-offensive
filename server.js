@@ -12,7 +12,7 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.
 const crypto = require('crypto');
 const PUBLISH_CODE = 'baumeister42'; // Code zum Veröffentlichen von Community-Karten – hier ändern
 const DATA_DIR = path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json'), LB_FILE = path.join(DATA_DIR, 'leaderboard.json');
-const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog'];
+const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat'];
 const GIST_ID = process.env.GIST_ID, GIST_TOKEN = process.env.GIST_TOKEN, GIST_FILE = 'users.json';
 const GH = { Authorization: 'Bearer ' + GIST_TOKEN, Accept: 'application/vnd.github+json', 'User-Agent': 'cs-web-offensive' };
 let USERS = {}, PUB = {}, LB = { all: [], day: '', today: [] }, loaded = false, saveT = null, writing = false, again = false;
@@ -60,16 +60,17 @@ function api(p, b, ip) {
  // ── Community-Karten: jeder sieht sie, veröffentlichen/entfernen nur mit Code ──
  if (p === '/api/maps') return { ok: 1, maps: PUB };
  // ── Entenjagd-Bestenliste: Top 10 heute + Top 10 aller Zeiten (pro Name nur der beste Wert) ──
- const today = new Date().toISOString().slice(0, 10); if (LB.day !== today) { LB.day = today; LB.today = []; }
- if (p === '/api/dhlb') return { ok: 1, all: LB.all, today: LB.today };
+ const today = new Date().toISOString().slice(0, 10); LB.w = LB.w || {}; if (LB.day !== today) { LB.day = today; LB.today = []; for (const k in LB.w) LB.w[k].today = []; }
+ const wk = ['ak47', 'pump', 'awp'].includes(b.w) ? b.w : 'ak47', L = wk === 'ak47' ? LB : (LB.w[wk] = LB.w[wk] || { all: [], today: [] }); // eigene Liste je Waffe
+ if (p === '/api/dhlb') return { ok: 1, all: L.all, today: L.today };
  if (p === '/api/dhscore') {
  if (limited(ip)) return { err: 'Zu viele Anfragen.' };
  const name = String(b.n || 'Gast').replace(/[<>"'&`]/g, '').trim().slice(0, 16) || 'Gast', sc = Math.floor(+b.s), ducks = Math.floor(+b.d) || 0;
  if (!(sc > 0) || sc > 5000 || ducks > 400) return { err: 'Ungültige Punktzahl.' }; // Plausibilität: 2 Min Entenjagd
  const put = list => { const old = list.find(e => e.n.toLowerCase() === name.toLowerCase()); if (old) { if (sc <= old.s) return list; old.s = sc; old.d = ducks; } else list.push({ n: name, s: sc, d: ducks }); return list.sort((a, c) => c.s - a.s).slice(0, 10); };
- LB.all = put(LB.all); LB.today = put(LB.today); persist();
+ L.all = put(L.all); L.today = put(L.today); persist();
  const rank = l => { const i = l.findIndex(e => e.n.toLowerCase() === name.toLowerCase() && e.s === sc); return i < 0 ? 0 : i + 1; };
- return { ok: 1, all: LB.all, today: LB.today, rAll: rank(LB.all), rToday: rank(LB.today) };
+ return { ok: 1, all: L.all, today: L.today, rAll: rank(L.all), rToday: rank(L.today) };
  }
  if (p === '/api/publish' || p === '/api/unpublish') {
  if (limited(ip)) return { err: 'Zu viele Versuche – bitte kurz warten.' };

@@ -2133,6 +2133,14 @@ body.dh #score, body.dh #roundlbl, body.dh #money, body.dh #aliveL, body.dh #ali
 #overlay.oldui button{ font-size:20px; padding:12px 26px; margin:8px }
 #overlay.oldui .mebtns button{ margin:0; font-size:14px } #overlay.oldui #meTools button{ margin:0; font-size:13px; padding:6px 8px } #overlay.oldui .lobrh button{ margin:0 }
 .mob #overlay.oldui .mebtns button{ font-size:14px; padding:9px 6px } .mob #overlay.oldui #meTools button{ font-size:14px; padding:8px }
+/* ── Entenjagd 2.0: Wellen-Ansage, Boss-Leiste, Waffenwahl ── */
+#dhBan{ position:absolute; top:24%; left:50%; transform:translateX(-50%); font:900 26px 'Arial Black', Impact, sans-serif; color:#ffd84a; text-shadow:0 2px 6px #000; white-space:nowrap; pointer-events:none; opacity:0; }
+#dhBan.on{ animation:dhBan 3s ease-out; } @keyframes dhBan{ 0%{ opacity:0; transform:translateX(-50%) scale(1.4); } 12%{ opacity:1; transform:translateX(-50%) scale(1); } 80%{ opacity:1; } 100%{ opacity:0; } }
+#dhHud .dhboss{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:3px; font-size:15px; } #dhHud .dhboss i{ display:block; width:160px; height:9px; background:rgba(0,0,0,.5); border:1px solid #ffd84a; border-radius:5px; overflow:hidden; } #dhHud .dhboss b{ display:block; height:100%; background:linear-gradient(90deg,#ff7a3d,#ffd84a); }
+.dhpick{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:6px 0 8px; }
+.dhw{ width:190px; padding:14px 12px; background:rgba(20,30,40,.85); border:1px solid rgba(255,216,74,.4); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.dhw:hover{ border-color:#ffd84a; background:rgba(255,216,74,.12); } .dhw i{ font-style:normal; font-size:38px; } .dhw b{ font:bold 17px Arial; color:#fff; } .dhw span{ font:12px Arial; color:#8fa3b8; min-height:30px; } .dhw em{ font:bold 12px Arial; color:#ffd84a; font-style:normal; }
+.mob #dhBan{ font-size:18px; top:20%; } .mob .dhw{ width:150px; padding:10px 8px; } .mob .dhw i{ font-size:28px; }
 /* ── Regeln: präsenter ── */
 #overlay button.rulesbtn{ border-color:#e8c98a; color:#111; background:linear-gradient(#f1d79e,#d9b56c); box-shadow:0 0 14px rgba(232,201,138,.35); font-weight:bold; }
 .rchips{ display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 2px; cursor:pointer; }
@@ -2565,7 +2573,7 @@ body.edit #tlook{ pointer-events:none; }
         // =====================================================================
         //  ACCOUNT / CLOUD-SAVE (Server speichert in data/users.json, keine Datenbank)
         // =====================================================================
-        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog'];
+        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat'];
         let ACC = null; try { ACC = JSON.parse(localStorage.getItem('cs_acc') || 'null'); } catch (e) { }
         let accT = null, accMute = false, accReady = !ACC; // accReady: erst nach dem Abgleich beim Start hochladen (sonst überschreibt ein altes Gerät neueren Stand)
         const accApi = (p, b) => fetch('/api/' + p, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json());
@@ -2610,7 +2618,10 @@ body.edit #tlook{ pointer-events:none; }
             const st = PRG.st, add = (k, v = 1) => st[k] = (st[k] || 0) + v; let xp = 0;
             if (ev === 'kill') { add('kills'); xp += 10; if (x.hs) { add('hs'); xp += 5; } if (x.w === 'knife') { add('knife'); xp += 15; } if (x.w === 'awp') add('awp'); if (++roundKills === 5) { add('ace'); xp += 50; } }
             else if (ev === 'round') xp += 20; else if (ev === 'plant' || ev === 'defuse') { add(ev); xp += 15; } else if (ev === 'case') add('cases'); else if (ev === 'made') add('made');
-            else if (ev === 'duck') { add('ducks'); xp += 2; if (x.gold) { add('gducks'); xp += 8; } if (st.ducks >= 10 && !store.inv.includes('knife_duck')) { store.inv.push('knife_duck'); saveStore(); toast('🎁 Belohnung freigeschaltet!', 'Butterfly | Quietscheente – jetzt im Inventar'); } }
+            else if (ev === 'duck') { add('ducks'); xp += 2; if (x.gold) { add('gducks'); xp += 8; } if (st.ducks >= 10 && !store.inv.includes('knife_duck')) { store.inv.push('knife_duck'); saveStore(); toast('🎁 Belohnung freigeschaltet!', 'Butterfly | Quietscheente – jetzt im Inventar'); }
+                if (st.ducks >= 20 && !st.duckHat) { st.duckHat = 1; toast('🎁 Entenhut freigeschaltet!', 'Inventar → Agenten: aufsetzen'); }
+                if (st.ducks >= 100 && !st.goldDuck) { st.goldDuck = 1; toast('🎁 Goldente freigeschaltet!', 'Neuer Agent im Inventar'); }
+                if (st.ducks >= 500 && !store.inv.includes('awp_duck')) { store.inv.push('awp_duck'); saveStore(); toast('🎁 AWP | Ententeich freigeschaltet!', 'Jetzt im Inventar'); } }
             else if (ev === 'dhend') { add('dhgames'); xp += Math.min(150, Math.round((x.score || 0) / 2)); }
             else if (ev === 'match' || ev === 'glmatch') { add('matches'); xp += 50; if (x.won) { add(ev === 'match' ? 'wins' : 'glwins'); xp += 100; } }
             const before = lvlOf(PRG.xp); PRG.xp += xp; const lv = lvlOf(PRG.xp);
@@ -2969,6 +2980,9 @@ body.edit #tlook{ pointer-events:none; }
         }
         function addBox(x0, x1, y0, y1, z0, z1, mat) { const m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), mat); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); m.castShadow = m.receiveShadow = true; scene.add(m); mapMeshes.push(m); aabbs.push({ minX: x0, maxX: x1, minZ: z0, maxZ: z1, top: y1, bot: y0 }); return m; }
         // Rendern: zusammengeführte Meshes je Material (wenige Draw-Calls). Treffer/Sicht: weiter die Einzel-Meshes (unsichtbar, in mapMeshes)
+        // Gedrehte Box: Grundriss wird so verkleinert, dass er komplett in der (achsengerechten) Kollisionsbox liegt
+        function tiltFit(m, a) { if (m && a) { const k = 1 / (Math.abs(Math.cos(a)) + Math.abs(Math.sin(a))); m.scale.set(k, 1, k); m.rotation.y = a; } return m; }
+        const tiltOf = (h, sh, steps, f) => ((((h >>> sh) % steps) - (steps - 1) / 2) * f); // aus der Feldposition → online für alle gleich
         function mergeStatic(list, parent = scene) {
             const groups = new Map(), imgId = new Map(); let nid = 0;
             const keyOf = m => { if (m.map) { if (!imgId.has(m.map.image)) imgId.set(m.map.image, nid++); return 'i' + imgId.get(m.map.image) + '_' + m.color.getHex(); } return m.uuid; };
@@ -2997,8 +3011,8 @@ body.edit #tlook{ pointer-events:none; }
                 if (!solid(ch)) openCells.push({ r, c });
                 if (ch === 'A') siteCells.A.push({ r, c }); if (ch === 'B') siteCells.B.push({ r, c });
                 if (ch === 'T') spawnCells.T.push({ r, c }); if (ch === 'K') spawnCells.CT.push({ r, c });
-                if (ch === 'c') { const hh = cellHash(r, c); addBox(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, crateMats[hh % 3]); const ox = Math.random() < 0.5 ? -0.6 : 0.6, oz = Math.random() < 0.5 ? -0.6 : 0.6; addBox(x + ox - 0.7, x + ox + 0.7, CRATE_H, CRATE_H * 2, z + oz - 0.7, z + oz + 0.7, crateMats[(hh >> 3) % 3]); }
-                if (ch === 'C') { addBox(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, contMats[cellHash(r, c) % contMats.length]); }
+                if (ch === 'c') { const hh = cellHash(r, c); tiltFit(addBox(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, crateMats[hh % 3]), tiltOf(hh, 5, 7, 0.08)); const ox = (hh >>> 12) & 1 ? 0.6 : -0.6, oz = (hh >>> 13) & 1 ? 0.6 : -0.6; tiltFit(addBox(x + ox - 0.7, x + ox + 0.7, CRATE_H, CRATE_H * 2, z + oz - 0.7, z + oz + 0.7, crateMats[(hh >> 3) % 3]), tiltOf(hh, 9, 9, 0.1)); }
+                if (ch === 'C') { const hh = cellHash(r, c); tiltFit(addBox(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, contMats[hh % contMats.length]), tiltOf(hh, 4, 5, 0.06)); }
                 if (ch >= '1' && ch <= '6') stairBoxes(cell, r, c, x, z, ch, (a, b, y0, y1, c0, c1) => addBox(a, b, y0, y1, c0, c1, stepMat));
                 if (ch === 'h') addBox(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, halfMat);
                 if (ch === '=') addBox(x - S / 2, x + S / 2, 2.45, 2.8, z - S / 2, z + S / 2, stegMat);
@@ -3287,7 +3301,8 @@ body.edit #tlook{ pointer-events:none; }
             { id: 'usp_neon', w: 'usp', n: 'USP .45 | Neon Grid', c: 0x00e5ff, c2: 0x0a0f1a, p: 'neon', r: 3 },
             { id: 'ak_neon', w: 'ak47', n: 'AK-47 | Neon Revolution', c: 0xff3df0, c2: 0x120a1a, p: 'neon', r: 3 },
             { id: 'knife_tiger', w: 'knife', n: 'Butterfly | Tiger Tooth', c: 0xf0b030, c2: 0x2a1600, p: 'tiger', r: 4 },
-            { id: 'knife_duck', w: 'knife', n: 'Butterfly | Quietscheente', c: 0xffd84a, c2: 0xf2a227, p: 'duck', r: 4, noCase: 1 } // Belohnung Entenjagd (10 Enten)
+            { id: 'knife_duck', w: 'knife', n: 'Butterfly | Quietscheente', c: 0xffd84a, c2: 0xf2a227, p: 'duck', r: 4, noCase: 1 }, // Belohnung Entenjagd (10 Enten)
+            { id: 'awp_duck', w: 'awp', n: 'AWP | Ententeich', c: 0xffd84a, c2: 0xf2a227, p: 'duck', r: 4, noCase: 1 } // Belohnung Entenjagd (500 Enten)
         ];
         // Muster je Skin: [muster, farbe2, farbe3]
         const SKIN_LOOK = { glock_candy: ['solid'], usp_royal: ['solid'], mp5_moss: ['camo', 0x2d4a24, 0x8fb070], ak_jungle: ['camo', 0x2a3a20, 0x8a7a50], m4_urban: ['camo', 0x4a5568, 0xb8c0cc], deagle_night: ['stripes', 0x0e1424], glock_fade: ['fade', 0xff5fb0, 0xffd34d], mp5_toxic: ['stripes', 0x111111], ak_red: ['stripes', 0x141414], m4_asiimov: ['asiimov', 0x1a1a1a], awp_neon: ['neon', 0x0d0a16], deagle_blaze: ['fade', 0xffb020, 0xfff060], awp_dragon: ['dragon', 0x2f6b3a, 0xc0392b], ak_gold: ['gold', 0x7a5a10], knife_fade: ['fade', 0x8a5cff, 0xffd34d], knife_doppler: ['doppler', 0x0a0f3a] };
@@ -3371,7 +3386,8 @@ body.edit #tlook{ pointer-events:none; }
             { id: 'jungle', n: 'Dschungel', d: 'Tarngrün mit Buschhut & Rucksack', body: 0x4f6b3a, legs: 0x33452a, head: 0x3f5530, hat: 'boonie', hatC: 0x5a6e3c, pack: 0x3a4a2a },
             { id: 'duck_rubber', n: 'Badeente', d: 'Quietschgelb mit orangem Schnabel', duck: 1, body: 0xffd84a, legs: 0xf2a227, head: 0xffd84a, wing: 0xf5c93a },
             { id: 'duck_mallard', n: 'Stockente', d: 'Grüner Kopf, weißer Halsring', duck: 1, body: 0x8a6a4a, legs: 0xf2a227, head: 0x1f6b3a, wing: 0x6b7f9a, ring: 0xffffff },
-            { id: 'duck_white', n: 'Hausente', d: 'Schneeweiß und gut gelaunt', duck: 1, body: 0xf3f3ef, legs: 0xf2a227, head: 0xf3f3ef, wing: 0xe2e2dc }
+            { id: 'duck_white', n: 'Hausente', d: 'Schneeweiß und gut gelaunt', duck: 1, body: 0xf3f3ef, legs: 0xf2a227, head: 0xf3f3ef, wing: 0xe2e2dc },
+            { id: 'duck_gold', n: 'Goldente', d: 'Für 100 erlegte Enten', duck: 1, body: 0xffc400, legs: 0xf2a227, head: 0xffc400, wing: 0xe0a800 }
         ];
         // Agenten-Thema (Host, Spielregeln): 0 = frei, 1 = alle Enten, 2+ = alle als dieser Agent
         const NONDUCK = AGENTS.filter(a => !a.duck);
@@ -3393,9 +3409,13 @@ body.edit #tlook{ pointer-events:none; }
                 const v = e.alive && e._ax !== undefined ? Math.hypot(e.x - e._ax, e.z - e._az) / Math.max(dt, 0.001) : 0; e._ax = e.x; e._az = e.z;
                 e._ph = (e._ph || 0) + Math.min(v, 8) * dt * 2.6; const sw = Math.min(1, v / 3) * 0.55 * Math.sin(e._ph); L.hipL.rotation.x = sw; L.hipR.rotation.x = -sw; }
         }
-        function remeshAll() { for (const e of [...bots, ...NET.players.values()]) { if (!e.mesh) continue; const m = makeBotMesh(e.team, e.ag); m.group.position.copy(e.mesh.position); m.group.rotation.copy(e.mesh.rotation); m.group.visible = e.mesh.visible; scene.remove(e.mesh); e.mesh = m.group; e.hit = m.hit; e.flash = m.flash; e.robo = false; m.hit.forEach(h => h.userData.ent = e); } }
+        function remeshAll() { for (const e of [...bots, ...NET.players.values()]) { if (!e.mesh) continue; const m = makeBotMesh(e.team, e.ag, false, e.hat); m.group.position.copy(e.mesh.position); m.group.rotation.copy(e.mesh.rotation); m.group.visible = e.mesh.visible; scene.remove(e.mesh); e.mesh = m.group; e.hit = m.hit; e.flash = m.flash; e.robo = false; m.hit.forEach(h => h.userData.ent = e); } }
         store.agent = AGENTS.some(a => a.id === localStorage.getItem('agent')) ? localStorage.getItem('agent') : 'std';
-        function makeBotMesh(team, agentId, raw) {
+        // 🦆 Entenhut (Belohnung ab 20 Enten): kleine Ente auf dem Kopf, bleibt auch im Robo-Look farbig
+        const duckHat = () => localStorage.getItem('duckhat') === '1' && (PRG.st.ducks || 0) >= 20;
+        function addDuckHat(g, y) { const M = c => new THREE.MeshLambertMaterial({ color: c }), Y = M(0xffd84a), O = M(0xf2a227), E = new THREE.MeshBasicMaterial({ color: 0x111111 }), mk = (w, h, d, m, x, yy, z) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, yy, z); b.userData.keep = 1; g.add(b); };
+            mk(0.24, 0.13, 0.3, Y, 0, y + 0.065, -0.02); mk(0.14, 0.13, 0.14, Y, 0, y + 0.19, 0.08); mk(0.08, 0.04, 0.08, O, 0, y + 0.17, 0.18); mk(0.03, 0.03, 0.01, E, -0.04, y + 0.21, 0.152); mk(0.03, 0.03, 0.01, E, 0.04, y + 0.21, 0.152); }
+        function makeBotMesh(team, agentId, raw, hat) {
             if (!raw) agentId = agentFor(team, agentId); // raw: Menü-Vorschau zeigt immer den eigenen Agenten
             const g = new THREE.Group(), T = team === 'T'; const M = c => new THREE.MeshLambertMaterial({ color: c }), AG = AGENTS.find(a => a.id === agentId && a.id !== 'std');
             if (AG && AG.duck) { // 🦆 Enten-Modell – gleiche Trefferzonen (Kopf/Körper/Beine) wie die normalen Modelle
@@ -3410,7 +3430,7 @@ body.edit #tlook{ pointer-events:none; }
                 const legL = mk(0.12, 0.65, 0.12, orange, -0.16, 0.33, 0, 'legs', 1), legR = mk(0.12, 0.65, 0.12, orange, 0.16, 0.33, 0, 'legs', 1);
                 mk(0.24, 0.05, 0.32, orange, -0.16, 0.025, 0.08, 0, 1); mk(0.24, 0.05, 0.32, orange, 0.16, 0.025, 0.08, 0, 1); mk(0.08, 0.12, 0.75, M(0x222222), 0.3, 1.12, 0.5);
                 const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.3, 1.12, 0.95); fl.visible = false; g.add(fl);
-                scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
+                if (hat) addDuckHat(g, AG && AG.duck ? 1.87 : 1.95); scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
             }
             // Menschliches Modell im Block-Stil – Trefferzonen wie bisher: Kopf (1,66 m), Körper (1,05–1,4 m), Beine
             const col = AG ? { b: AG.body, l: AG.legs, h: AG.head } : T ? { b: 0x9b7c4e, l: 0x5e513a, h: 0xc99c76 } : { b: 0x2c3b58, l: 0x1d2634, h: 0x151c2a };
@@ -3445,7 +3465,7 @@ body.edit #tlook{ pointer-events:none; }
                 if (AG.visor) { const v = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.08, 0.05), new THREE.MeshBasicMaterial({ color: AG.visor })); v.position.set(0, 1.69, 0.175); g.add(v); }
             }
             const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.28, 1.18, 1.05); fl.visible = false; g.add(fl);
-            scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
+            if (hat) addDuckHat(g, AG && AG.duck ? 1.87 : 1.95); scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
         }
         function createBot(name, team) { const m = makeBotMesh(team); const b = { isPlayer: false, id: bots.length, name, team, x: 0, y: 0, z: 0, r: 0.4, yaw: 0, health: 100, armor: 0, helmet: false, alive: true, kills: 0, deaths: 0, money: CFG.money, weapon: team === 'T' ? W.glock : W.usp, ammo: 0, reloadT: 0, fireT: 0, burst: 0, target: null, losT: Math.random(), reaction: 0, path: [], goal: null, waitT: 0, stuckT: 0, lastX: 0, lastZ: 0, wantMove: false, moving: false, strafeT: 0, strafeDir: 1, crouch: false, crouchT: 0, nades: [], nadeT: 0, plantT: 0, defuseT: 0, kit: false, stepT: 0, flashT: 0, lastShotT: -9, speed: 0, mesh: m.group, hit: m.hit, flash: m.flash }; m.hit.forEach(h => h.userData.ent = b); bots.push(b); return b; }
 
@@ -4381,7 +4401,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 body = `<div class="invgrid"><div class="invlist">${list}</div><div class="invpanel"><h5>${W[wk].name.toUpperCase()}${store.stick[wk] ? ' <span style="color:#ffd84a;letter-spacing:0">· 🖼 Wrap aktiv – ersetzt den Skin</span>' : ''}</h5><div class="invrow">${cards}</div></div></div>`;
             } else if (INV.tab === 'ag') {
                 const agCol = (a, k, def) => '#' + new THREE.Color(a[k] !== undefined ? a[k] : def).getHexString();
-                body = `<div class="invpanel" style="width:100%"><h5>SPIELERMODELL · ${CFG.agTheme ? '⚠ Der Host kann ein Agenten-Thema erzwingen' : 'gilt in allen Modi'}</h5><div class="invrow">${AGENTS.map(a => { const on = store.agent === a.id; return `<div class="inv ${on ? 'eq' : ''}" data-agent="${a.id}" style="border-color:${on ? '#e8c98a' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? '#e8c98a' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>`;
+                const hatOk = (PRG.st.ducks || 0) >= 20, hatOn = duckHat();
+                body = `<div class="invpanel" style="width:100%"><h5>🦆 ZUBEHÖR</h5><div class="invrow" style="margin-bottom:10px"><div class="inv ${hatOn ? 'eq' : ''} ${hatOk ? '' : 'locked'}" data-hat="1" style="border-color:#ffd84a;min-width:110px"><div class="agprev" style="font-size:26px;line-height:44px">🦆</div><b style="color:#ffd84a">Entenhut</b><span>${hatOk ? (hatOn ? '✓ Aufgesetzt' : 'Klicken zum Aufsetzen') : '🔒 20 Enten erlegen (' + (PRG.st.ducks || 0) + '/20)'}</span></div></div><h5>SPIELERMODELL · ${CFG.agTheme ? '⚠ Der Host kann ein Agenten-Thema erzwingen' : 'gilt in allen Modi'}</h5><div class="invrow">${AGENTS.map(a => { const on = store.agent === a.id; return `<div class="inv ${on ? 'eq' : ''}" data-agent="${a.id}" style="border-color:${on ? '#e8c98a' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? '#e8c98a' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>`;
             } else {
                 // Wraps: jede Waffe ein Feld – Bild oder „+ PNG"
                 const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
@@ -4398,7 +4419,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             document.querySelectorAll('[data-wk]').forEach(el => el.onclick = () => { INV.wk = el.dataset.wk; showInventory(); });
             document.querySelectorAll('[data-eq]').forEach(el => el.onclick = () => { const id = el.dataset.eq, s = SKINS.find(x => x.id === id); store.equip[s.w] = store.equip[s.w] === id ? undefined : id; saveStore(); applySkins(); showInventory(); });
             document.querySelectorAll('[data-eqnone]').forEach(el => el.onclick = () => { store.equip[el.dataset.eqnone] = undefined; saveStore(); applySkins(); showInventory(); });
-            document.querySelectorAll('[data-agent]').forEach(el => el.onclick = () => { store.agent = el.dataset.agent; localStorage.setItem('agent', store.agent); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent }); showInventory(); });
+            { const gd = document.querySelector('[data-agent="duck_gold"]'); if (gd && !((PRG.st.ducks || 0) >= 100)) { gd.classList.add('locked'); const sp = gd.querySelector('span:last-child'); if (sp) sp.textContent = '🔒 100 Enten erlegen (' + (PRG.st.ducks || 0) + '/100)'; } }
+            const hatEl = document.querySelector('[data-hat]'); if (hatEl) hatEl.onclick = () => { if ((PRG.st.ducks || 0) < 20) return toast('🔒 Entenhut', 'Erlege 20 Enten in der Entenjagd'); localStorage.setItem('duckhat', duckHat() ? '0' : '1'); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent, hat: duckHat() ? 1 : 0 }); showInventory(); };
+            document.querySelectorAll('[data-agent]').forEach(el => el.onclick = () => { if (el.dataset.agent === 'duck_gold' && !((PRG.st.ducks || 0) >= 100)) return toast('🔒 Goldente', 'Erlege 100 Enten in der Entenjagd'); store.agent = el.dataset.agent; localStorage.setItem('agent', store.agent); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent, hat: duckHat() ? 1 : 0 }); showInventory(); });
             let pendKey = null; const stf = $('stf');
             if (stf) stf.onchange = e => {
                 const f = e.target.files[0]; if (!f || !pendKey) return;
@@ -4804,7 +4827,40 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 1.5 „ENTENJAGD"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 1.6 „FEINSCHLIFF"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🦆 ENTENJAGD 2.0</p>
+ <b style="color:#ffd964">Waffenwahl:</b> 🔫 AK-47, 💥 Schrotflinte (stark gegen Schwärme) oder 🔭 AWP (nur Kopftreffer, dafür ×2) – jede Waffe mit <b>eigener Bestenliste</b>.<br>
+ <b>Wellen:</b> ⭐ Goldrausch (8 s nur Gold), 👑 <b>Riesen-Ente</b> mit Lebensbalken (+50, setzt 8 Enten frei), 🦆 Schwarm und ⏱ Finale mit doppelten Punkten.<br>
+ <b>Lebendiger:</b> Enten fliehen vor Schüssen, <b>Entenfamilien</b> watscheln im Gänsemarsch (ganze Familie = +10), Federn fliegen, und das Quaken wird mit jeder Combo höher.<br>
+ Mehr Enten, aufgeräumte Anzeige direkt unter dem Timer.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎁 NEUE BELOHNUNGEN</p>
+ <b>🦆 Entenhut</b> ab 20 Enten – passt auf jeden Agenten, Mitspieler sehen ihn.<br>
+ <b>Goldente</b> als Agent ab 100 Enten · <b>★ AWP | Ententeich</b> ab 500 Enten.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🧍 NEUE SPIELERMODELLE</p>
+ Weste, Gürtel, Stiefel, Handschuhe und eine richtig gehaltene Waffe. CT mit Helm und Brille, T mit Stirnband und Halstuch.<br>
+ Bots und Mitspieler haben jetzt eine <b>Laufanimation</b>. Trefferzonen bleiben exakt gleich.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ KARTEN WIRKEN STIMMIGER</p>
+ Wände niedriger (4 statt 5–7 m), Treppen bestehen jetzt aus feinen Stufen statt großer Blöcke.<br>
+ Kisten und Container stehen leicht <b>schräg</b> – zufällig, aber online für alle gleich.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎒 INVENTAR & MENÜS</p>
+ Neues Inventar mit Reitern (Skins / Agenten / Wraps), Ausrüstungs-Übersicht je Waffe und Sammelfortschritt inkl. fehlender 🔒 Skins.<br>
+ Menüs und Lobby kompakter und einheitlich skaliert, auch am Handy etwas kleiner.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🛠 VERBESSERUNGEN & FIXES</p>
+ <b>Kein Zurückspringen mehr:</b> Bots schieben Dich nicht mehr weg. Weniger Ruckler durch Effekte. Neu: <b>FPS-Anzeige</b> (⚙️ → FPS anzeigen).<br>
+ <b>Zuschauen:</b> Der beobachtete Spieler verdeckt nicht mehr die Sicht, Texte überlappen nicht mehr – neue Leiste unten.<br>
+ <b>Gauntlet & 1v1:</b> Du stehst schon während der Auswahl in der richtigen Arena – kein Teleport mehr. Auswahlfenster leicht transparent.<br>
+ <b>Online:</b> Mitspieler laufen nicht mehr „rückwärts“, Agentenwechsel bleibt erhalten, gestapelte Kisten stehen bei allen gleich.<br>
+ Updates kommen sofort an – kein veralteter Zwischenspeicher mehr.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.5 „ENTENJAGD"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🦆 NEUER MODUS: ENTENJAGD</p>
@@ -5014,7 +5070,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.5 „Entenjagd" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
+ <div id="csver">CS:WO 1.6 „Feinschliff" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -5104,7 +5160,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const backPlay = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
             $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => { GL.v1 = true; glStart(2); }, backPlay);
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
-            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnDuck').onclick = () => dhStart(); $('btnDuckLb').onclick = showDuckLb;
+            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = () => showGameSettings(); $('ruleChips').onclick = () => showGameSettings();
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navProf').onclick = showProfile;
@@ -5114,6 +5170,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         }
         // =====================================================================
         //  🦆 ENTENJAGD – entspannter 2-Minuten-Modus (offline & online, Host verwaltet die Enten)
+        //  Wellen (Goldrausch, Boss, Schwarm, Finale), Familien mit Küken, Flucht, Waffenwahl, Bestenliste je Waffe
         // =====================================================================
         const DH_TIME = 120;
         const DH_TYPES = { // pts: Punkte, sp: Spezial, w: Häufigkeit, fly: Anteil fliegend
@@ -5124,130 +5181,183 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             b: { n: 'Bomben-Ente', pts: 2, col: 0x2a2a2a, speed: 2.4, fly: 0, w: 5, ic: '💣', sp: 'bomb' },
             r: { n: 'Rausch-Ente', pts: 2, col: 0xb04aff, speed: 3.5, fly: 0.4, w: 5, ic: '🔥', sp: 'frenzy' },
             i: { n: 'Eis-Ente', pts: 2, col: 0x9fe8ff, speed: 3, fly: 0.3, w: 4, ic: '❄️', sp: 'ice' },
-            k: { n: 'Lockvogel', pts: -5, col: 0xd03030, speed: 3, fly: 0, w: 6, ic: '🚫', decoy: 1 }
+            k: { n: 'Lockvogel', pts: -5, col: 0xd03030, speed: 3, fly: 0, w: 6, ic: '🚫', decoy: 1 },
+            c: { n: 'Küken', pts: 2, col: 0xffe066, speed: 2.6, fly: 0, w: 0, chick: 1 },            // nur in Familien
+            B: { n: 'Riesen-Ente', pts: 50, col: 0xffd84a, speed: 1.4, fly: 0, w: 0, ic: '👑', boss: 1 } // einmal pro Runde
         };
+        const DH_WEAPONS = { ak47: ['🔫', 'AK-47', 'Allrounder · Deagle als Zweitwaffe'], pump: ['💥', 'Schrotflinte', 'Breite Streuung – stark gegen Schwärme'], awp: ['🔭', 'AWP', 'Nur Kopftreffer zählen – dafür ×2 Punkte'] };
         const DH_LOOKS = [[0xffd84a, 0xffd84a, 0xf5c93a], [0x8a6a4a, 0x1f6b3a, 0x6b7f9a], [0xf3f3ef, 0xf3f3ef, 0xe2e2dc]]; // Badeente, Stockente, Hausente
-        const DH = { on: false, ducks: [], t: 0, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, me: { pts: 0, n: 0, gold: 0, sp: 0, best: 0 }, ended: false };
+        const DH = { on: false, w: 'ak47', ducks: [], t: 0, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, fin: 0, rush: 0, ev: {}, fams: {}, me: { n: 0, gold: 0, sp: 0 }, ended: false };
         const dhMe = () => NET.on ? NET.pid : 'me';
         const DH_ICON = {}; function dhIcon(e) { if (DH_ICON[e]) return DH_ICON[e]; const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); g.font = '46px serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(e, 32, 36); return DH_ICON[e] = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthWrite: false, transparent: true }); }
-        function dhMesh(d) { // kleine Ente aus Boxen, Flügel schlagen, Specials mit Symbol darüber
-            const T = DH_TYPES[d.t], L = T.col ? [T.col, T.col, T.col] : DH_LOOKS[d.look], g = new THREE.Group();
+        function dhMesh(d) { // kleine Ente aus Boxen, Flügel schlagen, Specials mit Symbol darüber; Küken klein, Boss riesig
+            const T = DH_TYPES[d.t], L = T.col ? [T.col, T.col, T.col] : DH_LOOKS[d.look || 0], g = new THREE.Group();
             const M = (c, em) => new THREE.MeshLambertMaterial({ color: c, emissive: em || (T.gold ? 0x5a3c00 : 0) }), orange = M(0xf2a227);
-            const mk = (w, h, dd, m, x, y, z, part) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, dd), m); b.position.set(x, y, z); b.castShadow = true; g.add(b); if (part) { b.userData.part = part; b.userData.ent = d; } return b; };
+            const mk = (w, h, dd, m, x, y, z, part) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, dd), m); b.position.set(x, y, z); b.castShadow = !!part; g.add(b); if (part) { b.userData.part = part; b.userData.ent = d; } return b; };
             const body = mk(0.55, 0.42, 0.75, M(L[0]), 0, 0.42, 0, 'body'), head = mk(0.34, 0.32, 0.34, M(L[1]), 0, 0.82, 0.3, 'head');
             mk(0.2, 0.08, 0.2, orange, 0, 0.78, 0.53); mk(0.25, 0.18, 0.2, M(L[0]), 0, 0.55, -0.42);
             const eye = new THREE.MeshBasicMaterial({ color: 0x111111 }); mk(0.05, 0.06, 0.02, eye, -0.1, 0.88, 0.47); mk(0.05, 0.06, 0.02, eye, 0.1, 0.88, 0.47);
             const wl = mk(0.08, 0.28, 0.5, M(L[2]), -0.31, 0.47, -0.02), wr = mk(0.08, 0.28, 0.5, M(L[2]), 0.31, 0.47, -0.02);
             mk(0.06, 0.2, 0.06, orange, -0.12, 0.1, 0); mk(0.06, 0.2, 0.06, orange, 0.12, 0.1, 0);
-            if (T.ic) { const ic = new THREE.Sprite(dhIcon(T.ic)); ic.scale.set(0.55, 0.55, 1); ic.position.set(0, 1.35, 0); g.add(ic); }
+            if (T.boss) mk(0.3, 0.16, 0.3, M(0xffc400, 0x5a3c00), 0, 1.06, 0.3); // Krone
+            if (T.ic) { const ic = new THREE.Sprite(dhIcon(T.ic)); ic.scale.set(0.55, 0.55, 1); ic.position.set(0, T.boss ? 1.45 : 1.35, 0); g.add(ic); }
+            g.scale.setScalar(T.boss ? 2.6 : T.chick ? 0.55 : 1);
             scene.add(g); d.mesh = g; d.hit = [body, head]; d.wl = wl; d.wr = wr;
         }
         function dhPickType() { let x = Math.random() * Object.values(DH_TYPES).reduce((a, t) => a + t.w, 0); for (const k in DH_TYPES) { x -= DH_TYPES[k].w; if (x <= 0) return k; } return 'n'; }
-        function dhSpawn() { // nur Offline/Host
-            const t = dhPickType(), T = DH_TYPES[t], c = rnd(openCells), fly = Math.random() < T.fly, a = Math.random() * Math.PI * 2;
-            const d = { dh: 1, id: ++DH.id, t, look: Math.random() * 3 | 0, x: cx(c.c), z: cx(c.r), y: fly ? 6 + Math.random() * 3 : 0, fly, alive: true, r: 0.35, life: 12 + Math.random() * 6, yaw: a, vx: Math.sin(a), vz: Math.cos(a), ph: Math.random() * 6, tx: 0, tz: 0, retarget: 0 };
-            dhMesh(d); DH.ducks.push(d);
+        function dhNew(t, x, z, o = {}) { // nur Offline/Host
+            const T = DH_TYPES[t], fly = o.fly !== undefined ? o.fly : Math.random() < T.fly, a = Math.random() * Math.PI * 2;
+            const d = Object.assign({ dh: 1, id: ++DH.id, t, look: Math.random() * 3 | 0, x, z, y: fly ? 6 + Math.random() * 3 : 0, fly, alive: true, r: T.boss ? 1.0 : T.chick ? 0.25 : 0.35, life: T.boss ? 45 : 12 + Math.random() * 6, yaw: a, vx: Math.sin(a), vz: Math.cos(a), ph: Math.random() * 6, tx: x, tz: z, retarget: 0, flee: 0 }, o);
+            dhMesh(d); DH.ducks.push(d); return d;
         }
-        function dhRemove(d, fx) { d.alive = false; if (fx) burst(d.x, d.y + 0.5, d.z, DH_TYPES[d.t].gold ? 0xffd040 : 0xffffff, 12, 3); scene.remove(d.mesh); DH.ducks = DH.ducks.filter(x => x !== d); }
+        function dhSpawn() {
+            const c = rnd(openCells), x = cx(c.c), z = cx(c.r);
+            if (DH.rush > 0) return dhNew('g', x, z); // Goldrausch
+            if (Math.random() < 0.07) { // Entenfamilie: Mutter + 3 Küken im Gänsemarsch
+                const fid = ++DH.id, mom = dhNew('n', x, z, { fly: false, fam: fid, life: 22 }); let lead = mom; DH.fams[fid] = { left: 4, by: {} };
+                for (let i = 0; i < 3; i++) lead = dhNew('c', x - 0.7 * (i + 1), z, { fam: fid, lead, life: 22 });
+                return mom;
+            }
+            return dhNew(dhPickType(), x, z);
+        }
+        function dhAnnounce(txt) { // Wellen-Ansage (lokal + an alle)
+            const el = $('dhBan'); if (el) { el.textContent = txt; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); } sfx('start');
+            if (NET.on && NET.host) netSend({ type: 'dhev', txt });
+        }
+        function dhRemove(d, fx) { d.alive = false; if (fx) { const T = DH_TYPES[d.t]; burst(d.x, d.y + 0.5, d.z, 0xffffff, T.boss ? 30 : 14, T.boss ? 5 : 2.5); burst(d.x, d.y + 0.5, d.z, T.gold ? 0xffd040 : T.col || DH_LOOKS[d.look || 0][0], 6, 3); } scene.remove(d.mesh); DH.ducks = DH.ducks.filter(x => x !== d); }
         function quack(p = 1) { if (!AC) return; tone(560 * p, 0.12, 0.22, 0, 'sawtooth', 380 * p); setTimeout(() => AC && tone(500 * p, 0.1, 0.18, 0, 'sawtooth', 340 * p), 130); }
-        function dhMove(d, dt) { // Laufen (mit Kollision) oder Fliegen (über den Wänden)
-            const T = DH_TYPES[d.t], spd = T.speed * (DH.ice > 0 ? 0.35 : 1); d.ph += dt * (d.fly ? 14 : 8);
+        function dhMove(d, dt) { // Laufen (mit Kollision), Fliegen (über den Wänden), Küken folgen, Flucht vor Schüssen
+            const T = DH_TYPES[d.t]; let spd = T.speed * (DH.ice > 0 ? 0.35 : 1); d.ph += dt * (d.fly ? 14 : 8); if (d.flee > 0) { d.flee -= dt; spd *= 1.9; }
             if (d.fly) {
+                if (d.flee > 0) { d.vx += (d.fx - d.vx) * dt * 4; d.vz += (d.fz - d.vz) * dt * 4; }
                 d.x += d.vx * spd * dt; d.z += d.vz * spd * dt; d.y += Math.sin(d.ph * 0.25) * dt * 0.8;
                 if (d.x < 3 || d.x > WORLD_W - 3) d.vx *= -1; if (d.z < 3 || d.z > WORLD_D - 3) d.vz *= -1; d.x = clamp(d.x, 3, WORLD_W - 3); d.z = clamp(d.z, 3, WORLD_D - 3);
-                d.yaw = Math.atan2(d.vx, d.vz);
-            } else {
-                d.retarget -= dt; if (d.retarget <= 0 || Math.hypot(d.tx - d.x, d.tz - d.z) < 0.5) { const a = Math.random() * Math.PI * 2, r = 3 + Math.random() * 7; d.tx = d.x + Math.sin(a) * r; d.tz = d.z + Math.cos(a) * r; d.retarget = 2 + Math.random() * 3; }
-                const dx = d.tx - d.x, dz = d.tz - d.z, l = Math.hypot(dx, dz) || 1, ox = d.x, oz = d.z; collideMove(d, dx / l * spd * dt, dz / l * spd * dt);
-                if (Math.hypot(d.x - ox, d.z - oz) < spd * dt * 0.3) d.retarget = 0; // gegen Wand → neues Ziel
-                d.y = groundAt(d); d.yaw = lerpAngle(d.yaw, Math.atan2(dx, dz), Math.min(1, dt * 8));
+                d.yaw = Math.atan2(d.vx, d.vz); return;
             }
+            if (d.flee > 0) { d.tx = d.x + d.fx * 4; d.tz = d.z + d.fz * 4; }
+            else if (d.lead && d.lead.alive) { const b = Math.atan2(d.lead.x - d.x, d.lead.z - d.z); d.tx = d.lead.x - Math.sin(b) * 0.75; d.tz = d.lead.z - Math.cos(b) * 0.75; if (Math.hypot(d.tx - d.x, d.tz - d.z) < 0.15) { d.y = groundAt(d); return; } spd = Math.max(spd, DH_TYPES[d.lead.t].speed * 1.2); }
+            else { d.retarget -= dt; if (d.retarget <= 0 || Math.hypot(d.tx - d.x, d.tz - d.z) < 0.5) { const a = Math.random() * Math.PI * 2, r = 3 + Math.random() * 7; d.tx = d.x + Math.sin(a) * r; d.tz = d.z + Math.cos(a) * r; d.retarget = 2 + Math.random() * 3; } }
+            const dx = d.tx - d.x, dz = d.tz - d.z, l = Math.hypot(dx, dz) || 1, ox = d.x, oz = d.z; collideMove(d, dx / l * Math.min(spd * dt, l), dz / l * Math.min(spd * dt, l));
+            if (!d.lead && d.flee <= 0 && Math.hypot(d.x - ox, d.z - oz) < spd * dt * 0.3) d.retarget = 0; // gegen Wand → neues Ziel
+            d.y = groundAt(d); d.yaw = lerpAngle(d.yaw, Math.atan2(dx, dz), Math.min(1, dt * 8));
         }
         function dhPose(d) { d.mesh.position.set(d.x, d.y, d.z); d.mesh.rotation.set(0, d.yaw, d.fly ? 0 : Math.sin(d.ph) * 0.12); const f = d.fly ? Math.sin(d.ph) * 0.9 : Math.sin(d.ph) * 0.15; d.wl.rotation.z = f; d.wr.rotation.z = -f; }
-        // Treffer (nur Offline/Host): Punkte, Combo, Spezialeffekte
+        function dhScare(x, z) { for (const o of DH.ducks) { if (!o.alive || DH_TYPES[o.t].boss) continue; const dx = o.x - x, dz = o.z - z, l = Math.hypot(dx, dz); if (l < 7 && l > 0.01) { o.flee = 1.6; o.fx = dx / l; o.fz = dz / l; o.lead = null; } } }
+        // Treffer (nur Offline/Host): Punkte, Combo, Spezialeffekte, Boss-Lebenspunkte, Familienbonus
         function dhKill(d, by, head) {
-            if (!d.alive) return; const T = DH_TYPES[d.t], now2 = performance.now() / 1000, cb = DH.combo[by] || (DH.combo[by] = { n: 0, t: 0 });
+            if (!d.alive) return; const T = DH_TYPES[d.t];
+            if (DH.w === 'awp' && !head && !T.boss) return; // AWP-Modus: nur Kopftreffer zählen
+            const now2 = performance.now() / 1000, cb = DH.combo[by] || (DH.combo[by] = { n: 0, t: 0 });
             if (T.decoy) cb.n = 0; else { cb.n = now2 - cb.t < 2.5 ? cb.n + 1 : 1; cb.t = now2; }
-            const mult = T.decoy ? 1 : Math.min(4, 1 + Math.floor((cb.n - 1) / 5)) * (DH.frz[by] > 0 ? 2 : 1), pts = T.decoy ? T.pts : (T.pts + (head ? 1 : 0)) * mult;
-            DH.sc[by] = Math.max(0, (DH.sc[by] || 0) + pts); dhRemove(d, true);
+            const mult = T.decoy ? 1 : Math.min(4, 1 + Math.floor((cb.n - 1) / 5)) * (DH.frz[by] > 0 ? 2 : 1) * (DH.fin ? 2 : 1) * (DH.w === 'awp' ? 2 : 1);
+            if (T.boss) { // Riesen-Ente: jeder Treffer +1, der letzte bringt den großen Bonus
+                d.hp -= head ? 2 : 1;
+                if (d.hp > 0) { DH.sc[by] = (DH.sc[by] || 0) + 1; burst(d.x, d.y + 2, d.z, 0xffffff, 4, 2); if (NET.on) netSend({ type: 'dhbh', by, n: cb.n }); dhBossHit(by, cb.n); return; }
+            }
+            let pts = T.decoy ? T.pts : T.boss ? T.pts * (DH.fin ? 2 : 1) : (T.pts + (head ? 1 : 0)) * mult; /* Boss: fester Bonus, kein Combo-Multiplikator */
+            if (d.fam && DH.fams[d.fam]) { const F = DH.fams[d.fam]; F.by[by] = (F.by[by] || 0) + 1; if (--F.left === 0) { if (F.by[by] === 4) pts += 10; delete DH.fams[d.fam]; } }
+            DH.sc[by] = Math.max(0, (DH.sc[by] || 0) + pts); dhRemove(d, true); dhScare(d.x, d.z);
             if (T.sp === 'time') DH.t += 6; if (T.sp === 'ice') DH.ice = 6; if (T.sp === 'frenzy') DH.frz[by] = 8;
-            if (T.sp === 'bomb') { burst(d.x, d.y + 0.5, d.z, 0xff8a30, 26, 6); sfx('explosion', d.x, d.z); for (const o of DH.ducks.slice()) if (o.alive && !DH_TYPES[o.t].decoy && Math.hypot(o.x - d.x, o.z - d.z) < 7) dhKill(o, by, false); }
-            if (NET.on) netSend({ type: 'dhdie', id: d.id, by, pts, t: d.t, x: d.x, y: d.y, z: d.z, m: mult });
-            dhCredit(by, d.t, pts, mult);
+            if (T.sp === 'bomb') { burst(d.x, d.y + 0.5, d.z, 0xff8a30, 26, 6); sfx('explosion', d.x, d.z); for (const o of DH.ducks.slice()) if (o.alive && !DH_TYPES[o.t].decoy && !DH_TYPES[o.t].boss && Math.hypot(o.x - d.x, o.z - d.z) < 7) dhKill(o, by, true); }
+            if (T.boss) { for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; dhNew('n', d.x + Math.sin(a) * 2, d.z + Math.cos(a) * 2, { fly: i % 2 === 0 }); } dhAnnounce('👑 Riesen-Ente besiegt!'); }
+            if (NET.on) netSend({ type: 'dhdie', id: d.id, by, pts, t: d.t, x: d.x, y: d.y, z: d.z, m: mult, n: cb.n });
+            dhCredit(by, d.t, pts, mult, cb.n);
         }
-        // Rückmeldung für den Schützen (eigene Statistik, Belohnungen, Anzeige)
-        function dhCredit(by, t, pts, mult) {
+        function dhBossHit(by, n) { if (by !== dhMe()) return; hitT = 0.12; hitHS = false; quack(0.6 + Math.min(0.5, n * 0.03)); dhPop('+1 👑', '#ffd84a'); }
+        // Rückmeldung für den Schützen (eigene Statistik, Belohnungen, Anzeige) – Quaken wird mit jeder Combo höher
+        function dhCredit(by, t, pts, mult, n) {
             if (by !== dhMe()) return; const T = DH_TYPES[t];
             if (T.decoy) { sfx('empty'); dhPop(pts + ' Lockvogel!', '#ff6b6b'); return; }
-            DH.me.n++; if (T.gold) DH.me.gold++; if (T.sp) DH.me.sp++; quack(T.gold ? 1.4 : T.sp ? 0.8 : 1); hitT = 0.12; hitHS = false;
-            dhPop('+' + pts + (mult > 1 ? ' ×' + mult : '') + (T.sp ? ' ' + T.ic + ' ' + T.n : T.gold ? ' ⭐ GOLD' : ''), T.gold ? '#ffd040' : T.sp ? '#9fe8ff' : '#fff');
+            DH.me.n++; if (T.gold) DH.me.gold++; if (T.sp) DH.me.sp++; quack((T.gold ? 1.3 : T.sp ? 0.85 : T.chick ? 1.5 : T.boss ? 0.55 : 1) * (1 + Math.min(0.7, ((n || 1) - 1) * 0.04))); hitT = 0.12; hitHS = false;
+            dhPop('+' + pts + (mult > 1 ? ' ×' + mult : '') + (T.boss ? ' 👑 BOSS' : T.sp ? ' ' + T.ic + ' ' + T.n : T.gold ? ' ⭐ GOLD' : T.chick ? ' 🐤' : ''), T.gold || T.boss ? '#ffd040' : T.sp ? '#9fe8ff' : '#fff');
             xpEvent('duck', { gold: T.gold });
         }
         function dhShot(d, head) { // eigener Treffer
             if (!d.alive) return;
-            if (!NET.on || NET.host) dhKill(d, dhMe(), head); else { netSend({ type: 'dhhit', id: d.id, hs: head ? 1 : 0, pid: NET.pid }); d.alive = false; d.mesh.visible = false; burst(d.x, d.y + 0.5, d.z, 0xffffff, 10, 3); }
+            if (!NET.on || NET.host) { dhKill(d, dhMe(), head); return; }
+            if (DH.w === 'awp' && !head && !DH_TYPES[d.t].boss) return;
+            netSend({ type: 'dhhit', id: d.id, hs: head ? 1 : 0, pid: NET.pid }); if (!DH_TYPES[d.t].boss) { d.alive = false; d.mesh.visible = false; burst(d.x, d.y + 0.5, d.z, 0xffffff, 10, 3); }
         }
         function dhPop(txt, col) { const el = $('dhPop'); if (!el) return; el.textContent = txt; el.style.color = col; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
         function dhHudUpdate() {
             const el = $('dhHud'); if (!el) return; const me = DH.sc[dhMe()] || 0, cb = DH.combo[dhMe()], mult = cb && performance.now() / 1000 - cb.t < 2.5 ? Math.min(4, 1 + Math.floor((cb.n - 1) / 5)) : 1;
             const names = { me: player.name }; names[NET.pid] = player.name; for (const rp of NET.players.values()) names[rp.pid] = rp.name;
             const list = NET.on ? Object.entries(DH.sc).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([p, s], i) => `<div${p === dhMe() ? ' class="me"' : ''}>${i + 1}. ${(names[p] || '?').replace(/</g, '')} <b>${s}</b></div>`).join('') : '';
-            el.innerHTML = `<div class="dhs">🦆 <b>${me}</b> Pkt${mult > 1 ? ` <span class="dhx">×${mult}</span>` : ''}${DH.frz[dhMe()] > 0 ? ' <span class="dhx">🔥×2</span>' : ''}${DH.ice > 0 ? ' <span class="dhi">❄️</span>' : ''}</div>${list ? `<div class="dhl">${list}</div>` : ''}`;
+            const boss = DH.ducks.find(d => DH_TYPES[d.t].boss && d.alive), hp = boss ? Math.max(0, boss.hp / boss.maxhp) : 0;
+            el.innerHTML = `<div class="dhs">🦆 <b>${me}</b> Pkt${mult > 1 ? ` <span class="dhx">×${mult}</span>` : ''}${DH.frz[dhMe()] > 0 ? ' <span class="dhx">🔥×2</span>' : ''}${DH.fin ? ' <span class="dhx">⏱×2</span>' : ''}${DH.ice > 0 ? ' <span class="dhi">❄️</span>' : ''}</div>${boss ? `<div class="dhboss">👑 <i><b style="width:${Math.round(hp * 100)}%"></b></i></div>` : ''}${list ? `<div class="dhl">${list}</div>` : ''}`;
         }
-        function dhStart() {
+        // Waffenwahl vor dem Start (offline und für den Host)
+        function dhPick(go, back) {
+            showOverlay(`<h1 style="color:#ffd84a">🦆 ENTENJAGD<small>WÄHLE DEINE WAFFE</small></h1>
+ <div class="dhpick">${Object.entries(DH_WEAPONS).map(([k, [ic, n, d]]) => `<div class="dhw" data-dhw="${k}"><i>${ic}</i><b>${n}</b><span>${d}</span><em>Rekord: ${PRG.st['dhB_' + k] || 0}</em></div>`).join('')}</div>
+ <p style="font-size:12px;color:#8fa3b8">Jede Waffe hat ihre eigene Bestenliste · Wellen: ⭐ Goldrausch, 👑 Riesen-Ente, 🦆 Schwarm, ⏱ Finale ×2</p>
+ <div><button id="dhPickBack">Zurück</button></div>`);
+            document.querySelectorAll('[data-dhw]').forEach(el => el.onclick = () => go(el.dataset.dhw)); $('dhPickBack').onclick = back;
+        }
+        function dhStart(w) {
             remeshAll(); initAudio(); const nm = ($('pname') && $('pname').value || '').trim(); if (nm) player.name = nm.slice(0, 14);
-            for (const d of DH.ducks) scene.remove(d.mesh); Object.assign(DH, { on: true, ducks: [], t: DH_TIME, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, me: { pts: 0, n: 0, gold: 0, sp: 0 }, ended: false });
+            for (const d of DH.ducks) scene.remove(d.mesh); Object.assign(DH, { on: true, w: DH_WEAPONS[w] ? w : 'ak47', ducks: [], t: DH_TIME, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, fin: 0, rush: 0, ev: {}, fams: {}, me: { n: 0, gold: 0, sp: 0 }, ended: false });
             DH.sc[dhMe()] = 0; for (const rp of NET.players.values()) DH.sc[rp.pid] = 0;
-            player.team = 'CT'; player.alive = true; player.health = 100; player.weapons[1] = mkWeapon(W.ak47); player.weapons[2] = mkWeapon(W.deagle); player.weapons[4] = player.weapons[5] = null; player.slot = 1; updateVM();
+            player.team = 'CT'; player.alive = true; player.health = 100; player.weapons[1] = mkWeapon(W[DH.w]); player.weapons[2] = mkWeapon(W.deagle); player.weapons[4] = player.weapons[5] = null; player.slot = 1; updateVM();
             const c = rnd(spawnCells.CT.length ? spawnCells.CT : openCells); player.x = cx(c.c); player.z = cx(c.r); player.y = 0; player.vx = player.vz = player.vy = 0;
             ents = [player, ...NET.players.values()]; G.state = 'live'; G.timer = DH_TIME; G.bomb = { state: 'none', x: 0, z: 0, t: 0, carrier: null };
             started = true; gameEnded = false; $('overlay').style.display = 'none'; $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
-            document.body.classList.add('dh'); if (!$('dhHud')) { const h = document.createElement('div'); h.id = 'dhHud'; $('top').appendChild(h); const p = document.createElement('div'); p.id = 'dhPop'; $('hud').appendChild(p); }
-            renderer.domElement.requestPointerLock(); msg('', '🦆 Entenjagd · 2 Minuten · ⭐ Gold = 10 · 🚫 rote Lockvögel meiden!', 4);
+            document.body.classList.add('dh'); if (!$('dhHud')) { const h = document.createElement('div'); h.id = 'dhHud'; $('top').appendChild(h); for (const id of ['dhPop', 'dhBan']) { const p = document.createElement('div'); p.id = id; $('hud').appendChild(p); } }
+            renderer.domElement.requestPointerLock(); msg('', '🦆 Entenjagd · ' + DH_WEAPONS[DH.w][1] + ' · ⭐ Gold = 10 · 🚫 rote Lockvögel meiden!', 4);
             if (!NET.on || NET.host) for (let i = 0; i < 14; i++) dhSpawn();
+        }
+        function dhEvents(dt) { // Wellen nach Restzeit (Host)
+            DH.rush = Math.max(0, DH.rush - dt); const e = DH.ev, t = DH.t;
+            if (t <= 95 && !e.g1) { e.g1 = 1; DH.rush = 8; dhAnnounce('⭐ GOLDRAUSCH! 8 Sekunden nur goldene Enten'); }
+            if (t <= 75 && !e.boss) { e.boss = 1; const c = rnd(openCells), b = dhNew('B', cx(c.c), cx(c.r), { fly: false }); b.maxhp = b.hp = 30 + 12 * NET.players.size; dhAnnounce('👑 Eine RIESEN-ENTE ist aufgetaucht!'); }
+            if (t <= 50 && !e.swarm) { e.swarm = 1; for (let i = 0; i < 15; i++) { const c = rnd(openCells); dhNew('n', cx(c.c), cx(c.r), { fly: true }); } dhAnnounce('🦆 SCHWARM im Anflug!'); }
+            if (t <= 15 && !e.fin) { e.fin = 1; DH.fin = 1; dhAnnounce('⏱ FINALE! Doppelte Punkte'); }
         }
         function dhTick(dt) {
             for (const s of [1, 2]) { const w = player.weapons[s]; if (w) w.res = 999; } // unendlich Reserve
             const host = !NET.on || NET.host;
             if (host) {
-                DH.t -= dt; DH.ice = Math.max(0, DH.ice - dt); for (const k in DH.frz) DH.frz[k] = Math.max(0, DH.frz[k] - dt);
-                const max = 16 + 4 * NET.players.size; DH.spawnT -= dt; if (DH.spawnT <= 0 && DH.ducks.length < max) { dhSpawn(); DH.spawnT = 0.3; }
+                DH.t -= dt; DH.ice = Math.max(0, DH.ice - dt); for (const k in DH.frz) DH.frz[k] = Math.max(0, DH.frz[k] - dt); dhEvents(dt);
+                const max = 16 + 4 * NET.players.size + (DH.rush > 0 ? 8 : 0); DH.spawnT -= dt; if (DH.spawnT <= 0 && DH.ducks.length < max) { dhSpawn(); DH.spawnT = DH.rush > 0 ? 0.2 : 0.3; }
                 for (const d of DH.ducks.slice()) { d.life -= dt; if (d.life <= 0) { dhRemove(d, false); continue; } dhMove(d, dt); }
-                if (NET.on) { DH.sendT -= dt; if (DH.sendT <= 0) { DH.sendT = 0.1; netSend({ type: 'dhs', t: DH.t, ice: DH.ice, frz: DH.frz, sc: DH.sc, d: DH.ducks.map(d => [d.id, d.t, d.look, +d.x.toFixed(2), +d.y.toFixed(2), +d.z.toFixed(2), +d.yaw.toFixed(2), d.fly ? 1 : 0]) }); } }
+                if (NET.on) { DH.sendT -= dt; if (DH.sendT <= 0) { DH.sendT = 0.1; netSend({ type: 'dhs', t: DH.t, ice: DH.ice, frz: DH.frz, fin: DH.fin, sc: DH.sc, d: DH.ducks.map(d => [d.id, d.t, d.look, +d.x.toFixed(2), +d.y.toFixed(2), +d.z.toFixed(2), +d.yaw.toFixed(2), d.fly ? 1 : 0, d.maxhp ? +(d.hp / d.maxhp).toFixed(2) : 0]) }); } }
                 if (DH.t <= 0) { if (NET.on) netSend({ type: 'dhend', sc: DH.sc }); dhEnd(); return; }
             } else for (const d of DH.ducks) { d.x += (d.nx - d.x) * Math.min(1, dt * 12); d.y += (d.ny - d.y) * Math.min(1, dt * 12); d.z += (d.nz - d.z) * Math.min(1, dt * 12); d.ph += dt * (d.fly ? 14 : 8); }
             for (const d of DH.ducks) dhPose(d);
             G.timer = Math.max(0, DH.t); dhHudUpdate();
         }
         function dhSnap(m) { // Client: Enten-Zustand vom Host übernehmen
-            DH.t = m.t; DH.ice = m.ice; DH.frz = m.frz || {}; DH.sc = m.sc || {}; const seen = new Set();
-            for (const [id, t, look, x, y, z, yaw, fly] of m.d) { seen.add(id); let d = DH.ducks.find(o => o.id === id); if (!d) { if (DH.gone && DH.gone.has(id)) continue; d = { dh: 1, id, t, look, x, y, z, nx: x, ny: y, nz: z, yaw, fly: !!fly, alive: true, ph: 0 }; dhMesh(d); DH.ducks.push(d); } d.nx = x; d.ny = y; d.nz = z; d.yaw = yaw; }
+            DH.t = m.t; DH.ice = m.ice; DH.frz = m.frz || {}; DH.fin = m.fin || 0; DH.sc = m.sc || {}; const seen = new Set();
+            for (const [id, t, look, x, y, z, yaw, fly, hp] of m.d) { seen.add(id); let d = DH.ducks.find(o => o.id === id); if (!d) { d = { dh: 1, id, t, look, x, y, z, nx: x, ny: y, nz: z, yaw, fly: !!fly, alive: true, ph: 0 }; dhMesh(d); DH.ducks.push(d); } d.nx = x; d.ny = y; d.nz = z; d.yaw = yaw; if (hp) { d.maxhp = 1; d.hp = hp; } }
             for (const d of DH.ducks.slice()) if (!seen.has(d.id)) dhRemove(d, false);
         }
         function dhEnd(sc) {
             if (DH.ended) return; DH.ended = true; document.body.classList.remove('dh'); if (sc) DH.sc = sc; gameEnded = true; document.exitPointerLock(); for (const d of DH.ducks) scene.remove(d.mesh); DH.ducks = [];
-            const me = DH.sc[dhMe()] || 0, best = Math.max(me, PRG.st.dhBest || 0), newBest = me > (PRG.st.dhBest || 0); PRG.st.dhBest = best;
+            const me = DH.sc[dhMe()] || 0, bk = 'dhB_' + DH.w, best = Math.max(me, PRG.st[bk] || 0), newBest = me > (PRG.st[bk] || 0); PRG.st[bk] = best; PRG.st.dhBest = Math.max(PRG.st.dhBest || 0, me);
             xpEvent('dhend', { score: me }); if (me >= 150) { store.cases++; saveStore(); toast('📦 +1 Case', 'Für 150+ Punkte in der Entenjagd'); }
             $('hud').style.display = 'none';
             const names = { me: player.name }; names[NET.pid] = player.name; for (const rp of NET.players.values()) names[rp.pid] = rp.name;
             const table = NET.on ? `<div class="dhres">${Object.entries(DH.sc).sort((a, b) => b[1] - a[1]).map(([p, s], i) => `<div${p === dhMe() ? ' class="me"' : ''}>${['🥇', '🥈', '🥉'][i] || (i + 1) + '.'} ${(names[p] || '?').replace(/</g, '')} <b>${s}</b></div>`).join('')}</div>` : '';
-            showOverlay(`<h1 style="color:#ffd84a">🦆 ENTENJAGD VORBEI<small>${newBest ? '🎉 NEUER PERSÖNLICHER REKORD!' : 'REKORD: ' + best + ' PUNKTE'}</small></h1>
+            showOverlay(`<h1 style="color:#ffd84a">🦆 ENTENJAGD VORBEI<small>${DH_WEAPONS[DH.w][0]} ${DH_WEAPONS[DH.w][1].toUpperCase()} · ${newBest ? '🎉 NEUER REKORD!' : 'REKORD: ' + best + ' PUNKTE'}</small></h1>
  <div class="dhbig">${me}<span>Punkte</span></div>
  <div class="profstats" style="justify-content:center;margin:6px 0 10px"><span>Enten <b>${DH.me.n}</b></span><span>Gold <b>${DH.me.gold}</b></span><span>Specials <b>${DH.me.sp}</b></span><span>Gesamt <b>${PRG.st.ducks || 0}</b> 🦆</span></div>
  ${table}<div id="dhLb" class="dhlb">Bestenliste wird geladen…</div>
  <div><button id="dhAgain" ${NET.on ? 'style="display:none"' : ''}>🔁 Nochmal</button><button id="dhMenu">Zum Menü</button></div>`);
-            $('dhAgain').onclick = () => { DH.on = false; dhStart(); }; $('dhMenu').onclick = leaveGame;
+            $('dhAgain').onclick = () => { const w = DH.w; DH.on = false; dhStart(w); }; $('dhMenu').onclick = leaveGame;
             const nm = ACC ? ACC.u : (player.name || 'Gast');
-            (me > 0 ? accApi('dhscore', { n: nm, s: me, d: DH.me.n }) : accApi('dhlb', {})).then(r => { const el = $('dhLb'); if (el && r.ok) el.innerHTML = dhLbHtml(r, nm); }).catch(() => { const el = $('dhLb'); if (el) el.textContent = 'Bestenliste nicht erreichbar.'; });
+            (me > 0 ? accApi('dhscore', { n: nm, s: me, d: DH.me.n, w: DH.w }) : accApi('dhlb', { w: DH.w })).then(r => { const el = $('dhLb'); if (el && r.ok) el.innerHTML = dhLbHtml(r, nm); }).catch(() => { const el = $('dhLb'); if (el) el.textContent = 'Bestenliste nicht erreichbar.'; });
         }
         function dhLbHtml(r, nm) {
             const col = (t, l) => `<div><h4>${t}</h4>${l.length ? l.map((e, i) => `<div${nm && e.n.toLowerCase() === String(nm).toLowerCase() ? ' class="me"' : ''}>${['🥇', '🥈', '🥉'][i] || (i + 1) + '.'} ${e.n} <b>${e.s}</b></div>`).join('') : '<div style="opacity:.6">Noch keine Einträge</div>'}</div>`;
             return col('📅 HEUTE', r.today || []) + col('🏆 ALLZEIT', r.all || []);
         }
-        function showDuckLb() {
-            showOverlay(`<h1 style="color:#ffd84a">🏆 BESTENLISTE<small>ENTENJAGD</small></h1><div id="dhLb" class="dhlb">Lade…</div><p style="font-size:12px;color:#8fa3b8">Dein Rekord: <b>${PRG.st.dhBest || 0}</b> Punkte · Enten insgesamt: <b>${PRG.st.ducks || 0}</b></p><div><button id="dhLbBack">Zurück</button></div>`);
+        function showDuckLb(w = 'ak47') {
+            showOverlay(`<h1 style="color:#ffd84a">🏆 BESTENLISTE<small>ENTENJAGD</small></h1>
+ <div class="invtabs">${Object.entries(DH_WEAPONS).map(([k, [ic, n]]) => `<b class="${k === w ? 'on' : ''}" data-lbw="${k}">${ic} ${n}</b>`).join('')}</div>
+ <div id="dhLb" class="dhlb">Lade…</div><p style="font-size:12px;color:#8fa3b8">Dein Rekord: <b>${PRG.st['dhB_' + w] || 0}</b> Punkte · Enten insgesamt: <b>${PRG.st.ducks || 0}</b></p><div><button id="dhLbBack">Zurück</button></div>`);
+            document.querySelectorAll('[data-lbw]').forEach(el => el.onclick = () => showDuckLb(el.dataset.lbw));
             $('dhLbBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
-            accApi('dhlb', {}).then(r => { const el = $('dhLb'); if (el && r.ok) el.innerHTML = dhLbHtml(r, ACC ? ACC.u : player.name); }).catch(() => { const el = $('dhLb'); if (el) el.textContent = 'Bestenliste nicht erreichbar.'; });
+            accApi('dhlb', { w }).then(r => { const el = $('dhLb'); if (el && r.ok) el.innerHTML = dhLbHtml(r, ACC ? ACC.u : player.name); }).catch(() => { const el = $('dhLb'); if (el) el.textContent = 'Bestenliste nicht erreichbar.'; });
         }
         function startGame(team) {
             remeshAll(); // Agenten-Thema auf Mitspieler anwenden
@@ -5363,7 +5473,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const th = THEMES[A.theme] || THEME;
             const info = { key, ox, rows, R, C, aabbs: [], meshes: [], spawnT: [], spawnK: [], cells: [], fx: [] }; const grp = new THREE.Group(); scene.add(grp);
             const aCell = (r, c) => (r < 0 || c < 0 || r >= R || c >= C) ? '#' : (rows[r][c] || '.');
-            const box = (x0, x1, y0, y1, z0, z1, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), mat); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); m.castShadow = m.receiveShadow = true; grp.add(m); info.meshes.push(m); info.aabbs.push({ minX: x0, maxX: x1, minZ: z0, maxZ: z1, top: y1, bot: y0 }); };
+            const box = (x0, x1, y0, y1, z0, z1, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), mat); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); m.castShadow = m.receiveShadow = true; grp.add(m); info.meshes.push(m); info.aabbs.push({ minX: x0, maxX: x1, minZ: z0, maxZ: z1, top: y1, bot: y0 }); return m; };
             const aCrateM = new THREE.MeshLambertMaterial({ color: new THREE.Color().setHSL(th.crateHue / 360, th.crateSat / 100, th.crateLight / 100) });
             const aStepM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.floor).multiplyScalar(0.82) });
             const aStegM = new THREE.MeshLambertMaterial({ color: 0x4a5058 });
@@ -5390,7 +5500,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     const ch = aCell(r, c), x = ox + cx(c), z = cx(r);
                     if (!solid(ch)) info.cells.push({ r, c });
                     if (ch === 'T') info.spawnT.push({ x, z }); if (ch === 'K') info.spawnK.push({ x, z });
-                    if (ch === 'c') { box(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, aCrateM); box(x - 0.7, x + 0.7, CRATE_H, CRATE_H * 2, z - 0.7, z + 0.7, aCrateM); }
+                    if (ch === 'c') { const hh = cellHash(r, c); tiltFit(box(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, aCrateM), tiltOf(hh, 5, 7, 0.08)); tiltFit(box(x - 0.7, x + 0.7, CRATE_H, CRATE_H * 2, z - 0.7, z + 0.7, aCrateM), tiltOf(hh, 9, 9, 0.1)); }
                     if (ch === 'C') box(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, aCrateM);
                     if (ch >= '1' && ch <= '6') stairBoxes(aCell, r, c, x, z, ch, (a, b, y0, y1, c0, c1) => box(a, b, y0, y1, c0, c1, aStepM));
                     if (ch === 'h') box(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, aHalfM);
@@ -5976,10 +6086,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // ================= MULTIPLAYER =================
         const NET = { on: false, host: false, ws: null, pid: Math.random().toString(36).slice(2, 8), players: new Map(), sendT: 0, snapT: 0 };
         function netSend(o) { if (NET.ws && NET.ws.readyState === 1) NET.ws.send(JSON.stringify(o)); }
-        function addRemote(pid, name, team, ag) {
+        function addRemote(pid, name, team, ag, hat) {
             if (pid === NET.pid || NET.players.has(pid)) return;
-            const m = makeBotMesh(team, ag);
-            const rp = { remote: true, isPlayer: false, pid, name, team, ag, x: 0, y: 0, z: 0, tx: 0, ty: 0, tz: 0, yaw: 0, tyaw: 0, r: 0.4, alive: true, health: 100, kills: 0, deaths: 0, money: 0, mesh: m.group, hit: m.hit, flash: m.flash, lastShotT: -9, speed: 0, moving: true };
+            const m = makeBotMesh(team, ag, false, hat);
+            const rp = { remote: true, isPlayer: false, pid, name, team, ag, hat, x: 0, y: 0, z: 0, tx: 0, ty: 0, tz: 0, yaw: 0, tyaw: 0, r: 0.4, alive: true, health: 100, kills: 0, deaths: 0, money: 0, mesh: m.group, hit: m.hit, flash: m.flash, lastShotT: -9, speed: 0, moving: true };
             m.hit.forEach(h => h.userData.ent = rp); NET.players.set(pid, rp); ents.push(rp); msg(name + ' ist beigetreten', '', 3);
         }
         function startMP(team) {
@@ -5997,16 +6107,18 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function netMsg(m) {
             switch (m.type) {
                 case 'joined': NET.on = true; NET.host = m.host; NET.inLobby = true; if (NET.host) netSend({ type: 'lmode', mode: NET.mode }); renderLobby();
-                    netSend({ type: 'hello', pid: NET.pid, name: player.name, team: player.team, ag: store.agent }); break;
-                case 'dhstart': if (!NET.host) { if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; } if (m.cfg) Object.assign(CFG, m.cfg); NET.inLobby = false; if (!DH.on || DH.ended) dhStart(); } break;
+                    netSend({ type: 'hello', pid: NET.pid, name: player.name, team: player.team, ag: store.agent, hat: duckHat() ? 1 : 0 }); break;
+                case 'dhstart': if (!NET.host) { if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; } if (m.cfg) Object.assign(CFG, m.cfg); NET.inLobby = false; if (!DH.on || DH.ended) dhStart(m.w); } break;
+                case 'dhev': if (!NET.host) { const el = $('dhBan'); if (el) { el.textContent = m.txt; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); } sfx('start'); } break;
+                case 'dhbh': if (!NET.host) dhBossHit(m.by, m.n); break;
                 case 'dhs': if (!NET.host && DH.on && !DH.ended) dhSnap(m); break;
                 case 'dhhit': if (NET.host && DH.on && !DH.ended) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhKill(d, m.pid, !!m.hs); } break;
-                case 'dhdie': if (!NET.host && DH.on) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhRemove(d, true); else burst(m.x, m.y + 0.5, m.z, 0xffffff, 10, 3); if (m.t === 'b') burst(m.x, m.y + 0.5, m.z, 0xff8a30, 26, 6); dhCredit(m.by, m.t, m.pts, m.m); } break;
+                case 'dhdie': if (!NET.host && DH.on) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhRemove(d, true); else burst(m.x, m.y + 0.5, m.z, 0xffffff, 10, 3); if (m.t === 'b') burst(m.x, m.y + 0.5, m.z, 0xff8a30, 26, 6); dhCredit(m.by, m.t, m.pts, m.m, m.n); } break;
                 case 'dhend': if (!NET.host && DH.on) dhEnd(m.sc); break;
                 case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
-                case 'hello': addRemote(m.pid, m.name, m.team, m.ag); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG }); }
-                    netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: store.agent });
-                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag); if (NET.inLobby) renderLobby(); } break;
+                case 'hello': addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w: DH.w }); }
+                    netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: store.agent, hat: duckHat() ? 1 : 0 });
+                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp) { rp.ag = m.ag; rp.hat = m.hat; } if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag, false, m.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.inLobby) renderLobby(); } break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
                 case 'plant': if (NET.host) plantBomb({ x: m.x, z: m.z, isPlayer: false, money: 0, plantT: 0 }); break;
                 case 'defuse': if (NET.host && G.bomb.state === 'planted') defuseBomb({ isPlayer: false, money: 0, defuseT: 0 }); break;
@@ -6143,7 +6255,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
                 on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
                 on('btnGlMp', 'onclick', () => { const t = +$('glTeamsMp').value; pickArenas(() => glStartMP(t), renderLobby); }); on('btnV1Mp', 'onclick', () => pickArenas(() => { GL.v1 = true; glStartMP(2); }, renderLobby));
-                on('btnDuckMp', 'onclick', () => { NET.inLobby = false; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG }); dhStart(); });
+                on('btnDuckMp', 'onclick', () => dhPick(w => { NET.inLobby = false; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w }); dhStart(w); }, renderLobby));
                 on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 1 }); startGame(player.team); });
                 on('glTeamsMp', 'onchange', e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); });
             }
@@ -6214,7 +6326,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // =====================================================================
         let menuChar = null, menuT = 0;
         function setupMenuScene() {
-            if (!menuChar) { menuChar = makeBotMesh(player.team || 'CT', store.agent, true); const c = spawnCells.CT[0] || { r: 2, c: 2 }; menuChar.group.position.set(cx(c.c), 0, cx(c.r)); }
+            if (!menuChar) { menuChar = makeBotMesh(player.team || 'CT', store.agent, true, duckHat()); const c = spawnCells.CT[0] || { r: 2, c: 2 }; menuChar.group.position.set(cx(c.c), 0, cx(c.r)); }
             menuChar.group.visible = true;
         }
         // FPS-Anzeige: Bilder pro Sekunde + langsamster Frame der letzten Sekunde (zeigt Ruckler)
