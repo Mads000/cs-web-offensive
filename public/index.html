@@ -908,6 +908,13 @@
             text-align: left
         }
 
+        /* News: die letzten drei Patches als Karten nebeneinander */
+        #csnews { position: absolute; left: 28px; right: 28px; top: 84px; gap: 14px; align-items: flex-start; overflow-x: auto }
+        #csnews .newscard { position: static; flex: 1 1 0; min-width: 260px; width: auto; max-width: none; max-height: calc(100vh - 150px); overflow-y: auto }
+        #csnews .newscard:first-child { border-color: rgba(232, 201, 138, .55) }
+        .mob #csnews { top: 48px; left: 10px; right: 10px; gap: 8px }
+        .mob #csnews .newscard { min-width: 240px; max-height: calc(100vh - 64px); padding: 10px 12px }
+
         .cspanel h3 {
             margin: 0 0 10px;
             font: bold 14px 'Arial Black', Impact, sans-serif;
@@ -4394,8 +4401,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <button id="btnGSet">🎮 Regeln</button><button id="btnSet">⌨️ Tasten</button>
  </div>
  </div>
- <div id="csnews" class="cspanel" style="display:none;width:430px;max-height:72vh;overflow-y:auto">
- <h3>NEWS – PATCH 1.1 „BAUMEISTER"</h3>
+ <div id="csnews" style="display:none">
+ <div class="cspanel newscard"><h3>NEU · PATCH 1.1 „BAUMEISTER"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ MAP-EDITOR</p>
@@ -4428,7 +4435,9 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <b>Nur Headshots</b>, <b>Nur Pistolen</b> oder <b>Nur AWP</b> (gratis für alle), <b>Mond- und Weltraum-Schwerkraft</b>, höhere Sprünge, schnelleres Lauftempo und <b>unendlich Munition</b>.<br>
  Teamgröße jetzt von <b>1 gegen 1 bis 6 gegen 6</b>. Online gelten wie immer die Regeln des Hosts.<br><br>
 
- <p style="margin:6px 0;color:#8fa3b8;font:bold 12px Arial">PATCH 1.0 „NEUE ARENA"</p>
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.0 „NEUE ARENA"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎮 NEUE MODI</p>
  <b style="color:#ff6b6b">💀 Deathmatch</b> – Jeder gegen jeden, offline & online. Respawn nach 3 s an einem freien Ort, 1,5 s Spawnschutz, Waffen jederzeit gratis kaufen. Wer zuerst 30 Kills hat (oder nach 10 Min vorne liegt), gewinnt. Rangliste im Scoreboard.<br>
@@ -4462,12 +4471,17 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  Endbildschirm: „Zurück zum Menü" ist wieder klickbar.<br>
  Online: Bots werden jetzt auch bei Spielern angezeigt, die beim Start schon in der Lobby waren. Bot-Kills gegen Online-Spieler werden korrekt gezählt.<br><br>
 
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 0.9 „GLITCH IM GAUNTLET"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">⚔️ GAUNTLET</p>
+ Fähigkeiten [F], Glitch-Varianten, Rerolls, Robo-Agenten, Host-Migration<br><br>
  <p style="margin:6px 0;color:#8fa3b8;font:bold 12px Arial">ÄLTERE UPDATES</p>
- ⚔️ 0.9 „Glitch im Gauntlet": Fähigkeiten [F], Glitch-Varianten, Rerolls, Robo-Agenten, Host-Migration<br>
  🗺️ Neue Karte: de_moisty<br>
  📦 Cases & Inventar getrennt<br>
  📱 Mobile-Version mit Touch-Steuerung<br>
  🌐 Crossplay: PC & Handy im selben Raum
+ </div>
  </div>
  </div>
  <div id="cschar"><b>${savedName || 'Spieler'}</b></div>
@@ -4501,7 +4515,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const setTab = nav => {
                 document.querySelectorAll('#cstabs a').forEach(x => x.classList.toggle('on', x.dataset.nav === nav));
                 $('csplayview').style.display = nav === 'play' ? 'flex' : 'none';
-                $('csnews').style.display = nav === 'news' ? 'block' : 'none';
+                $('csnews').style.display = nav === 'news' ? 'flex' : 'none';
                 $('cschar').style.display = nav === 'play' ? 'none' : 'block';
                 const lg = $('cslogo'); if (lg) lg.style.display = nav === 'home' ? 'block' : 'none';
             };
