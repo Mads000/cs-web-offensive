@@ -6,13 +6,35 @@ const { WebSocketServer } = require('ws');
 const PORT = process.env.PORT || 8081;
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.ico': 'image/x-icon' };
 
-// ── Accounts ohne Datenbank: alles in data/users.json (Passwörter nur als scrypt-Hash) ──
+// ── Accounts ohne Datenbank (Passwörter nur als scrypt-Hash) ──
+// Mit GIST_ID + GIST_TOKEN (Umgebungsvariablen, z.B. bei Render) → dauerhaft in einem privaten GitHub-Gist,
+// sonst lokal in data/users.json. Render löscht die Festplatte bei jedem Deploy/Neustart, daher der Gist.
 const crypto = require('crypto');
 const DATA_DIR = path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json');
 const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick'];
-let USERS = {}; try { USERS = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { }
-let saveT = null;
-function persist() { clearTimeout(saveT); saveT = setTimeout(() => { fs.mkdirSync(DATA_DIR, { recursive: true }); const tmp = USERS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(USERS)); fs.renameSync(tmp, USERS_FILE); }, 500); }
+const GIST_ID = process.env.GIST_ID, GIST_TOKEN = process.env.GIST_TOKEN, GIST_FILE = 'users.json';
+const GH = { Authorization: 'Bearer ' + GIST_TOKEN, Accept: 'application/vnd.github+json', 'User-Agent': 'cs-web-offensive' };
+let USERS = {}, loaded = false, saveT = null, writing = false, again = false;
+async function loadUsers() {
+ if (!GIST_ID || !GIST_TOKEN) { try { USERS = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { } loaded = true; console.log('Accounts: lokale Datei (' + Object.keys(USERS).length + ')'); return; }
+ try {
+ const r = await fetch('https://api.github.com/gists/' + GIST_ID, { headers: GH }); if (!r.ok) throw new Error('HTTP ' + r.status);
+ const f = (await r.json()).files[GIST_FILE], txt = !f ? '{}' : f.truncated ? await (await fetch(f.raw_url, { headers: GH })).text() : f.content;
+ USERS = JSON.parse(txt || '{}'); loaded = true; console.log('Accounts: Gist geladen (' + Object.keys(USERS).length + ')');
+ } catch (e) { console.error('Gist laden fehlgeschlagen (' + e.message + ') – neuer Versuch in 10 s'); setTimeout(loadUsers, 10000); } // nie mit leerem Stand überschreiben
+}
+async function writeUsers() {
+ if (!loaded) return; if (writing) { again = true; return; } writing = true;
+ try {
+ if (GIST_ID && GIST_TOKEN) { const r = await fetch('https://api.github.com/gists/' + GIST_ID, { method: 'PATCH', headers: GH, body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(USERS) } } }) }); if (!r.ok) throw new Error('HTTP ' + r.status); }
+ else { fs.mkdirSync(DATA_DIR, { recursive: true }); const tmp = USERS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(USERS)); fs.renameSync(tmp, USERS_FILE); }
+ } catch (e) { console.error('Accounts speichern fehlgeschlagen: ' + e.message); again = true; }
+ writing = false; if (again) { again = false; persist(); }
+}
+function persist() { clearTimeout(saveT); saveT = setTimeout(writeUsers, GIST_ID ? 3000 : 500); } // Gist: Änderungen 3 s sammeln (schont das GitHub-Limit)
+loadUsers();
+// Render beendet den Server mit SIGTERM (Deploy/Ruhemodus) → offene Änderungen vorher noch speichern
+process.on('SIGTERM', async () => { clearTimeout(saveT); while (writing) await new Promise(r => setTimeout(r, 100)); await writeUsers(); process.exit(0); });
 const hashPw = (pw, salt) => crypto.scryptSync(pw, salt, 32).toString('hex');
 const cleanData = d => { const o = {}; if (d && typeof d === 'object') for (const k of SYNC_KEYS) if (typeof d[k] === 'string') o[k] = d[k]; return o; };
 const byTok = tok => typeof tok === 'string' && tok.length === 48 ? Object.values(USERS).find(u => u.toks.includes(tok)) : null;
@@ -20,6 +42,7 @@ const newTok = u => { const t = crypto.randomBytes(24).toString('hex'); u.toks =
 const tries = new Map(); // einfache Bremse gegen Passwort-Raten: max. 10 Versuche pro Minute und IP
 function limited(ip) { const now = Date.now(), t = (tries.get(ip) || []).filter(x => now - x < 60000); t.push(now); tries.set(ip, t); return t.length > 10; }
 function api(p, b, ip) {
+ if (!loaded) return { err: 'Server startet gerade – bitte in ein paar Sekunden nochmal.' };
  if (p === '/api/register' || p === '/api/login') {
  if (limited(ip)) return { err: 'Zu viele Versuche – bitte kurz warten.' };
  const name = String(b.u || '').trim(), key = name.toLowerCase(), pw = String(b.p || '');
