@@ -1,0 +1,17 @@
+{
+  "name": "Counter-Strike: Web Offensive",
+  "short_name": "CS:WO",
+  "description": "Taktik-Shooter mit Bots, Online-Lobbys, Map-Editor und Arenen",
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#0b1015",
+  "theme_color": "#0b1015",
+  "lang": "de",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

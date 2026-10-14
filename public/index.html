@@ -9,6 +9,33 @@
 
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔫</text></svg>">
+    <!-- PWA: als App installierbar (eigenes Icon, ohne Adressleiste) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b1015">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CS:WO">
+    <style>
+        /* Ladebildschirm – steht vor allem anderen, damit er sofort sichtbar ist */
+        #loader { position: fixed; inset: 0; z-index: 100000; background: radial-gradient(circle at 50% 40%, #1a2430, #0b1015 70%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; transition: opacity .5s; font-family: Arial, sans-serif }
+        #loader.done { opacity: 0; pointer-events: none }
+        #loader img { width: 110px; height: 110px; border-radius: 22px; box-shadow: 0 0 40px rgba(232, 201, 138, .25); animation: ldPulse 1.6s ease-in-out infinite }
+        #loader b { font: 900 30px 'Arial Black', Impact, sans-serif; letter-spacing: 6px; color: #e8c98a }
+        #loader i { display: block; width: min(320px, 70vw); height: 6px; background: rgba(255, 255, 255, .1); border-radius: 3px; overflow: hidden }
+        #loader i::after { content: ''; display: block; height: 100%; width: 100%; background: #e8c98a; transform-origin: left; animation: ldBar 6s cubic-bezier(.1, .7, .3, 1) forwards }
+        #loader.done i::after { animation: none; transform: scaleX(1) }
+        #loader small { color: #8fa3b8; font-size: 13px; letter-spacing: 1px }
+        @keyframes ldBar { from { transform: scaleX(0) } to { transform: scaleX(.92) } }
+        @keyframes ldPulse { 50% { transform: scale(1.05) } }
+        /* Kein Browser-Gefühl: nichts markieren/ziehen, kein Antipp-Menü, kein Doppeltipp-Zoom, eigener Mauszeiger */
+        html, body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; overscroll-behavior: none }
+        input, textarea, select { -webkit-user-select: text; user-select: text }
+        img, canvas { -webkit-user-drag: none }
+        body { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z' fill='%23e8c98a' stroke='%23111' stroke-width='1.5'/%3E%3C/svg%3E") 2 2, auto }
+        button, a, [data-nav], [data-cat], .mapc, .arc, label, select { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z' fill='%23ffffff' stroke='%23111' stroke-width='1.5'/%3E%3C/svg%3E") 2 2, pointer }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
@@ -2052,6 +2079,20 @@
 .mob .mebtns button{ font-size:14px; padding:9px 6px; }
 /* ── Tabs oben: am Handy kompakter (MAP-/ARENA-EDITOR passen daneben) ── */
 .mob #cstabs a{ padding:10px 7px; font-size:11px; letter-spacing:1px; }
+/* ── Level & Erfolge ── */
+.toast{ position:fixed; top:70px; left:50%; transform:translateX(-50%); z-index:99990; background:rgba(14,22,32,.95); border:1px solid #e8c98a; border-radius:8px; padding:10px 18px; text-align:center; font:13px Arial; color:#cfd8e3; box-shadow:0 6px 24px rgba(0,0,0,.5); animation:toastIn .35s ease-out; pointer-events:none; }
+.toast b{ display:block; font:bold 16px Arial; color:#e8c98a; } .toast.out{ opacity:0; transition:opacity .4s; }
+@keyframes toastIn{ from{ opacity:0; transform:translate(-50%,-14px); } }
+.lvchip{ font:bold 11px Arial; color:#111; background:#e8c98a; border-radius:3px; padding:2px 5px; }
+.profbox{ display:flex; gap:18px; align-items:center; flex-wrap:wrap; justify-content:center; background:#141e28; border:1px solid rgba(232,201,138,.4); border-radius:8px; padding:14px 18px; max-width:min(640px,94vw); text-align:left; }
+.proflv{ width:92px; height:92px; border-radius:50%; border:3px solid #e8c98a; display:flex; flex-direction:column; align-items:center; justify-content:center; background:radial-gradient(circle at 35% 30%, #2b3d52, #0e1620); }
+.proflv b{ font:900 34px 'Arial Black', Impact, sans-serif; color:#e8c98a; line-height:1; } .proflv span{ font:bold 10px Arial; color:#cfd8e3; text-align:center; }
+.profbar{ height:8px; background:rgba(255,255,255,.1); border-radius:4px; overflow:hidden; margin:4px 0 8px; } .profbar i{ display:block; height:100%; background:#e8c98a; }
+.profstats{ display:flex; flex-wrap:wrap; gap:6px 14px; font:12px Arial; color:#8fa3b8; } .profstats b{ color:#fff; }
+.achgrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:6px; max-width:min(820px,94vw); max-height:calc(100vh - 330px); overflow-y:auto; margin-bottom:10px; }
+.ach{ display:grid; grid-template-columns:30px 1fr; column-gap:6px; align-items:center; text-align:left; background:#141e28; border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:6px 8px; opacity:.45; filter:grayscale(1); }
+.ach.on{ opacity:1; filter:none; border-color:#e8c98a; } .ach i{ grid-row:span 2; font-style:normal; font-size:22px; } .ach b{ font:bold 12px Arial; color:#fff; } .ach span{ font:10px Arial; color:#8fa3b8; }
+.mob .achgrid{ max-height:calc(100vh - 230px); } .mob .toast{ top:50px; }
 /* ── Arena-Editor: Liste ── */
 #arList{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:min(900px,94vw); max-height:calc(100vh - 230px); overflow-y:auto; margin-bottom:10px; }
 .arc{ position:relative; width:110px; padding:6px; background:#141e28; border:1px solid rgba(255,255,255,.18); border-radius:6px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font:12px Arial; color:#cfd8e3; }
@@ -2382,6 +2423,11 @@ body.edit #tlook{ pointer-events:none; }
 </head>
 
 <body>
+    <div id="loader"><img src="icon-192.png" alt=""><b>CS:WO</b><i></i><small id="ldTxt">Lade Spiel…</small></div>
+    <script>
+        // Falls beim Laden etwas schiefgeht: Hinweis statt endlosem Ladebildschirm
+        addEventListener('error', () => { const t = document.getElementById('ldTxt'); if (t && document.getElementById('loader')) t.textContent = 'Fehler beim Laden – bitte Seite neu laden.'; });
+    </script>
     <div id="hud">
         <canvas id="radar" width="170" height="170"></canvas>
         <div id="aliveL"></div>
@@ -2453,7 +2499,7 @@ body.edit #tlook{ pointer-events:none; }
         // =====================================================================
         //  ACCOUNT / CLOUD-SAVE (Server speichert in data/users.json, keine Datenbank)
         // =====================================================================
-        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff'];
+        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog'];
         let ACC = null; try { ACC = JSON.parse(localStorage.getItem('cs_acc') || 'null'); } catch (e) { }
         let accT = null, accMute = false, accReady = !ACC; // accReady: erst nach dem Abgleich beim Start hochladen (sonst überschreibt ein altes Gerät neueren Stand)
         const accApi = (p, b) => fetch('/api/' + p, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json());
@@ -2478,6 +2524,46 @@ body.edit #tlook{ pointer-events:none; }
         }
         // Beim Start: neuerer Stand auf dem Server (von einem anderen Gerät)? → übernehmen und neu laden
         if (ACC) accApi('pull', { tok: ACC.tok }).then(r => { if (r.relog) return accLogout(true); if (r.ok && r.ver > ACC.ver && !started) { accApply(r.data, r.ver); location.reload(); return; } accReady = true; }).catch(() => { accReady = true; });
+        // =====================================================================
+        //  LEVEL & ERFOLGE (gespeichert in 'prog', mit dem Account synchronisiert)
+        // =====================================================================
+        let instEvt = null, roundKills = 0; // instEvt: PWA-Installationsangebot des Browsers
+        let PRG = { xp: 0, st: {}, ach: {} }; try { const o = JSON.parse(localStorage.getItem('prog') || '{}'); PRG = { xp: +o.xp || 0, st: o.st || {}, ach: o.ach || {} }; } catch (e) { }
+        const RANKS = ['Rekrut', 'Gefreiter', 'Obergefreiter', 'Unteroffizier', 'Feldwebel', 'Leutnant', 'Hauptmann', 'Major', 'Oberst', 'General', 'Global Elite'];
+        const lvlOf = xp => Math.floor(Math.sqrt(xp / 60)) + 1, xpFor = l => 60 * (l - 1) * (l - 1), rankOf = l => RANKS[Math.min(RANKS.length - 1, Math.floor((l - 1) / 3))];
+        const ACHS = [ // [id, Icon, Name, Beschreibung, Bedingung(Statistik, Level)]
+            ['first', '🩸', 'Erstes Blut', 'Erziele Deinen ersten Kill', s => s.kills >= 1], ['k100', '💯', 'Hundert', '100 Kills', s => s.kills >= 100], ['k1000', '☠️', 'Tausend Tode', '1.000 Kills', s => s.kills >= 1000],
+            ['hs50', '🎯', 'Kopfgeldjäger', '50 Headshots', s => s.hs >= 50], ['knife', '🔪', 'Klingenmeister', 'Kill mit dem Messer', s => s.knife >= 1], ['awp', '🔭', 'Scharfschütze', '10 Kills mit der AWP', s => s.awp >= 10],
+            ['ace', '⭐', 'Ass', '5 Kills, ohne zu sterben', s => s.ace >= 1], ['plant', '💣', 'Sprengmeister', 'Bombe 10× legen', s => s.plant >= 10], ['defuse', '🧯', 'Entschärfer', 'Bombe entschärfen', s => s.defuse >= 1],
+            ['win1', '🏆', 'Erster Sieg', 'Ein Match gewinnen', s => s.wins >= 1], ['win25', '👑', 'Champion', '25 Matches gewinnen', s => s.wins >= 25], ['m10', '🎮', 'Stammspieler', '10 Matches spielen', s => s.matches >= 10],
+            ['glwin', '⚔️', 'Gladiator', 'Gauntlet oder 1v1 gewinnen', s => s.glwins >= 1], ['cases', '📦', 'Sammler', '25 Cases öffnen', s => s.cases >= 25], ['made', '🛠', 'Baumeister', 'Eigene Karte oder Arena speichern', s => s.made >= 1],
+            ['lvl10', '🎖️', 'Veteran', 'Level 10 erreichen', (s, l) => l >= 10]];
+        // Spielereignis → Statistik, XP, Level-Up und Erfolge
+        function xpEvent(ev, x = {}) {
+            const st = PRG.st, add = (k, v = 1) => st[k] = (st[k] || 0) + v; let xp = 0;
+            if (ev === 'kill') { add('kills'); xp += 10; if (x.hs) { add('hs'); xp += 5; } if (x.w === 'knife') { add('knife'); xp += 15; } if (x.w === 'awp') add('awp'); if (++roundKills === 5) { add('ace'); xp += 50; } }
+            else if (ev === 'round') xp += 20; else if (ev === 'plant' || ev === 'defuse') { add(ev); xp += 15; } else if (ev === 'case') add('cases'); else if (ev === 'made') add('made');
+            else if (ev === 'match' || ev === 'glmatch') { add('matches'); xp += 50; if (x.won) { add(ev === 'match' ? 'wins' : 'glwins'); xp += 100; } }
+            const before = lvlOf(PRG.xp); PRG.xp += xp; const lv = lvlOf(PRG.xp);
+            if (lv > before) toast('⬆ LEVEL ' + lv, rankOf(lv) !== rankOf(before) ? 'Neuer Rang: ' + rankOf(lv) : 'Weiter so!');
+            for (const a of ACHS) if (!PRG.ach[a[0]] && a[4](st, lv)) { PRG.ach[a[0]] = Date.now(); toast(a[1] + ' Erfolg: ' + a[2], a[3]); }
+            localStorage.setItem('prog', JSON.stringify(PRG));
+        }
+        // kleine Einblendung oben (nacheinander, je 3,5 s)
+        const toastQ = []; let toastOn = false;
+        function toast(title, sub) { toastQ.push([title, sub]); if (!toastOn) toastNext(); }
+        function toastNext() { const t = toastQ.shift(); if (!t) { toastOn = false; return; } toastOn = true; const el = document.createElement('div'); el.className = 'toast'; el.innerHTML = '<b></b><span></span>'; el.firstChild.textContent = t[0]; el.lastChild.textContent = t[1] || ''; document.body.appendChild(el); sfx('win'); setTimeout(() => el.classList.add('out'), 3200); setTimeout(() => { el.remove(); toastNext(); }, 3600); }
+        function showProfile() {
+            const lv = lvlOf(PRG.xp), a = xpFor(lv), b = xpFor(lv + 1), st = PRG.st, got = ACHS.filter(x => PRG.ach[x[0]]).length, v = k => st[k] || 0;
+            showOverlay(`<h1 style="font-size:34px">🏅 PROFIL<small>LEVEL & ERFOLGE</small></h1>
+ <div class="profbox"><div class="proflv"><b>${lv}</b><span>${rankOf(lv)}</span></div>
+ <div style="flex:1;min-width:200px"><div style="font-size:12px;color:#8fa3b8">${PRG.xp - a} / ${b - a} XP bis Level ${lv + 1}</div><div class="profbar"><i style="width:${Math.round((PRG.xp - a) / (b - a) * 100)}%"></i></div>
+ <div class="profstats"><span>Kills <b>${v('kills')}</b></span><span>Headshots <b>${v('hs')}</b></span><span>Matches <b>${v('matches')}</b></span><span>Siege <b>${v('wins') + v('glwins')}</b></span><span>Bomben <b>${v('plant')}</b></span><span>Entschärft <b>${v('defuse')}</b></span></div></div></div>
+ <div style="font:bold 12px Arial;letter-spacing:2px;color:#8fa3b8;margin:10px 0 6px">ERFOLGE ${got} / ${ACHS.length}</div>
+ <div class="achgrid">${ACHS.map(x => `<div class="ach${PRG.ach[x[0]] ? ' on' : ''}"><i>${x[1]}</i><b>${x[2]}</b><span>${x[3]}</span></div>`).join('')}</div>
+ <div><button id="profBack">Zurück</button></div>`);
+            $('profBack').onclick = showMenu;
+        }
         function showAccount() {
             if (ACC) {
                 showOverlay(`<h1 style="font-size:36px">☁️ ACCOUNT<small>EINGELOGGT</small></h1>
@@ -3467,7 +3553,7 @@ body.edit #tlook{ pointer-events:none; }
             if (att && att.isPlayer && att !== e) { hitT = 0.12; hitHS = !!hs; sfx(hs ? 'hs' : 'hit'); } if (e.health <= 0) { e.health = 0; kill(e, att, w, hs); }
         }
         function kill(e, att, w, hs) {
-            e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
+            if (e.isPlayer) roundKills = 0; e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
             if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
             else if (!e.remote && e.weapon && e.weapon.slot === 1) { const dd = dropWeapon(e.weapon, e.x, e.z, e.weapon.mag, 0, null); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } }
             if (att && att !== e) { if (att.team !== e.team || GL.on || DM.on) { att.kills++; att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
@@ -3544,6 +3630,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             b.ammo = b.weapon.mag;
         }
         function startRound() {
+            roundKills = 0;
             clearDrops(); clearNades(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear();
             const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } funLoadout(p); p.weapons[5] = null; p.alive = true; p.health = 100;
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); funLoadout(b); }
@@ -3556,7 +3643,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (NET.on && NET.host) { netSend({ type: 'round', rd: G.round, site: G.site }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); }
         }
         function endRound(winner, reason) {
-            if (G.state !== 'live') return; G.state = 'end'; G.t = 5; G.score[winner]++; const loser = winner === 'CT' ? 'T' : 'CT'; G.loss[winner] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
+            if (G.state !== 'live') return; G.state = 'end'; G.t = 5; G.score[winner]++; if (winner === player.team) xpEvent('round'); const loser = winner === 'CT' ? 'T' : 'CT'; G.loss[winner] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
             const winBonus = reason.includes('explodiert') ? 3500 : 3250, loseBonus = 1400 + 500 * (G.loss[loser] - 1);
             for (const e of ents) { e.money = Math.min(16000, e.money + (e.team === winner ? winBonus : loseBonus)); if (e.team === 'T' && G.bomb.state !== 'carried' && G.bomb.state !== 'dropped') e.money = Math.min(16000, e.money + 300); }
             msg(winner === 'CT' ? 'Counter-Terrorists gewinnen' : 'Terroristen gewinnen', reason, 5); sfx(player.team === winner ? 'win' : 'lose'); hideProgress(); closeBuy();
@@ -3576,7 +3663,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             for (const e of ents) { if (!e.alive || e.remote) continue; const d = Math.hypot(e.x - G.bomb.x, e.z - G.bomb.z); if (d < 16) applyDamage(e, 400 * (1 - d / 16), null, null, false); }
         }
         function gameOver() {
-            if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); $('hud').style.display = 'none'; store.cases++; saveStore(); if (DM.on) { dmReport(); return; } const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
+            if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); $('hud').style.display = 'none'; store.cases++; saveStore(); xpEvent('match', { won: DM.on ? dmRank()[0] === player : G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT'] }); if (DM.on) { dmReport(); return; } const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
             showOverlay(`<h1 style="color:${won ? 'var(--acc)' : '#8da0b5'}">${won ? 'SIEG' : 'NIEDERLAGE'}<small>SPIEL BEENDET</small></h1>
 <div class="panel" style="min-width:320px;text-align:left">
 <div class="psub">MATCH-REPORT · ${MAPLABEL.toUpperCase()}</div>
@@ -3873,9 +3960,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const p = player; let prog = null;
             if (p.alive && G.state === 'live') {
                 const nearBomb = G.bomb.state === 'planted' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2.0;
-                if (p.team === 'CT' && nearBomb && down('use') && p.speed === 0) { p.defuseT += dt; const need = p.kit ? 5 : 10; prog = { v: p.defuseT / need, txt: 'Entschärfe Bombe…' }; if (p.defuseT >= need) { prog = null; if (NET.on && !NET.host) { p.defuseT = 0; netSend({ type: 'defuse' }); p.money = Math.min(16000, p.money + 300); } else defuseBomb(p); } } else p.defuseT = 0;
+                if (p.team === 'CT' && nearBomb && down('use') && p.speed === 0) { p.defuseT += dt; const need = p.kit ? 5 : 10; prog = { v: p.defuseT / need, txt: 'Entschärfe Bombe…' }; if (p.defuseT >= need) { prog = null; xpEvent('defuse'); if (NET.on && !NET.host) { p.defuseT = 0; netSend({ type: 'defuse' }); p.money = Math.min(16000, p.money + 300); } else defuseBomb(p); } } else p.defuseT = 0;
                 if (p.team === 'CT' && nearBomb && G.msgT <= 0) $('sub').textContent = `Halte [${keyName(BIND.use)}] zum Entschärfen` + (p.kit ? ' (Kit)' : ''); const inSite = ['A', 'B'].includes(cell(cr(p.z), cr(p.x)));
-                if (p.team === 'T' && p.slot === 5 && p.weapons[5] && mouseDown && inSite && p.speed === 0) { p.plantT += dt; prog = { v: p.plantT / 3, txt: 'Platziere Bombe…' }; if (Math.floor(p.plantT * 3) !== Math.floor((p.plantT - dt) * 3)) sfx('plant'); if (p.plantT >= 3) { prog = null; if (NET.on && !NET.host) { p.plantT = 0; netSend({ type: 'plant', x: p.x, z: p.z }); p.money = Math.min(16000, p.money + 300); p.weapons[5] = null; p.slot = p.weapons[1] ? 1 : 2; p.switchT = 1; updateVM(); } else plantBomb(p); } } else p.plantT = 0;
+                if (p.team === 'T' && p.slot === 5 && p.weapons[5] && mouseDown && inSite && p.speed === 0) { p.plantT += dt; prog = { v: p.plantT / 3, txt: 'Platziere Bombe…' }; if (Math.floor(p.plantT * 3) !== Math.floor((p.plantT - dt) * 3)) sfx('plant'); if (p.plantT >= 3) { prog = null; xpEvent('plant'); if (NET.on && !NET.host) { p.plantT = 0; netSend({ type: 'plant', x: p.x, z: p.z }); p.money = Math.min(16000, p.money + 300); p.weapons[5] = null; p.slot = p.weapons[1] ? 1 : 2; p.switchT = 1; updateVM(); } else plantBomb(p); } } else p.plantT = 0;
                 if (p.team === 'T' && p.weapons[5] && inSite && G.msgT <= 0) $('sub').textContent = p.slot === 5 ? 'Halte Feuertaste zum Platzieren' : 'Taste [5]: Bombe auswählen';
             } else p.defuseT = p.plantT = 0;
             if (prog) { $('prog').style.display = 'block'; $('prog').firstElementChild.style.width = (prog.v * 100) + '%'; $('progtxt').style.display = 'block'; $('progtxt').textContent = prog.txt; } else hideProgress();
@@ -4031,7 +4118,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             $('dmg').style.opacity = dmgFlash * 0.9; $('flash').style.opacity = whiteFlash; $('hitm').style.opacity = hitT > 0 ? 1 : 0;
             if (hitT > 0) { const hc = hitHS ? '#ff3030' : '#fff'; for (const el of $('hitm').children) { el.style.background = hc; el.style.boxShadow = hitHS ? '0 0 6px #ff3030' : '0 0 2px #000'; } }
         }
-        function killPop(name, hs) { const el = $('killpop'); el.innerHTML = `${hs ? '☠ HEADSHOT' : '✓ ELIMINIERT'}<span>${name}</span>`; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
+        function killPop(name, hs) { const kw = player.weapons[player.slot]; xpEvent('kill', { hs, w: kw && kw.def.key }); const el = $('killpop'); el.innerHTML = `${hs ? '☠ HEADSHOT' : '✓ ELIMINIERT'}<span>${name}</span>`; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
         function killfeed(att, vic, w, hs) { const nm = e => `<span class="${e.team === 'CT' ? 'ct' : 't'}">${e.name}</span>`; const d = document.createElement('div'); d.innerHTML = `${att ? nm(att) : '💣'} <span style="color:#fff">[${w ? w.name : 'Bombe'}${hs ? ' ☠' : ''}]</span> ${nm(vic)}`; const f = $('killfeed'); f.prepend(d); while (f.children.length > 6) f.lastChild.remove(); setTimeout(() => d.remove(), 6000); }
         function renderBoard() {
             if (GL.on) { $('board').innerHTML = glBoard(); return; }
@@ -4161,7 +4248,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             document.querySelectorAll('[data-eq]').forEach(el => el.onclick = () => { const id = el.dataset.eq, s = SKINS.find(x => x.id === id); store.equip[s.w] = store.equip[s.w] === id ? undefined : id; saveStore(); applySkins(); showInventory(); });
         }
         function openCase() {
-            if (store.cases < 1) return; store.cases--; saveStore(); initAudio();
+            if (store.cases < 1) return; store.cases--; saveStore(); initAudio(); xpEvent('case');
             const win = rollSkin(), N = 40, WIN = 34, cw = 128;
             let cards = '';
             for (let i = 0; i < N; i++) { const s = i === WIN ? win : rnd(SKINS); cards += `<div class="ccard" style="border-color:${RARITY[s.r][0]}"><span class="sksw" style="background-image:url(${skinSwatch(s)})"></span><i style="background:${RARITY[s.r][0]}"></i>${s.n}</div>`; }
@@ -4470,7 +4557,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const k = editKey || newMapKey(n, ar);
                 regMap(k, mapData()); if (!(ar ? ARENAS[k] : MAPS[k]) || !CMAP_INFO[k]) { msgEl.textContent = 'Ungültige Daten – bitte prüfen.'; return null; }
                 ST[k] = Object.assign({ g: ar ? ARENAS[k].rows : MAPS[k] }, CMAP_INFO[k]); ar ? saveCARS() : saveCMaps(); if (ar) delete GA.built[k]; // geänderte Arena beim nächsten Duell neu bauen
-                editKey = k; saved = true; $('meH').querySelector('small').textContent = 'EIGENE ' + KIND + ' BEARBEITEN'; msgEl.style.color = '#7c7'; msgEl.textContent = '✓ Gespeichert'; return k;
+                editKey = k; saved = true; xpEvent('made'); $('meH').querySelector('small').textContent = 'EIGENE ' + KIND + ' BEARBEITEN'; msgEl.style.color = '#7c7'; msgEl.textContent = '✓ Gespeichert'; return k;
             };
             $('meSave').onclick = save;
             $('mePlay').onclick = () => { const k = save(); if (!k) return; localStorage.setItem('map', k); sessionStorage.setItem('opentab', 'play'); location.reload(); };
@@ -4487,7 +4574,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             showOverlay(`
  <div id="csmenu">
  <div id="cstop">
- <div class="ctic"><span id="navHome">🏠</span><span id="navSet">⚙️</span><span id="navOff">⏻</span></div>
+ <div class="ctic"><span id="navHome">🏠</span><span id="navProf" title="Profil & Erfolge">🏅</span><span id="navSet">⚙️</span><span id="navInst" title="Als App installieren" style="${instEvt ? '' : 'display:none'}">📲</span><span id="navOff">⏻</span></div>
  <nav id="cstabs">
  <a data-nav="inv">INVENTAR</a>
  <a data-nav="play">SPIELEN</a>
@@ -4496,7 +4583,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <a data-nav="maps">MAP-EDITOR</a>
  <a data-nav="arenas">ARENA-EDITOR</a>
  </nav>
- <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}">${ACC ? `<b>Eingeloggt als <span style="color:#e8c98a">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
+ <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}"><span class="lvchip" title="${rankOf(lvlOf(PRG.xp))}">Lv ${lvlOf(PRG.xp)}</span>${ACC ? `<b>Eingeloggt als <span style="color:#e8c98a">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
  </div>
  <div id="cslogo" style="position:absolute;left:28px;top:90px;pointer-events:none">
  <div style="font:700 12px Rajdhani;letter-spacing:.45em;color:var(--mut)">BROWSER TACTICAL SHOOTER</div>
@@ -4535,7 +4622,33 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 1.3 „COMMUNITY"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 1.4 „GAME ON"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📲 ALS APP INSTALLIEREN</p>
+ <b style="color:#ffd964">CS:WO ist jetzt eine echte App:</b> Klick oben links auf <b>📲</b> (Chrome/Edge, Android) – danach startet das Spiel mit eigenem Icon im Vollbild, ganz ohne Adressleiste. Am Handy automatisch im Querformat.<br>
+ iPhone: In Safari auf <b>Teilen → „Zum Home-Bildschirm"</b>.<br>
+ Nach dem ersten Start lädt das Spiel deutlich schneller. Updates kommen trotzdem sofort an.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">⏳ LADEBILDSCHIRM</p>
+ Neuer Startbildschirm mit Logo und Ladebalken statt leerem Bild – blendet weich ins Menü über.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎮 FÜHLT SICH WIE EIN SPIEL AN</p>
+ Kein versehentliches Markieren von Text, kein Browser-Rechtsklickmenü, kein Bilder-Ziehen.<br>
+ Am Handy: kein Doppeltipp- oder Pinch-Zoom und kein Hüpfen beim Scrollen mehr.<br>
+ Eigener goldener Mauszeiger im Menü.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🏅 LEVEL & RÄNGE</p>
+ Sammle <b>XP</b> für Kills (+10), Headshots (+5), Messer-Kills (+15), Rundensiege (+20), Bombe legen/entschärfen (+15), Asse (+50), jedes Match (+50) und Siege (+100).<br>
+ Steig auf vom <b>Rekrut</b> über Feldwebel und Hauptmann bis zur <b>Global Elite</b> – alle 3 Level ein neuer Rang. Dein Level steht oben neben Deinem Namen.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🏆 ERFOLGE</p>
+ <b>16 Erfolge</b> warten – von <i>Erstes Blut</i> über <i>Ass</i> und <i>Klingenmeister</i> bis <i>Champion</i>, <i>Gladiator</i> und <i>Baumeister</i>. Freigeschaltete Erfolge und Level-Ups erscheinen direkt im Spiel.<br>
+ Oben links auf <b>🏅</b>: Profil mit Level, Rang, XP-Balken, Statistik und allen Erfolgen.<br>
+ Level & Erfolge werden mit Deinem Account gespeichert.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.3 „COMMUNITY"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🌍 COMMUNITY-KARTEN & -ARENEN</p>
@@ -4673,7 +4786,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.3 „Community" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
+ <div id="csver">CS:WO 1.4 „Game On" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -4766,7 +4879,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); };
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = showGameSettings;
-            $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navOff').onclick = () => location.reload();
+            $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navProf').onclick = showProfile;
+            $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
             else if (sessionStorage.getItem('opentab') === 'maps') { sessionStorage.removeItem('opentab'); showMapList(); }
         }
@@ -5393,7 +5507,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function glGameOver(winner) {
             GL.phase = 'over'; gameEnded = true; document.exitPointerLock(); setArena(null); stopFreecam(); $('hud').style.display = 'none';
             if (NET.on && NET.host) netSend({ type: 'glover', w: winner ? winner.id : null }); const won = winner === GL.myTeam;
-            store.cases += won ? 2 : 1; saveStore();
+            store.cases += won ? 2 : 1; saveStore(); xpEvent('glmatch', { won });
             showOverlay(`<h1 style="color:${won ? 'var(--acc)' : '#8da0b5'}">${won ? '🏆 SIEG' : GL.v1 ? '1V1 VORBEI' : 'GAUNTLET VORBEI'}<small>${winner ? winner.name + ' gewinnt das Turnier' : ''}</small></h1>
  <div class="panel" style="min-width:320px;text-align:left">
  <div class="psub">${GL.v1 ? '1V1-REPORT' : 'GAUNTLET-REPORT'}</div>
@@ -5518,7 +5632,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
                     if (!NET.host && !started) { NET.inLobby = false; $('overlay').style.display = 'none'; startGameClient(); } break; case 'roster': if (!NET.host && bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); ents = [player, ...bots, ...NET.players.values()]; } break;
                 case 'round': if (!NET.host && (!m.to || m.to === NET.pid)) { G.round = m.rd; G.site = m.site; clientRound(); } break; case 'end': if (!NET.host) {
-                    G.state = 'end'; const loser = m.w === 'CT' ? 'T' : 'CT';
+                    G.state = 'end'; const loser = m.w === 'CT' ? 'T' : 'CT'; if (m.w === player.team) xpEvent('round');
                     G.loss[m.w] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
                     player.money = Math.min(16000, player.money + (player.team === m.w ? (m.rs.includes('explodiert') ? 3500 : 3250) : 1400 + 500 * (G.loss[loser] - 1)));
                     msg(m.w === 'CT' ? 'Counter-Terrorists gewinnen' : 'Terroristen gewinnen', m.rs, 5);
@@ -5653,6 +5767,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             renderer.domElement.requestPointerLock(); msg('Verbunden – warte auf Host…', '', 4);
         }
         function clientRound() {
+            roundKills = 0;
             clearDrops(); clearNades();
             const p = player;
             if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.armor = 0; p.helmet = false; p.kit = false; }
@@ -5729,6 +5844,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             renderer.render(scene, camera);
         }
         showMenu();
+        // Ladebildschirm ausblenden, sobald das Menü steht
+        { const ld = $('loader'); if (ld) { ld.classList.add('done'); setTimeout(() => ld.remove(), 600); } }
+        // App-Gefühl: kein Browser-Rechtsklickmenü (außer in Eingabefeldern), kein Pinch-Zoom (iOS)
+        addEventListener('contextmenu', e => { if (!e.target.closest('input,textarea')) e.preventDefault(); });
+        document.addEventListener('gesturestart', e => e.preventDefault());
+        // PWA: Service Worker + „Installieren"-Button (📲 oben links im Menü, nur wenn der Browser es anbietet)
+        if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => { });
+        addEventListener('beforeinstallprompt', e => { e.preventDefault(); instEvt = e; const b = $('navInst'); if (b) b.style.display = ''; });
+        addEventListener('appinstalled', () => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; toast('📲 Installiert!', 'CS:WO ist jetzt als App auf Deinem Gerät.'); });
         const mj = sessionStorage.getItem('mpjoin');
         if (mj) { sessionStorage.removeItem('mpjoin'); try { const j = JSON.parse(mj); $('pname').value = j.name; $('srv').value = j.srv; $('room').value = j.room; startMP(j.team); } catch (e) { } }
         loop();    </script>
