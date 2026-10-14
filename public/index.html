@@ -2080,8 +2080,9 @@
 /* ── Tabs oben: am Handy kompakter (MAP-/ARENA-EDITOR passen daneben) ── */
 .mob #cstabs a{ padding:10px 7px; font-size:11px; letter-spacing:1px; }
 /* ── Entenjagd ── */
-#dhHud{ position:absolute; top:64px; left:50%; transform:translateX(-50%); text-align:center; pointer-events:none; font:14px Arial; color:#fff; text-shadow:0 1px 3px #000; }
-#dhHud .dhs{ font:bold 22px Arial; } #dhHud .dhs b{ color:#ffd84a; font-size:28px; } .dhx{ color:#111; background:#ffd84a; border-radius:4px; padding:0 6px; font-size:15px; } .dhi{ font-size:18px; }
+#dhHud{ margin-top:2px; text-align:center; pointer-events:none; font:14px Arial; color:#fff; text-shadow:0 1px 3px #000; white-space:nowrap; }
+body.dh #score, body.dh #roundlbl, body.dh #money, body.dh #aliveL, body.dh #aliveR, body.dh #tBuy, body.dh #bomb{ display:none !important; } /* im Entenmodus unnötig */
+#dhHud .dhs{ display:inline-block; font:bold 18px Arial; background:rgba(0,0,0,.45); border:1px solid rgba(255,216,74,.5); border-radius:16px; padding:2px 14px; } #dhHud .dhs b{ color:#ffd84a; font-size:22px; } .dhx{ color:#111; background:#ffd84a; border-radius:4px; padding:0 6px; font-size:15px; } .dhi{ font-size:18px; }
 #dhHud .dhl{ margin-top:4px; font-size:12px; background:rgba(0,0,0,.35); border-radius:6px; padding:4px 10px; } #dhHud .dhl .me, .dhres .me, .dhlb .me{ color:#ffd84a; }
 #dhPop{ position:absolute; top:42%; left:50%; transform:translate(-50%,-50%); font:bold 26px Arial; text-shadow:0 2px 4px #000; pointer-events:none; opacity:0; }
 #dhPop.on{ animation:dhPop 0.9s ease-out; } @keyframes dhPop{ 0%{ opacity:1; transform:translate(-50%,-30%) scale(1.25); } 100%{ opacity:0; transform:translate(-50%,-140%) scale(1); } }
@@ -2089,7 +2090,7 @@
 .dhres{ display:flex; flex-direction:column; gap:2px; font:14px Arial; color:#cfd8e3; margin:0 0 8px; } .dhres b, .dhlb b{ color:#fff; }
 .dhlb{ display:flex; gap:24px; justify-content:center; flex-wrap:wrap; background:rgba(10,14,19,.82); border:1px solid rgba(255,216,74,.4); border-radius:8px; padding:10px 18px; font:13px Arial; color:#cfd8e3; text-align:left; min-width:260px; margin-bottom:10px; }
 .dhlb h4{ margin:0 0 6px; color:#ffd84a; font:bold 12px Arial; letter-spacing:2px; } .dhlb > div{ min-width:150px; } .dhlb > div > div{ padding:2px 0; }
-.mob #dhHud{ top:46px; } .mob .dhbig{ font-size:44px; }
+.mob .dhbig{ font-size:44px; }
 /* ── Regeln: präsenter ── */
 #overlay button.rulesbtn{ border-color:#e8c98a; color:#111; background:linear-gradient(#f1d79e,#d9b56c); box-shadow:0 0 14px rgba(232,201,138,.35); font-weight:bold; }
 .rchips{ display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 2px; cursor:pointer; }
@@ -5102,16 +5103,16 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const c = rnd(spawnCells.CT.length ? spawnCells.CT : openCells); player.x = cx(c.c); player.z = cx(c.r); player.y = 0; player.vx = player.vz = player.vy = 0;
             ents = [player, ...NET.players.values()]; G.state = 'live'; G.timer = DH_TIME; G.bomb = { state: 'none', x: 0, z: 0, t: 0, carrier: null };
             started = true; gameEnded = false; $('overlay').style.display = 'none'; $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
-            if (!$('dhHud')) { const h = document.createElement('div'); h.id = 'dhHud'; $('hud').appendChild(h); const p = document.createElement('div'); p.id = 'dhPop'; $('hud').appendChild(p); }
-            renderer.domElement.requestPointerLock(); msg('🦆 Entenjagd', '2 Minuten · ⭐ Gold = 10 · 🚫 rote Lockvögel meiden!', 4);
-            if (!NET.on || NET.host) for (let i = 0; i < 8; i++) dhSpawn();
+            document.body.classList.add('dh'); if (!$('dhHud')) { const h = document.createElement('div'); h.id = 'dhHud'; $('top').appendChild(h); const p = document.createElement('div'); p.id = 'dhPop'; $('hud').appendChild(p); }
+            renderer.domElement.requestPointerLock(); msg('', '🦆 Entenjagd · 2 Minuten · ⭐ Gold = 10 · 🚫 rote Lockvögel meiden!', 4);
+            if (!NET.on || NET.host) for (let i = 0; i < 14; i++) dhSpawn();
         }
         function dhTick(dt) {
             for (const s of [1, 2]) { const w = player.weapons[s]; if (w) w.res = 999; } // unendlich Reserve
             const host = !NET.on || NET.host;
             if (host) {
                 DH.t -= dt; DH.ice = Math.max(0, DH.ice - dt); for (const k in DH.frz) DH.frz[k] = Math.max(0, DH.frz[k] - dt);
-                const max = 10 + 3 * NET.players.size; DH.spawnT -= dt; if (DH.spawnT <= 0 && DH.ducks.length < max) { dhSpawn(); DH.spawnT = 0.55; }
+                const max = 16 + 4 * NET.players.size; DH.spawnT -= dt; if (DH.spawnT <= 0 && DH.ducks.length < max) { dhSpawn(); DH.spawnT = 0.3; }
                 for (const d of DH.ducks.slice()) { d.life -= dt; if (d.life <= 0) { dhRemove(d, false); continue; } dhMove(d, dt); }
                 if (NET.on) { DH.sendT -= dt; if (DH.sendT <= 0) { DH.sendT = 0.1; netSend({ type: 'dhs', t: DH.t, ice: DH.ice, frz: DH.frz, sc: DH.sc, d: DH.ducks.map(d => [d.id, d.t, d.look, +d.x.toFixed(2), +d.y.toFixed(2), +d.z.toFixed(2), +d.yaw.toFixed(2), d.fly ? 1 : 0]) }); } }
                 if (DH.t <= 0) { if (NET.on) netSend({ type: 'dhend', sc: DH.sc }); dhEnd(); return; }
@@ -5125,7 +5126,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             for (const d of DH.ducks.slice()) if (!seen.has(d.id)) dhRemove(d, false);
         }
         function dhEnd(sc) {
-            if (DH.ended) return; DH.ended = true; if (sc) DH.sc = sc; gameEnded = true; document.exitPointerLock(); for (const d of DH.ducks) scene.remove(d.mesh); DH.ducks = [];
+            if (DH.ended) return; DH.ended = true; document.body.classList.remove('dh'); if (sc) DH.sc = sc; gameEnded = true; document.exitPointerLock(); for (const d of DH.ducks) scene.remove(d.mesh); DH.ducks = [];
             const me = DH.sc[dhMe()] || 0, best = Math.max(me, PRG.st.dhBest || 0), newBest = me > (PRG.st.dhBest || 0); PRG.st.dhBest = best;
             xpEvent('dhend', { score: me }); if (me >= 150) { store.cases++; saveStore(); toast('📦 +1 Case', 'Für 150+ Punkte in der Entenjagd'); }
             $('hud').style.display = 'none';
