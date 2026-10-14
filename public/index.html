@@ -2102,6 +2102,9 @@ body.dh #score, body.dh #roundlbl, body.dh #money, body.dh #aliveL, body.dh #ali
 .dhlb{ display:flex; gap:24px; justify-content:center; flex-wrap:wrap; background:rgba(10,14,19,.82); border:1px solid rgba(255,216,74,.4); border-radius:8px; padding:10px 18px; font:13px Arial; color:#cfd8e3; text-align:left; min-width:260px; margin-bottom:10px; }
 .dhlb h4{ margin:0 0 6px; color:#ffd84a; font:bold 12px Arial; letter-spacing:2px; } .dhlb > div{ min-width:150px; } .dhlb > div > div{ padding:2px 0; }
 .mob .dhbig{ font-size:44px; }
+#fpsBox{ position:fixed; right:8px; top:6px; z-index:99995; font:bold 12px monospace; background:rgba(0,0,0,.55); padding:2px 8px; border-radius:4px; pointer-events:none; }
+/* Gauntlet-Auswahl: leicht transparent wie die anderen Menüs, Arena dahinter sichtbar */
+.gldraft{ background:rgba(16,23,32,.72) !important; -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); }
 /* ── Regeln: präsenter ── */
 #overlay button.rulesbtn{ border-color:#e8c98a; color:#111; background:linear-gradient(#f1d79e,#d9b56c); box-shadow:0 0 14px rgba(232,201,138,.35); font-weight:bold; }
 .rchips{ display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 2px; cursor:pointer; }
@@ -3600,7 +3603,16 @@ body.edit #tlook{ pointer-events:none; }
             else b.path = bfs(cr(b.z), cr(b.x), r, c, (b.y || 0) > 2) || [];
         } function randomNear(r, c, rad) { for (let i = 0; i < 12; i++) { const rr = r + Math.round((Math.random() * 2 - 1) * rad), cc = c + Math.round((Math.random() * 2 - 1) * rad); if (!solid(cell(rr, cc))) return { r: rr, c: cc }; } return { r, c }; }
         function botMoveToward(b, tx, tz, dt, spd) { const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz); if (d < 0.05) return; const s = Math.min(spd * (b.spdMul || 1) * CFG.speed / 100 * dt, d); collideMove(b, dx / d * s, dz / d * s); if (!b.target) b.yaw = lerpAngle(b.yaw, Math.atan2(dx, dz), Math.min(1, dt * 12)); b.moving = true; b.wantMove = true; }
-        function followPath(b, dt) { if (!b.path.length) return false; const wp = b.path[0], tx = wp.ax !== undefined ? wp.ax : cx(wp.c), tz = wp.az !== undefined ? wp.az : cx(wp.r); if (Math.hypot(tx - b.x, tz - b.z) < 0.6) { b.path.shift(); return followPath(b, dt); } botMoveToward(b, tx, tz, dt, BOT_SPEED); return true; } function separate() { const all = ents.filter(e => e.alive); for (let i = 0; i < all.length; i++)for (let j = i + 1; j < all.length; j++) { const a = all[i], b = all[j]; const dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz); if (d < 0.85 && d > 0.001) { const p = (0.85 - d) / 2, nx = dx / d, nz = dz / d; if (!a.isPlayer) collideMove(a, -nx * p, -nz * p); if (!b.isPlayer) collideMove(b, nx * p, nz * p); if (a.isPlayer) collideMove(a, -nx * p, -nz * p); if (b.isPlayer) collideMove(b, nx * p, nz * p); } } }
+        function followPath(b, dt) { if (!b.path.length) return false; const wp = b.path[0], tx = wp.ax !== undefined ? wp.ax : cx(wp.c), tz = wp.az !== undefined ? wp.az : cx(wp.r); if (Math.hypot(tx - b.x, tz - b.z) < 0.6) { b.path.shift(); return followPath(b, dt); } botMoveToward(b, tx, tz, dt, BOT_SPEED); return true; } function separate() {
+            const all = ents, bot = e => !e.isPlayer && !e.remote;
+            for (let i = 0; i < all.length; i++) { const a = all[i]; if (!a.alive) continue; for (let j = i + 1; j < all.length; j++) { const b = all[j]; if (!b.alive) continue;
+                const dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz); if (d >= 0.85 || d <= 0.001) continue; const p = 0.85 - d, nx = dx / d, nz = dz / d;
+                if (bot(a) && bot(b)) { collideMove(a, -nx * p / 2, -nz * p / 2); collideMove(b, nx * p / 2, nz * p / 2); continue; }
+                const o = bot(a) ? a : bot(b) ? b : null; if (!o) continue; const sg = o === b ? 1 : -1, other = o === a ? b : a, ox = o.x, oz = o.z;
+                collideMove(o, sg * nx * p, sg * nz * p); const moved = Math.hypot(o.x - ox, o.z - oz);
+                if (other.isPlayer && moved < p * 0.5) collideMove(other, -sg * nx * (p - moved), -sg * nz * (p - moved)); // Bot klemmt an der Wand → Spieler weicht sanft aus
+            } }
+        }
 
         // =====================================================================
         //  KAMPF & EFFEKTE
@@ -3613,7 +3625,7 @@ body.edit #tlook{ pointer-events:none; }
         const decals = [], decalGeo = new THREE.PlaneGeometry(0.18, 0.18), decalMat = new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
         function addDecal(p, n) { const m = new THREE.Mesh(decalGeo, decalMat); m.position.copy(p).addScaledVector(n, 0.012); m.lookAt(p.clone().add(n)); scene.add(m); decals.push(m); if (decals.length > 90) scene.remove(decals.shift()); }
         const parts = [], partGeo = new THREE.BoxGeometry(0.06, 0.06, 0.06);
-        function burst(x, y, z, color, n, spd) { if (parts.length > (OPT.gfx === 0 ? 60 : 150)) return; const mat = new THREE.MeshBasicMaterial({ color }); for (let i = 0; i < n; i++) { const m = new THREE.Mesh(partGeo, mat); m.position.set(x, y, z); m.userData.v = new THREE.Vector3((Math.random() - 0.5) * spd, Math.random() * spd * 0.8, (Math.random() - 0.5) * spd); m.userData.life = 0.35 + Math.random() * 0.3; scene.add(m); parts.push(m); } }
+        const PART_MAT = new Map(); function burst(x, y, z, color, n, spd) { if (parts.length > (OPT.gfx === 0 ? 60 : 150)) return; let mat = PART_MAT.get(color); if (!mat) { mat = new THREE.MeshBasicMaterial({ color }); PART_MAT.set(color, mat); } for (let i = 0; i < n; i++) { const m = new THREE.Mesh(partGeo, mat); m.position.set(x, y, z); m.userData.v = new THREE.Vector3((Math.random() - 0.5) * spd, Math.random() * spd * 0.8, (Math.random() - 0.5) * spd); m.userData.life = 0.35 + Math.random() * 0.3; scene.add(m); parts.push(m); } }
         const tracerPool = []; for (let i = 0; i < 24; i++) { const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3)); const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0xffe08a, transparent: true, opacity: 0.7 })); line.visible = false; line.frustumCulled = false; scene.add(line); tracerPool.push({ line, t: 0 }); }
         function tracer(x, y, z, end) { const tr = tracerPool.find(t => t.t <= 0) || tracerPool[0]; const a = tr.line.geometry.attributes.position; a.setXYZ(0, x, y, z); a.setXYZ(1, end.x, end.y, end.z); a.needsUpdate = true; tr.line.visible = true; tr.t = 0.06; }
         const boomMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), new THREE.MeshBasicMaterial({ color: 0xffb040, transparent: true, opacity: 0.9 })); boomMesh.visible = false; scene.add(boomMesh);
@@ -3930,9 +3942,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // =====================================================================
         const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)' };
         const BIND = Object.assign({}, BIND_DEF, JSON.parse(localStorage.getItem('cs_binds') || '{}'));
-        const OPT = Object.assign({ sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
+        const OPT = Object.assign({ sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
         // Ansicht-Optionen anwenden (HUD-Farbe, Radar, Killfeed, Handy-Buttons) – nur bei Änderung, nicht pro Frame
-        function applyLook() { $('hud').style.color = OPT.hudCol; const r = $('radar'); r.style.display = OPT.radar ? '' : 'none'; if (OPT.radar) r.style.width = r.style.height = Math.round((IS_TOUCH ? 100 : 170) * OPT.radar) + 'px'; $('killfeed').style.display = OPT.kf ? '' : 'none'; const ds = document.documentElement.style; ds.setProperty('--tbs', OPT.tbs); ds.setProperty('--tba', OPT.tba); }
+        function applyLook() { $('hud').style.color = OPT.hudCol; const r = $('radar'); r.style.display = OPT.radar ? '' : 'none'; if (OPT.radar) r.style.width = r.style.height = Math.round((IS_TOUCH ? 100 : 170) * OPT.radar) + 'px'; $('killfeed').style.display = OPT.kf ? '' : 'none'; let fe = $('fpsBox'); if (OPT.fps && !fe) { fe = document.createElement('div'); fe.id = 'fpsBox'; document.body.appendChild(fe); } if (fe) fe.style.display = OPT.fps ? '' : 'none'; const ds = document.documentElement.style; ds.setProperty('--tbs', OPT.tbs); ds.setProperty('--tba', OPT.tba); }
         function applyGfx() {
             const g = OPT.gfx;
             renderer.setPixelRatio(g === 0 ? 1 : g === 1 ? Math.min(devicePixelRatio, 1.5) : Math.min(devicePixelRatio, 2));
@@ -4426,7 +4438,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <label style="display:block">Waffe nah/fern: <b id="vmZV">${OPT.vmZ}</b><input data-opt="vmZ" type="range" min="-0.2" max="0.2" step="0.02" value="${OPT.vmZ}" style="width:100%"></label>
  <label style="display:block;margin:4px 0">HUD-Farbe: <input data-opt="hudCol" type="color" value="${OPT.hudCol}" style="vertical-align:middle;width:40px;height:22px;padding:0;border:0;background:none"></label>
  <label style="display:block;margin:4px 0">Radar: <select data-opt="radar" style="font:bold 13px Arial;padding:4px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px">${[[0, 'Aus'], [0.7, 'Klein'], [1, 'Normal'], [1.4, 'Groß']].map(([v, l]) => `<option value="${v}" ${OPT.radar === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
- <input data-opt="kf" type="checkbox" ${OPT.kf ? 'checked' : ''} style="margin-left:12px"> Killfeed</label>
+ <input data-opt="kf" type="checkbox" ${OPT.kf ? 'checked' : ''} style="margin-left:12px"> Killfeed <input data-opt="fps" type="checkbox" ${OPT.fps ? 'checked' : ''} style="margin-left:12px"> FPS anzeigen</label>
  <label style="display:block;margin:4px 0">Treffer-Sound: <select data-opt="hitSnd" style="font:bold 13px Arial;padding:4px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px">${['Standard', 'Ding', 'Klick', 'Aus'].map((l, v) => `<option value="${v}" ${OPT.hitSnd === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
  <input data-opt="killSnd" type="checkbox" ${OPT.killSnd ? 'checked' : ''} style="margin-left:12px"> Kill-Sound</label>
  ${IS_TOUCH ? `<label style="display:block">Button-Größe: <b id="tbsV">${OPT.tbs}</b><input data-opt="tbs" type="range" min="0.6" max="1.6" step="0.05" value="${OPT.tbs}" style="width:100%"></label>
@@ -5609,7 +5621,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const w = GL.teams.find(t => t.wins >= V1_WIN); if (w) { glGameOver(w); return; }
                 GL.stage++; const T = GL.teams; GL.pairs = []; for (let i = 0; i < T.length; i++) for (let j = i + 1; j < T.length; j++) GL.pairs.push([T[i], T[j]]); shuffle(GL.pairs);
                 const mi = GL.pairs.findIndex(p => p.includes(GL.myTeam)); if (mi > 0) { const [mp] = GL.pairs.splice(mi, 1); GL.pairs.unshift(mp); }
-                GL.bye = null; GL.duelIdx = 0; GL.phase = 'announce'; GL.t = 1.5; return;
+                GL.bye = null; GL.duelIdx = 0; GL.phase = 'announce'; GL.t = 1.5; GL.nextAr = glPickArena(); glPrepArena(GL.nextAr); return; /* 1v1: gleich auf der Arena der nächsten Runde stehen */
             }
             const alive = glAliveTeams();
             if (alive.length <= 1) { glGameOver(alive[0]); return; }
@@ -5654,12 +5666,23 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const pick = (up.length && Math.random() < 0.6) ? rnd(up) : offs[0];
             if (pick) glLevelUp(m, pick);
         }
+        const glPickArena = () => { const pool = Object.keys(ARENAS).filter(k => !AOFF.includes(k)); return rnd(pool.length ? pool : Object.keys(ARENAS)); }; // nur angehakte Arenen
+        const glArenaData = k => CMAP_INFO[k] ? Object.assign({ k, g: ARENAS[k].rows }, CMAP_INFO[k]) : null;
+        // Arena des nächsten Duells schon während der Auswahl zeigen: Spieler steht an seinem Spawn (eingefroren bis Duellstart)
+        function glPrepArena(akey) {
+            setArena(akey); buildArenaRadar(); const A = GA.cur, p = player, pair = GL.pairs && GL.pairs[GL.duelIdx || 0];
+            const sp = (pair && pair[1] === GL.myTeam ? A.spawnK : A.spawnT), i = GL.myTeam ? Math.max(0, GL.myTeam.members.indexOf(p)) : 0, c = sp[i % sp.length];
+            stopFreecam(); specTarget = null; $('dead').style.display = 'none';
+            p.alive = true; p.health = p.maxHP || 100; p.x = c.x; p.z = c.z; p.y = 0; p.vx = p.vz = p.vy = 0; p.pitch = 0; p.yaw = Math.atan2((A.ox + A.C * S / 2) - p.x, (A.R * S / 2) - p.z) + Math.PI;
+            G.state = 'freeze';
+        }
         function glOfferDraft() {
             GL.phase = 'draft'; GL.draftDur = 15; GL.t = GL.draftDur;
+            GL.nextAr = glPickArena(); glPrepArena(GL.nextAr);
             document.exitPointerLock();
             for (const t of glAliveTeams()) for (const m of t.members) if (!m.isPlayer && !m.remote) glBotDraft(m);
             GL.humanReady = new Set();
-            if (NET.on && NET.host) netSend({ type: 'glphase', ph: 'draft', stage: GL.stage, bye: GL.bye ? GL.bye.name : null });
+            if (NET.on && NET.host) netSend({ type: 'glphase', ph: 'draft', stage: GL.stage, bye: GL.bye ? GL.bye.name : null, ar: GL.nextAr, arena: glArenaData(GL.nextAr) });
             GL.botReady = glAliveTeams().filter(t => t !== GL.myTeam).map(t => ({ team: t, at: 2 + Math.random() * 9 }));
             GL.offW = shuffle(glWeaponPool().slice()).slice(0, 3);
             GL.offU = glUtilOffers(player);
@@ -5696,7 +5719,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  ${GL.offU.length ? `<button class="glreroll" data-rr="u" ${GL.rerolls < 1 ? 'disabled' : ''}>🔄 REROLL</button>` : ''}
  <div style="font:bold 11px Arial;letter-spacing:2px;color:#c86bff">REROLLS ÜBRIG: ${GL.rerolls}</div>
  <div id="glwait" style="padding:10px 18px;border:1px solid rgba(255,255,255,.15);border-radius:6px;background:rgba(0,0,0,.35);font-size:13px;color:#ddd;width:100%;box-sizing:border-box">${glWaitHTML()}</div>
- </div>`);
+ </div>`, true);
             GL.waitCache = '';
             document.querySelectorAll('[data-glw]').forEach(el => el.onclick = () => { GL.pickW = el.dataset.glw; glDraftUI(); });
             document.querySelectorAll('[data-glu]').forEach(el => el.onclick = () => { GL.pickU = +el.dataset.glu; glDraftUI(); });
@@ -5736,7 +5759,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function glStartDuel() {
             const pair = GL.pairs[GL.duelIdx];
             if (!pair) { glStandings(); return; }
-            const pool = Object.keys(ARENAS).filter(k => !AOFF.includes(k)), akey = rnd(pool.length ? pool : Object.keys(ARENAS)); // nur angehakte Arenen (alle abgewählt → alle)
+            const akey = GL.nextAr && ARENAS[GL.nextAr] ? GL.nextAr : glPickArena(); GL.nextAr = null; // beim ersten Duell: die Arena aus der Auswahlphase
             setArena(akey); buildArenaRadar(); clearDecoys(); clearNades(); if (player.glA) player.glA.cd = 0; const A = GA.cur;
             GL.duel = { teams: pair, t: GL_TIME, over: false };
             for (const e of ents) { if (!e.isPlayer) { e.alive = false; e.mesh.visible = false; e.target = null; e.path = []; e.goal = null; } }
@@ -5758,7 +5781,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             GL.phase = 'duel'; G.state = 'live'; G.timer = GL_TIME; G.bomb.state = 'none';
             specTarget = null; stopFreecam();
             if (!mine) { startFreecam(); if (!locked) renderer.domElement.requestPointerLock(); }
-            if (NET.on && NET.host) netSend({ type: 'glduel', ar: akey, arena: CMAP_INFO[akey] ? Object.assign({ k: akey, g: ARENAS[akey].rows }, CMAP_INFO[akey]) : null, a: pair[0].id, b: pair[1].id, idx: GL.duelIdx, total: GL.pairs.length, w: GL.v1 ? GL.v1w : null });
+            if (NET.on && NET.host) netSend({ type: 'glduel', ar: akey, arena: glArenaData(akey), a: pair[0].id, b: pair[1].id, idx: GL.duelIdx, total: GL.pairs.length, w: GL.v1 ? GL.v1w : null });
             if (GL.v1) msg('RUNDE ' + (GL.v1n + 1) + ' · ' + W[GL.v1w].name, pair[0].name + ' ' + pair[0].wins + ' : ' + pair[1].wins + ' ' + pair[1].name, 3); else msg('DUELL ' + (GL.duelIdx + 1) + '/' + GL.pairs.length, pair[0].name + ' vs. ' + pair[1].name, 3);
             sfx('start');
         }
@@ -5959,6 +5982,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
                 } break;
                 case 'glphase': if (!NET.host && m.ph === 'draft') {
+                    if (m.ar) { if (m.arena && isArKey(m.arena.k) && !ARENAS[m.ar]) regMap(m.ar, m.arena); if (ARENAS[m.ar] && (!m.arena || ARENAS[m.ar].rows.join() === m.arena.g.join())) glPrepArena(m.ar); }
                     GL.stage = m.stage; GL.phase = 'draft'; GL.draftDur = 15; GL.t = 15; GL.sent = false;
                     GL.bye = m.bye ? { name: m.bye } : null; GL.botReady = [];
                     GL.offW = shuffle(glWeaponPool().slice()).slice(0, 3);
@@ -6121,8 +6145,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (!menuChar) { menuChar = makeBotMesh(player.team || 'CT', store.agent, true); const c = spawnCells.CT[0] || { r: 2, c: 2 }; menuChar.group.position.set(cx(c.c), 0, cx(c.r)); }
             menuChar.group.visible = true;
         }
+        // FPS-Anzeige: Bilder pro Sekunde + langsamster Frame der letzten Sekunde (zeigt Ruckler)
+        const FPS = { n: 0, t: 0, worst: 0 }; function fpsTick(fdt) { FPS.n++; FPS.t += fdt; FPS.worst = Math.max(FPS.worst, fdt); if (FPS.t >= 1000) { const el = $('fpsBox'); if (el) { const f = Math.round(FPS.n * 1000 / FPS.t); el.textContent = f + ' FPS · max ' + Math.round(FPS.worst) + ' ms'; el.style.color = FPS.worst > 60 ? '#ff6b6b' : f < 45 ? '#ffd84a' : '#7c7'; } FPS.n = FPS.t = FPS.worst = 0; } }
         let last = performance.now(), frameN = 0; function loop() {
-            requestAnimationFrame(loop); const t = performance.now(); const dt = Math.min(0.05, (t - last) / 1000); last = t; now = t / 1000;
+            requestAnimationFrame(loop); const t = performance.now(); const fdt = t - last; const dt = Math.min(0.05, fdt / 1000); if (OPT.fps) fpsTick(fdt); last = t; now = t / 1000;
             if (!started) {
                 menuT += dt; const a = menuT * 0.07, r = Math.min(WORLD_W, WORLD_D) * 0.42;
                 camera.position.set(WORLD_W / 2 + Math.cos(a) * r, 22, WORLD_D / 2 + Math.sin(a) * r);
