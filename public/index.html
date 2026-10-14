@@ -4409,7 +4409,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <a data-nav="store">CASES</a>
  <a data-nav="news">NEWS</a>
  </nav>
- <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}"><b id="profName">${savedName || 'Spieler'}</b><span>${ACC ? '☁️' : '👤'}</span></div>
+ <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}">${ACC ? `<b>Eingeloggt als <span style="color:#e8c98a">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
  </div>
  <div id="csfriends">${['M', 'K', 'G', 'S', 'V', 'Z'].map(x => `<div class="fr">${x}</div>`).join('')}</div>
  <div id="cslogo" style="position:absolute;left:28px;top:90px;pointer-events:none">
@@ -4449,7 +4449,34 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 1.1 „BAUMEISTER"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 1.2 „WOLKE 7"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">☁️ ACCOUNTS & CLOUD-SAVE</p>
+ <b style="color:#ffd964">Dein Spielstand auf allen Geräten:</b> Registriere Dich mit Name und Passwort und spiel am PC und am Handy mit demselben Fortschritt.<br>
+ Gespeichert werden <b>Cases, Inventar, Skins, Agent, eigene Karten, Einstellungen, Tastenbelegung, Button-Layout, Spielregeln und Spielername</b>.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">👤 SO FUNKTIONIERT'S</p>
+ Beim Betreten der Seite erscheint ein Hinweis – <b>Zum Login</b> oder <b>Egal</b> (dann spielst Du wie bisher ohne Account).<br>
+ Jederzeit oben rechts auf <b>👤</b> klicken. Eingeloggt steht dort <b>„Eingeloggt als …" ☁️</b>.<br>
+ <b>Registrieren</b> übernimmt Deinen aktuellen Spielstand ins Konto.<br>
+ <b>Einloggen auf einem neuen Gerät:</b> Du wählst, ob der Account-Stand geladen oder der Stand des Geräts hochgeladen wird.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🔄 AUTOMATISCH SYNCHRON</p>
+ Jede Änderung – neuer Case, Skin, Karte oder Einstellung – wird nach wenigen Sekunden automatisch gespeichert.<br>
+ Beim Start lädt das Spiel automatisch den neuesten Stand, wenn Du zwischendurch auf einem anderen Gerät gespielt hast.<br>
+ Im Account-Menü: <b>☁️ Jetzt speichern</b> und <b>Logout</b>.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🔒 SICHERHEIT</p>
+ Passwörter werden nur verschlüsselt (gehasht) gespeichert, nie im Klartext.<br>
+ Schutz gegen Passwort-Raten: maximal 10 Login-Versuche pro Minute.<br>
+ Ohne Login bleibt alles wie bisher nur auf Deinem Gerät.<br><br>
+
+ <p style="margin:6px 0;color:#8fa3b8;font:bold 12px Arial">ℹ️ HINWEIS</p>
+ Spielst Du auf zwei Geräten gleichzeitig, gilt der zuletzt gespeicherte Stand.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.1 „BAUMEISTER"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ MAP-EDITOR</p>
@@ -4465,9 +4492,6 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📦 CASES</p>
  Im Cases-Menü können jetzt <b>Codes</b> eingelöst werden – halte die Augen offen!<br><br>
-
- <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">☁️ ACCOUNTS</p>
- Klick oben rechts auf <b>👤</b> → Registrieren oder Einloggen. Cases, Inventar, Skins, Agent, eigene Karten und Einstellungen werden automatisch gespeichert und sind auf jedem Gerät verfügbar. Ohne Login bleibt alles wie bisher lokal.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ MAP-EDITOR: NOCH MEHR FREIHEIT</p>
  <b>Eigene Farben:</b> Himmel, Nebel, Boden und Wände frei wählbar – das Thema dient nur als Startpunkt.<br>
@@ -4521,9 +4545,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  Endbildschirm: „Zurück zum Menü" ist wieder klickbar.<br>
  Online: Bots werden jetzt auch bei Spielern angezeigt, die beim Start schon in der Lobby waren. Bot-Kills gegen Online-Spieler werden korrekt gezählt.<br><br>
 
- </div></div>
- <div class="cspanel newscard"><h3>PATCH 0.9 „GLITCH IM GAUNTLET"</h3>
- <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+ <p style="margin:6px 0;color:#8fa3b8;font:bold 12px Arial">PATCH 0.9 „GLITCH IM GAUNTLET"</p>
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">⚔️ GAUNTLET</p>
  Fähigkeiten [F], Glitch-Varianten, Rerolls, Robo-Agenten, Host-Migration<br><br>
  <p style="margin:6px 0;color:#8fa3b8;font:bold 12px Arial">ÄLTERE UPDATES</p>
@@ -4535,7 +4557,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.1 „Baumeister" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
+ <div id="csver">CS:WO 1.2 „Wolke 7" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -4576,6 +4598,18 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 setTab(nav);
             });
             $('ctAcc').onclick = showAccount;
+            // Beim Betreten der Seite (einmal pro Sitzung): Hinweis zum Login, falls nicht eingeloggt
+            if (!ACC && !sessionStorage.getItem('loginAsked')) {
+                sessionStorage.setItem('loginAsked', '1');
+                const lp = document.createElement('div'); lp.id = 'loginPop';
+                lp.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px';
+                lp.innerHTML = `<div style="background:#141e28;border:1px solid rgba(232,201,138,.6);border-radius:8px;padding:20px 24px;max-width:360px;text-align:center;color:#dfe6ee;font:14px Arial">
+ <div style="font:bold 18px Arial;color:#e8c98a;margin-bottom:8px">☁️ Nicht eingeloggt</div>
+ <p style="margin:0 0 14px;line-height:1.5">Logge Dich ein, damit Cases, Skins, Karten und Einstellungen auf allen Geräten gespeichert werden.</p>
+ <button id="lpGo">👤 Zum Login</button><button id="lpNo">Egal</button></div>`;
+                $('overlay').appendChild(lp); // im Overlay → gleiche Button-Optik wie im Menü
+                $('lpGo').onclick = () => { lp.remove(); showAccount(); }; $('lpNo').onclick = () => lp.remove();
+            }
             document.querySelectorAll('.mapc').forEach(el => {
                 // Rechtsklick (PC) bzw. langes Drücken (Handy) → Map-Editor-Menü
                 el.addEventListener('contextmenu', e => { e.preventDefault(); mapCtxMenu(el.dataset.map, e.clientX, e.clientY); });
@@ -4610,7 +4644,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('modeOn').onclick = () => { PM.on = true; setMode(); };
             setMode();
             $('btnGl').onclick = () => glStart(+$('glTeams').value); $('btnV1').onclick = () => { GL.v1 = true; glStart(2); };
-            $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); $('profName').textContent = v || 'Spieler'; document.querySelector('#cschar b').textContent = v || 'Spieler'; };
+            $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; document.querySelector('#cschar b').textContent = v || 'Spieler'; };
             $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); };
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = showGameSettings;
