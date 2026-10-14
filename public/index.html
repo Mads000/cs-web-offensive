@@ -2781,7 +2781,7 @@ body.edit #tlook{ pointer-events:none; }
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
         const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 5, CRATE_H = 1.0, TALL_H = 3;
         const WORLD_W = COLS * S, WORLD_D = ROWS * S;
-        const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
+        const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, agTheme: 0, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
         const CFG = Object.assign({}, CFG_DEF, JSON.parse(localStorage.getItem('gamecfg') || '{}'));
         const SKILL_VAL = [0.6, 0.85, 1.05], SKILL_LBL = ['Leicht', 'Normal', 'Schwer'];
         const BOT_SPEED = 5.6;
@@ -3284,11 +3284,34 @@ body.edit #tlook{ pointer-events:none; }
             { id: 'arctic', n: 'Arktis-Späher', d: 'Weiß mit Eis-Visier', body: 0xe6ebf0, legs: 0xb9c3cc, head: 0xdfe6ec, hat: 'helmet', hatC: 0xf4f7fa, visor: 0x6fd0ff },
             { id: 'neon', n: 'Neon-Runner', d: 'Dunkel mit leuchtendem Visier', body: 0x17171f, legs: 0x0d0d14, head: 0x101018, visor: 0xff3df0 },
             { id: 'ninja', n: 'Schatten', d: 'Ganz in Schwarz, rotes Stirnband', body: 0x101012, legs: 0x0b0b0c, head: 0x101012, band: 0xb52222 },
-            { id: 'jungle', n: 'Dschungel', d: 'Tarngrün mit Buschhut & Rucksack', body: 0x4f6b3a, legs: 0x33452a, head: 0x3f5530, hat: 'boonie', hatC: 0x5a6e3c, pack: 0x3a4a2a }
+            { id: 'jungle', n: 'Dschungel', d: 'Tarngrün mit Buschhut & Rucksack', body: 0x4f6b3a, legs: 0x33452a, head: 0x3f5530, hat: 'boonie', hatC: 0x5a6e3c, pack: 0x3a4a2a },
+            { id: 'duck_rubber', n: 'Badeente', d: 'Quietschgelb mit orangem Schnabel', duck: 1, body: 0xffd84a, legs: 0xf2a227, head: 0xffd84a, wing: 0xf5c93a },
+            { id: 'duck_mallard', n: 'Stockente', d: 'Grüner Kopf, weißer Halsring', duck: 1, body: 0x8a6a4a, legs: 0xf2a227, head: 0x1f6b3a, wing: 0x6b7f9a, ring: 0xffffff },
+            { id: 'duck_white', n: 'Hausente', d: 'Schneeweiß und gut gelaunt', duck: 1, body: 0xf3f3ef, legs: 0xf2a227, head: 0xf3f3ef, wing: 0xe2e2dc }
         ];
+        // Agenten-Thema (Host, Spielregeln): 0 = frei, 1 = alle Enten, 2+ = alle als dieser Agent
+        const NONDUCK = AGENTS.filter(a => !a.duck);
+        function agentFor(team, want) { const t = CFG.agTheme | 0; if (!t) return want; if (t === 1) return AGENTS.some(a => a.duck && a.id === want) ? want : team === 'T' ? 'duck_mallard' : 'duck_rubber'; return (NONDUCK[t - 2] || {}).id || want; }
+        // Modelle aller Bots/Mitspieler neu bauen (z.B. wenn das Thema erst beim Start bekannt ist)
+        function remeshAll() { for (const e of [...bots, ...NET.players.values()]) { if (!e.mesh) continue; const m = makeBotMesh(e.team, e.ag); m.group.position.copy(e.mesh.position); m.group.rotation.copy(e.mesh.rotation); m.group.visible = e.mesh.visible; scene.remove(e.mesh); e.mesh = m.group; e.hit = m.hit; e.flash = m.flash; e.robo = false; m.hit.forEach(h => h.userData.ent = e); } }
         store.agent = AGENTS.some(a => a.id === localStorage.getItem('agent')) ? localStorage.getItem('agent') : 'std';
-        function makeBotMesh(team, agentId) {
+        function makeBotMesh(team, agentId, raw) {
+            if (!raw) agentId = agentFor(team, agentId); // raw: Menü-Vorschau zeigt immer den eigenen Agenten
             const g = new THREE.Group(), T = team === 'T'; const M = c => new THREE.MeshLambertMaterial({ color: c }), AG = AGENTS.find(a => a.id === agentId && a.id !== 'std');
+            if (AG && AG.duck) { // 🦆 Enten-Modell – gleiche Trefferzonen (Kopf/Körper/Beine) wie die normalen Modelle
+                const mk = (w, h, d, m, x, y, z, part, keep) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = true; g.add(b); if (part) b.userData.part = part; if (keep) b.userData.keep = 1; return b; };
+                const bodyM = M(AG.body), wingM = M(AG.wing), orange = M(0xf2a227), black = new THREE.MeshBasicMaterial({ color: 0x111111 });
+                const body = mk(0.72, 0.72, 0.64, bodyM, 0, 1.0, -0.02, 'body'); mk(0.5, 0.26, 0.42, bodyM, 0, 1.38, 0.05);
+                const head = mk(0.4, 0.38, 0.4, M(AG.head), 0, 1.66, 0.04, 'head'); mk(0.26, 0.1, 0.24, orange, 0, 1.6, 0.32, 0, 1);
+                mk(0.06, 0.07, 0.02, black, -0.12, 1.73, 0.245, 0, 1); mk(0.06, 0.07, 0.02, black, 0.12, 1.73, 0.245, 0, 1);
+                if (AG.ring) mk(0.42, 0.05, 0.42, M(AG.ring), 0, 1.47, 0.04);
+                mk(0.32, 0.2, 0.22, bodyM, 0, 1.22, -0.42); mk(0.1, 0.46, 0.46, wingM, -0.41, 1.05, -0.05); mk(0.16, 0.42, 0.16, wingM, 0.42, 1.1, 0.25);
+                mk(0.12, 0.1, 0.22, M(T ? 0xd04040 : 0x4a7dff), -0.47, 1.18, -0.05, 0, 1); // Team-Armbinde
+                const legL = mk(0.12, 0.65, 0.12, orange, -0.16, 0.33, 0, 'legs', 1), legR = mk(0.12, 0.65, 0.12, orange, 0.16, 0.33, 0, 'legs', 1);
+                mk(0.24, 0.05, 0.32, orange, -0.16, 0.025, 0.08, 0, 1); mk(0.24, 0.05, 0.32, orange, 0.16, 0.025, 0.08, 0, 1); mk(0.08, 0.12, 0.75, M(0x222222), 0.3, 1.12, 0.5);
+                const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.3, 1.12, 0.95); fl.visible = false; g.add(fl);
+                scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
+            }
             const bodyMat = M(AG ? AG.body : T ? 0x9b7c4e : 0x2c3b58), legMat = M(AG ? AG.legs : T ? 0x5e513a : 0x1d2634), headMat = M(AG ? AG.head : T ? 0xc99c76 : 0x151c2a);
             const mk = (w, h, d, m, x, y, z, part) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = true; g.add(b); if (part) b.userData.part = part; return b; };
             const body = mk(0.7, 0.85, 0.4, bodyMat, 0, 1.05, 0, 'body'), head = mk(0.34, 0.34, 0.34, headMat, 0, 1.66, 0, 'head');
@@ -4219,7 +4242,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             }
             if (!invHtml) invHtml = '<p style="color:#888">Noch keine Skins – öffne eine Case!</p>';
             const agCol = (a, k, def) => '#' + new THREE.Color(a[k] !== undefined ? a[k] : def).getHexString();
-            invHtml = `<div class="invsec"><h5>AGENTEN · SPIELERMODELL</h5><div class="invrow">${AGENTS.map(a => { const on = store.agent === a.id; return `<div class="inv ${on ? 'eq' : ''}" data-agent="${a.id}" style="border-color:${on ? '#e8c98a' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:20px;height:16px;background:${agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? '#e8c98a' : '#ddd'}">${a.n}</b><span>${on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>` + invHtml;
+            invHtml = `<div class="invsec"><h5>AGENTEN · SPIELERMODELL</h5><div class="invrow">${AGENTS.map(a => { const on = store.agent === a.id; return `<div class="inv ${on ? 'eq' : ''}" data-agent="${a.id}" style="border-color:${on ? '#e8c98a' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? '#e8c98a' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>` + invHtml;
             const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
             const used = WK.filter(k => store.stick[k]), free = WK.filter(k => !store.stick[k]);
             let wrapHtml = used.map(k => `<div class="wrap"><img src="${store.stick[k]}" title="Hover zum Vergrößern"><b>${W[k].name}</b><div style="display:flex;gap:4px"><button data-wch="${k}">Ändern</button><button data-wdel="${k}" class="del">🗑 Löschen</button></div></div>`).join('');
@@ -4392,6 +4415,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  ${sel('skill', 'Bot-Schwierigkeit', [0, 1, 2], v => SKILL_LBL[v])}
  ${sel('teamSize', 'Teamgröße', [1, 2, 3, 4, 5, 6], v => v + ' gegen ' + v)}
  ${sel('money', 'Startgeld', [800, 2000, 5000, 16000], v => '$ ' + v)}
+ ${sel('agTheme', 'Agenten-Thema', [0, 1, ...NONDUCK.map((a, i) => i + 2)], v => v === 0 ? 'Frei (jeder seinen)' : v === 1 ? '🦆 Alle sind Enten' : 'Alle: ' + NONDUCK[v - 2].n)}
  <tr><td colspan="2" style="padding:10px 0 4px;color:#e8c98a;font-weight:bold;text-align:left">🎉 SPASS-MODI</td></tr>
  ${sel('hsOnly', 'Nur Headshots', [0, 1], v => v ? 'An' : 'Aus')}
  ${sel('wpn', 'Waffen', [0, 1, 2], v => ['Alle', 'Nur Pistolen', 'Nur AWP'][v])}
@@ -4645,7 +4669,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🏆 ERFOLGE</p>
  <b>16 Erfolge</b> warten – von <i>Erstes Blut</i> über <i>Ass</i> und <i>Klingenmeister</i> bis <i>Champion</i>, <i>Gladiator</i> und <i>Baumeister</i>. Freigeschaltete Erfolge und Level-Ups erscheinen direkt im Spiel.<br>
  Oben links auf <b>🏅</b>: Profil mit Level, Rang, XP-Balken, Statistik und allen Erfolgen.<br>
- Level & Erfolge werden mit Deinem Account gespeichert.
+ Level & Erfolge werden mit Deinem Account gespeichert.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🦆 ENTEN-AGENTEN</p>
+ Drei neue Agenten im Inventar: <b>Badeente</b> (quietschgelb), <b>Stockente</b> (grüner Kopf, weißer Halsring) und <b>Hausente</b> (schneeweiß) – mit Schnabel, Flügeln, Füßen und Team-Armbinde.<br>
+ Keine Vorteile: Kopf, Körper und Beine treffen genau wie bei den anderen Modellen.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎭 AGENTEN-THEMA</p>
+ Neu unter <b>🎮 Regeln</b>: Der Host bestimmt, wie alle aussehen – <b>Frei</b> (jeder seinen), <b>🦆 Alle sind Enten</b> oder <b>alle als ein Agent</b> (z.B. alle Elite-Kommando).<br>
+ Beim Enten-Thema behält jeder seine eigene Ente, alle anderen und die Bots werden T = Stockente, CT = Badeente. Im Gauntlet gibt's Robo-Enten.
 
  </div></div>
  <div class="cspanel newscard"><h3>PATCH 1.3 „COMMUNITY"</h3>
@@ -4885,6 +4917,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             else if (sessionStorage.getItem('opentab') === 'maps') { sessionStorage.removeItem('opentab'); showMapList(); }
         }
         function startGame(team) {
+            remeshAll(); // Agenten-Thema auf Mitspieler anwenden
             initAudio(); const nm = ($('pname') && $('pname').value || '').trim(); if (nm) player.name = nm.slice(0, 14); player.team = team;
             player.weapons[2] = mkWeapon(team === 'T' ? W.glock : W.usp); const ctN = ['Cliffe', 'Minh', 'Gooseman', 'Kyle', 'Steel'], tN = ['Vitaliy', 'Zim', 'Opie', 'Ron', 'Wolf'];
             // Bots füllen nur freie Plätze auf (5 pro Team)
@@ -5080,7 +5113,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
         function roboize(e, accent) {
             if (!e || !e.mesh || e.isPlayer || e.robo) return; e.robo = true;
-            e.mesh.traverse(o => { if (o.isMesh && o.material && o.material.color) { o.material = o.material.clone(); const p = o.userData.part; o.material.color.setHex(p === 'head' ? 0x15181c : p === 'legs' ? 0x23272c : 0x3a3f46); } });
+            e.mesh.traverse(o => { if (o.isMesh && o.material && o.material.color && !o.userData.keep) { o.material = o.material.clone(); const p = o.userData.part; o.material.color.setHex(p === 'head' ? 0x15181c : p === 'legs' ? 0x23272c : 0x3a3f46); } });
             const vis = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.07, 0.03), new THREE.MeshBasicMaterial({ color: accent }));
             vis.position.set(0, 1.67, 0.18); e.mesh.add(vis);
             const core = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.03), new THREE.MeshBasicMaterial({ color: accent }));
@@ -5278,7 +5311,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
             glNextStage();
         }
-        function glSer() { return { type: 'glstart', v1: GL.v1 ? 1 : 0, map: MAPNAME, cmap: mapNet(), bots: bots.map(b => ({ n: b.name, t: b.team })), teams: GL.teams.map(t => ({ id: t.id, name: t.name, members: t.members.map(m => m.remote ? { p: m.pid } : (m.isPlayer ? { p: NET.pid } : { b: bots.indexOf(m) })) })) }; }
+        function glSer() { return { type: 'glstart', ag: CFG.agTheme | 0, v1: GL.v1 ? 1 : 0, map: MAPNAME, cmap: mapNet(), bots: bots.map(b => ({ n: b.name, t: b.team })), teams: GL.teams.map(t => ({ id: t.id, name: t.name, members: t.members.map(m => m.remote ? { p: m.pid } : (m.isPlayer ? { p: NET.pid } : { b: bots.indexOf(m) })) })) }; }
         function glAsg() { return NET.glAsg || (NET.glAsg = {}); }
         function glTeamCol(id, l) { return `hsl(${Math.round(((0.62 + id * 0.125) % 1) * 360)},100%,${l || 60}%)`; }
         function glAsgHTML() {
@@ -5293,6 +5326,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         }
         function glAsgSend(o) { netSend(Object.assign({ type: 'glasg' }, o)); renderLobby(); }
         function glStartMP(teamCount) {
+            remeshAll();
             initAudio(); player.team = 'CT'; NET.inLobby = false;
             GL.on = true; GL.stage = 0; GL.teams = []; GL.phase = 'setup'; GL.rerolls = 3; const names = ['Wolf', 'Zim', 'Opie', 'Ron', 'Steel', 'Kyle', 'Minh', 'Vera', 'Nox', 'Juri', 'Finn', 'Alba', 'Gooseman', 'Cliffe', 'Vitaliy', 'Bo'];
             let ni = 0;
@@ -5600,7 +5634,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function addRemote(pid, name, team, ag) {
             if (pid === NET.pid || NET.players.has(pid)) return;
             const m = makeBotMesh(team, ag);
-            const rp = { remote: true, isPlayer: false, pid, name, team, x: 0, y: 0, z: 0, tx: 0, ty: 0, tz: 0, yaw: 0, tyaw: 0, r: 0.4, alive: true, health: 100, kills: 0, deaths: 0, money: 0, mesh: m.group, hit: m.hit, flash: m.flash, lastShotT: -9, speed: 0, moving: true };
+            const rp = { remote: true, isPlayer: false, pid, name, team, ag, x: 0, y: 0, z: 0, tx: 0, ty: 0, tz: 0, yaw: 0, tyaw: 0, r: 0.4, alive: true, health: 100, kills: 0, deaths: 0, money: 0, mesh: m.group, hit: m.hit, flash: m.flash, lastShotT: -9, speed: 0, moving: true };
             m.hit.forEach(h => h.userData.ent = rp); NET.players.set(pid, rp); ents.push(rp); msg(name + ' ist beigetreten', '', 3);
         }
         function startMP(team) {
@@ -5628,7 +5662,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'c4': if (!NET.host && m.pid === NET.pid) { player.weapons[5] = mkWeapon(W.c4); msg('Du trägst die Bombe!', `Angriff auf Bombsite ${G.site}`, 4); } break;
                 case 'nade': { const ow = m.ap ? (m.ap === NET.pid ? player : NET.players.get(m.ap)) : null; launchNade(m.k, m.x, m.y, m.z, m.dx, m.dy, m.dz, ow || { name: m.on, team: m.ot, isPlayer: false }, m.lv || 1, m.g || null); break; } case 'wdrop': { const d = dropWeapon(W[m.w], m.x, m.z, m.a ?? (W[m.w].mag || 0), m.rs ?? 0, m.sk ?? null); if (d) d.did = m.did; break; } case 'wtake': { const i = drops.findIndex(d => d.did === m.did); if (i >= 0) { scene.remove(drops[i].mesh); drops.splice(i, 1); } break; }
                 case 'start': if (m.dm) DM.on = true;
-                    if (m.cfg && !NET.host) { Object.assign(CFG, m.cfg); applyCfg(); if (!started) player.money = CFG.money; }
+                    if (m.cfg && !NET.host) { Object.assign(CFG, m.cfg); applyCfg(); if (!started) player.money = CFG.money; remeshAll(); }
                     if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
                     if (!NET.host && !started) { NET.inLobby = false; $('overlay').style.display = 'none'; startGameClient(); } break; case 'roster': if (!NET.host && bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); ents = [player, ...bots, ...NET.players.values()]; } break;
                 case 'round': if (!NET.host && (!m.to || m.to === NET.pid)) { G.round = m.rd; G.site = m.site; clientRound(); } break; case 'end': if (!NET.host) {
@@ -5659,7 +5693,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'botdmg2': if (m.to === NET.pid && player.alive) applyDamage(player, m.d, { name: m.bn, team: m.bt, isPlayer: false }, { name: m.w, key: '' }, m.hs); break; case 'botdmg': if (NET.host && bots[m.id] && bots[m.id].alive) applyDamage(bots[m.id], m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
                 case 'glstart': if (!NET.host) {
                     if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
-                    NET.inLobby = false; GL.on = true; GL.v1 = !!m.v1; GL.stage = 0; GL.rerolls = 3; if (bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); }
+                    NET.inLobby = false; GL.on = true; GL.v1 = !!m.v1; GL.stage = 0; GL.rerolls = 3; CFG.agTheme = m.ag | 0; remeshAll(); if (bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); }
                     ents = [player, ...bots, ...NET.players.values()];
                     GL.teams = m.teams.map(t => ({ id: t.id, name: t.name, lives: GL_LIVES, wins: 0, members: t.members.map(mm => mm.b !== undefined ? bots[mm.b] : (mm.p === NET.pid ? player : NET.players.get(mm.p))).filter(Boolean) }));
                     GL.myTeam = GL.teams.find(t => t.members.includes(player));
@@ -5823,7 +5857,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // =====================================================================
         let menuChar = null, menuT = 0;
         function setupMenuScene() {
-            if (!menuChar) { menuChar = makeBotMesh(player.team || 'CT', store.agent); const c = spawnCells.CT[0] || { r: 2, c: 2 }; menuChar.group.position.set(cx(c.c), 0, cx(c.r)); }
+            if (!menuChar) { menuChar = makeBotMesh(player.team || 'CT', store.agent, true); const c = spawnCells.CT[0] || { r: 2, c: 2 }; menuChar.group.position.set(cx(c.c), 0, cx(c.r)); }
             menuChar.group.visible = true;
         }
         let last = performance.now(), frameN = 0; function loop() {
