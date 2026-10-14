@@ -2050,6 +2050,8 @@
 .mob #meSide{ width:auto; flex:1 1 auto; min-width:0; max-height:calc(100vh - 40px); overflow-y:auto; }
 .mob #meTools button{ font-size:14px; padding:8px; }
 .mob .mebtns button{ font-size:14px; padding:9px 6px; }
+/* ── Tabs oben: am Handy kompakter (MAP-/ARENA-EDITOR passen daneben) ── */
+.mob #cstabs a{ padding:10px 7px; font-size:11px; letter-spacing:1px; }
 /* ── Arena-Editor: Liste ── */
 #arList{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:min(900px,94vw); max-height:calc(100vh - 230px); overflow-y:auto; margin-bottom:10px; }
 .arc{ position:relative; width:110px; padding:6px; background:#141e28; border:1px solid rgba(255,255,255,.18); border-radius:6px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font:12px Arial; color:#cfd8e3; }
@@ -2682,7 +2684,7 @@ body.edit #tlook{ pointer-events:none; }
             if (!r.ok || JSON.stringify(r.maps) === JSON.stringify(PUBC)) return;
             PUBC = r.maps; localStorage.setItem('pubmaps', JSON.stringify(PUBC)); for (const k in PUBC) regMap(k, PUBC[k]);
             if (!started && $('csmenu') && !$('loginPop') && !$('mapctx')) showMenu(); // Menü mit neuen Karten neu zeichnen
-            else if ($('arList') && !$('mapctx')) showArenaList();
+            else if ($('arList') && !$('mapctx') && listArgs && !listArgs[1]) gridList(...listArgs); // offene Editor-Liste aktualisieren (nicht die Start-Auswahl)
         }).catch(() => { });
         try { const nm = JSON.parse(sessionStorage.getItem('netmap') || 'null'); if (nm && /^(my|pub)_/.test(nm.k)) regMap(nm.k, nm); } catch (e) { }
         function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? Object.assign({ k: MAPNAME, g: MAP }, i) : null; }
@@ -4351,6 +4353,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const ME_TOOLS = [['.', '🧽 Radierer', '#3a3226'], ['#', 'Wand', '#d8cbb0'], ['c', 'Kiste', '#a8743c'], ['C', 'Container', '#6b4a2a'], ['h', 'Halbe Wand', '#9c8f78'], ['=', 'Steg', '#8291a0'],
         ['1', 'Stufe 1', '#56606a'], ['2', 'Stufe 2', '#66717c'], ['3', 'Stufe 3', '#77838e'], ['4', 'Stufe 4', '#8995a0'], ['5', 'Stufe 5', '#9ba7b2'], ['6', 'Stufe 6', '#adb9c4'],
         ['A', 'Bombsite A', '#e07a2a'], ['B', 'Bombsite B', '#e0a82a'], ['T', 'Spawn T', '#d9822b'], ['K', 'Spawn CT', '#4a7fd0']];
+        let edFrom = 'play'; // wohin Karten-Aktionen zurückkehren: Spielen-Tab oder Map-Editor-Liste
         function saveCMaps() { localStorage.setItem('custommaps', JSON.stringify(CMAPS)); }
         function saveCARS() { localStorage.setItem('customarenas', JSON.stringify(CARS)); }
         function newMapKey(n, ar) { const base = (ar ? 'myar_' : 'my_') + (String(n).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'map'); let k = base, i = 2; while ((ar ? ARENAS : MAPS)[k]) k = base + '_' + i++; return k; }
@@ -4365,12 +4368,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const items = own ? [['✏️ Bearbeiten', () => showMapEditor(k, k)], ['📄 Kopie erstellen', () => showMapEditor(k, null)]] : [['✏️ Bearbeiten (als Kopie)', () => showMapEditor(k, null)]];
             if (own) items.push(['📤 Teilen (Code)', () => shareMap(Object.assign({ g: MAPS[k] }, CMAP_INFO[k]))]);
             // Community: veröffentlichen / entfernen – der Code wird nur auf dem Server geprüft
-            const pubCall = (path, body, done) => { const code = prompt('Code zum ' + (path === 'publish' ? 'Veröffentlichen' : 'Entfernen') + ':'); if (!code) return; accApi(path, Object.assign({ code }, body)).then(r => { if (!r.ok) return alert(r.err); done(); sessionStorage.setItem('opentab', 'play'); location.reload(); }).catch(() => alert('Server nicht erreichbar.')); };
+            const pubCall = (path, body, done) => { const code = prompt('Code zum ' + (path === 'publish' ? 'Veröffentlichen' : 'Entfernen') + ':'); if (!code) return; accApi(path, Object.assign({ code }, body)).then(r => { if (!r.ok) return alert(r.err); done(); sessionStorage.setItem('opentab', edFrom); location.reload(); }).catch(() => alert('Server nicht erreichbar.')); };
             if (own) items.push(['🌍 Veröffentlichen', () => { const pk = 'pub_' + k.slice(3), map = Object.assign({ g: MAPS[k] }, CMAP_INFO[k]); pubCall('publish', { k: pk, map, by: ACC ? ACC.u : (localStorage.getItem('pname') || '') }, () => { PUBC[pk] = Object.assign({}, map, { by: ACC ? ACC.u : '' }); localStorage.setItem('pubmaps', JSON.stringify(PUBC)); alert('Karte ist jetzt für alle sichtbar!'); }); }]);
             if (k.startsWith('pub_')) items.push(['❌ Veröffentlichung entfernen', () => pubCall('unpublish', { k }, () => { delete PUBC[k]; localStorage.setItem('pubmaps', JSON.stringify(PUBC)); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); })]);
             items.push(['📥 Code importieren', importMap]);
-            if (own) items.push(['🏷️ Umbenennen', () => { const n = (prompt('Neuer Name:', CMAPS[k].n) || '').trim().slice(0, 20); if (n) { CMAPS[k].n = n; saveCMaps(); sessionStorage.setItem('opentab', 'play'); location.reload(); } }],
-                ['🗑️ Löschen', () => { if (!confirm(`Karte „${CMAPS[k].n}" wirklich löschen?`)) return; delete CMAPS[k]; saveCMaps(); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); sessionStorage.setItem('opentab', 'play'); location.reload(); }]);
+            if (own) items.push(['🏷️ Umbenennen', () => { const n = (prompt('Neuer Name:', CMAPS[k].n) || '').trim().slice(0, 20); if (n) { CMAPS[k].n = n; saveCMaps(); sessionStorage.setItem('opentab', edFrom); location.reload(); } }],
+                ['🗑️ Löschen', () => { if (!confirm(`Karte „${CMAPS[k].n}" wirklich löschen?`)) return; delete CMAPS[k]; saveCMaps(); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); sessionStorage.setItem('opentab', edFrom); location.reload(); }]);
             for (const [t, fn] of items) { const b = document.createElement('button'); b.textContent = t; b.style.cssText = 'margin:2px;text-align:left;font-size:14px'; b.onclick = e => { e.stopPropagation(); d.remove(); fn(); }; d.appendChild(b); }
             document.body.appendChild(d);
             setTimeout(() => addEventListener('pointerdown', function off(e) { if (!d.contains(e.target)) { d.remove(); removeEventListener('pointerdown', off, true); } }, true), 0);
@@ -4391,26 +4394,37 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             document.body.appendChild(d);
             setTimeout(() => addEventListener('pointerdown', function off(e) { if (!d.contains(e.target)) { d.remove(); removeEventListener('pointerdown', off, true); } }, true), 0);
         }
-        // Arena-Liste: Vorschau, Haken für die Zufallsauswahl, Klick/Rechtsklick → Aktionen
-        function showArenaList() {
-            const keys = Object.keys(ARENAS), nm = k => CMAP_INFO[k] ? CMAP_INFO[k].n : k.replace(/^ar_/, '');
-            showOverlay(`<h1 style="font-size:32px">🏟 ARENA-EDITOR<small>GAUNTLET & 1V1</small></h1>
- <p style="font-size:12px;color:#8fa3b8;margin:0 0 8px">Klick auf eine Arena für Bearbeiten, Teilen & mehr · ✔ = kommt in die Zufallsauswahl</p>
- <div id="arList">${keys.map(k => `<div class="arc${CARS[k] ? ' own' : k.startsWith('puba_') ? ' pub' : ''}" data-k="${k}"><canvas width="110" height="180"></canvas><b></b><span>${CARS[k] ? 'EIGENE' : k.startsWith('puba_') ? '🌍 COMMUNITY' : 'STANDARD'}</span><label><input type="checkbox" data-on="${k}" ${AOFF.includes(k) ? '' : 'checked'}> im Spiel</label></div>`).join('')}</div>
- <div><button id="arNew">➕ Neue Arena</button><button id="arImp">📥 Code importieren</button><button id="arBack">Zurück</button></div>`);
+        // Gemeinsame Liste: Map-Editor (ar=false), Arena-Editor (ar=true) und Arena-Auswahl beim Start (pick = { go, back })
+        let listArgs = null;
+        function gridList(ar, pick) {
+            listArgs = [ar, pick];
+            const keys = Object.keys(ar ? ARENAS : MAPS), own = k => !!(ar ? CARS : CMAPS)[k], pub = k => /^puba?_/.test(k), nm = k => CMAP_INFO[k] ? CMAP_INFO[k].n : k.replace(/^(ar|de)_/, ''), CH = ar ? 180 : 110;
+            if (!ar) edFrom = 'maps';
+            showOverlay(`<h1 style="font-size:32px">${pick ? '🏟 ARENEN WÄHLEN<small>WELCHE SOLLEN GESPIELT WERDEN?</small>' : ar ? '🏟 ARENA-EDITOR<small>GAUNTLET & 1V1</small>' : '🗺️ MAP-EDITOR<small>WETTKAMPF & DEATHMATCH</small>'}</h1>
+ <p style="font-size:12px;color:#8fa3b8;margin:0 0 8px">${pick ? 'Angehakte Arenen kommen in die Zufallsauswahl · Klick auf eine Arena schaltet um' : 'Klick (oder Rechtsklick) auf eine ' + (ar ? 'Arena' : 'Karte') + ' für Bearbeiten, Teilen & mehr'}</p>
+ <div id="arList">${keys.map(k => `<div class="arc${own(k) ? ' own' : pub(k) ? ' pub' : ''}" data-k="${k}"><canvas width="110" height="${CH}" style="height:${CH}px"></canvas><b></b><span>${own(k) ? 'EIGENE' : pub(k) ? '🌍 COMMUNITY' : 'STANDARD'}</span>${pick ? `<label><input type="checkbox" data-on="${k}" ${AOFF.includes(k) ? '' : 'checked'}> spielen</label>` : ''}</div>`).join('')}</div>
+ <p id="arMsg" style="font-size:13px;color:#c66;min-height:16px;margin:0"></p>
+ <div>${pick ? '<button id="arGo">▶ Starten</button><button id="arAll">Alle wählen</button>' : `<button id="arNew">➕ Neue ${ar ? 'Arena' : 'Karte'}</button><button id="arImp">📥 Code importieren</button>`}<button id="arBack">${pick ? 'Abbrechen' : 'Zurück'}</button></div>`);
             const col = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]]));
             document.querySelectorAll('.arc').forEach(el => {
-                const k = el.dataset.k, rows = ARENAS[k].rows, g = el.querySelector('canvas').getContext('2d'), s = 10, ox = (110 - rows[0].length * s) / 2;
-                el.querySelector('b').textContent = nm(k); g.fillStyle = (THEMES[ARENAS[k].theme] || THEMES.de_dusty).floor; g.fillRect(0, 0, 110, 180);
-                rows.forEach((row, r) => [...row].forEach((ch, c) => { if (ch !== '.') { g.fillStyle = col[ch] || '#fff'; g.fillRect(ox + c * s, r * s, s, s); } }));
-                const open = e => { if (e.target.closest('label')) return; e.preventDefault(); mapCtxMenu(k, e.clientX, e.clientY); }; el.onclick = open; el.oncontextmenu = open;
+                const k = el.dataset.k, rows = ar ? ARENAS[k].rows : MAPS[k], g = el.querySelector('canvas').getContext('2d'), s = Math.min(110 / rows[0].length, CH / rows.length), ox = (110 - rows[0].length * s) / 2, oy = (CH - rows.length * s) / 2;
+                el.querySelector('b').textContent = nm(k); g.fillStyle = (THEMES[ar ? ARENAS[k].theme : k] || THEMES.de_dusty).floor; g.fillRect(0, 0, 110, CH);
+                rows.forEach((row, r) => [...row].forEach((ch, c) => { if (ch !== '.') { g.fillStyle = col[ch] || '#fff'; g.fillRect(ox + c * s, oy + r * s, s, s); } }));
+                const open = e => { if (e.target.closest('label')) return; e.preventDefault(); if (pick) { const cb = el.querySelector('input'); cb.checked = !cb.checked; } else mapCtxMenu(k, e.clientX, e.clientY); }; el.onclick = open; el.oncontextmenu = open;
             });
-            document.querySelectorAll('[data-on]').forEach(cb => cb.onchange = () => { const k = cb.dataset.on; AOFF = AOFF.filter(x => x !== k); if (!cb.checked) AOFF.push(k); localStorage.setItem('arenaoff', JSON.stringify(AOFF)); });
-            $('arNew').onclick = () => showMapEditor('ar_dustyard', null, 1, true); $('arImp').onclick = importMap; $('arBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
+            if (pick) {
+                $('arAll').onclick = () => document.querySelectorAll('[data-on]').forEach(cb => cb.checked = true);
+                $('arGo').onclick = () => { const off = [...document.querySelectorAll('[data-on]')].filter(cb => !cb.checked).map(cb => cb.dataset.on); if (off.length === keys.length) { $('arMsg').textContent = 'Bitte mindestens eine Arena wählen.'; return; } AOFF = off; localStorage.setItem('arenaoff', JSON.stringify(AOFF)); pick.go(); };
+                $('arBack').onclick = pick.back; return;
+            }
+            $('arNew').onclick = () => showMapEditor(ar ? 'ar_dustyard' : 'de_dusty', null, ar ? 1 : 0, true); $('arImp').onclick = importMap; $('arBack').onclick = () => showMenu();
         }
+        function showArenaList() { gridList(true); }
+        function showMapList() { gridList(false); }
+        function pickArenas(go, back) { gridList(true, { go, back }); }
         function showMapEditor(src, editKey, ar, blank) {
             const ST = ar ? CARS : CMAPS, W = ar ? 11 : 28, H = ar ? 18 : 28, N = H; // ar: Arena-Modus (11×18, ohne Bombsites)
-            const grid = (ar ? ARENAS[src].rows : MAPS[src]).map(r => r.split('')); let tool = '#', name = editKey ? ST[editKey].n : blank ? 'Neue Arena' : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace(/^(de|ar)_/, '')) + ' Kopie').slice(0, 20);
+            const grid = (ar ? ARENAS[src].rows : MAPS[src]).map(r => r.split('')); let tool = '#', name = editKey ? ST[editKey].n : blank ? (ar ? 'Neue Arena' : 'Neue Karte') : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace(/^(de|ar)_/, '')) + ' Kopie').slice(0, 20);
             if (grid.length > H) grid.splice(H - 1, grid.length - H); // z.B. ar_moistpit (19 Zeilen) → auf 11×18 kürzen, Außenwand bleibt
             if (blank) for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.';
             let th = editKey ? ST[editKey].th : (CMAP_INFO[src] ? CMAP_INFO[src].th : ar ? ARENAS[src].theme : src); if (!/^de_/.test(th) || !THEMES[th]) th = 'de_dusty';
@@ -4446,7 +4460,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const mapData = () => ({ n: $('meName').value.trim().slice(0, 20), th, col: Object.assign({}, cols), tod, em: $('meEm').value.trim(), emc: $('meEmc').value, g: grid.map(r => r.join('')) });
             $('meShare').onclick = () => shareMap(mapData());
             let saved = false; // nach dem Speichern beim Zurückgehen neu laden, damit die Karte im Menü erscheint
-            $('meBack').onclick = () => { if (ar) return showArenaList(); sessionStorage.setItem('opentab', 'play'); if (saved) location.reload(); else showMenu(); };
+            $('meBack').onclick = () => { if (ar) return showArenaList(); sessionStorage.setItem('opentab', edFrom); if (saved) location.reload(); else if (edFrom === 'maps') showMapList(); else showMenu(); };
             $('meClear').onclick = () => { if (!confirm((ar ? 'Arena' : 'Karte') + ' komplett leeren? (Nur die Außenwand bleibt)')) return; for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.'; draw(); };
             const save = () => {
                 const n = $('meName').value.trim().slice(0, 20), flat = grid.map(r => r.join('')).join(''), msgEl = $('meMsg'); msgEl.style.color = '#c66';
@@ -4462,6 +4476,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('mePlay').onclick = () => { const k = save(); if (!k) return; localStorage.setItem('map', k); sessionStorage.setItem('opentab', 'play'); location.reload(); };
         }
         function showMenu() {
+            edFrom = 'play';
             $('hud').style.display = 'none'; setupMenuScene();
             const savedName = localStorage.getItem('pname') || '';
             const mapCards = Object.keys(MAPS).map(m => {
@@ -4478,6 +4493,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <a data-nav="play">SPIELEN</a>
  <a data-nav="store">CASES</a>
  <a data-nav="news">NEWS</a>
+ <a data-nav="maps">MAP-EDITOR</a>
+ <a data-nav="arenas">ARENA-EDITOR</a>
  </nav>
  <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}">${ACC ? `<b>Eingeloggt als <span style="color:#e8c98a">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
  </div>
@@ -4486,7 +4503,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="font:700 50px Rajdhani;line-height:1;color:var(--text);text-transform:uppercase">CS Web<br><span style="color:var(--acc)">Offensive</span></div>
  <div style="width:64px;height:3px;background:var(--acc);margin-top:10px"></div>
  </div> <div id="csplayview">
-<div class="subnav" id="catnav">${Object.keys(MODES).map(k => `<b data-cat="${k}">${MODES[k][0]} ${MODES[k][1].toUpperCase()}</b>`).join('')}</div><div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b></div><p id="catdesc" style="margin:2px 0 6px;font-size:12px;color:#8fa3b8"></p><button id="btnArEd" style="display:none;margin:0 auto 6px">🏟 Arena-Editor</button>  <div id="mapgrid">${mapCards}</div>
+<div class="subnav" id="catnav">${Object.keys(MODES).map(k => `<b data-cat="${k}">${MODES[k][0]} ${MODES[k][1].toUpperCase()}</b>`).join('')}</div><div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b></div><p id="catdesc" style="margin:2px 0 6px;font-size:12px;color:#8fa3b8"></p>  <div id="mapgrid">${mapCards}</div>
  <div id="roomlist" style="display:none"></div>
  <div id="glpanel" style="display:none;gap:16px;justify-content:center;margin:14px 0;flex-wrap:wrap">
  <div class="mcard" id="glcSolo" style="min-width:270px">
@@ -4664,9 +4681,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const nav = a.dataset.nav;
                 if (nav === 'inv') { showInventory(); return; }
                 if (nav === 'store') { showCases(); return; }
+                if (nav === 'maps') { showMapList(); return; } if (nav === 'arenas') { showArenaList(); return; }
                 setTab(nav);
             });
-            $('ctAcc').onclick = showAccount; $('btnArEd').onclick = showArenaList;
+            $('ctAcc').onclick = showAccount;
             // Beim Betreten der Seite (einmal pro Sitzung): Hinweis zum Login, falls nicht eingeloggt
             if (!ACC && !sessionStorage.getItem('loginAsked')) {
                 sessionStorage.setItem('loginAsked', '1');
@@ -4697,7 +4715,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 document.querySelectorAll('[data-cat]').forEach(b => b.classList.toggle('on', b.dataset.cat === PM.cat));
                 $('modeOff').classList.toggle('on', !PM.on); $('modeOn').classList.toggle('on', PM.on);
                 const arena = PM.cat === 'gl' || PM.cat === 'v1';
-                $('mapgrid').style.display = arena ? 'none' : 'flex'; $('btnArEd').style.display = arena ? 'block' : 'none';
+                $('mapgrid').style.display = arena ? 'none' : 'flex';
                 $('glpanel').style.display = !PM.on && arena ? 'flex' : 'none';
                 $('glcSolo').style.display = PM.cat === 'gl' ? '' : 'none'; $('glcV1').style.display = PM.cat === 'v1' ? '' : 'none';
                 $('roomlist').style.display = PM.on ? 'flex' : 'none';
@@ -4712,13 +4730,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('modeOff').onclick = () => { PM.on = false; setMode(); };
             $('modeOn').onclick = () => { PM.on = true; setMode(); };
             setMode();
-            $('btnGl').onclick = () => glStart(+$('glTeams').value); $('btnV1').onclick = () => { GL.v1 = true; glStart(2); };
+            const backPlay = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
+            $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => { GL.v1 = true; glStart(2); }, backPlay);
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
             $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); };
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = showGameSettings;
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
+            else if (sessionStorage.getItem('opentab') === 'maps') { sessionStorage.removeItem('opentab'); showMapList(); }
         }
         function startGame(team) {
             initAudio(); const nm = ($('pname') && $('pname').value || '').trim(); if (nm) player.name = nm.slice(0, 14); player.team = team;
@@ -5588,7 +5608,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
                 on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
-                on('btnGlMp', 'onclick', () => glStartMP(+$('glTeamsMp').value)); on('btnV1Mp', 'onclick', () => { GL.v1 = true; glStartMP(2); });
+                on('btnGlMp', 'onclick', () => { const t = +$('glTeamsMp').value; pickArenas(() => glStartMP(t), renderLobby); }); on('btnV1Mp', 'onclick', () => pickArenas(() => { GL.v1 = true; glStartMP(2); }, renderLobby));
                 on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 1 }); startGame(player.team); });
                 on('glTeamsMp', 'onchange', e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); });
             }
