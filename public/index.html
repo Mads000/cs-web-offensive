@@ -6132,7 +6132,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             for (const rp of NET.players.values()) {
                 if (!rp.alive) { rp.mesh.position.set(rp.x, 0.3, rp.z); continue; }
                 rp.x += (rp.tx - rp.x) * k; rp.y += (rp.ty - rp.y) * k; rp.z += (rp.tz - rp.z) * k; rp.yaw = lerpAngle(rp.yaw, rp.tyaw, k);
-                rp.mesh.position.set(rp.x, rp.y, rp.z); rp.mesh.rotation.y = rp.yaw;
+                rp.mesh.position.set(rp.x, rp.y, rp.z); rp.mesh.rotation.y = rp.yaw + Math.PI; /* Kamera-Blick → Modell-Vorderseite (um 180° gedreht) */
             }
         }
 
