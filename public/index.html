@@ -2452,7 +2452,15 @@ body.edit #tlook{ pointer-events:none; }
         function accApply(d, ver) { accMute = true; for (const k of SYNC_KEYS) if (k in d) localStorage.setItem(k, d[k]); else localStorage.removeItem(k); ACC.ver = ver; accStore(); }
         function accDirty() { if (!ACC || accMute) return; clearTimeout(accT); accT = setTimeout(accPush, 1500); }
         function accPush() { if (!ACC) return; if (!accReady) { accDirty(); return; } accApi('save', { tok: ACC.tok, data: accData() }).then(r => { if (r.ok) { ACC.ver = r.ver; accStore(); } else if (r.relog) accLogout(true); }).catch(() => { }); }
-        function accLogout(silent) { if (ACC) accApi('logout', { tok: ACC.tok }).catch(() => { }); ACC = null; accReady = true; localStorage.removeItem('cs_acc'); if (!silent) showAccount(); }
+        function accLogout(silent) {
+            if (silent) { ACC = null; accReady = true; localStorage.removeItem('cs_acc'); return; } // ungültiger Token: lokale Daten sicherheitshalber behalten
+            if (!ACC) return; const tok = ACC.tok; clearTimeout(accT); showOverlay('<h1 style="font-size:32px">☁️ LOGOUT<small>SPIELSTAND WIRD GESPEICHERT…</small></h1>');
+            // erst aktuellen Stand sichern, dann abmelden und alle Spielstände auf diesem Gerät löschen (Gast startet frisch)
+            (accReady ? accApi('save', { tok, data: accData() }) : Promise.resolve()).catch(() => { }).then(() => accApi('logout', { tok })).catch(() => { }).then(() => {
+                ACC = null; accMute = true; localStorage.removeItem('cs_acc'); for (const k of SYNC_KEYS) localStorage.removeItem(k);
+                sessionStorage.removeItem('netmap'); location.reload();
+            });
+        }
         { // jede Änderung an Spielständen automatisch hochladen
             const ss = Storage.prototype.setItem, rm = Storage.prototype.removeItem;
             Storage.prototype.setItem = function (k, v) { ss.call(this, k, v); if (this === localStorage && SYNC_KEYS.includes(k)) accDirty(); };
@@ -4411,7 +4419,6 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </nav>
  <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}">${ACC ? `<b>Eingeloggt als <span style="color:#e8c98a">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
  </div>
- <div id="csfriends">${['M', 'K', 'G', 'S', 'V', 'Z'].map(x => `<div class="fr">${x}</div>`).join('')}</div>
  <div id="cslogo" style="position:absolute;left:28px;top:90px;pointer-events:none">
  <div style="font:700 12px Rajdhani;letter-spacing:.45em;color:var(--mut)">BROWSER TACTICAL SHOOTER</div>
  <div style="font:700 50px Rajdhani;line-height:1;color:var(--text);text-transform:uppercase">CS Web<br><span style="color:var(--acc)">Offensive</span></div>
@@ -4556,7 +4563,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  </div>
- <div id="cschar"><b>${savedName || 'Spieler'}</b></div>
+ <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
  <div id="csver">CS:WO 1.2 „Wolke 7" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
@@ -4644,7 +4651,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('modeOn').onclick = () => { PM.on = true; setMode(); };
             setMode();
             $('btnGl').onclick = () => glStart(+$('glTeams').value); $('btnV1').onclick = () => { GL.v1 = true; glStart(2); };
-            $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; document.querySelector('#cschar b').textContent = v || 'Spieler'; };
+            $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
             $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); };
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = showGameSettings;
