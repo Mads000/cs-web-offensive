@@ -4308,8 +4308,23 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="csnews" class="cspanel" style="display:none;width:430px;max-height:72vh;overflow-y:auto">
- <h3>NEWS – PATCH 1.0 „NEUE ARENA"</h3>
+ <h3>NEWS – PATCH 1.1 „BAUMEISTER"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ MAP-EDITOR</p>
+ <b style="color:#ffd964">Eigene Karten bauen:</b> Rechtsklick auf eine Karte (am Handy lange drücken) → <b>Bearbeiten (als Kopie)</b>. Male Wände, Kisten, Container, Stege, Stufen, Bombsites und Spawns auf ein 28×28-Raster und wähle ein Thema (Dusty, Bazaar, Frost …).<br>
+ Eigene Karten werden lokal gespeichert und erscheinen in der Kartenauswahl – umbenennen und löschen per Rechtsklick.<br>
+ <b>Online:</b> Wählt der Host eine eigene Karte, wird sie automatisch an alle Mitspieler übertragen. Gefällt sie Dir, speicherst Du sie per Rechtsklick als Kopie.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📱 MOBILE</p>
+ Das Spiel läuft jetzt immer im Querformat – hochkant erscheint ein Hinweis zum Drehen, die Buttons verrutschen nicht mehr.<br>
+ Tot? Alle Buttons werden ausgeblendet, mit <b>◀ ▶</b> wechselst Du zwischen Deinen Mitspielern.<br>
+ <b>Doppeltipp auf das Spielfeld</b> öffnet das Pause-Menü – wie ESC am PC.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📦 CASES</p>
+ Im Cases-Menü können jetzt <b>Codes</b> eingelöst werden – halte die Augen offen!<br><br>
+
+ <p style="margin:6px 0;color:#8fa3b8;font:bold 12px Arial">PATCH 1.0 „NEUE ARENA"</p>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎮 NEUE MODI</p>
  <b style="color:#ff6b6b">💀 Deathmatch</b> – Jeder gegen jeden, offline & online. Respawn nach 3 s an einem freien Ort, 1,5 s Spawnschutz, Waffen jederzeit gratis kaufen. Wer zuerst 30 Kills hat (oder nach 10 Min vorne liegt), gewinnt. Rangliste im Scoreboard.<br>
@@ -4352,7 +4367,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.0 „Neue Arena" | ${MAPNAME} | 📦 ${store.cases} Cases</div> </div>`, true);
+ <div id="csver">CS:WO 1.1 „Baumeister" | ${MAPNAME} | 📦 ${store.cases} Cases</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
