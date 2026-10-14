@@ -795,19 +795,30 @@
         #dead {
             position: absolute;
             inset: 0;
-            background: rgba(40, 0, 0, .4);
-            display: none
+            background: radial-gradient(ellipse at center, transparent 55%, rgba(60, 0, 0, .45));
+            display: none;
+            pointer-events: none
         }
 
-        #dead div {
+        /* Zuschauer-/Todes-Leiste unten (verdeckt die Sicht nicht) */
+        #dead > div {
             position: absolute;
             left: 50%;
-            top: 40%;
-            transform: translate(-50%, -50%);
-            font: bold 30px 'Arial Black', Impact, sans-serif;
+            bottom: 15%;
+            transform: translateX(-50%);
+            max-width: 90vw;
+            background: rgba(10, 14, 19, .78);
+            border: 1px solid rgba(255, 255, 255, .15);
+            border-radius: 8px;
+            padding: 10px 24px 12px;
+            font: bold 22px 'Arial Black', Impact, sans-serif;
             color: #fff;
-            text-align: center
+            text-align: center;
+            text-shadow: 0 1px 3px #000
         }
+
+        #dead > div > div { font-family: Arial, sans-serif; letter-spacing: .5px }
+        .mob #dead > div { bottom: 24%; font-size: 16px; padding: 8px 16px }
 
         #wname {
             font: bold 16px Arial;
@@ -3623,7 +3634,10 @@ body.edit #tlook{ pointer-events:none; }
             if (NET.on && (e.isPlayer || (NET.host && !e.remote))) netSend({ type: 'kf', ap: att ? (att.isPlayer ? NET.pid : att.pid || null) : null, an: att ? att.name : null, at: att ? att.team : '', vn: e.name, vt: e.team, w: w ? w.name : null, hs: !!hs, rw: w && (w.key === 'knife' || w.name === 'Butterfly') ? 1500 : w && (w.key === 'awp' || w.name === 'AWP') ? 100 : 300 }); if (G.bomb.carrier === e && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); if (e.isPlayer) e.weapons[5] = null; }
             if (e.isPlayer) playerDie(att); else { e.mesh.rotation.x = -Math.PI / 2; e.mesh.scale.y = 1; e.crouch = false; e.mesh.position.set(e.x, 0.3, e.z); e.target = null; e.flash.visible = false; } checkRoundEnd();
         }
-        function playerDie(att) { const p = player; p.scoped = false; setScoped(false); p.weapons[5] = null; if (DM.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Gestorben') + '<div id="dmresp" style="font-size:16px;margin-top:10px;color:#e8c98a">Respawn in 3</div>'; closeBuy(); return; } if (GL.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> eliminiert` : 'Eliminiert') + '<div style="font-size:13px;color:#aaa;margin-top:8px">🚁 Freecam: WASD fliegen · Leertaste/Strg hoch/runter</div>'; startFreecam(); return; } $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Du wurdest von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Du bist gestorben') + '<div id="specname" style="font-size:16px;margin-top:10px;color:#e8c98a"></div><div style="font-size:13px;color:#aaa">Linksklick: nächsten Spieler beobachten</div>'; closeBuy(); specTarget = null; cycleSpec(); }
+        function playerDie(att) { const p = player; $('sub').textContent = ''; $('msg').textContent = ''; /* alte Hinweise (z.B. „Taste [5]“) weg */ p.scoped = false; setScoped(false); p.weapons[5] = null; if (DM.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Gestorben') + '<div id="dmresp" style="font-size:16px;margin-top:10px;color:#e8c98a">Respawn in 3</div>'; closeBuy(); return; } if (GL.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> eliminiert` : 'Eliminiert') + '<div style="font-size:13px;color:#aaa;margin-top:8px">🚁 Freecam: WASD fliegen · Leertaste/Strg hoch/runter</div>'; startFreecam(); return; } $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Du wurdest von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Du bist gestorben') + '<div id="specname" style="font-size:16px;margin-top:6px;color:#e8c98a"></div><div style="font-size:12px;color:#aab4c0;margin-top:4px">' + (IS_TOUCH ? '◀ ▶ oder Tippen: Spieler wechseln' : 'Linksklick: nächsten Spieler beobachten') + '</div>'; closeBuy(); specTarget = null; cycleSpec(); }
+        // beim Zuschauen das Modell des Beobachteten ausblenden, beim Wechsel/Ende wieder zeigen
+        let specHidden = null;
+        function specHide(e) { if (specHidden === e) return; if (specHidden && specHidden.mesh) specHidden.mesh.visible = true; specHidden = e; if (e && e.mesh) e.mesh.visible = false; }
         function cycleSpec(dir = 1) {
             if (DM.on) { specTarget = null; return; }
             const mates = ents.filter(e => e !== player && e.alive && e.team === player.team);
@@ -4007,6 +4021,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (p.speed > 4 && p.onGround) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.42; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
             p.recoil = Math.max(0, p.recoil - dt * 5); p.moving = p.speed > 0;
+            specHide(!p.alive && !FC.on ? specTarget : null);
             if (FC.on) {
                 updateFreecam(dt);
             } else if (!p.alive && specTarget) {
