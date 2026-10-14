@@ -2079,6 +2079,18 @@
 .mob .mebtns button{ font-size:14px; padding:9px 6px; }
 /* ── Tabs oben: am Handy kompakter (MAP-/ARENA-EDITOR passen daneben) ── */
 .mob #cstabs a{ padding:10px 7px; font-size:11px; letter-spacing:1px; }
+/* ── Regeln: präsenter ── */
+#overlay button.rulesbtn{ border-color:#e8c98a; color:#111; background:linear-gradient(#f1d79e,#d9b56c); box-shadow:0 0 14px rgba(232,201,138,.35); font-weight:bold; }
+.rchips{ display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 2px; cursor:pointer; }
+.rchips span{ font:bold 11px Arial; color:#cfd8e3; background:rgba(20,30,40,.85); border:1px solid rgba(255,255,255,.18); border-radius:12px; padding:3px 9px; }
+.rchips span.fun{ color:#111; background:#e8c98a; border-color:#e8c98a; }
+.cfgpanel{ background:rgba(10,14,19,.82); border:1px solid rgba(232,201,138,.35); border-radius:8px; padding:6px 18px 10px; max-height:calc(100vh - 260px); overflow-y:auto; }
+.cfgsec{ padding:12px 0 4px; color:#e8c98a; font:bold 12px Arial; letter-spacing:2px; text-align:left; border-bottom:1px solid rgba(232,201,138,.25); }
+.lobrules{ margin:10px 0 4px; padding:8px 10px; background:rgba(232,201,138,.08); border:1px solid rgba(232,201,138,.4); border-radius:6px; }
+.lobrh{ display:flex; align-items:center; justify-content:space-between; gap:8px; } .lobrh b{ color:#e8c98a; font:bold 12px Arial; letter-spacing:2px; }
+#overlay .lobrh button{ margin:0; padding:5px 10px; font-size:12px; }
+.lobrules .rchips{ cursor:default; margin-top:6px; }
+.mob .cfgpanel{ max-height:calc(100vh - 170px); }
 /* ── Level & Erfolge ── */
 .toast{ position:fixed; top:70px; left:50%; transform:translateX(-50%); z-index:99990; background:rgba(14,22,32,.95); border:1px solid #e8c98a; border-radius:8px; padding:10px 18px; text-align:center; font:13px Arial; color:#cfd8e3; box-shadow:0 6px 24px rgba(0,0,0,.5); animation:toastIn .35s ease-out; pointer-events:none; }
 .toast b{ display:block; font:bold 16px Arial; color:#e8c98a; } .toast.out{ opacity:0; transition:opacity .4s; }
@@ -4411,35 +4423,49 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             rebindKey = null; showSettings();
         }, true);
 
-        function showGameSettings() {
+        // Kurzfassung der Regeln als Schilder (Spielen-Tab & Lobby)
+        function ruleChips(C) {
+            if (!C) return '<span>Regeln des Hosts werden geladen…</span>';
+            const L = [C.rounds + ' Runden', C.teamSize + ' gegen ' + C.teamSize, 'Bots: ' + SKILL_LBL[C.skill], '$ ' + C.money], F = [];
+            if (C.agTheme) F.push(C.agTheme === 1 ? '🦆 Alle Enten' : 'Alle: ' + (NONDUCK[C.agTheme - 2] || {}).n);
+            if (C.hsOnly) F.push('🎯 Nur Headshots'); if (C.wpn) F.push(['', '🔫 Nur Pistolen', '🔭 Nur AWP'][C.wpn]); if (C.grav !== 100) F.push('🌙 Schwerkraft ' + C.grav + ' %');
+            if (C.jump !== 100) F.push('🦘 Sprung ' + C.jump + ' %'); if (C.speed !== 100) F.push('⚡ Tempo ' + C.speed + ' %'); if (C.infAmmo) F.push('♾ Munition');
+            return L.map(t => `<span>${t}</span>`).join('') + F.map(t => `<span class="fun">${t}</span>`).join('');
+        }
+        // o: { cfg, ro (nur ansehen), back } – ohne o: eigene Regeln bearbeiten (Menü)
+        function showGameSettings(o = {}) {
+            const C = o.cfg || CFG, ro = !!o.ro, back = o.back || showMenu;
+            const sec = t => `<tr><td colspan="2" class="cfgsec">${t}</td></tr>`;
             const sel = (key, label, opts, fmt) =>
                 `<tr><td style="text-align:left;padding:5px 18px 5px 0;color:#ddd">${label}</td><td>
- <select data-cfg="${key}" style="font:bold 14px Arial;padding:6px 10px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px;min-width:140px">
- ${opts.map(v => `<option value="${v}" ${CFG[key] === v ? 'selected' : ''}>${fmt(v)}</option>`).join('')}
+ <select data-cfg="${key}" ${ro ? 'disabled' : ''} style="font:bold 14px Arial;padding:6px 10px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px;min-width:140px${ro ? ';opacity:.85' : ''}">
+ ${opts.map(v => `<option value="${v}" ${C[key] === v ? 'selected' : ''}>${fmt(v)}</option>`).join('')}
  </select></td></tr>`;
             const min = v => v >= 60 ? Math.floor(v / 60) + ':' + String(v % 60).padStart(2, '0') + ' min' : v + ' s';
-            showOverlay(`<h1 style="font-size:36px">🎮 REGELN<small>SPIELEINSTELLUNGEN</small></h1>
- <table style="border-collapse:collapse">
- ${sel('rounds', 'Maximale Runden', [1, 5, 9, 15, 21, 29], v => v === 1 ? '1 Runde (Showdown)' : v + ' Runden (Sieg bei ' + (Math.floor(v / 2) + 1) + ')')} ${sel('roundTime', 'Rundenzeit', [60, 115, 180, 300], min)}
+            showOverlay(`<h1 style="font-size:36px">🎮 REGELN<small>${ro ? 'VOM HOST FESTGELEGT – NUR ANSICHT' : NET.inLobby ? 'DU BIST HOST – GILT FÜR ALLE' : 'SPIELEINSTELLUNGEN'}</small></h1>
+ <div class="rchips" style="justify-content:center;margin:0 0 10px;cursor:default">${ruleChips(C)}</div>
+ <div class="cfgpanel"><table style="border-collapse:collapse">
+ ${sec('🏆 MATCH')}${sel('rounds', 'Maximale Runden', [1, 5, 9, 15, 21, 29], v => v === 1 ? '1 Runde (Showdown)' : v + ' Runden (Sieg bei ' + (Math.floor(v / 2) + 1) + ')')} ${sel('roundTime', 'Rundenzeit', [60, 115, 180, 300], min)}
  ${sel('freeze', 'Freeze-Time', [0, 3, 5, 10], v => v + ' s')}
  ${sel('bombTime', 'Bomben-Timer', [30, 40, 60], v => v + ' s')}
- ${sel('skill', 'Bot-Schwierigkeit', [0, 1, 2], v => SKILL_LBL[v])}
+ ${sec('🤖 TEAMS & BOTS')}${sel('skill', 'Bot-Schwierigkeit', [0, 1, 2], v => SKILL_LBL[v])}
  ${sel('teamSize', 'Teamgröße', [1, 2, 3, 4, 5, 6], v => v + ' gegen ' + v)}
  ${sel('money', 'Startgeld', [800, 2000, 5000, 16000], v => '$ ' + v)}
- ${sel('agTheme', 'Agenten-Thema', [0, 1, ...NONDUCK.map((a, i) => i + 2)], v => v === 0 ? 'Frei (jeder seinen)' : v === 1 ? '🦆 Alle sind Enten' : 'Alle: ' + NONDUCK[v - 2].n)}
- <tr><td colspan="2" style="padding:10px 0 4px;color:#e8c98a;font-weight:bold;text-align:left">🎉 SPASS-MODI</td></tr>
+ ${sec('🎭 AUSSEHEN')}${sel('agTheme', 'Agenten-Thema', [0, 1, ...NONDUCK.map((a, i) => i + 2)], v => v === 0 ? 'Frei (jeder seinen)' : v === 1 ? '🦆 Alle sind Enten' : 'Alle: ' + NONDUCK[v - 2].n)}
+ ${sec('🎉 SPASS-MODI')}
  ${sel('hsOnly', 'Nur Headshots', [0, 1], v => v ? 'An' : 'Aus')}
  ${sel('wpn', 'Waffen', [0, 1, 2], v => ['Alle', 'Nur Pistolen', 'Nur AWP'][v])}
  ${sel('grav', 'Schwerkraft', [100, 60, 30], v => v === 100 ? 'Normal' : v === 60 ? 'Mond (60 %)' : 'Weltraum (30 %)')}
  ${sel('jump', 'Sprunghöhe', [100, 140, 200], v => v + ' %')}
  ${sel('speed', 'Lauftempo', [100, 125, 150], v => v + ' %')}
  ${sel('infAmmo', 'Unendlich Munition', [0, 1], v => v ? 'An' : 'Aus')}
- </table>
- <p style="font-size:12px;color:#999">Wird gespeichert und gilt für das nächste Spiel · Online zählen die Regeln des Hosts</p>
- <div><button id="cfgReset" style="border-color:#c66;color:#c66">Zurücksetzen</button><button id="cfgBack">Zurück</button></div>`);
-            document.querySelectorAll('[data-cfg]').forEach(el => el.onchange = () => { CFG[el.dataset.cfg] = +el.value; saveCfg(); });
-            $('cfgReset').onclick = () => { Object.assign(CFG, CFG_DEF); saveCfg(); showGameSettings(); };
-            $('cfgBack').onclick = showMenu;
+ </table></div>
+ <p style="font-size:12px;color:#999">${ro ? 'Nur der Host kann die Regeln ändern.' : 'Wird gespeichert und gilt für das nächste Spiel · Online zählen die Regeln des Hosts'}</p>
+ <div>${ro ? '' : '<button id="cfgReset" style="border-color:#c66;color:#c66">Zurücksetzen</button>'}<button id="cfgBack">Zurück</button></div>`);
+            const sync = () => { if (NET.on && NET.host) netSend({ type: 'lcfg', cfg: CFG }); }; // Host: Änderungen sofort an alle in der Lobby
+            if (!ro) document.querySelectorAll('[data-cfg]').forEach(el => el.onchange = () => { CFG[el.dataset.cfg] = +el.value; saveCfg(); sync(); showGameSettings(o); });
+            if (!ro) $('cfgReset').onclick = () => { Object.assign(CFG, CFG_DEF); saveCfg(); sync(); showGameSettings(o); };
+            $('cfgBack').onclick = back;
         }
         function navBack() { NET.inLobby ? renderLobby() : showMenu(); }
         const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; 
@@ -4653,8 +4679,9 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <button id="mpT">Beitreten: T</button>
  </span>
  <span style="color:#394a5c">|</span>
- <button id="btnGSet">🎮 Regeln</button><button id="btnSet">⌨️ Tasten</button>
+ <button id="btnGSet" class="rulesbtn">🎮 REGELN</button><button id="btnSet">⌨️ Tasten</button>
  </div>
+ <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
  <div class="cspanel newscard"><h3>NEU · PATCH 1.4 „GAME ON"</h3>
@@ -4925,7 +4952,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
             $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); };
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
-            $('btnSet').onclick = showSettings; $('btnGSet').onclick = showGameSettings;
+            $('btnSet').onclick = showSettings; $('btnGSet').onclick = () => showGameSettings(); $('ruleChips').onclick = () => showGameSettings();
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navProf').onclick = showProfile;
             $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
@@ -5668,7 +5695,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             switch (m.type) {
                 case 'joined': NET.on = true; NET.host = m.host; NET.inLobby = true; if (NET.host) netSend({ type: 'lmode', mode: NET.mode }); renderLobby();
                     netSend({ type: 'hello', pid: NET.pid, name: player.name, team: player.team, ag: store.agent }); break;
-                case 'hello': addRemote(m.pid, m.name, m.team, m.ag);
+                case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
+                case 'hello': addRemote(m.pid, m.name, m.team, m.ag); if (NET.host) netSend({ type: 'lcfg', cfg: CFG });
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: store.agent });
                     if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag); if (NET.inLobby) renderLobby(); } break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
@@ -5765,6 +5793,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             }
         }
         function renderLobby() {
+            if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); // aktuelle Regeln an alle (auch neue Spieler)
             $('hud').style.display = 'none'; setupMenuScene();
             const md = MODES[NET.mode] ? NET.mode : 'comp', isGl = md === 'gl';
             const card = (team, name, crown) => `<div class="lobp" style="border-left-color:${md !== 'comp' ? '#e8c98a' : team === 'CT' ? '#8ab4ff' : '#ffb076'}"><b>${name}</b><span>${md !== 'comp' ? 'Bereit' : team === 'CT' ? 'Counter-Terrorist' : 'Terrorist'}${crown ? ' · 👑 Host' : ''}</span></div>`;
@@ -5788,6 +5817,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="cspanel" style="width:360px">
  <h3>RAUM: ${NET.room.toUpperCase()} · ${NET.players.size + 1} SPIELER</h3>
  <div class="lobmode">${modeName(md)} · ${MODES[md][2]}${NET.host ? '' : ' <span style="color:#8fa3b8">(vom Host festgelegt)</span>'}</div>
+ <div class="lobrules"><div class="lobrh"><b>🎮 REGELN</b><button id="lobRules">${NET.host ? '✏️ Bearbeiten' : '👁 Ansehen'}</button></div><div class="rchips">${ruleChips(NET.host ? CFG : NET.hostCfg)}</div></div>
  <div style="display:flex;flex-direction:column;gap:6px;max-height:290px;overflow-y:auto">${rows}</div>
  ${IS_TOUCH && isGl ? glAsgHTML() : ''}
  ${NET.host
@@ -5798,6 +5828,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div id="cschar"><b>${player.name}</b></div>
  <div id="csver">LOBBY | ${modeName(md)} | ${md === 'gl' || md === 'v1' ? 'Arenen' : MAPLABEL} | ${NET.srv}</div>
  </div>`, true);
+            $('lobRules').onclick = () => { if (NET.host || NET.hostCfg) showGameSettings({ cfg: NET.host ? CFG : NET.hostCfg, ro: !NET.host, back: renderLobby }); };
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
                 on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
