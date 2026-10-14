@@ -445,21 +445,22 @@
         #overlay table, #reelbox { max-width: 96vw }
         @media (max-width: 700px), (max-height: 600px) { #overlay h1 { font-size: 30px !important } }
         .cspanel { max-height: calc((100vh - 140px) / var(--ui, 1)); max-width: calc((100vw - 150px) / var(--ui, 1)); overflow-y: auto }
-        #csmenu .cspanel, #cstop, #csfriends { zoom: var(--ui, 1) }
+        #csmenu .cspanel, #cstop, #csfriends, #csplayview, #cschar, #csver { zoom: var(--ui, 1) }
+        #csplayview { width: min(1340px, calc(96vw / var(--ui, 1))) !important; max-height: calc(100vh / var(--ui, 1) - 68px) !important }
         #gltpanel { left: 450px; width: 560px }
         #gltpanel #gltgrid { grid-template-columns: repeat(4, 1fr); gap: 10px; max-height: none }
         #gltpanel .gltb>b { font-size: 13px; padding: 7px 0 }
         #gltpanel .glts { font-size: 14px; padding: 14px 10px }
 
         #overlay h1 {
-            font: bold 56px 'Arial Black', Impact, sans-serif;
+            font: bold 46px 'Arial Black', Impact, sans-serif;
             margin: 0 0 6px;
             letter-spacing: 2px
         }
 
         #overlay h1 small {
             display: block;
-            font-size: 18px;
+            font-size: 15px;
             color: #bbb;
             letter-spacing: 5px
         }
@@ -471,9 +472,9 @@
         }
 
         #overlay button {
-            font: bold 20px Arial;
-            padding: 12px 26px;
-            margin: 8px;
+            font: bold 17px Arial;
+            padding: 10px 22px;
+            margin: 6px;
             background: #1d2b3a;
             color: #e8c98a;
             border: 2px solid #e8c98a;
@@ -2105,6 +2106,33 @@ body.dh #score, body.dh #roundlbl, body.dh #money, body.dh #aliveL, body.dh #ali
 #fpsBox{ position:fixed; right:8px; top:6px; z-index:99995; font:bold 12px monospace; background:rgba(0,0,0,.55); padding:2px 8px; border-radius:4px; pointer-events:none; }
 /* Gauntlet-Auswahl: leicht transparent wie die anderen Menüs, Arena dahinter sichtbar */
 .gldraft{ background:rgba(16,23,32,.72) !important; -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); }
+/* ── Inventar: Reiter, Waffenliste + Skin-Auswahl, Wrap-Raster ── */
+.invtabs{ display:flex; gap:4px; justify-content:center; margin:2px 0 10px; }
+.invtabs b{ font:bold 14px Rajdhani, Arial; letter-spacing:2px; padding:8px 18px; color:#cfd8e3; background:rgba(20,30,40,.85); border:1px solid rgba(255,255,255,.15); cursor:pointer; }
+.invtabs b.on{ color:#111; background:#e8c98a; border-color:#e8c98a; }
+.invbox{ width:min(980px,94vw); max-height:calc(100vh / var(--ui, 1) - 250px); overflow-y:auto; text-align:left; }
+.invgrid{ display:flex; gap:12px; align-items:flex-start; }
+.invlist{ flex:0 0 240px; display:flex; flex-direction:column; gap:4px; }
+.invw{ display:flex; align-items:center; gap:8px; padding:6px 8px; background:rgba(20,30,40,.85); border:1px solid rgba(255,255,255,.12); cursor:pointer; }
+.invw:hover{ border-color:rgba(232,201,138,.6); } .invw.on{ border-color:#e8c98a; background:rgba(232,201,138,.14); }
+.invw .sksw{ width:34px; height:22px; flex:0 0 34px; border-radius:3px; background-size:cover; }
+.invw > div{ flex:1; min-width:0; } .invw b{ display:block; font:bold 13px Arial; color:#fff; } .invw span{ display:block; font:11px Arial; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.invw em{ font:bold 11px Arial; color:#8fa3b8; font-style:normal; }
+.invpanel{ flex:1; min-width:0; background:rgba(10,14,19,.6); border:1px solid rgba(255,255,255,.1); padding:8px 10px; }
+.invpanel h5{ margin:0 0 8px; font:bold 12px Arial; letter-spacing:2px; color:#8fa3b8; }
+.inv.locked{ opacity:.38; filter:grayscale(.7); cursor:default; }
+.wrapgrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
+.wrapc{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px; background:rgba(20,30,40,.85); border:1px solid rgba(255,255,255,.15); text-align:center; }
+.wrapc img{ width:96px; height:96px; object-fit:cover; border-radius:4px; } .wrapc b{ font:bold 12px Arial; color:#fff; } .wrapc span{ font:11px Arial; color:#8fa3b8; }
+.wrapc.empty{ cursor:pointer; border-style:dashed; } .wrapc.empty:hover{ border-color:#e8c98a; } .wrapc.empty i{ font-style:normal; font-size:40px; line-height:96px; height:96px; color:#e8c98a; }
+#overlay .wrapc button{ margin:2px; padding:4px 10px; font-size:12px; }
+.mob .invgrid{ flex-direction:column; } .mob .invlist{ flex:none; width:100%; display:grid; grid-template-columns:repeat(3,1fr); }
+.mob .invw{ padding:4px 6px; } .mob .invw .sksw{ display:none; } .mob .invbox{ max-height:calc(100vh - 150px); }
+/* Map-/Arena-Editor in Originalgröße (wie vor der Menü-Verkleinerung) */
+#overlay.oldui>:not(#csmenu){ zoom: var(--ui0, 1); max-width: calc(100vw / var(--ui0, 1)) }
+#overlay.oldui button{ font-size:20px; padding:12px 26px; margin:8px }
+#overlay.oldui .mebtns button{ margin:0; font-size:14px } #overlay.oldui #meTools button{ margin:0; font-size:13px; padding:6px 8px } #overlay.oldui .lobrh button{ margin:0 }
+.mob #overlay.oldui .mebtns button{ font-size:14px; padding:9px 6px } .mob #overlay.oldui #meTools button{ font-size:14px; padding:8px }
 /* ── Regeln: präsenter ── */
 #overlay button.rulesbtn{ border-color:#e8c98a; color:#111; background:linear-gradient(#f1d79e,#d9b56c); box-shadow:0 0 14px rgba(232,201,138,.35); font-weight:bold; }
 .rchips{ display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 2px; cursor:pointer; }
@@ -2820,7 +2848,7 @@ body.edit #tlook{ pointer-events:none; }
         const MAPLABEL = CMAP_INFO[MAPNAME] ? CMAP_INFO[MAPNAME].n : MAPNAME; // Anzeigename (eigene Karten: selbst vergebener Name)
         const MAP = MAPS[MAPNAME] || MAPS.de_dusty;
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
-        const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 5, CRATE_H = 1.0, TALL_H = 3;
+        const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 4, CRATE_H = 1.0, TALL_H = 3;
         const WORLD_W = COLS * S, WORLD_D = ROWS * S;
         const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, bots: 1, agTheme: 0, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
         const CFG = Object.assign({}, CFG_DEF, JSON.parse(localStorage.getItem('gamecfg') || '{}'));
@@ -2926,6 +2954,19 @@ body.edit #tlook{ pointer-events:none; }
         const stepMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.floor).multiplyScalar(0.82) });
         const stegMat = new THREE.MeshLambertMaterial({ color: 0x4a5058 });
         const halfMat = new THREE.MeshLambertMaterial({ map: texBags });
+        // Feine Treppe: eine Stufen-Zelle (Höhe n·0,7 m) wird zu 4 kleinen Stufen à 17,5 cm, ansteigend zur höheren Nachbarstufe
+        // (bzw. weg von der niedrigeren). Die oberste kleine Stufe hat die alte Zellenhöhe → Übergänge & Bot-Wege bleiben gleich.
+        function stairBoxes(cellF, r, c, x, z, ch, add) {
+            const nv = +ch, h = nv * 0.7, h0 = h - 0.7, lv = q => q >= '1' && q <= '6' ? +q : q === '=' ? 4 : 0, D = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+            let dir = D.find(([dr, dc]) => lv(cellF(r + dr, c + dc)) > nv);
+            if (!dir) { const lo = D.find(([dr, dc]) => { const q = cellF(r + dr, c + dc); return lv(q) === nv - 1 && q !== '#'; }); if (lo) dir = [-lo[0], -lo[1]]; }
+            if (!dir) { add(x - S / 2, x + S / 2, 0, h, z - S / 2, z + S / 2); return; }
+            for (let i = 0; i < 4; i++) {
+                const a = -S / 2 + i * S / 4, b = a + S / 4, top = h0 + (h - h0) * (i + 1) / 4;
+                if (dir[1]) { const x0 = dir[1] > 0 ? x + a : x - b, x1 = dir[1] > 0 ? x + b : x - a; add(x0, x1, 0, top, z - S / 2, z + S / 2); }
+                else { const z0 = dir[0] > 0 ? z + a : z - b, z1 = dir[0] > 0 ? z + b : z - a; add(x - S / 2, x + S / 2, 0, top, z0, z1); }
+            }
+        }
         function addBox(x0, x1, y0, y1, z0, z1, mat) { const m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), mat); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); m.castShadow = m.receiveShadow = true; scene.add(m); mapMeshes.push(m); aabbs.push({ minX: x0, maxX: x1, minZ: z0, maxZ: z1, top: y1, bot: y0 }); return m; }
         // Rendern: zusammengeführte Meshes je Material (wenige Draw-Calls). Treffer/Sicht: weiter die Einzel-Meshes (unsichtbar, in mapMeshes)
         function mergeStatic(list, parent = scene) {
@@ -2958,14 +2999,14 @@ body.edit #tlook{ pointer-events:none; }
                 if (ch === 'T') spawnCells.T.push({ r, c }); if (ch === 'K') spawnCells.CT.push({ r, c });
                 if (ch === 'c') { const hh = cellHash(r, c); addBox(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, crateMats[hh % 3]); const ox = Math.random() < 0.5 ? -0.6 : 0.6, oz = Math.random() < 0.5 ? -0.6 : 0.6; addBox(x + ox - 0.7, x + ox + 0.7, CRATE_H, CRATE_H * 2, z + oz - 0.7, z + oz + 0.7, crateMats[(hh >> 3) % 3]); }
                 if (ch === 'C') { addBox(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, contMats[cellHash(r, c) % contMats.length]); }
-                if (ch >= '1' && ch <= '6') { const h = (+ch) * 0.7; addBox(x - S / 2, x + S / 2, 0, h, z - S / 2, z + S / 2, stepMat); }
+                if (ch >= '1' && ch <= '6') stairBoxes(cell, r, c, x, z, ch, (a, b, y0, y1, c0, c1) => addBox(a, b, y0, y1, c0, c1, stepMat));
                 if (ch === 'h') addBox(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, halfMat);
                 if (ch === '=') addBox(x - S / 2, x + S / 2, 2.45, 2.8, z - S / 2, z + S / 2, stegMat);
             }
             let c = 0; while (c < COLS) {
                 if (cell(r, c) === '#') {
                     const s = c; while (c < COLS && cell(r, c) === '#') c++;
-                    const len = c - s, hv = WALL_H + ((r * 7 + s * 13) % 3) * 0.9;
+                    const len = c - s, hv = WALL_H + ((r * 7 + s * 13) % 3) * 0.6;
                     const sm = sideMat(len, wallSet[cellHash(r, s) % wallSet.length]);
                     addBox(s * S, c * S, 0, hv, r * S, (r + 1) * S, [wallEnd, wallEnd, wallTop, wallEnd, sm, sm]);
                     const deco = (w2, h2, d2, x2, y2, z2, m2) => { const mm = new THREE.Mesh(new THREE.BoxGeometry(w2, h2, d2), m2); mm.position.set(x2, y2, z2); mm.castShadow = mm.receiveShadow = true; scene.add(mm); };
@@ -3347,6 +3388,11 @@ body.edit #tlook{ pointer-events:none; }
                 if (!e.mate || e.mate.parent !== e.mesh) { e.mate = new THREE.Sprite(mateMat(col)); e.mate.scale.set(0.32, 0.32, 1); e.mate.position.set(0, 2.25, 0); e.mate.renderOrder = 999; e.mesh.add(e.mate); }
                 e.mate.material = mateMat(col); e.mate.visible = e.alive && isMate(e); }
         }
+        function animChars(dt) {
+            for (const e of ents) { if (e === player || !e.mesh) continue; const L = e.mesh.userData.limbs; if (!L) continue;
+                const v = e.alive && e._ax !== undefined ? Math.hypot(e.x - e._ax, e.z - e._az) / Math.max(dt, 0.001) : 0; e._ax = e.x; e._az = e.z;
+                e._ph = (e._ph || 0) + Math.min(v, 8) * dt * 2.6; const sw = Math.min(1, v / 3) * 0.55 * Math.sin(e._ph); L.hipL.rotation.x = sw; L.hipR.rotation.x = -sw; }
+        }
         function remeshAll() { for (const e of [...bots, ...NET.players.values()]) { if (!e.mesh) continue; const m = makeBotMesh(e.team, e.ag); m.group.position.copy(e.mesh.position); m.group.rotation.copy(e.mesh.rotation); m.group.visible = e.mesh.visible; scene.remove(e.mesh); e.mesh = m.group; e.hit = m.hit; e.flash = m.flash; e.robo = false; m.hit.forEach(h => h.userData.ent = e); } }
         store.agent = AGENTS.some(a => a.id === localStorage.getItem('agent')) ? localStorage.getItem('agent') : 'std';
         function makeBotMesh(team, agentId, raw) {
@@ -3366,22 +3412,39 @@ body.edit #tlook{ pointer-events:none; }
                 const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.3, 1.12, 0.95); fl.visible = false; g.add(fl);
                 scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
             }
-            const bodyMat = M(AG ? AG.body : T ? 0x9b7c4e : 0x2c3b58), legMat = M(AG ? AG.legs : T ? 0x5e513a : 0x1d2634), headMat = M(AG ? AG.head : T ? 0xc99c76 : 0x151c2a);
-            const mk = (w, h, d, m, x, y, z, part) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = true; g.add(b); if (part) b.userData.part = part; return b; };
-            const body = mk(0.7, 0.85, 0.4, bodyMat, 0, 1.05, 0, 'body'), head = mk(0.34, 0.34, 0.34, headMat, 0, 1.66, 0, 'head');
-            if (T) mk(0.36, 0.07, 0.36, M(0xb52222), 0, 1.74, 0); else mk(0.3, 0.08, 0.05, M(0x6fa0ff), 0, 1.68, 0.17);
-            const legL = mk(0.28, 0.65, 0.3, legMat, -0.18, 0.33, 0, 'legs'), legR = mk(0.28, 0.65, 0.3, legMat, 0.18, 0.33, 0, 'legs');
-            mk(0.18, 0.6, 0.18, bodyMat, -0.45, 1.05, 0.05); mk(0.18, 0.5, 0.18, bodyMat, 0.42, 1.1, 0.25); mk(0.08, 0.12, 0.75, M(0x222222), 0.3, 1.12, 0.5);
-            if (AG) {
-                mk(0.2, 0.12, 0.2, M(T ? 0xd04040 : 0x4a7dff), -0.45, 1.22, 0.05); // Team-Armbinde: Team bleibt immer erkennbar
-                if (AG.hat === 'helmet') mk(0.4, 0.16, 0.4, M(AG.hatC), 0, 1.86, 0);
-                if (AG.hat === 'cap') { mk(0.36, 0.1, 0.36, M(AG.hatC), 0, 1.86, 0); mk(0.3, 0.03, 0.2, M(AG.hatC), 0, 1.82, 0.25); }
-                if (AG.hat === 'boonie') { mk(0.58, 0.04, 0.58, M(AG.hatC), 0, 1.85, 0); mk(0.36, 0.1, 0.36, M(AG.hatC), 0, 1.9, 0); }
-                if (AG.pack) mk(0.5, 0.6, 0.22, M(AG.pack), 0, 1.12, -0.3);
-                if (AG.band) mk(0.36, 0.06, 0.36, M(AG.band), 0, 1.72, 0);
-                if (AG.visor) { const v = new THREE.Mesh(new THREE.BoxGeometry(0.31, 0.08, 0.05), new THREE.MeshBasicMaterial({ color: AG.visor })); v.position.set(0, 1.68, 0.175); g.add(v); }
+            // Menschliches Modell im Block-Stil – Trefferzonen wie bisher: Kopf (1,66 m), Körper (1,05–1,4 m), Beine
+            const col = AG ? { b: AG.body, l: AG.legs, h: AG.head } : T ? { b: 0x9b7c4e, l: 0x5e513a, h: 0xc99c76 } : { b: 0x2c3b58, l: 0x1d2634, h: 0x151c2a };
+            const sh = (c, f) => new THREE.Color(c).multiplyScalar(f).getHex();
+            const bodyMat = M(col.b), legMat = M(col.l), headMat = M(col.h), vestMat = M(sh(col.b, 0.7)), dark = M(0x17191d), glove = M(0x26282c), skin = M(0xb98a68), gunA = M(0x222428), gunB = M(0x3b3e44);
+            const mk = (w, h, d, m, x, y, z, part, par, shadow) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = !!(part || shadow); (par || g).add(b); if (part) b.userData.part = part; return b; };
+            // Rumpf, Weste, Gürtel, Hals, Kopf mit Augen
+            const body = mk(0.7, 0.85, 0.4, bodyMat, 0, 1.05, 0, 'body'); mk(0.74, 0.46, 0.44, vestMat, 0, 1.22, 0, 0, 0, 1); mk(0.72, 0.1, 0.42, dark, 0, 0.8, 0); /* Trefferzonen exakt wie vorher */
+            mk(0.15, 0.1, 0.15, skin, 0, 1.5, 0); const head = mk(0.34, 0.34, 0.34, headMat, 0, 1.66, 0, 'head');
+            if (col.h !== 0x101012 && col.h !== 0x101018) { mk(0.06, 0.04, 0.01, dark, -0.07, 1.69, 0.175); mk(0.06, 0.04, 0.01, dark, 0.07, 1.69, 0.175); }
+            if (!AG) { // Standard-Ausrüstung: CT Helm + blaue Brille, T rotes Stirnband + Halstuch
+                if (T) { mk(0.36, 0.07, 0.36, M(0xb52222), 0, 1.75, 0); mk(0.36, 0.12, 0.36, M(0x3a3226), 0, 1.56, 0.005); }
+                else { mk(0.38, 0.13, 0.38, M(0x2a3446), 0, 1.86, 0); mk(0.38, 0.04, 0.08, M(0x2a3446), 0, 1.8, 0.19); mk(0.3, 0.07, 0.04, M(0x6fa0ff), 0, 1.7, 0.185); }
             }
-            const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.3, 1.12, 0.95); fl.visible = false; g.add(fl);
+            // Arme halten die Waffe (links am Vorderschaft, rechts am Abzug), Handschuhe
+            mk(0.15, 0.34, 0.17, bodyMat, -0.43, 1.27, 0.06, 0, 0, 1); mk(0.13, 0.13, 0.4, bodyMat, -0.27, 1.12, 0.3); mk(0.12, 0.12, 0.12, glove, -0.12, 1.13, 0.52);
+            mk(0.15, 0.34, 0.17, bodyMat, 0.43, 1.27, 0.04, 0, 0, 1); mk(0.13, 0.13, 0.32, bodyMat, 0.35, 1.1, 0.24); mk(0.12, 0.12, 0.12, glove, 0.3, 1.1, 0.4);
+            // Waffe: Gehäuse, Lauf, Magazin
+            mk(0.08, 0.13, 0.62, gunA, 0.28, 1.16, 0.42); mk(0.045, 0.045, 0.3, gunB, 0.28, 1.18, 0.88); mk(0.06, 0.17, 0.09, gunB, 0.28, 1.03, 0.48);
+            // Beine an Hüftgelenken (für die Laufanimation), Stiefel
+            const hipL = new THREE.Group(), hipR = new THREE.Group(); hipL.position.set(-0.18, 0.66, 0); hipR.position.set(0.18, 0.66, 0); g.add(hipL, hipR);
+            const legL = mk(0.28, 0.65, 0.3, legMat, 0, -0.33, 0, 'legs', hipL), legR = mk(0.28, 0.65, 0.3, legMat, 0, -0.33, 0, 'legs', hipR);
+            mk(0.3, 0.13, 0.38, dark, 0, -0.595, 0.04, 0, hipL); mk(0.3, 0.13, 0.38, dark, 0, -0.595, 0.04, 0, hipR);
+            g.userData.limbs = { hipL, hipR };
+            if (AG) {
+                mk(0.17, 0.11, 0.19, M(T ? 0xd04040 : 0x4a7dff), -0.43, 1.32, 0.06); // Team-Armbinde: Team bleibt immer erkennbar
+                if (AG.hat === 'helmet') mk(0.38, 0.15, 0.38, M(AG.hatC), 0, 1.85, 0);
+                if (AG.hat === 'cap') { mk(0.35, 0.1, 0.35, M(AG.hatC), 0, 1.86, 0); mk(0.3, 0.03, 0.2, M(AG.hatC), 0, 1.82, 0.25); }
+                if (AG.hat === 'boonie') { mk(0.58, 0.04, 0.58, M(AG.hatC), 0, 1.85, 0); mk(0.35, 0.1, 0.35, M(AG.hatC), 0, 1.9, 0); }
+                if (AG.pack) mk(0.48, 0.56, 0.2, M(AG.pack), 0, 1.15, -0.3, 0, 0, 1);
+                if (AG.band) mk(0.34, 0.06, 0.34, M(AG.band), 0, 1.73, 0);
+                if (AG.visor) { const v = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.08, 0.05), new THREE.MeshBasicMaterial({ color: AG.visor })); v.position.set(0, 1.69, 0.175); g.add(v); }
+            }
+            const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.28, 1.18, 1.05); fl.visible = false; g.add(fl);
             scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
         }
         function createBot(name, team) { const m = makeBotMesh(team); const b = { isPlayer: false, id: bots.length, name, team, x: 0, y: 0, z: 0, r: 0.4, yaw: 0, health: 100, armor: 0, helmet: false, alive: true, kills: 0, deaths: 0, money: CFG.money, weapon: team === 'T' ? W.glock : W.usp, ammo: 0, reloadT: 0, fireT: 0, burst: 0, target: null, losT: Math.random(), reaction: 0, path: [], goal: null, waitT: 0, stuckT: 0, lastX: 0, lastZ: 0, wantMove: false, moving: false, strafeT: 0, strafeDir: 1, crouch: false, crouchT: 0, nades: [], nadeT: 0, plantT: 0, defuseT: 0, kit: false, stepT: 0, flashT: 0, lastShotT: -9, speed: 0, mesh: m.group, hit: m.hit, flash: m.flash }; m.hit.forEach(h => h.userData.ent = b); bots.push(b); return b; }
@@ -3963,7 +4026,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // ───── TOUCH-STEUERUNG ─────
         const IS_TOUCH = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
         const TOUCH = { f: 0, s: 0 };
-        function fitUI() { const u = IS_TOUCH ? 1 : Math.max(0.8, Math.min(1.8, innerWidth / 1440, innerHeight / 780)); document.documentElement.style.setProperty('--ui', u.toFixed(3)); } fitUI(); addEventListener('resize', fitUI); applyLook();
+        function fitUI() { const u = IS_TOUCH ? 0.88 : Math.max(0.75, Math.min(1.1, innerWidth / 1680, innerHeight / 940)); /* Menüs nicht mehr riesig auf großen Bildschirmen */ document.documentElement.style.setProperty('--ui', u.toFixed(3)); document.documentElement.style.setProperty('--ui0', (IS_TOUCH ? 1 : Math.max(0.8, Math.min(1.8, innerWidth / 1440, innerHeight / 780))).toFixed(3)); /* --ui0: ursprüngliche Größe (Editoren & News) */ } fitUI(); addEventListener('resize', fitUI); applyLook();
         if (IS_TOUCH) {
             renderer.domElement.requestPointerLock = () => { }; // kein Pointer-Lock auf Mobile
             document.exitPointerLock = () => { }; // iOS kennt die API nicht – Stub verhindert Crash
@@ -4283,7 +4346,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         addEventListener('wheel', e => { if (!locked) return; const order = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); let i = order.indexOf(player.slot); i = (i + (e.deltaY > 0 ? 1 : -1) + order.length) % order.length; selectSlot(order[i]); });
         addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button><button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
         document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button,.mapc,[data-cat],.subnav b,#cstabs a,.inv,.gltb')) { initAudio(); sfx('ui'); } }, true);
-        function showOverlay(html, trans) { const o = $('overlay'); o.innerHTML = html; o.style.display = 'flex'; o.style.background = trans ? 'none' : 'rgba(8,11,15,.82)'; } function leaveGame() {
+        function showOverlay(html, trans) { const o = $('overlay'); o.classList.remove('oldui'); o.innerHTML = html; o.style.display = 'flex'; o.style.background = trans ? 'none' : 'rgba(8,11,15,.82)'; } function leaveGame() {
             if (NET.ws) { NET.on = false; NET.ws.close(); }
             location.reload();
         }
@@ -4297,47 +4360,54 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             $('btnCode').onclick = () => { const c = $('caseCode').value.toLowerCase().replace(/\s+/g, ''), m = $('codeMsg'); if (c === 'cases10') { store.cases += 10; saveStore(); $('caseCnt').textContent = store.cases; if ($('btnBack').style.display !== 'none') { $('btnOpen').disabled = false; $('btnOpen').style.opacity = ''; } m.style.color = '#7c7'; m.textContent = '+10 Cases!'; sfx('win'); } else { m.style.color = '#c66'; m.textContent = 'Ungültiger Code'; } $('caseCode').value = ''; };
             $('btnOpen').onclick = openCase; $('btnInvGo').onclick = showInventory; $('btnGbGo').onclick = () => showGamble(); $('btnBack').onclick = navBack;
         }
+        // Inventar: Reiter (Skins / Agenten / Wraps), Skins als Ausrüstungs-Übersicht mit Sammelfortschritt
+        let INV = { tab: 'sk', wk: null };
         function showInventory() {
             const ORDER = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
             const counts = {}; for (const id of store.inv) counts[id] = (counts[id] || 0) + 1;
-            let invHtml = '';
-            for (const wk of ORDER) {
-                const sks = SKINS.filter(s => s.w === wk && counts[s.id]).sort((a, b) => b.r - a.r);
-                if (!sks.length) continue;
-                invHtml += `<div class="invsec"><h5>${W[wk].name.toUpperCase()}</h5><div class="invrow">` + sks.map(s => {
-                    const eq = store.equip[s.w] === s.id, n = counts[s.id], label = s.n.split(' | ')[1] || s.n;
-                    return `<div class="inv ${eq ? 'eq' : ''}" data-eq="${s.id}" style="border-color:${RARITY[s.r][0]}"><span class="sksw" style="background-image:url(${skinSwatch(s)})"></span><b style="color:${RARITY[s.r][0]}">${label}${n > 1 ? ` <em>×${n}</em>` : ''}</b><span>${RARITY[s.r][1]} · ${eq ? '✓ Ausgerüstet' : 'Klicken zum Ausrüsten'}</span></div>`;
-                }).join('') + `</div></div>`;
+            const owned = SKINS.filter(s => counts[s.id]).length, rare = SKINS.filter(s => counts[s.id] && s.r >= 3).length, lbl = s => s.n.split(' | ')[1] || s.n;
+            if (!INV.wk) INV.wk = ORDER.find(k => SKINS.some(s => s.w === k && counts[s.id])) || 'ak47';
+            const tabs = [['sk', '🔫 Skins'], ['ag', '👤 Agenten'], ['wr', '🖼 Wraps']].map(([k, t]) => `<b class="${INV.tab === k ? 'on' : ''}" data-itab="${k}">${t}</b>`).join('');
+            let body = '';
+            if (INV.tab === 'sk') {
+                // links: alle Waffen mit ausgerüstetem Skin, rechts: Skins der gewählten Waffe (gesammelt + noch fehlend)
+                const list = ORDER.map(wk => { const eq = skinOf(wk), have = SKINS.filter(s => s.w === wk && counts[s.id]).length, all = SKINS.filter(s => s.w === wk).length;
+                    return `<div class="invw ${INV.wk === wk ? 'on' : ''}" data-wk="${wk}"><span class="sksw" style="${eq ? `background-image:url(${skinSwatch(eq)})` : 'background:#2a3038'}"></span><div><b>${W[wk].name}</b><span style="color:${eq ? RARITY[eq.r][0] : '#8fa3b8'}">${eq ? lbl(eq) : 'Standard'}</span></div><em>${have}/${all}</em></div>`; }).join('');
+                const wk = INV.wk, std = !store.equip[wk];
+                const cards = `<div class="inv ${std ? 'eq' : ''}" data-eqnone="${wk}" style="border-color:#556"><span class="sksw" style="background:#2a3038"></span><b style="color:#cfd8e3">Standard</b><span>${std ? '✓ Ausgerüstet' : 'Ohne Skin'}</span></div>` +
+                    SKINS.filter(s => s.w === wk).sort((a, b) => b.r - a.r).map(s => { const n = counts[s.id], eq = store.equip[wk] === s.id;
+                        return n ? `<div class="inv ${eq ? 'eq' : ''}" data-eq="${s.id}" style="border-color:${RARITY[s.r][0]}"><span class="sksw" style="background-image:url(${skinSwatch(s)})"></span><b style="color:${RARITY[s.r][0]}">${lbl(s)}${n > 1 ? ` <em>×${n}</em>` : ''}</b><span>${RARITY[s.r][1]} · ${eq ? '✓ Ausgerüstet' : 'Ausrüsten'}</span></div>`
+                            : `<div class="inv locked" style="border-color:${RARITY[s.r][0]}"><span class="sksw" style="background-image:url(${skinSwatch(s)})"></span><b style="color:${RARITY[s.r][0]}">🔒 ${lbl(s)}</b><span>${RARITY[s.r][1]} · ${s.noCase ? 'Entenjagd-Belohnung' : 'aus Cases'}</span></div>`; }).join('');
+                body = `<div class="invgrid"><div class="invlist">${list}</div><div class="invpanel"><h5>${W[wk].name.toUpperCase()}${store.stick[wk] ? ' <span style="color:#ffd84a;letter-spacing:0">· 🖼 Wrap aktiv – ersetzt den Skin</span>' : ''}</h5><div class="invrow">${cards}</div></div></div>`;
+            } else if (INV.tab === 'ag') {
+                const agCol = (a, k, def) => '#' + new THREE.Color(a[k] !== undefined ? a[k] : def).getHexString();
+                body = `<div class="invpanel" style="width:100%"><h5>SPIELERMODELL · ${CFG.agTheme ? '⚠ Der Host kann ein Agenten-Thema erzwingen' : 'gilt in allen Modi'}</h5><div class="invrow">${AGENTS.map(a => { const on = store.agent === a.id; return `<div class="inv ${on ? 'eq' : ''}" data-agent="${a.id}" style="border-color:${on ? '#e8c98a' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? '#e8c98a' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>`;
+            } else {
+                // Wraps: jede Waffe ein Feld – Bild oder „+ PNG"
+                const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
+                body = `<div class="invpanel" style="width:100%"><h5>EIGENE PNGs AUF DEN WAFFEN · ein Wrap ersetzt den Skin</h5><div class="wrapgrid">${WK.map(k => store.stick[k]
+                    ? `<div class="wrapc"><img src="${store.stick[k]}"><b>${W[k].name}</b><div><button data-wch="${k}">Ändern</button><button data-wdel="${k}" class="del">🗑</button></div></div>`
+                    : `<div class="wrapc empty" data-wch="${k}"><i>＋</i><b>${W[k].name}</b><span>PNG hochladen</span></div>`).join('')}</div><input type="file" id="stf" accept="image/*" style="display:none"></div>`;
             }
-            if (!invHtml) invHtml = '<p style="color:#888">Noch keine Skins – öffne eine Case!</p>';
-            const agCol = (a, k, def) => '#' + new THREE.Color(a[k] !== undefined ? a[k] : def).getHexString();
-            invHtml = `<div class="invsec"><h5>AGENTEN · SPIELERMODELL</h5><div class="invrow">${AGENTS.map(a => { const on = store.agent === a.id; return `<div class="inv ${on ? 'eq' : ''}" data-agent="${a.id}" style="border-color:${on ? '#e8c98a' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? '#e8c98a' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>` + invHtml;
-            const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
-            const used = WK.filter(k => store.stick[k]), free = WK.filter(k => !store.stick[k]);
-            let wrapHtml = used.map(k => `<div class="wrap"><img src="${store.stick[k]}" title="Hover zum Vergrößern"><b>${W[k].name}</b><div style="display:flex;gap:4px"><button data-wch="${k}">Ändern</button><button data-wdel="${k}" class="del">🗑 Löschen</button></div></div>`).join('');
-            if (!wrapHtml) wrapHtml = '<p style="color:#888;font-size:12px;margin:4px">Noch keine Wraps – wähle unten eine Waffe und lade ein PNG hoch.</p>';
-            showOverlay(`<h1 style="font-size:36px">🎒 INVENTAR<small>AGENTEN · SKINS · WRAPS</small></h1>
- <div class="invwrap">${invHtml}</div>
- <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,.12);padding-top:10px;max-width:760px">
- <span style="font:bold 12px Arial;letter-spacing:2px;color:#8fa3b8">🖼 WRAPS – EIGENE PNGs AUF DEN WAFFEN</span>
- <div class="wraps">${wrapHtml}</div>
- ${free.length ? `<div style="margin-top:8px"><select id="stw" style="font:bold 14px Arial;padding:7px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px;margin:0 4px">${free.map(k => `<option value="${k}">${W[k].name}</option>`).join('')}</select><button id="stAdd" style="font-size:14px;padding:8px 14px">+ PNG hochladen…</button></div>` : ''}
- <input type="file" id="stf" accept="image/*" style="display:none">
- </div>
+            showOverlay(`<h1 style="font-size:34px">🎒 INVENTAR<small>${owned}/${SKINS.length} SKINS GESAMMELT · ${rare} SELTENE · 📦 ${store.cases} CASES</small></h1>
+ <div class="invtabs">${tabs}</div>
+ <div class="invbox">${body}</div>
  <div><button id="btnCasesGo">📦 Cases (${store.cases})</button><button id="btnGbGo">🎰 Gamble</button><button id="btnBack">Zurück</button></div>`);
             $('btnCasesGo').onclick = showCases; $('btnGbGo').onclick = () => showGamble(); $('btnBack').onclick = navBack;
-            let pendKey = null;
-            $('stf').onchange = e => {
+            document.querySelectorAll('[data-itab]').forEach(el => el.onclick = () => { INV.tab = el.dataset.itab; showInventory(); });
+            document.querySelectorAll('[data-wk]').forEach(el => el.onclick = () => { INV.wk = el.dataset.wk; showInventory(); });
+            document.querySelectorAll('[data-eq]').forEach(el => el.onclick = () => { const id = el.dataset.eq, s = SKINS.find(x => x.id === id); store.equip[s.w] = store.equip[s.w] === id ? undefined : id; saveStore(); applySkins(); showInventory(); });
+            document.querySelectorAll('[data-eqnone]').forEach(el => el.onclick = () => { store.equip[el.dataset.eqnone] = undefined; saveStore(); applySkins(); showInventory(); });
+            document.querySelectorAll('[data-agent]').forEach(el => el.onclick = () => { store.agent = el.dataset.agent; localStorage.setItem('agent', store.agent); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent }); showInventory(); });
+            let pendKey = null; const stf = $('stf');
+            if (stf) stf.onchange = e => {
                 const f = e.target.files[0]; if (!f || !pendKey) return;
                 const img = new Image();
                 img.onload = () => { const c = document.createElement('canvas'); c.width = 256; c.height = 256; c.getContext('2d').drawImage(img, 0, 0, 256, 256); setSticker(pendKey, c.toDataURL()); showInventory(); };
                 img.src = URL.createObjectURL(f); e.target.value = '';
             };
-            const stAdd = $('stAdd'); if (stAdd) stAdd.onclick = () => { pendKey = $('stw').value; $('stf').click(); };
-            document.querySelectorAll('[data-wch]').forEach(el => el.onclick = () => { pendKey = el.dataset.wch; $('stf').click(); });
-            document.querySelectorAll('[data-wdel]').forEach(el => el.onclick = () => { setSticker(el.dataset.wdel, null); showInventory(); });
-            document.querySelectorAll('[data-agent]').forEach(el => el.onclick = () => { store.agent = el.dataset.agent; localStorage.setItem('agent', store.agent); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent }); showInventory(); });
-            document.querySelectorAll('[data-eq]').forEach(el => el.onclick = () => { const id = el.dataset.eq, s = SKINS.find(x => x.id === id); store.equip[s.w] = store.equip[s.w] === id ? undefined : id; saveStore(); applySkins(); showInventory(); });
+            document.querySelectorAll('[data-wch]').forEach(el => el.onclick = () => { pendKey = el.dataset.wch; stf.click(); });
+            document.querySelectorAll('[data-wdel]').forEach(el => el.onclick = e => { e.stopPropagation(); setSticker(el.dataset.wdel, null); showInventory(); });
         }
         function openCase() {
             if (store.cases < 1) return; store.cases--; saveStore(); initAudio(); xpEvent('case');
@@ -4592,6 +4662,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         let listArgs = null;
         function gridList(ar, pick) {
             listArgs = [ar, pick];
+            setTimeout(() => $('overlay').classList.add('oldui')); /* Editor-Listen in Originalgröße */
             const keys = Object.keys(ar ? ARENAS : MAPS), own = k => !!(ar ? CARS : CMAPS)[k], pub = k => /^puba?_/.test(k), nm = k => CMAP_INFO[k] ? CMAP_INFO[k].n : k.replace(/^(ar|de)_/, ''), CH = ar ? 180 : 110;
             if (!ar) edFrom = 'maps';
             showOverlay(`<h1 style="font-size:32px">${pick ? '🏟 ARENEN WÄHLEN<small>WELCHE SOLLEN GESPIELT WERDEN?</small>' : ar ? '🏟 ARENA-EDITOR<small>GAUNTLET & 1V1</small>' : '🗺️ MAP-EDITOR<small>WETTKAMPF & DEATHMATCH</small>'}</h1>
@@ -4617,6 +4688,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function showMapList() { gridList(false); }
         function pickArenas(go, back) { gridList(true, { go, back }); }
         function showMapEditor(src, editKey, ar, blank) {
+            setTimeout(() => $('overlay').classList.add('oldui')); /* Editor in Originalgröße */
             const ST = ar ? CARS : CMAPS, W = ar ? 11 : 28, H = ar ? 18 : 28, N = H; // ar: Arena-Modus (11×18, ohne Bombsites)
             const grid = (ar ? ARENAS[src].rows : MAPS[src]).map(r => r.split('')); let tool = '#', name = editKey ? ST[editKey].n : blank ? (ar ? 'Neue Arena' : 'Neue Karte') : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace(/^(de|ar)_/, '')) + ' Kopie').slice(0, 20);
             if (grid.length > H) grid.splice(H - 1, grid.length - H); // z.B. ar_moistpit (19 Zeilen) → auf 11×18 kürzen, Außenwand bleibt
@@ -5320,14 +5392,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     if (ch === 'T') info.spawnT.push({ x, z }); if (ch === 'K') info.spawnK.push({ x, z });
                     if (ch === 'c') { box(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, aCrateM); box(x - 0.7, x + 0.7, CRATE_H, CRATE_H * 2, z - 0.7, z + 0.7, aCrateM); }
                     if (ch === 'C') box(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, aCrateM);
-                    if (ch >= '1' && ch <= '6') { const hh = (+ch) * 0.7; box(x - S / 2, x + S / 2, 0, hh, z - S / 2, z + S / 2, aStepM); }
+                    if (ch >= '1' && ch <= '6') stairBoxes(aCell, r, c, x, z, ch, (a, b, y0, y1, c0, c1) => box(a, b, y0, y1, c0, c1, aStepM));
                     if (ch === 'h') box(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, aHalfM);
                     if (ch === '=') box(x - S / 2, x + S / 2, 2.45, 2.8, z - S / 2, z + S / 2, aStegM);
                 }
                 let c = 0; while (c < C) {
                     if (aCell(r, c) === '#') {
                         const s0 = c; while (c < C && aCell(r, c) === '#') c++;
-                        const len = c - s0, hv = WALL_H + ((r * 7 + s0 * 13) % 3) * 0.9;
+                        const len = c - s0, hv = WALL_H + ((r * 7 + s0 * 13) % 3) * 0.6;
                         const sm = aSideMat(len);
                         box(ox + s0 * S, ox + c * S, 0, hv, r * S, (r + 1) * S, [aEndM, aEndM, aTopM, aEndM, sm, sm]);
                         solidDeco(len * S + 0.1, 1.05, S + 0.12, ox + (s0 + c) / 2 * S, 0.525, (r + 0.5) * S, aBrickMat(len));
@@ -6160,7 +6232,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (DH.on) dhTick(dt); else if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
                 updatePlayer(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
-                separate(); updateFX(dt); updateMates(); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
+                separate(); updateFX(dt); updateMates(); animChars(dt); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
             }
             renderer.render(scene, camera);
         }
