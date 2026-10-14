@@ -2558,7 +2558,14 @@ body.edit #tlook{ pointer-events:none; }
             de_moisty: { sky: 0x4a6b5d, fog: 0x2d4237, floor: '#3a4d39', wallBase: '#2f4032', wallHue: 135, wallSat: 25, wallLight: 35, crateHue: 85, crateSat: 35, crateLight: 28 },
             de_foundry: { sky: 0x9fb4c4, fog: 0xaab8c0, floor: '#8f949a', wallBase: '#7d8288', wallHue: 210, wallSat: 8, wallLight: 52, crateHue: 24, crateSat: 55, crateLight: 40 }
         };
-        const MAPNAME = localStorage.getItem('map') || 'de_dusty';
+        // Eigene Karten (Map-Editor): lokal gespeichert + ggf. vom Online-Host übertragene Karte (nur für die Sitzung)
+        let CMAPS = {}; try { CMAPS = JSON.parse(localStorage.getItem('custommaps') || '{}') || {}; } catch (e) { }
+        const CMAP_INFO = {}, regMap = (k, d) => { if (!d || !Array.isArray(d.g) || d.g.length !== 28 || d.g.some(r => typeof r !== 'string' || !/^[#.cCh=1-6ABTK]{28}$/.test(r)) || !/^my_[a-z0-9_]+$/.test(k)) return; MAPS[k] = d.g; THEMES[k] = THEMES[d.th] || THEMES.de_dusty; CMAP_INFO[k] = { n: String(d.n || k).replace(/[<>"'&`]/g, '').slice(0, 20) || k, th: d.th }; };
+        for (const k in CMAPS) regMap(k, CMAPS[k]);
+        try { const nm = JSON.parse(sessionStorage.getItem('netmap') || 'null'); if (nm && /^my_/.test(nm.k)) regMap(nm.k, nm); } catch (e) { }
+        function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? { k: MAPNAME, n: i.n, th: i.th, g: MAP } : null; }
+        function netMapChanged(m) { if (m.cmap) sessionStorage.setItem('netmap', JSON.stringify(m.cmap)); return !!m.map && (m.map !== MAPNAME ? !!(MAPS[m.map] || m.cmap) : !!(m.cmap && m.cmap.g.join() !== MAP.join())); }
+        const MAPNAME = (k => MAPS[k] ? k : 'de_dusty')(localStorage.getItem('map') || 'de_dusty');
         const MAP = MAPS[MAPNAME] || MAPS.de_dusty;
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
         const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 5, CRATE_H = 1.0, TALL_H = 3;
@@ -2635,7 +2642,7 @@ body.edit #tlook{ pointer-events:none; }
             for (let y = 0; y < h2; y += bh) { const off = ((y / bh) % 2) * bw / 2; for (let x = -bw; x < w + bw; x += bw) { g.fillStyle = `hsl(${12 + Math.random() * 6},${28 + Math.random() * 6}%,${46 + Math.random() * 6}%)`; g.fillRect(x + off + 1, y + 1, bw - 2, bh - 2); } }
         });
         const WALL_SETS = { de_dusty: [texWall, texPlaster, texBrickTall], de_bazaar: [texPlaster, texBrickTall, texWall], de_frost: [texConcrete, texMetal, texWall], de_moisty: [texWood, texWall, texConcrete], de_foundry: [texMetal, texConcrete, texBrickTall] };
-        const wallSet = WALL_SETS[MAPNAME] || WALL_SETS.de_dusty;
+        const wallSet = WALL_SETS[MAPNAME] || WALL_SETS[(CMAP_INFO[MAPNAME] || {}).th] || WALL_SETS.de_dusty;
         const texCrateDark = makeTex(128, 128, (g, w, h2) => {
             for (let i = 0; i < 6; i++) { g.fillStyle = HS(THEME.crateHue, THEME.crateSat * 0.8, THEME.crateLight - 10 + Math.random() * 6); g.fillRect(0, i * 22, w, 21); }
             g.strokeStyle = '#2a1a0c'; g.lineWidth = 6; g.strokeRect(3, 3, w - 6, h2 - 6);
@@ -4193,11 +4200,61 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  }
  window.fetchRooms = fetchRooms;
 
+        // =====================================================================
+        //  MAP-EDITOR (eigene Karten, nur lokal gespeichert)
+        // =====================================================================
+        const ME_TOOLS = [['#', 'Wand', '#d8cbb0'], ['.', 'Boden', '#3a3226'], ['c', 'Kiste', '#a8743c'], ['C', 'Container', '#6b4a2a'], ['h', 'Halbe Wand', '#9c8f78'], ['=', 'Steg', '#8291a0'],
+        ['1', 'Stufe 1', '#56606a'], ['2', 'Stufe 2', '#66717c'], ['3', 'Stufe 3', '#77838e'], ['4', 'Stufe 4', '#8995a0'], ['5', 'Stufe 5', '#9ba7b2'], ['6', 'Stufe 6', '#adb9c4'],
+        ['A', 'Bombsite A', '#e07a2a'], ['B', 'Bombsite B', '#e0a82a'], ['T', 'Spawn T', '#d9822b'], ['K', 'Spawn CT', '#4a7fd0']];
+        function saveCMaps() { localStorage.setItem('custommaps', JSON.stringify(CMAPS)); }
+        function mapCtxMenu(k, x, y) {
+            const old = $('mapctx'); if (old) old.remove();
+            const own = !!CMAPS[k], d = document.createElement('div'); d.id = 'mapctx';
+            d.style.cssText = `position:fixed;left:${Math.min(x, innerWidth - 220)}px;top:${Math.min(y, innerHeight - 150)}px;z-index:9999;background:#141e28;border:1px solid rgba(232,201,138,.6);border-radius:6px;padding:6px;display:flex;flex-direction:column;min-width:200px`;
+            const items = [['✏️ Bearbeiten (als Kopie)', () => showMapEditor(k, null)]];
+            if (own) items.unshift(['✏️ Bearbeiten', () => showMapEditor(k, k)]), items.push(['🏷️ Umbenennen', () => { const n = (prompt('Neuer Name:', CMAPS[k].n) || '').trim().slice(0, 20); if (n) { CMAPS[k].n = n; saveCMaps(); sessionStorage.setItem('opentab', 'play'); location.reload(); } }],
+                ['🗑️ Löschen', () => { if (!confirm(`Karte „${CMAPS[k].n}" wirklich löschen?`)) return; delete CMAPS[k]; saveCMaps(); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); sessionStorage.setItem('opentab', 'play'); location.reload(); }]);
+            for (const [t, fn] of items) { const b = document.createElement('button'); b.textContent = t; b.style.cssText = 'margin:2px;text-align:left;font-size:14px'; b.onclick = e => { e.stopPropagation(); d.remove(); fn(); }; d.appendChild(b); }
+            document.body.appendChild(d);
+            setTimeout(() => addEventListener('pointerdown', function off(e) { if (!d.contains(e.target)) { d.remove(); removeEventListener('pointerdown', off, true); } }, true), 0);
+        }
+        function showMapEditor(src, editKey) {
+            const grid = MAPS[src].map(r => r.split('')), N = 28; let tool = '#', name = editKey ? CMAPS[editKey].n : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace('de_', '')) + ' Kopie').slice(0, 20);
+            let th = editKey ? CMAPS[editKey].th : (CMAP_INFO[src] ? CMAP_INFO[src].th : src); if (!/^de_/.test(th) || !THEMES[th]) th = 'de_dusty';
+            const col = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]]));
+            showOverlay(`<h1 style="font-size:32px">🗺️ MAP-EDITOR<small>${editKey ? 'EIGENE KARTE BEARBEITEN' : 'NEUE KARTE'}</small></h1>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:8px">
+ <input id="meName" maxlength="20" value="${name.replace(/"/g, '')}" placeholder="Name" style="font:bold 14px Arial;padding:7px 10px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px;width:170px">
+ <select id="meTheme" style="font:bold 14px Arial;padding:6px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px">${Object.keys(THEMES).filter(t => /^de_/.test(t)).map(t => `<option value="${t}" ${t === th ? 'selected' : ''}>Thema: ${t.replace('de_', '')}</option>`).join('')}</select></div>
+ <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:flex-start">
+ <canvas id="meCv" width="560" height="560" style="width:min(560px,92vw,62vh);height:auto;touch-action:none;border:1px solid rgba(232,201,138,.5);cursor:crosshair"></canvas>
+ <div id="meTools" style="display:grid;grid-template-columns:repeat(2,auto);gap:4px;max-width:260px">${ME_TOOLS.map(t => `<button data-t="${t[0]}" style="margin:0;font-size:12px;padding:5px 8px;text-align:left"><i style="display:inline-block;width:12px;height:12px;background:${t[2]};margin-right:6px;vertical-align:middle"></i>${t[1]}</button>`).join('')}</div></div>
+ <p id="meMsg" style="font-size:13px;min-height:16px;color:#c66"></p>
+ <p style="font-size:12px;color:#8fa3b8;margin:0 0 6px">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT, Bombsite A & B</p>
+ <div><button id="meSave">💾 Speichern & auswählen</button><button id="meBack">Abbrechen</button></div>`);
+            const cv = $('meCv'), g = cv.getContext('2d'), cs = 560 / N;
+            const draw = () => { g.fillStyle = THEMES[th].floor; g.fillRect(0, 0, 560, 560); for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= N; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); g.moveTo(0, i * cs); g.lineTo(560, i * cs); } g.stroke(); };
+            const selTool = t => { tool = t; document.querySelectorAll('#meTools button').forEach(b => b.style.background = b.dataset.t === t ? 'rgba(232,201,138,.45)' : ''); };
+            document.querySelectorAll('#meTools button').forEach(b => b.onclick = () => selTool(b.dataset.t)); selTool('#');
+            const paint = e => { const R = cv.getBoundingClientRect(), c = Math.floor((e.clientX - R.left) / R.width * N), r = Math.floor((e.clientY - R.top) / R.height * N); if (r < 1 || c < 1 || r > N - 2 || c > N - 2 || grid[r][c] === tool) return; grid[r][c] = tool; draw(); };
+            let painting = false; cv.onpointerdown = e => { e.preventDefault(); painting = true; cv.setPointerCapture(e.pointerId); paint(e); }; cv.onpointermove = e => { if (painting) paint(e); }; cv.onpointerup = cv.onpointercancel = () => painting = false;
+            $('meTheme').onchange = e => { th = e.target.value; draw(); }; draw();
+            $('meBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
+            $('meSave').onclick = () => {
+                const n = $('meName').value.trim().slice(0, 20), flat = grid.map(r => r.join('')).join(''), msgEl = $('meMsg');
+                if (!n) { msgEl.textContent = 'Bitte einen Namen eingeben.'; return; }
+                const miss = [['T', 'Spawn T'], ['K', 'Spawn CT'], ['A', 'Bombsite A'], ['B', 'Bombsite B']].filter(([ch]) => !flat.includes(ch)).map(x => x[1]);
+                if (miss.length) { msgEl.textContent = 'Es fehlt: ' + miss.join(', '); return; }
+                let k = editKey; if (!k) { const base = 'my_' + (n.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'map'); k = base; let i = 2; while (MAPS[k]) k = base + '_' + i++; }
+                CMAPS[k] = { n, th, g: grid.map(r => r.join('')) }; saveCMaps();
+                localStorage.setItem('map', k); sessionStorage.setItem('opentab', 'play'); location.reload();
+            };
+        }
         function showMenu() {
             $('hud').style.display = 'none'; setupMenuScene();
             const savedName = localStorage.getItem('pname') || '';
             const mapCards = Object.keys(MAPS).map(m => {
-                const nice = m.replace('de_', ''), Nice = nice[0].toUpperCase() + nice.slice(1);
+                const nice = CMAP_INFO[m] ? CMAP_INFO[m].n : m.replace('de_', ''), Nice = nice[0].toUpperCase() + nice.slice(1);
                 const wt = '0' + (1 + Math.floor(Math.random() * 2)) + ':' + String(10 + Math.floor(Math.random() * 49)).padStart(2, '0');
                 return `<div class="mapc ${m === MAPNAME ? 'sel' : ''}" data-map="${m}"><canvas width="200" height="300"></canvas><div class="chk"></div><div class="emb">${Nice[0]}</div><b>${Nice}</b><span>🕓 Wait Time ${wt}</span></div>`;
             }).join('');
@@ -4327,7 +4384,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (nav === 'store') { showCases(); return; }
                 setTab(nav);
             });
+            document.querySelectorAll('.mapc').forEach(el => {
+                // Rechtsklick (PC) bzw. langes Drücken (Handy) → Map-Editor-Menü
+                el.addEventListener('contextmenu', e => { e.preventDefault(); mapCtxMenu(el.dataset.map, e.clientX, e.clientY); });
+                let lpT = null; el.addEventListener('touchstart', e => { const t = e.touches[0]; lpT = setTimeout(() => { el._lp = true; mapCtxMenu(el.dataset.map, t.clientX, t.clientY); }, 550); }, { passive: true });
+                const lpEnd = () => clearTimeout(lpT); el.addEventListener('touchmove', lpEnd, { passive: true }); el.addEventListener('touchend', lpEnd); el.addEventListener('touchcancel', lpEnd);
+            });
             document.querySelectorAll('.mapc').forEach(el => el.onclick = () => {
+                if (el._lp) { el._lp = false; return; }
                 const m = el.dataset.map; if (m === MAPNAME) return;
                 localStorage.setItem('map', m); sessionStorage.setItem('opentab', 'play'); location.reload();
             });
@@ -4754,7 +4818,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
             glNextStage();
         }
-        function glSer() { return { type: 'glstart', v1: GL.v1 ? 1 : 0, map: MAPNAME, bots: bots.map(b => ({ n: b.name, t: b.team })), teams: GL.teams.map(t => ({ id: t.id, name: t.name, members: t.members.map(m => m.remote ? { p: m.pid } : (m.isPlayer ? { p: NET.pid } : { b: bots.indexOf(m) })) })) }; }
+        function glSer() { return { type: 'glstart', v1: GL.v1 ? 1 : 0, map: MAPNAME, cmap: mapNet(), bots: bots.map(b => ({ n: b.name, t: b.team })), teams: GL.teams.map(t => ({ id: t.id, name: t.name, members: t.members.map(m => m.remote ? { p: m.pid } : (m.isPlayer ? { p: NET.pid } : { b: bots.indexOf(m) })) })) }; }
         function glAsg() { return NET.glAsg || (NET.glAsg = {}); }
         function glTeamCol(id, l) { return `hsl(${Math.round(((0.62 + id * 0.125) % 1) * 360)},100%,${l || 60}%)`; }
         function glAsgHTML() {
@@ -5094,7 +5158,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     netSend({ type: 'hello', pid: NET.pid, name: player.name, team: player.team, ag: store.agent }); break;
                 case 'hello': addRemote(m.pid, m.name, m.team, m.ag);
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: store.agent });
-                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag); if (NET.inLobby) renderLobby(); } break;
+                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag); if (NET.inLobby) renderLobby(); } break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
                 case 'plant': if (NET.host) plantBomb({ x: m.x, z: m.z, isPlayer: false, money: 0, plantT: 0 }); break;
                 case 'defuse': if (NET.host && G.bomb.state === 'planted') defuseBomb({ isPlayer: false, money: 0, defuseT: 0 }); break;
@@ -5102,7 +5166,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'nade': { const ow = m.ap ? (m.ap === NET.pid ? player : NET.players.get(m.ap)) : null; launchNade(m.k, m.x, m.y, m.z, m.dx, m.dy, m.dz, ow || { name: m.on, team: m.ot, isPlayer: false }, m.lv || 1, m.g || null); break; } case 'wdrop': { const d = dropWeapon(W[m.w], m.x, m.z, m.a ?? (W[m.w].mag || 0), m.rs ?? 0, m.sk ?? null); if (d) d.did = m.did; break; } case 'wtake': { const i = drops.findIndex(d => d.did === m.did); if (i >= 0) { scene.remove(drops[i].mesh); drops.splice(i, 1); } break; }
                 case 'start': if (m.dm) DM.on = true;
                     if (m.cfg && !NET.host) { Object.assign(CFG, m.cfg); applyCfg(); if (!started) player.money = CFG.money; }
-                    if (m.map && m.map !== MAPNAME) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
+                    if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
                     if (!NET.host && !started) { NET.inLobby = false; $('overlay').style.display = 'none'; startGameClient(); } break; case 'roster': if (!NET.host && bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); ents = [player, ...bots, ...NET.players.values()]; } break;
                 case 'round': if (!NET.host && (!m.to || m.to === NET.pid)) { G.round = m.rd; G.site = m.site; clientRound(); } break; case 'end': if (!NET.host) {
                     G.state = 'end'; const loser = m.w === 'CT' ? 'T' : 'CT';
@@ -5131,7 +5195,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
                 case 'botdmg2': if (m.to === NET.pid && player.alive) applyDamage(player, m.d, { name: m.bn, team: m.bt, isPlayer: false }, { name: m.w, key: '' }, m.hs); break; case 'botdmg': if (NET.host && bots[m.id] && bots[m.id].alive) applyDamage(bots[m.id], m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
                 case 'glstart': if (!NET.host) {
-                    if (m.map !== MAPNAME) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
+                    if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
                     NET.inLobby = false; GL.on = true; GL.v1 = !!m.v1; GL.stage = 0; GL.rerolls = 3; if (bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); }
                     ents = [player, ...bots, ...NET.players.values()];
                     GL.teams = m.teams.map(t => ({ id: t.id, name: t.name, lives: GL_LIVES, wins: 0, members: t.members.map(mm => mm.b !== undefined ? bots[mm.b] : (mm.p === NET.pid ? player : NET.players.get(mm.p))).filter(Boolean) }));
@@ -5224,9 +5288,9 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>`, true);
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
-                on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
+                on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
                 on('btnGlMp', 'onclick', () => glStartMP(+$('glTeamsMp').value)); on('btnV1Mp', 'onclick', () => { GL.v1 = true; glStartMP(2); });
-                on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cfg: CFG, dm: 1 }); startGame(player.team); });
+                on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 1 }); startGame(player.team); });
                 on('glTeamsMp', 'onchange', e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); });
             }
             document.querySelectorAll('[data-glk]').forEach(el => el.onclick = () => { const k = +el.dataset.glk; if (glAsg()[NET.pid] === k || el.classList.contains('full')) return; glAsg()[NET.pid] = k; glAsgSend({ a: { [NET.pid]: k } }); }); $('lobInv').onclick = showInventory;
