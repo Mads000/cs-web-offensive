@@ -2050,6 +2050,13 @@
 .mob #meSide{ width:auto; flex:1 1 auto; min-width:0; max-height:calc(100vh - 40px); overflow-y:auto; }
 .mob #meTools button{ font-size:14px; padding:8px; }
 .mob .mebtns button{ font-size:14px; padding:9px 6px; }
+/* ── Arena-Editor: Liste ── */
+#arList{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:min(900px,94vw); max-height:calc(100vh - 230px); overflow-y:auto; margin-bottom:10px; }
+.arc{ position:relative; width:110px; padding:6px; background:#141e28; border:1px solid rgba(255,255,255,.18); border-radius:6px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; font:12px Arial; color:#cfd8e3; }
+.arc:hover{ border-color:#e8c98a; } .arc.own{ border-color:rgba(232,201,138,.6); } .arc.pub{ border-color:#7ec8e3; }
+.arc canvas{ width:110px; height:180px; border-radius:3px; } .arc b{ font-size:13px; color:#fff; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .arc span{ font-size:9px; letter-spacing:1px; color:#8fa3b8; }
+.arc label{ display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer; }
+.mob #arList{ max-height:calc(100vh - 150px); }
 /* ── Eigene Karten im Menü ── */
 .mapc.custom .emb{ background:radial-gradient(circle at 35% 30%, #2b5d8a, #0e2238); border-color:#e8c98a; }
 .mapc.custom::after{ content:'EIGENE KARTE'; position:absolute; top:8px; left:8px; padding:2px 6px; font:bold 10px Arial; color:#111; background:#e8c98a; border-radius:3px; }
@@ -2444,7 +2451,7 @@ body.edit #tlook{ pointer-events:none; }
         // =====================================================================
         //  ACCOUNT / CLOUD-SAVE (Server speichert in data/users.json, keine Datenbank)
         // =====================================================================
-        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick'];
+        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff'];
         let ACC = null; try { ACC = JSON.parse(localStorage.getItem('cs_acc') || 'null'); } catch (e) { }
         let accT = null, accMute = false, accReady = !ACC; // accReady: erst nach dem Abgleich beim Start hochladen (sonst überschreibt ein altes Gerät neueren Stand)
         const accApi = (p, b) => fetch('/api/' + p, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json());
@@ -2629,9 +2636,9 @@ body.edit #tlook{ pointer-events:none; }
             "###.###..#...cc....##AAAA###",
             "###.###..#...cc....##cAAA###",
             "#..BBBB..#...cc....#.AAAA==#",
-            "#..BBBc..#.........#.#####2#",
-            "######44##h...######......1#",
-            "#..1234==========4321.C....#",
+            "#..BBBc..#.........#.#####3#",
+            "######44##h...######......2#",
+            "#..1234==========4321.C...1#",
             "#.........h...#............#",
             "#....##...#...#...##########",
             "#.........#..c#...#........#",
@@ -2655,7 +2662,11 @@ body.edit #tlook{ pointer-events:none; }
         };
         // Eigene Karten (Map-Editor): lokal gespeichert + ggf. vom Online-Host übertragene Karte (nur für die Sitzung)
         let CMAPS = {}; try { CMAPS = JSON.parse(localStorage.getItem('custommaps') || '{}') || {}; } catch (e) { }
-        const CMAP_INFO = {}, regMap = (k, d) => { if (!d || !Array.isArray(d.g) || d.g.length !== 28 || d.g.some(r => typeof r !== 'string' || !/^[#.cCh=1-6ABTK]{28}$/.test(r)) || !/^(my|pub)_[a-z0-9_]+$/.test(k)) return; MAPS[k] = d.g;
+        // Eigene Arenen (myar_…, 11×18) und abgewählte Arenen für die Zufallsauswahl
+        let CARS = {}, AOFF = []; try { CARS = JSON.parse(localStorage.getItem('customarenas') || '{}') || {}; AOFF = JSON.parse(localStorage.getItem('arenaoff') || '[]') || []; } catch (e) { }
+        const isArKey = k => /^(myar|puba)_/.test(k);
+        // regMap: Karten (my_/pub_, 28×28) → MAPS, Arenen (myar_/puba_, 11×18, ohne Bombsites) → ARENAS
+        const CMAP_INFO = {}, regMap = (k, d) => { const AR = isArKey(k), H = AR ? 18 : 28, RX = AR ? /^[#.cCh=1-6TK]{11}$/ : /^[#.cCh=1-6ABTK]{28}$/; if (!d || !Array.isArray(d.g) || d.g.length !== H || d.g.some(r => typeof r !== 'string' || !RX.test(r)) || !/^(my|pub|myar|puba)_[a-z0-9_]+$/.test(k)) return; if (AR) ARENAS[k] = { theme: k, rows: d.g }; else MAPS[k] = d.g;
             // geprüfte Zusatzdaten: Thema, eigene Farben, Tageszeit (0 Tag, 1 Abend, 2 Nacht), Emblem
             const HEX = /^#[0-9a-f]{6}$/i, th = /^de_/.test(d.th) && THEMES[d.th] ? d.th : 'de_dusty', c = d.col || {}, col = {}, t = Object.assign({}, THEMES[th]);
             for (const f of ['sky', 'fog', 'floor', 'wall']) if (HEX.test(c[f])) col[f] = c[f];
@@ -2666,11 +2677,12 @@ body.edit #tlook{ pointer-events:none; }
         for (const k in CMAPS) regMap(k, CMAPS[k]);
         // Community-Karten (veröffentlicht, für alle sichtbar): sofort aus dem lokalen Zwischenspeicher, danach frisch vom Server
         let PUBC = {}; try { PUBC = JSON.parse(localStorage.getItem('pubmaps') || '{}') || {}; } catch (e) { }
-        for (const k in PUBC) regMap(k, PUBC[k]);
+        for (const k in PUBC) if (!isArKey(k)) regMap(k, PUBC[k]); // Community-Arenen erst nach ARENAS (weiter unten)
         accApi('maps', {}).then(r => {
             if (!r.ok || JSON.stringify(r.maps) === JSON.stringify(PUBC)) return;
             PUBC = r.maps; localStorage.setItem('pubmaps', JSON.stringify(PUBC)); for (const k in PUBC) regMap(k, PUBC[k]);
             if (!started && $('csmenu') && !$('loginPop') && !$('mapctx')) showMenu(); // Menü mit neuen Karten neu zeichnen
+            else if ($('arList') && !$('mapctx')) showArenaList();
         }).catch(() => { });
         try { const nm = JSON.parse(sessionStorage.getItem('netmap') || 'null'); if (nm && /^(my|pub)_/.test(nm.k)) regMap(nm.k, nm); } catch (e) { }
         function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? Object.assign({ k: MAPNAME, g: MAP }, i) : null; }
@@ -3409,24 +3421,20 @@ body.edit #tlook{ pointer-events:none; }
             e.z += dz; for (const b of activeAabbs()) { if (!blockedBy(e, b)) continue; if (e.x + r > b.minX && e.x - r < b.maxX && e.z + r > b.minZ && e.z - r < b.maxZ) { const l = e.z + r - b.minZ, rt = b.maxZ - (e.z - r); e.z = l < rt ? b.minZ - r : b.maxZ + r; } }
         }
         function groundAt(e) { let g = 0; const rr = e.r * 0.6, y = e.y || 0; for (const b of activeAabbs()) { if (y < b.top - STEP_H - 0.05) continue; if (e.x + rr > b.minX && e.x - rr < b.maxX && e.z + rr > b.minZ && e.z - rr < b.maxZ) g = Math.max(g, b.top); } return g; }
-        function bfs(sr, sc, tr, tc, onTop) {
+        // Wegsuche mit Höhen (Treppen/Stege) – gemeinsam für Karten und Arenen (cell/ROWS/COLS werden übergeben)
+        function bfs(sr, sc, tr, tc, onTop) { return bfsGrid(cell, ROWS, COLS, sr, sc, tr, tc, onTop); }
+        function bfsGrid(cell, ROWS, COLS, sr, sc, tr, tc, onTop) {
             if (solid(cell(tr, tc)) || solid(cell(sr, sc))) return null; const N = ROWS * COLS, prev = new Int32Array(N * 2).fill(-1), q = new Int32Array(N * 2); let qh = 0, qt = 0, end = -1;
             // Zustand = Zelle*2 + (oben auf Steg ? 1 : 0); Aufstieg max. 1 Stufe, Herunterfallen immer erlaubt
             const lv = (ch, top) => ch >= '1' && ch <= '6' ? +ch : (ch === '=' && top) ? 4 : 0, t = tr * COLS + tc, s = (sr * COLS + sc) * 2 + (onTop && cell(sr, sc) === '=' ? 1 : 0); prev[s] = s; q[qt++] = s;
-            while (qh < qt) { const cur = q[qh++]; if (cur >> 1 === t) { end = cur; break; } const ci = cur >> 1, r = (ci / COLS) | 0, c = ci % COLS, hh = lv(cell(r, c), cur & 1); const nb = [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]; if (Math.random() < 0.5) nb.reverse(); for (const [nr, nc] of nb) { const ch = cell(nr, nc); if (solid(ch)) continue; const top = ch === '=' && hh >= 3 ? 1 : 0; if (lv(ch, top) - hh > 1) continue; const ni = (nr * COLS + nc) * 2 + top; if (prev[ni] !== -1) continue; prev[ni] = cur; q[qt++] = ni; } }
+            while (qh < qt) { const cur = q[qh++]; if (cur >> 1 === t) { end = cur; break; } const ci = cur >> 1, r = (ci / COLS) | 0, c = ci % COLS, hh = lv(cell(r, c), cur & 1); const nb = [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]; if (Math.random() < 0.5) nb.reverse(); for (const [nr, nc] of nb) { const ch = cell(nr, nc); if (solid(ch)) continue; const top = ch === '=' && hh >= 3 ? 1 : 0; if (lv(ch, top) - hh > 1) continue; if (ch === '=' && !top && hh > 1) continue; /* von Stufe 2 aus: Steg zu hoch zum Hochsteigen, drunter stößt der Kopf an */ const ni = (nr * COLS + nc) * 2 + top; if (prev[ni] !== -1) continue; prev[ni] = cur; q[qt++] = ni; } }
             if (end < 0) return null; const path = []; let cur = end; while (cur !== s) { const ci = cur >> 1; path.push({ r: (ci / COLS) | 0, c: ci % COLS }); cur = prev[cur]; } return path.reverse();
         }
         function aCellCur(r, c) { const A = GA.cur; return (r < 0 || c < 0 || r >= A.R || c >= A.C) ? '#' : (A.rows[r][c] || '.'); }
-        function bfsArena(sr, sc, tr, tc) {
-            const A = GA.cur, R = A.R, C = A.C;
-            if (solid(aCellCur(tr, tc)) || solid(aCellCur(sr, sc))) return null;
-            const N = R * C, prev = new Int16Array(N).fill(-1), q = new Int16Array(N); let qh = 0, qt = 0; const s = sr * C + sc, t = tr * C + tc; prev[s] = s; q[qt++] = s;
-            while (qh < qt) { const cur = q[qh++]; if (cur === t) break; const r = (cur / C) | 0, c = cur % C; for (const [nr, nc] of [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]]) { if (solid(aCellCur(nr, nc))) continue; const ni = nr * C + nc; if (prev[ni] !== -1) continue; prev[ni] = cur; q[qt++] = ni; } }
-            if (prev[t] === -1) return null; const path = []; let cur = t; while (cur !== s) { path.push({ r: (cur / C) | 0, c: cur % C }); cur = prev[cur]; } return path.reverse();
-        }
+        function bfsArena(sr, sc, tr, tc, onTop) { return bfsGrid(aCellCur, GA.cur.R, GA.cur.C, sr, sc, tr, tc, onTop); } // jetzt auch mit Treppen-/Steg-Logik
         function setGoal(b, r, c) {
             b.goal = { r, c };
-            if (GA.cur) { b.path = (bfsArena(cr(b.z), cr(b.x - GA.cur.ox), r, c) || []).map(p => ({ r: p.r, c: p.c, ax: GA.cur.ox + cx(p.c), az: cx(p.r) })); }
+            if (GA.cur) { b.path = (bfsArena(cr(b.z), cr(b.x - GA.cur.ox), r, c, (b.y || 0) > 2) || []).map(p => ({ r: p.r, c: p.c, ax: GA.cur.ox + cx(p.c), az: cx(p.r) })); }
             else b.path = bfs(cr(b.z), cr(b.x), r, c, (b.y || 0) > 2) || [];
         } function randomNear(r, c, rad) { for (let i = 0; i < 12; i++) { const rr = r + Math.round((Math.random() * 2 - 1) * rad), cc = c + Math.round((Math.random() * 2 - 1) * rad); if (!solid(cell(rr, cc))) return { r: rr, c: cc }; } return { r, c }; }
         function botMoveToward(b, tx, tz, dt, spd) { const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz); if (d < 0.05) return; const s = Math.min(spd * (b.spdMul || 1) * CFG.speed / 100 * dt, d); collideMove(b, dx / d * s, dz / d * s); if (!b.target) b.yaw = lerpAngle(b.yaw, Math.atan2(dx, dz), Math.min(1, dt * 12)); b.moving = true; b.wantMove = true; }
@@ -4344,12 +4352,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         ['1', 'Stufe 1', '#56606a'], ['2', 'Stufe 2', '#66717c'], ['3', 'Stufe 3', '#77838e'], ['4', 'Stufe 4', '#8995a0'], ['5', 'Stufe 5', '#9ba7b2'], ['6', 'Stufe 6', '#adb9c4'],
         ['A', 'Bombsite A', '#e07a2a'], ['B', 'Bombsite B', '#e0a82a'], ['T', 'Spawn T', '#d9822b'], ['K', 'Spawn CT', '#4a7fd0']];
         function saveCMaps() { localStorage.setItem('custommaps', JSON.stringify(CMAPS)); }
-        function newMapKey(n) { const base = 'my_' + (String(n).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'map'); let k = base, i = 2; while (MAPS[k]) k = base + '_' + i++; return k; }
+        function saveCARS() { localStorage.setItem('customarenas', JSON.stringify(CARS)); }
+        function newMapKey(n, ar) { const base = (ar ? 'myar_' : 'my_') + (String(n).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'map'); let k = base, i = 2; while ((ar ? ARENAS : MAPS)[k]) k = base + '_' + i++; return k; }
         // Karten teilen: Code = "CSWO:" + Base64(JSON) – lässt sich per Chat verschicken
-        function shareMap(d) { const code = 'CSWO:' + btoa(unescape(encodeURIComponent(JSON.stringify({ n: d.n, th: d.th, col: d.col, tod: d.tod, em: d.em, emc: d.emc, g: d.g })))); const ok = () => alert('Karten-Code kopiert! Freunde fügen ihn per Rechtsklick (Handy: lange drücken) auf eine Karte → „📥 Code importieren" ein.'); if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(code).then(ok, () => prompt('Code kopieren:', code)); else prompt('Code kopieren:', code); }
-        function importMap() { const s = (prompt('Karten-Code einfügen:') || '').trim(); if (!s) return; try { const d = JSON.parse(decodeURIComponent(escape(atob(s.replace(/^CSWO:/, ''))))), k = newMapKey(d.n || 'import'); regMap(k, d); if (!CMAP_INFO[k]) throw 0; CMAPS[k] = Object.assign({ g: d.g }, CMAP_INFO[k]); saveCMaps(); sessionStorage.setItem('opentab', 'play'); location.reload(); } catch (e) { alert('Ungültiger Karten-Code.'); } }
+        function shareMap(d) { const code = 'CSWO:' + btoa(unescape(encodeURIComponent(JSON.stringify({ n: d.n, th: d.th, col: d.col, tod: d.tod, em: d.em, emc: d.emc, g: d.g, ar: d.g.length === 18 ? 1 : 0 })))); const ok = () => alert('Karten-Code kopiert! Freunde fügen ihn per Rechtsklick (Handy: lange drücken) auf eine Karte → „📥 Code importieren" ein.'); if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(code).then(ok, () => prompt('Code kopieren:', code)); else prompt('Code kopieren:', code); }
+        function importMap() { const s = (prompt('Karten-Code einfügen:') || '').trim(); if (!s) return; try { const d = JSON.parse(decodeURIComponent(escape(atob(s.replace(/^CSWO:/, ''))))), ar = !!d.ar, k = newMapKey(d.n || 'import', ar); regMap(k, d); if (!CMAP_INFO[k]) throw 0; (ar ? CARS : CMAPS)[k] = Object.assign({ g: d.g }, CMAP_INFO[k]); if (ar) { saveCARS(); alert('Arena importiert!'); showArenaList(); return; } saveCMaps(); sessionStorage.setItem('opentab', 'play'); location.reload(); } catch (e) { alert('Ungültiger Karten-Code.'); } }
         function mapCtxMenu(k, x, y) {
             const old = $('mapctx'); if (old) old.remove();
+            if (isArKey(k) || ARENAS[k]) return arenaCtx(k, x, y);
             const own = !!CMAPS[k], d = document.createElement('div'); d.id = 'mapctx';
             d.style.cssText = `position:fixed;left:${Math.min(x, innerWidth - 220)}px;top:${Math.min(y, innerHeight - 150)}px;z-index:9999;background:#141e28;border:1px solid rgba(232,201,138,.6);border-radius:6px;padding:6px;display:flex;flex-direction:column;min-width:200px`;
             const items = own ? [['✏️ Bearbeiten', () => showMapEditor(k, k)], ['📄 Kopie erstellen', () => showMapEditor(k, null)]] : [['✏️ Bearbeiten (als Kopie)', () => showMapEditor(k, null)]];
@@ -4365,32 +4375,69 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             document.body.appendChild(d);
             setTimeout(() => addEventListener('pointerdown', function off(e) { if (!d.contains(e.target)) { d.remove(); removeEventListener('pointerdown', off, true); } }, true), 0);
         }
-        function showMapEditor(src, editKey) {
-            const grid = MAPS[src].map(r => r.split('')), N = 28; let tool = '#', name = editKey ? CMAPS[editKey].n : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace('de_', '')) + ' Kopie').slice(0, 20);
-            let th = editKey ? CMAPS[editKey].th : (CMAP_INFO[src] ? CMAP_INFO[src].th : src); if (!/^de_/.test(th) || !THEMES[th]) th = 'de_dusty';
+        // Kontextmenü für Arenen (gleiche Aktionen wie bei Karten, aber ohne Neuladen der Seite)
+        function arenaCtx(k, x, y) {
+            const own = !!CARS[k], d = document.createElement('div'); d.id = 'mapctx';
+            d.style.cssText = `position:fixed;left:${Math.min(x, innerWidth - 220)}px;top:${Math.min(y, innerHeight - 150)}px;z-index:9999;background:#141e28;border:1px solid rgba(232,201,138,.6);border-radius:6px;padding:6px;display:flex;flex-direction:column;min-width:200px`;
+            const data = () => Object.assign({ g: ARENAS[k].rows }, CMAP_INFO[k] || { n: k.replace(/^ar_/, ''), th: ARENAS[k].theme });
+            const pubCall = (path, body, done) => { const code = prompt('Code zum ' + (path === 'publish' ? 'Veröffentlichen' : 'Entfernen') + ':'); if (!code) return; accApi(path, Object.assign({ code }, body)).then(r => { if (!r.ok) return alert(r.err); done(); showArenaList(); }).catch(() => alert('Server nicht erreichbar.')); };
+            const items = own ? [['✏️ Bearbeiten', () => showMapEditor(k, k, 1)], ['📄 Kopie erstellen', () => showMapEditor(k, null, 1)]] : [['✏️ Bearbeiten (als Kopie)', () => showMapEditor(k, null, 1)]];
+            if (own) items.push(['📤 Teilen (Code)', () => shareMap(data())], ['🌍 Veröffentlichen', () => { const pk = 'puba_' + k.slice(5), map = data(); pubCall('publish', { k: pk, map, by: ACC ? ACC.u : (localStorage.getItem('pname') || '') }, () => { PUBC[pk] = Object.assign({}, map, { by: ACC ? ACC.u : '' }); localStorage.setItem('pubmaps', JSON.stringify(PUBC)); regMap(pk, PUBC[pk]); alert('Arena ist jetzt für alle sichtbar!'); }); }]);
+            if (k.startsWith('puba_')) items.push(['❌ Veröffentlichung entfernen', () => pubCall('unpublish', { k }, () => { delete PUBC[k]; delete ARENAS[k]; localStorage.setItem('pubmaps', JSON.stringify(PUBC)); })]);
+            items.push(['📥 Code importieren', importMap]);
+            if (own) items.push(['🏷️ Umbenennen', () => { const n = (prompt('Neuer Name:', CARS[k].n) || '').trim().slice(0, 20); if (n) { CARS[k].n = n; saveCARS(); regMap(k, CARS[k]); showArenaList(); } }],
+                ['🗑️ Löschen', () => { if (!confirm(`Arena „${CARS[k].n}" wirklich löschen?`)) return; delete CARS[k]; delete ARENAS[k]; saveCARS(); showArenaList(); }]);
+            for (const [t, fn] of items) { const b = document.createElement('button'); b.textContent = t; b.style.cssText = 'margin:2px;text-align:left;font-size:14px'; b.onclick = e => { e.stopPropagation(); d.remove(); fn(); }; d.appendChild(b); }
+            document.body.appendChild(d);
+            setTimeout(() => addEventListener('pointerdown', function off(e) { if (!d.contains(e.target)) { d.remove(); removeEventListener('pointerdown', off, true); } }, true), 0);
+        }
+        // Arena-Liste: Vorschau, Haken für die Zufallsauswahl, Klick/Rechtsklick → Aktionen
+        function showArenaList() {
+            const keys = Object.keys(ARENAS), nm = k => CMAP_INFO[k] ? CMAP_INFO[k].n : k.replace(/^ar_/, '');
+            showOverlay(`<h1 style="font-size:32px">🏟 ARENA-EDITOR<small>GAUNTLET & 1V1</small></h1>
+ <p style="font-size:12px;color:#8fa3b8;margin:0 0 8px">Klick auf eine Arena für Bearbeiten, Teilen & mehr · ✔ = kommt in die Zufallsauswahl</p>
+ <div id="arList">${keys.map(k => `<div class="arc${CARS[k] ? ' own' : k.startsWith('puba_') ? ' pub' : ''}" data-k="${k}"><canvas width="110" height="180"></canvas><b></b><span>${CARS[k] ? 'EIGENE' : k.startsWith('puba_') ? '🌍 COMMUNITY' : 'STANDARD'}</span><label><input type="checkbox" data-on="${k}" ${AOFF.includes(k) ? '' : 'checked'}> im Spiel</label></div>`).join('')}</div>
+ <div><button id="arNew">➕ Neue Arena</button><button id="arImp">📥 Code importieren</button><button id="arBack">Zurück</button></div>`);
+            const col = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]]));
+            document.querySelectorAll('.arc').forEach(el => {
+                const k = el.dataset.k, rows = ARENAS[k].rows, g = el.querySelector('canvas').getContext('2d'), s = 10, ox = (110 - rows[0].length * s) / 2;
+                el.querySelector('b').textContent = nm(k); g.fillStyle = (THEMES[ARENAS[k].theme] || THEMES.de_dusty).floor; g.fillRect(0, 0, 110, 180);
+                rows.forEach((row, r) => [...row].forEach((ch, c) => { if (ch !== '.') { g.fillStyle = col[ch] || '#fff'; g.fillRect(ox + c * s, r * s, s, s); } }));
+                const open = e => { if (e.target.closest('label')) return; e.preventDefault(); mapCtxMenu(k, e.clientX, e.clientY); }; el.onclick = open; el.oncontextmenu = open;
+            });
+            document.querySelectorAll('[data-on]').forEach(cb => cb.onchange = () => { const k = cb.dataset.on; AOFF = AOFF.filter(x => x !== k); if (!cb.checked) AOFF.push(k); localStorage.setItem('arenaoff', JSON.stringify(AOFF)); });
+            $('arNew').onclick = () => showMapEditor('ar_dustyard', null, 1, true); $('arImp').onclick = importMap; $('arBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
+        }
+        function showMapEditor(src, editKey, ar, blank) {
+            const ST = ar ? CARS : CMAPS, W = ar ? 11 : 28, H = ar ? 18 : 28, N = H; // ar: Arena-Modus (11×18, ohne Bombsites)
+            const grid = (ar ? ARENAS[src].rows : MAPS[src]).map(r => r.split('')); let tool = '#', name = editKey ? ST[editKey].n : blank ? 'Neue Arena' : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace(/^(de|ar)_/, '')) + ' Kopie').slice(0, 20);
+            if (grid.length > H) grid.splice(H - 1, grid.length - H); // z.B. ar_moistpit (19 Zeilen) → auf 11×18 kürzen, Außenwand bleibt
+            if (blank) for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.';
+            let th = editKey ? ST[editKey].th : (CMAP_INFO[src] ? CMAP_INFO[src].th : ar ? ARENAS[src].theme : src); if (!/^de_/.test(th) || !THEMES[th]) th = 'de_dusty';
             const col = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]])), inf = CMAP_INFO[src] || {}, hx = v => '#' + v.toString(16).padStart(6, '0');
             const thCol = t => ({ sky: hx(THEMES[t].sky), fog: hx(THEMES[t].fog), floor: THEMES[t].floor, wall: THEMES[t].wallBase });
             const cols = Object.assign(thCol(th), inf.col); let tod = inf.tod || 0;
             const cin = (id, l) => `<label>${l}<input type="color" id="${id}"></label>`;
-            showOverlay(`<h1 id="meH" style="font-size:32px">🗺️ MAP-EDITOR<small>${editKey ? 'EIGENE KARTE BEARBEITEN' : 'NEUE KARTE'}</small></h1>
+            const cs = 560 / H, CW = W * cs, KIND = ar ? 'ARENA' : 'KARTE';
+            showOverlay(`<h1 id="meH" style="font-size:32px">${ar ? '🏟 ARENA' : '🗺️ MAP'}-EDITOR<small>${editKey ? 'EIGENE ' + KIND + ' BEARBEITEN' : 'NEUE ' + KIND}</small></h1>
  <div id="meWrap">
- <canvas id="meCv" width="560" height="560"></canvas>
+ <canvas id="meCv" width="${CW}" height="560" ${ar ? 'style="width:min(342px,92vw,calc((100vh - 60px) * 11 / 18))"' : ''}></canvas>
  <div id="meSide">
  <input id="meName" maxlength="20" value="${name.replace(/"/g, '')}" placeholder="Name">
  <select id="meTheme">${Object.keys(THEMES).filter(t => /^de_/.test(t)).map(t => `<option value="${t}" ${t === th ? 'selected' : ''}>Thema: ${t.replace('de_', '')}</option>`).join('')}</select>
  <div class="merow">${cin('meSky', 'Himmel')}${cin('meFog', 'Nebel')}${cin('meFloor', 'Boden')}${cin('meWall', 'Wände')}</div>
- <div class="merow"><select id="meTod">${['☀️ Tag', '🌅 Abend', '🌙 Nacht'].map((l, i) => `<option value="${i}" ${i === tod ? 'selected' : ''}>${l}</option>`).join('')}</select>
+ <div class="merow"><select id="meTod" ${ar ? 'style="display:none"' : ''}>${['☀️ Tag', '🌅 Abend', '🌙 Nacht'].map((l, i) => `<option value="${i}" ${i === tod ? 'selected' : ''}>${l}</option>`).join('')}</select>
  <label>Emblem<input id="meEm" maxlength="4" placeholder="🛠" value="${(inf.em || '').replace(/"/g, '')}"></label><label>Farbe<input type="color" id="meEmc" value="${inf.emc || '#2b5d8a'}"></label></div>
- <div id="meTools">${ME_TOOLS.map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
+ <div id="meTools">${ME_TOOLS.filter(t => !ar || !'AB'.includes(t[0])).map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
  <p id="meMsg"></p>
- <p class="mehint">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT, Bombsite A & B</p>
- <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay">▶ Speichern & spielen</button><button id="meShare">📤 Teilen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
+ <p class="mehint">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT${ar ? '' : ', Bombsite A & B'}</p>
+ <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay" ${ar ? 'style="display:none"' : ''}>▶ Speichern & spielen</button><button id="meShare">📤 Teilen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
  </div></div>`);
-            const cv = $('meCv'), g = cv.getContext('2d'), cs = 560 / N;
-            const draw = () => { g.fillStyle = cols.floor; g.fillRect(0, 0, 560, 560); for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= N; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); g.moveTo(0, i * cs); g.lineTo(560, i * cs); } g.stroke(); };
+            const cv = $('meCv'), g = cv.getContext('2d');
+            const draw = () => { g.fillStyle = cols.floor; g.fillRect(0, 0, CW, 560); for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= W; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); } for (let i = 0; i <= H; i++) { g.moveTo(0, i * cs); g.lineTo(CW, i * cs); } g.stroke(); };
             const selTool = t => { tool = t; document.querySelectorAll('#meTools button').forEach(b => b.style.background = b.dataset.t === t ? 'rgba(232,201,138,.45)' : ''); };
             document.querySelectorAll('#meTools button').forEach(b => b.onclick = () => selTool(b.dataset.t)); selTool('#');
-            const paint = e => { const R = cv.getBoundingClientRect(), c = Math.floor((e.clientX - R.left) / R.width * N), r = Math.floor((e.clientY - R.top) / R.height * N); if (r < 1 || c < 1 || r > N - 2 || c > N - 2 || grid[r][c] === tool) return; grid[r][c] = tool; draw(); };
+            const paint = e => { const R = cv.getBoundingClientRect(), c = Math.floor((e.clientX - R.left) / R.width * W), r = Math.floor((e.clientY - R.top) / R.height * H); if (r < 1 || c < 1 || r > H - 2 || c > W - 2 || grid[r][c] === tool) return; grid[r][c] = tool; draw(); };
             let painting = false; cv.onpointerdown = e => { e.preventDefault(); painting = true; cv.setPointerCapture(e.pointerId); paint(e); }; cv.onpointermove = e => { if (painting) paint(e); }; cv.onpointerup = cv.onpointercancel = () => painting = false;
             const CIN = { meSky: 'sky', meFog: 'fog', meFloor: 'floor', meWall: 'wall' }, syncCols = () => { for (const id in CIN) $(id).value = cols[CIN[id]]; };
             for (const id in CIN) $(id).oninput = e => { cols[CIN[id]] = e.target.value; if (id === 'meFloor') draw(); };
@@ -4399,16 +4446,17 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const mapData = () => ({ n: $('meName').value.trim().slice(0, 20), th, col: Object.assign({}, cols), tod, em: $('meEm').value.trim(), emc: $('meEmc').value, g: grid.map(r => r.join('')) });
             $('meShare').onclick = () => shareMap(mapData());
             let saved = false; // nach dem Speichern beim Zurückgehen neu laden, damit die Karte im Menü erscheint
-            $('meBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); if (saved) location.reload(); else showMenu(); };
-            $('meClear').onclick = () => { if (!confirm('Karte komplett leeren? (Nur die Außenwand bleibt)')) return; for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) grid[r][c] = (r === 0 || c === 0 || r === N - 1 || c === N - 1) ? '#' : '.'; draw(); };
+            $('meBack').onclick = () => { if (ar) return showArenaList(); sessionStorage.setItem('opentab', 'play'); if (saved) location.reload(); else showMenu(); };
+            $('meClear').onclick = () => { if (!confirm((ar ? 'Arena' : 'Karte') + ' komplett leeren? (Nur die Außenwand bleibt)')) return; for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.'; draw(); };
             const save = () => {
                 const n = $('meName').value.trim().slice(0, 20), flat = grid.map(r => r.join('')).join(''), msgEl = $('meMsg'); msgEl.style.color = '#c66';
                 if (!n) { msgEl.textContent = 'Bitte einen Namen eingeben.'; return null; }
-                const miss = [['T', 'Spawn T'], ['K', 'Spawn CT'], ['A', 'Bombsite A'], ['B', 'Bombsite B']].filter(([ch]) => !flat.includes(ch)).map(x => x[1]);
+                const miss = [['T', 'Spawn T'], ['K', 'Spawn CT'], ['A', 'Bombsite A'], ['B', 'Bombsite B']].slice(0, ar ? 2 : 4).filter(([ch]) => !flat.includes(ch)).map(x => x[1]);
                 if (miss.length) { msgEl.textContent = 'Es fehlt: ' + miss.join(', '); return null; }
-                const k = editKey || newMapKey(n);
-                regMap(k, mapData()); CMAPS[k] = Object.assign({ g: MAPS[k] }, CMAP_INFO[k]); saveCMaps();
-                editKey = k; saved = true; $('meH').querySelector('small').textContent = 'EIGENE KARTE BEARBEITEN'; msgEl.style.color = '#7c7'; msgEl.textContent = '✓ Gespeichert'; return k;
+                const k = editKey || newMapKey(n, ar);
+                regMap(k, mapData()); if (!(ar ? ARENAS[k] : MAPS[k]) || !CMAP_INFO[k]) { msgEl.textContent = 'Ungültige Daten – bitte prüfen.'; return null; }
+                ST[k] = Object.assign({ g: ar ? ARENAS[k].rows : MAPS[k] }, CMAP_INFO[k]); ar ? saveCARS() : saveCMaps(); if (ar) delete GA.built[k]; // geänderte Arena beim nächsten Duell neu bauen
+                editKey = k; saved = true; $('meH').querySelector('small').textContent = 'EIGENE ' + KIND + ' BEARBEITEN'; msgEl.style.color = '#7c7'; msgEl.textContent = '✓ Gespeichert'; return k;
             };
             $('meSave').onclick = save;
             $('mePlay').onclick = () => { const k = save(); if (!k) return; localStorage.setItem('map', k); sessionStorage.setItem('opentab', 'play'); location.reload(); };
@@ -4438,7 +4486,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="font:700 50px Rajdhani;line-height:1;color:var(--text);text-transform:uppercase">CS Web<br><span style="color:var(--acc)">Offensive</span></div>
  <div style="width:64px;height:3px;background:var(--acc);margin-top:10px"></div>
  </div> <div id="csplayview">
-<div class="subnav" id="catnav">${Object.keys(MODES).map(k => `<b data-cat="${k}">${MODES[k][0]} ${MODES[k][1].toUpperCase()}</b>`).join('')}</div><div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b></div><p id="catdesc" style="margin:2px 0 6px;font-size:12px;color:#8fa3b8"></p>  <div id="mapgrid">${mapCards}</div>
+<div class="subnav" id="catnav">${Object.keys(MODES).map(k => `<b data-cat="${k}">${MODES[k][0]} ${MODES[k][1].toUpperCase()}</b>`).join('')}</div><div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b></div><p id="catdesc" style="margin:2px 0 6px;font-size:12px;color:#8fa3b8"></p><button id="btnArEd" style="display:none;margin:0 auto 6px">🏟 Arena-Editor</button>  <div id="mapgrid">${mapCards}</div>
  <div id="roomlist" style="display:none"></div>
  <div id="glpanel" style="display:none;gap:16px;justify-content:center;margin:14px 0;flex-wrap:wrap">
  <div class="mcard" id="glcSolo" style="min-width:270px">
@@ -4618,7 +4666,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (nav === 'store') { showCases(); return; }
                 setTab(nav);
             });
-            $('ctAcc').onclick = showAccount;
+            $('ctAcc').onclick = showAccount; $('btnArEd').onclick = showArenaList;
             // Beim Betreten der Seite (einmal pro Sitzung): Hinweis zum Login, falls nicht eingeloggt
             if (!ACC && !sessionStorage.getItem('loginAsked')) {
                 sessionStorage.setItem('loginAsked', '1');
@@ -4649,7 +4697,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 document.querySelectorAll('[data-cat]').forEach(b => b.classList.toggle('on', b.dataset.cat === PM.cat));
                 $('modeOff').classList.toggle('on', !PM.on); $('modeOn').classList.toggle('on', PM.on);
                 const arena = PM.cat === 'gl' || PM.cat === 'v1';
-                $('mapgrid').style.display = arena ? 'none' : 'flex';
+                $('mapgrid').style.display = arena ? 'none' : 'flex'; $('btnArEd').style.display = arena ? 'block' : 'none';
                 $('glpanel').style.display = !PM.on && arena ? 'flex' : 'none';
                 $('glcSolo').style.display = PM.cat === 'gl' ? '' : 'none'; $('glcV1').style.display = PM.cat === 'v1' ? '' : 'none';
                 $('roomlist').style.display = PM.on ? 'flex' : 'none';
@@ -4776,6 +4824,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             }
         };
         const GA = { built: {}, cur: null, OX: 3000 };
+        for (const k in CARS) regMap(k, CARS[k]); for (const k in PUBC) if (isArKey(k)) regMap(k, PUBC[k]); // eigene + Community-Arenen
         function buildArena(key) {
             if (GA.built[key]) return GA.built[key];
             const A = ARENAS[key], rows = A.rows, R = rows.length, C = rows[0].length;
@@ -5239,7 +5288,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function glStartDuel() {
             const pair = GL.pairs[GL.duelIdx];
             if (!pair) { glStandings(); return; }
-            const akey = rnd(Object.keys(ARENAS));
+            const pool = Object.keys(ARENAS).filter(k => !AOFF.includes(k)), akey = rnd(pool.length ? pool : Object.keys(ARENAS)); // nur angehakte Arenen (alle abgewählt → alle)
             setArena(akey); buildArenaRadar(); clearDecoys(); clearNades(); if (player.glA) player.glA.cd = 0; const A = GA.cur;
             GL.duel = { teams: pair, t: GL_TIME, over: false };
             for (const e of ents) { if (!e.isPlayer) { e.alive = false; e.mesh.visible = false; e.target = null; e.path = []; e.goal = null; } }
@@ -5261,7 +5310,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             GL.phase = 'duel'; G.state = 'live'; G.timer = GL_TIME; G.bomb.state = 'none';
             specTarget = null; stopFreecam();
             if (!mine) { startFreecam(); if (!locked) renderer.domElement.requestPointerLock(); }
-            if (NET.on && NET.host) netSend({ type: 'glduel', ar: akey, a: pair[0].id, b: pair[1].id, idx: GL.duelIdx, total: GL.pairs.length, w: GL.v1 ? GL.v1w : null });
+            if (NET.on && NET.host) netSend({ type: 'glduel', ar: akey, arena: CMAP_INFO[akey] ? Object.assign({ k: akey, g: ARENAS[akey].rows }, CMAP_INFO[akey]) : null, a: pair[0].id, b: pair[1].id, idx: GL.duelIdx, total: GL.pairs.length, w: GL.v1 ? GL.v1w : null });
             if (GL.v1) msg('RUNDE ' + (GL.v1n + 1) + ' · ' + W[GL.v1w].name, pair[0].name + ' ' + pair[0].wins + ' : ' + pair[1].wins + ' ' + pair[1].name, 3); else msg('DUELL ' + (GL.duelIdx + 1) + '/' + GL.pairs.length, pair[0].name + ' vs. ' + pair[1].name, 3);
             sfx('start');
         }
@@ -5355,7 +5404,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         }
         function glDuelClient(m) {
             if (!GL.sent && GL.phase === 'draft') glClientSubmit();
-            setArena(m.ar); buildArenaRadar(); clearDecoys(); clearNades(); if (player.glA) player.glA.cd = 0; const A = GA.cur; const ta = GL.teams.find(t => t.id === m.a), tb = GL.teams.find(t => t.id === m.b);
+            // eigene/Community-Arena des Hosts übernehmen (bei gleichem Schlüssel, aber anderem Inhalt → eigener Netz-Schlüssel)
+            let ak = m.ar; if (m.arena && isArKey(m.arena.k)) { if (ARENAS[ak] && ARENAS[ak].rows.join() !== m.arena.g.join()) ak = 'puba_net' + Date.now().toString(36); regMap(ak, m.arena); if (!ARENAS[ak]) ak = Object.keys(ARENAS)[0]; }
+            if (!ARENAS[ak]) ak = Object.keys(ARENAS)[0];
+            setArena(ak); buildArenaRadar(); clearDecoys(); clearNades(); if (player.glA) player.glA.cd = 0; const A = GA.cur; const ta = GL.teams.find(t => t.id === m.a), tb = GL.teams.find(t => t.id === m.b);
             GL.duel = { teams: [ta, tb], t: GL_TIME, over: false };
             $('overlay').style.display = 'none'; stopFreecam(); specTarget = null; $('dead').style.display = 'none';
             player.alive = false;
