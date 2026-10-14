@@ -2079,6 +2079,17 @@
 .mob .mebtns button{ font-size:14px; padding:9px 6px; }
 /* ── Tabs oben: am Handy kompakter (MAP-/ARENA-EDITOR passen daneben) ── */
 .mob #cstabs a{ padding:10px 7px; font-size:11px; letter-spacing:1px; }
+/* ── Entenjagd ── */
+#dhHud{ position:absolute; top:64px; left:50%; transform:translateX(-50%); text-align:center; pointer-events:none; font:14px Arial; color:#fff; text-shadow:0 1px 3px #000; }
+#dhHud .dhs{ font:bold 22px Arial; } #dhHud .dhs b{ color:#ffd84a; font-size:28px; } .dhx{ color:#111; background:#ffd84a; border-radius:4px; padding:0 6px; font-size:15px; } .dhi{ font-size:18px; }
+#dhHud .dhl{ margin-top:4px; font-size:12px; background:rgba(0,0,0,.35); border-radius:6px; padding:4px 10px; } #dhHud .dhl .me, .dhres .me, .dhlb .me{ color:#ffd84a; }
+#dhPop{ position:absolute; top:42%; left:50%; transform:translate(-50%,-50%); font:bold 26px Arial; text-shadow:0 2px 4px #000; pointer-events:none; opacity:0; }
+#dhPop.on{ animation:dhPop 0.9s ease-out; } @keyframes dhPop{ 0%{ opacity:1; transform:translate(-50%,-30%) scale(1.25); } 100%{ opacity:0; transform:translate(-50%,-140%) scale(1); } }
+.dhbig{ font:900 64px 'Arial Black', Impact, sans-serif; color:#ffd84a; line-height:1; } .dhbig span{ display:block; font:bold 12px Arial; letter-spacing:3px; color:#8fa3b8; }
+.dhres{ display:flex; flex-direction:column; gap:2px; font:14px Arial; color:#cfd8e3; margin:0 0 8px; } .dhres b, .dhlb b{ color:#fff; }
+.dhlb{ display:flex; gap:24px; justify-content:center; flex-wrap:wrap; background:rgba(10,14,19,.82); border:1px solid rgba(255,216,74,.4); border-radius:8px; padding:10px 18px; font:13px Arial; color:#cfd8e3; text-align:left; min-width:260px; margin-bottom:10px; }
+.dhlb h4{ margin:0 0 6px; color:#ffd84a; font:bold 12px Arial; letter-spacing:2px; } .dhlb > div{ min-width:150px; } .dhlb > div > div{ padding:2px 0; }
+.mob #dhHud{ top:46px; } .mob .dhbig{ font-size:44px; }
 /* ── Regeln: präsenter ── */
 #overlay button.rulesbtn{ border-color:#e8c98a; color:#111; background:linear-gradient(#f1d79e,#d9b56c); box-shadow:0 0 14px rgba(232,201,138,.35); font-weight:bold; }
 .rchips{ display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 2px; cursor:pointer; }
@@ -2549,12 +2560,15 @@ body.edit #tlook{ pointer-events:none; }
             ['ace', '⭐', 'Ass', '5 Kills, ohne zu sterben', s => s.ace >= 1], ['plant', '💣', 'Sprengmeister', 'Bombe 10× legen', s => s.plant >= 10], ['defuse', '🧯', 'Entschärfer', 'Bombe entschärfen', s => s.defuse >= 1],
             ['win1', '🏆', 'Erster Sieg', 'Ein Match gewinnen', s => s.wins >= 1], ['win25', '👑', 'Champion', '25 Matches gewinnen', s => s.wins >= 25], ['m10', '🎮', 'Stammspieler', '10 Matches spielen', s => s.matches >= 10],
             ['glwin', '⚔️', 'Gladiator', 'Gauntlet oder 1v1 gewinnen', s => s.glwins >= 1], ['cases', '📦', 'Sammler', '25 Cases öffnen', s => s.cases >= 25], ['made', '🛠', 'Baumeister', 'Eigene Karte oder Arena speichern', s => s.made >= 1],
-            ['lvl10', '🎖️', 'Veteran', 'Level 10 erreichen', (s, l) => l >= 10]];
+            ['lvl10', '🎖️', 'Veteran', 'Level 10 erreichen', (s, l) => l >= 10], ['duck10', '🐤', 'Entenfreund', '10 Enten erlegen', s => s.ducks >= 10],
+            ['duck100', '🦆', 'Entenjäger', '100 Enten erlegen', s => s.ducks >= 100], ['gduck10', '🌟', 'Goldjäger', '10 goldene Enten', s => s.gducks >= 10], ['dh150', '🎯', 'Meisterschütze', '150 Punkte in einer Entenjagd', s => s.dhBest >= 150]];
         // Spielereignis → Statistik, XP, Level-Up und Erfolge
         function xpEvent(ev, x = {}) {
             const st = PRG.st, add = (k, v = 1) => st[k] = (st[k] || 0) + v; let xp = 0;
             if (ev === 'kill') { add('kills'); xp += 10; if (x.hs) { add('hs'); xp += 5; } if (x.w === 'knife') { add('knife'); xp += 15; } if (x.w === 'awp') add('awp'); if (++roundKills === 5) { add('ace'); xp += 50; } }
             else if (ev === 'round') xp += 20; else if (ev === 'plant' || ev === 'defuse') { add(ev); xp += 15; } else if (ev === 'case') add('cases'); else if (ev === 'made') add('made');
+            else if (ev === 'duck') { add('ducks'); xp += 2; if (x.gold) { add('gducks'); xp += 8; } if (st.ducks >= 10 && !store.inv.includes('knife_duck')) { store.inv.push('knife_duck'); saveStore(); toast('🎁 Belohnung freigeschaltet!', 'Butterfly | Quietscheente – jetzt im Inventar'); } }
+            else if (ev === 'dhend') { add('dhgames'); xp += Math.min(150, Math.round((x.score || 0) / 2)); }
             else if (ev === 'match' || ev === 'glmatch') { add('matches'); xp += 50; if (x.won) { add(ev === 'match' ? 'wins' : 'glwins'); xp += 100; } }
             const before = lvlOf(PRG.xp); PRG.xp += xp; const lv = lvlOf(PRG.xp);
             if (lv > before) toast('⬆ LEVEL ' + lv, rankOf(lv) !== rankOf(before) ? 'Neuer Rang: ' + rankOf(lv) : 'Weiter so!');
@@ -3216,7 +3230,8 @@ body.edit #tlook{ pointer-events:none; }
             { id: 'pump_tiger', w: 'pump', n: 'Pump Shotgun | Tiger', c: 0xe08a2a, c2: 0x1a1208, p: 'tiger', r: 2 },
             { id: 'usp_neon', w: 'usp', n: 'USP .45 | Neon Grid', c: 0x00e5ff, c2: 0x0a0f1a, p: 'neon', r: 3 },
             { id: 'ak_neon', w: 'ak47', n: 'AK-47 | Neon Revolution', c: 0xff3df0, c2: 0x120a1a, p: 'neon', r: 3 },
-            { id: 'knife_tiger', w: 'knife', n: 'Butterfly | Tiger Tooth', c: 0xf0b030, c2: 0x2a1600, p: 'tiger', r: 4 }
+            { id: 'knife_tiger', w: 'knife', n: 'Butterfly | Tiger Tooth', c: 0xf0b030, c2: 0x2a1600, p: 'tiger', r: 4 },
+            { id: 'knife_duck', w: 'knife', n: 'Butterfly | Quietscheente', c: 0xffd84a, c2: 0xf2a227, p: 'duck', r: 4, noCase: 1 } // Belohnung Entenjagd (10 Enten)
         ];
         // Muster je Skin: [muster, farbe2, farbe3]
         const SKIN_LOOK = { glock_candy: ['solid'], usp_royal: ['solid'], mp5_moss: ['camo', 0x2d4a24, 0x8fb070], ak_jungle: ['camo', 0x2a3a20, 0x8a7a50], m4_urban: ['camo', 0x4a5568, 0xb8c0cc], deagle_night: ['stripes', 0x0e1424], glock_fade: ['fade', 0xff5fb0, 0xffd34d], mp5_toxic: ['stripes', 0x111111], ak_red: ['stripes', 0x141414], m4_asiimov: ['asiimov', 0x1a1a1a], awp_neon: ['neon', 0x0d0a16], deagle_blaze: ['fade', 0xffb020, 0xfff060], awp_dragon: ['dragon', 0x2f6b3a, 0xc0392b], ak_gold: ['gold', 0x7a5a10], knife_fade: ['fade', 0x8a5cff, 0xffd34d], knife_doppler: ['doppler', 0x0a0f3a] };
@@ -3236,6 +3251,7 @@ body.edit #tlook{ pointer-events:none; }
                 else if (P === 'fade') { const gr = g.createLinearGradient(0, 0, w, hh); gr.addColorStop(0, A); gr.addColorStop(0.55, B); gr.addColorStop(1, C); g.fillStyle = gr; g.fillRect(0, 0, w, hh); }
                 else if (P === 'stripes') { g.fillStyle = B; g.fillRect(0, 0, w, hh); g.fillStyle = A; for (let x = -hh; x < w + hh; x += 28) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 10, 0); g.lineTo(x + 10 + hh, hh); g.lineTo(x + hh, hh); g.fill(); } }
                 else if (P === 'tiger') { g.fillStyle = A; g.fillRect(0, 0, w, hh); g.strokeStyle = B; g.lineWidth = 6; g.lineCap = 'round'; for (let x = 6; x < w; x += 20) { g.beginPath(); g.moveTo(x, -4); g.bezierCurveTo(x + 12, 30, x - 12, 70, x + 6, hh + 4); g.stroke(); } }
+                else if (P === 'duck') { g.fillStyle = '#7ec8e3'; g.fillRect(0, 0, w, hh); g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 2; for (let y = 14; y < hh; y += 26) { g.beginPath(); for (let x = 0; x <= w; x += 6) g.lineTo(x, y + Math.sin(x / 7) * 3); g.stroke(); } for (let i = 0; i < 6; i++) { const x = 18 + (i % 3) * 42, y = 22 + Math.floor(i / 3) * 62 + (i % 2) * 8; g.fillStyle = A; g.beginPath(); g.ellipse(x, y + 10, 13, 9, 0, 0, 7); g.fill(); g.beginPath(); g.arc(x + 9, y, 7, 0, 7); g.fill(); g.fillStyle = B; g.fillRect(x + 15, y - 1, 7, 4); g.fillStyle = '#111'; g.fillRect(x + 10, y - 3, 2, 2); } }
                 else if (P === 'carbon') { for (let y = 0; y < hh; y += 8) for (let x = 0; x < w; x += 8) { g.fillStyle = ((x + y) / 8) % 2 ? A : B; g.fillRect(x, y, 8, 8); } }
                 else if (P === 'neon') { g.fillStyle = B; g.fillRect(0, 0, w, hh); g.strokeStyle = A; g.lineWidth = 2; for (let i = 0; i <= w; i += 16) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, hh); g.moveTo(0, i); g.lineTo(w, i); g.stroke(); } g.lineWidth = 4; g.beginPath(); g.moveTo(0, hh * 0.8); g.lineTo(w * 0.4, hh * 0.3); g.lineTo(w, hh * 0.6); g.stroke(); }
                 else if (P === 'doppler') { const gr = g.createRadialGradient(w * 0.4, hh * 0.4, 4, w / 2, hh / 2, w * 0.75); gr.addColorStop(0, C); gr.addColorStop(0.45, A); gr.addColorStop(1, B); g.fillStyle = gr; g.fillRect(0, 0, w, hh); g.fillStyle = 'rgba(255,255,255,.8)'; for (let i = 0; i < 30; i++) g.fillRect(Math.random() * w, Math.random() * hh, 1.5, 1.5); }
@@ -3266,7 +3282,7 @@ body.edit #tlook{ pointer-events:none; }
                 });
             }
         }
-        function rollSkin() { const r = Math.random(), rar = r < 0.02 ? 4 : r < 0.09 ? 3 : r < 0.32 ? 2 : 1; return rnd(SKINS.filter(s => s.r === rar)); }
+        function rollSkin() { const r = Math.random(), rar = r < 0.02 ? 4 : r < 0.09 ? 3 : r < 0.32 ? 2 : 1; return rnd(SKINS.filter(s => s.r === rar && !s.noCase)); }
         store.stick = JSON.parse(localStorage.getItem('stick') || '{}');
         const stickerTex = {};
         function setSticker(wkey, dataURL) {
@@ -3581,7 +3597,7 @@ body.edit #tlook{ pointer-events:none; }
         function hasLOS(ax, ay, az, bx, by, bz) {
             for (const s of smokeBlock) { const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1; let t = ((s.x - ax) * dx + (s.z - az) * dz) / L2; t = clamp(t, 0, 1); if (Math.hypot(ax + dx * t - s.x, az + dz * t - s.z) < s.r) return false; }
             _o.set(ax, ay, az); _d.set(bx - ax, by - ay, bz - az); const L = _d.length(); _d.normalize(); _ray.set(_o, _d); _ray.far = L; return _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false).length === 0;
-        } function castShot(spread) { camera.getWorldDirection(_fwd); _right.crossVectors(_fwd, camera.up).normalize(); _up.crossVectors(_right, _fwd).normalize(); const a = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * spread; _d.copy(_fwd).addScaledVector(_right, Math.cos(a) * rr).addScaledVector(_up, Math.sin(a) * rr).normalize(); _ray.set(camera.position, _d); _ray.far = 250; const objs = (GA.cur ? GA.cur.meshes : mapMeshes).slice(); for (const b of bots) if (b.alive) objs.push(...b.hit); for (const rp of NET.players.values()) if (rp.alive) objs.push(...rp.hit); for (const dc of decoys) objs.push(...dc.hit); return _ray.intersectObjects(objs, false)[0] || null; }
+        } function castShot(spread) { camera.getWorldDirection(_fwd); _right.crossVectors(_fwd, camera.up).normalize(); _up.crossVectors(_right, _fwd).normalize(); const a = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * spread; _d.copy(_fwd).addScaledVector(_right, Math.cos(a) * rr).addScaledVector(_up, Math.sin(a) * rr).normalize(); _ray.set(camera.position, _d); _ray.far = 250; const objs = (GA.cur ? GA.cur.meshes : mapMeshes).slice(); if (DH.on) { for (const d of DH.ducks) if (d.alive) objs.push(...d.hit); return _ray.intersectObjects(objs, false)[0] || null; } for (const b of bots) if (b.alive) objs.push(...b.hit); for (const rp of NET.players.values()) if (rp.alive) objs.push(...rp.hit); for (const dc of decoys) objs.push(...dc.hit); return _ray.intersectObjects(objs, false)[0] || null; }
         const decals = [], decalGeo = new THREE.PlaneGeometry(0.18, 0.18), decalMat = new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
         function addDecal(p, n) { const m = new THREE.Mesh(decalGeo, decalMat); m.position.copy(p).addScaledVector(n, 0.012); m.lookAt(p.clone().add(n)); scene.add(m); decals.push(m); if (decals.length > 90) scene.remove(decals.shift()); }
         const parts = [], partGeo = new THREE.BoxGeometry(0.06, 0.06, 0.06);
@@ -3696,7 +3712,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (NET.on && NET.host) netSend({ type: 'end', w: winner, rs: reason });
         }
         function nextRound() { if (G.score.CT >= WIN_SCORE || G.score.T >= WIN_SCORE || G.round >= MAX_ROUNDS) gameOver(); else { G.round++; startRound(); } }
-        function checkRoundEnd() { if (GL.on || DM.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; if (aCT === 0) endRound('T', 'Alle Counter-Terroristen eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Terroristen eliminiert'); }
+        function checkRoundEnd() { if (GL.on || DM.on || DH.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; if (aCT === 0) endRound('T', 'Alle Counter-Terroristen eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Terroristen eliminiert'); }
         function plantBomb(e) {
             if (G.state !== 'live') return; G.bomb.state = 'planted'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.t = BOMB_TIME; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); bombMesh.rotation.set(0, 0, 0); e.plantT = 0; e.money = Math.min(16000, e.money + 300);
             if (e.isPlayer) { e.weapons[5] = null; e.slot = e.weapons[1] ? 1 : 2; e.switchT = 1; updateVM(); }
@@ -4017,13 +4033,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function tryShoot() {
             const p = player; if (!p.alive || G.state === 'freeze' || buyOpen) { clickQueued = false; return; } const w = p.weapons[p.slot]; if (!w) return; const d = w.def; if (d.plant) { clickQueued = false; return; } if (d.nade) { const c = clickQueued; clickQueued = false; if (c) throwNade(d); return; } if (w.reloading) { clickQueued = false; return; }
             const want = d.auto ? mouseDown : clickQueued; clickQueued = false; if (!want) return; if (now - w.last < d.rate) return; w.last = now;
-            if (d.melee) { sfx('knife'); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: 'knife', x: p.x, z: p.z }); p.kick = 1; const h = castShot(0); if (h && h.distance < 2.3) { const ud = h.object.userData; if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) { const dmg = d.dmg * (ud.part === 'head' ? 2 : 1); if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else applyDamage(ud.ent, dmg, p, d, false); } else if (!ud.ent) { addDecal(h.point, h.face.normal); } } return; } if (w.ammo <= 0) { sfx('empty'); startReload(); return; }
+            if (d.melee) { sfx('knife'); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: 'knife', x: p.x, z: p.z }); p.kick = 1; const h = castShot(0); if (h && h.distance < 2.3) { const ud = h.object.userData; if (ud.ent && ud.ent.dh) dhShot(ud.ent, ud.part === 'head'); else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) { const dmg = d.dmg * (ud.part === 'head' ? 2 : 1); if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else applyDamage(ud.ent, dmg, p, d, false); } else if (!ud.ent) { addDecal(h.point, h.face.normal); } } return; } if (w.ammo <= 0) { sfx('empty'); startReload(); return; }
             if (!CFG.infAmmo) w.ammo--; p.lastShotT = now;
             let spread = d.spread; if (d.scope) spread = p.scoped ? d.scopedSpread : d.spread; else { spread *= (1 + p.recoil * 0.9); if (p.speed > 3) spread *= 2.5; else if (p.speed > 0) spread *= 1.5; if (p.crouch) spread *= 0.7; if (!p.onGround) spread *= 4; }
             for (let pi = 0; pi < (d.pellets || 1); pi++) {
                 const h = castShot(spread);
                 if (!h) continue;
                 const ud = h.object.userData;
+                if (ud.ent && ud.ent.dh) { dhShot(ud.ent, ud.part === 'head'); continue; }
                 if (ud.ent && ud.ent.decoy) { ud.ent.hp -= d.dmg; burst(h.point.x, h.point.y, h.point.z, 0x7dffb0, 4, 2); hitT = 0.12; hitHS = false; sfx('hit'); }
                 else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) {
                     const hs = ud.part === 'head';
@@ -4081,7 +4098,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                     { g: 'ammo', label: 'Munition auffüllen', price: 100 }]
             }
         ];
-        function canBuy() { if (GL.on) return false; if (DM.on) return player.alive; return player.alive && (G.state === 'freeze' || (G.state === 'live' && G.timer > ROUND_TIME - 15)); } let buyCache = '';
+        function canBuy() { if (GL.on || DH.on) return false; if (DM.on) return player.alive; return player.alive && (G.state === 'freeze' || (G.state === 'live' && G.timer > ROUND_TIME - 15)); } let buyCache = '';
         function itemPrice(it) { if (it.w) return W[it.w].price; return it.g === 'helm' && player.armor >= 100 ? 350 : it.price; }
         function itemOwned(it) {
             const p = player;
@@ -4167,6 +4184,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function killPop(name, hs) { const kw = player.weapons[player.slot]; xpEvent('kill', { hs, w: kw && kw.def.key }); const el = $('killpop'); el.innerHTML = `${hs ? '☠ HEADSHOT' : '✓ ELIMINIERT'}<span>${name}</span>`; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
         function killfeed(att, vic, w, hs) { const nm = e => `<span class="${e.team === 'CT' ? 'ct' : 't'}">${e.name}</span>`; const d = document.createElement('div'); d.innerHTML = `${att ? nm(att) : '💣'} <span style="color:#fff">[${w ? w.name : 'Bombe'}${hs ? ' ☠' : ''}]</span> ${nm(vic)}`; const f = $('killfeed'); f.prepend(d); while (f.children.length > 6) f.lastChild.remove(); setTimeout(() => d.remove(), 6000); }
         function renderBoard() {
+            if (DH.on) { $('board').innerHTML = '<h3 style="margin:0 0 8px">🦆 Entenjagd</h3>' + ($('dhHud') ? $('dhHud').innerHTML : ''); return; }
             if (GL.on) { $('board').innerHTML = glBoard(); return; }
             if (DM.on) { $('board').innerHTML = `<h3 style="margin:0 0 8px">💀 Deathmatch – ${MAPLABEL}</h3><table><tr><th>Spieler</th><th>K</th><th>T</th></tr>${dmRank().map((e, i) => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${i + 1}. ${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td></tr>`).join('')}</table>${IS_TOUCH ? '<p style="font-size:11px;color:#8fa3b8">Doppeltipp: Einstellungen</p>' : ''}`; return; }
             const rows = t => ents.filter(e => e.team === t).sort((a, b) => b.kills - a.kills).map(e => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td><td>$ ${e.money}</td></tr>`).join('');
@@ -4325,7 +4343,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             let act = '';
             if (GB.tab === 'up') {
                 if (GB.sel.length) {
-                    const tg = SKINS.filter(s => s.r > r0).sort((a, b) => a.r - b.r);
+                    const tg = SKINS.filter(s => s.r > r0 && !s.noCase).sort((a, b) => a.r - b.r);
                     act = `<div style="margin:10px 0 6px;color:#8fa3b8;font-size:12px;letter-spacing:2px">ZIEL WÄHLEN</div><div class="invrow" style="justify-content:center">${tg.map(s => gbCard(s, '', `data-gbt="${s.id}"`, GB.tgt === s.id)).join('')}</div>`;
                     if (GB.tgt) act += `<p>Chance: <b style="color:#e8c98a;font-size:18px">${Math.round(gbUpChance() * 100)} %</b></p><button id="gbGo">⬆️ UPGRADEN</button>`;
                 } else act = '<p style="color:#8fa3b8">Wähle 1 Skin aus deinem Inventar</p>';
@@ -4353,8 +4371,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (GB.busy) return; GB.busy = true; initAudio(); $('gbGo').disabled = true;
             let out, ok = true;
             if (GB.tab === 'up') { ok = Math.random() < gbUpChance(); out = ok ? SKINS.find(s => s.id === GB.tgt) : null; }
-            else if (GB.tab === 'tu') out = rnd(SKINS.filter(s => s.r === gbSk(GB.sel[0]).r + 1));
-            else { const o = gbCtOdds(); let x = Math.random(), r = 1; for (; r < 4; r++) { if (x < o[r]) break; x -= o[r]; } out = rnd(SKINS.filter(s => s.r === r)); }
+            else if (GB.tab === 'tu') out = rnd(SKINS.filter(s => s.r === gbSk(GB.sel[0]).r + 1 && !s.noCase));
+            else { const o = gbCtOdds(); let x = Math.random(), r = 1; for (; r < 4; r++) { if (x < o[r]) break; x -= o[r]; } out = rnd(SKINS.filter(s => s.r === r && !s.noCase)); }
             gbTake(GB.sel); if (out) gbGive(out); saveStore(); applySkins();
             let n = 0; const tk = setInterval(() => { const s = rnd(SKINS), el = $('gbRoll'); if (el) { el.textContent = s.n; el.style.color = RARITY[s.r][0]; } tone(700 + n * 15, 0.02, 0.05, 0, 'square'); if (++n > 18) { clearInterval(tk); GB.busy = false; GB.sel = []; GB.tgt = null; sfx(ok ? 'win' : 'lose'); showGamble(ok ? { ok: true, txt: `✓ ${out.n}` } : { ok: false, txt: '✗ Upgrade fehlgeschlagen – Skin verloren' }); } }, 90);
         }
@@ -4471,7 +4489,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; 
         
 
-        const MODES = { comp: ['🏆', 'Wettkampf', 'CT gegen T · Bombe legen & entschärfen'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'] };
+        const MODES = { comp: ['🏆', 'Wettkampf', 'CT gegen T · Bombe legen & entschärfen'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'] };
         const modeName = k => MODES[k] ? MODES[k][0] + ' ' + MODES[k][1] : '';
          function fetchRooms() {
  const el = $('roomlist'); if (!el) return;
@@ -4671,6 +4689,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <button id="btnCT">Start: Counter-Terrorists</button>
  <button id="btnT">Start: Terroristen</button>
  <button id="btnDM">💀 Deathmatch starten</button>
+ <button id="btnDuck" style="border-color:#ffd84a;color:#ffd84a">🦆 Entenjagd starten</button>
+ <button id="btnDuckLb">🏆 Bestenliste</button>
  </span>
  <span id="barOn" style="display:none">
  <input id="srv" value="${DEF_WS}" placeholder="wss://…">
@@ -4684,7 +4704,33 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 1.4 „GAME ON"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 1.5 „ENTENJAGD"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🦆 NEUER MODUS: ENTENJAGD</p>
+ <b style="color:#ffd964">Entspannt für zwischendurch:</b> 2 Minuten, keine Gegner – nur Du, Deine AK, Deine Deagle und jede Menge Enten. Sie watscheln über die Karte oder flattern über die Dächer. Triff so viele wie möglich!<br>
+ Im Spielen-Tab unter <b>🦆 Entenjagd</b> – auf jeder Karte, auch eigenen und Community-Karten. Unendlich Reservemunition, kein Kaufen, kein Stress.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">⭐ ENTEN & SPECIALS</p>
+ <b>Ente</b> 1 Punkt · <b>💨 Flitzer</b> 3 · <b>⭐ Goldene Ente</b> 10<br>
+ <b>⏱ Zeit-Ente</b> +6 Sekunden · <b>💣 Bomben-Ente</b> erledigt alle Enten in der Nähe · <b>🔥 Rausch-Ente</b> 8 s doppelte Punkte · <b>❄️ Eis-Ente</b> verlangsamt alle Enten<br>
+ <b>🚫 Lockvogel</b> (rot): Finger weg – kostet 5 Punkte und Deine Combo!<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🔥 COMBOS</p>
+ Kopftreffer geben +1. Triff schnell hintereinander, und alle 5 Treffer steigt Dein Multiplikator – bis zu <b>×4</b>.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🌐 ONLINE</p>
+ Neuer Lobby-Modus: Alle jagen dieselben Enten – wer zuerst trifft, bekommt die Punkte. Live-Rangliste im Spiel und Siegerpodest am Ende.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🏆 BESTENLISTE</p>
+ Deine Punkte landen in der <b>Tages-</b> und der <b>Allzeit-Bestenliste</b> (Top 10). Jeden Tag eine neue Chance auf Platz 1! Auch über <b>🏆 Bestenliste</b> im Spielen-Tab.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎁 BELOHNUNGEN</p>
+ Nach <b>10 Enten</b> gibt's den exklusiven <b>★ Butterfly | Quietscheente</b> – nur über die Entenjagd, nicht aus Cases.<br>
+ XP für jede Ente, ab 150 Punkten <b>+1 Case</b> und 4 neue Erfolge: <i>Entenfreund</i>, <i>Entenjäger</i>, <i>Goldjäger</i> und <i>Meisterschütze</i>.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.4 „GAME ON"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📲 ALS APP INSTALLIEREN</p>
@@ -4868,7 +4914,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.4 „Game On" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
+ <div id="csver">CS:WO 1.5 „Entenjagd" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -4945,7 +4991,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 $('glcSolo').style.display = PM.cat === 'gl' ? '' : 'none'; $('glcV1').style.display = PM.cat === 'v1' ? '' : 'none';
                 $('roomlist').style.display = PM.on ? 'flex' : 'none';
                 $('barOff').style.display = !PM.on && !arena ? 'inline-flex' : 'none';
-                $('btnCT').style.display = $('btnT').style.display = PM.cat === 'comp' ? '' : 'none'; $('btnDM').style.display = PM.cat === 'dm' ? '' : 'none';
+                $('btnCT').style.display = $('btnT').style.display = PM.cat === 'comp' ? '' : 'none'; $('btnDM').style.display = PM.cat === 'dm' ? '' : 'none'; $('btnDuck').style.display = $('btnDuckLb').style.display = PM.cat === 'duck' ? '' : 'none';
                 $('barOn').style.display = PM.on ? 'inline-flex' : 'none';
                 $('mpT').style.display = PM.cat === 'comp' ? '' : 'none'; $('mpCT').textContent = PM.cat === 'comp' ? 'Beitreten: CT' : 'Lobby beitreten';
                 $('catdesc').textContent = MODES[PM.cat][2] + (PM.on ? ' · Online: Tritt einer Lobby bei – der Host startet dort.' : arena ? ' · Arena wird automatisch gewählt.' : ' · Wähle eine Karte.');
@@ -4958,13 +5004,150 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const backPlay = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
             $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => { GL.v1 = true; glStart(2); }, backPlay);
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
-            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); };
+            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnDuck').onclick = () => dhStart(); $('btnDuckLb').onclick = showDuckLb;
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = () => showGameSettings(); $('ruleChips').onclick = () => showGameSettings();
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navProf').onclick = showProfile;
             $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
             else if (sessionStorage.getItem('opentab') === 'maps') { sessionStorage.removeItem('opentab'); showMapList(); }
+        }
+        // =====================================================================
+        //  🦆 ENTENJAGD – entspannter 2-Minuten-Modus (offline & online, Host verwaltet die Enten)
+        // =====================================================================
+        const DH_TIME = 120;
+        const DH_TYPES = { // pts: Punkte, sp: Spezial, w: Häufigkeit, fly: Anteil fliegend
+            n: { n: 'Ente', pts: 1, speed: 2.2, fly: 0.25, w: 60 },
+            f: { n: 'Flitzer', pts: 3, col: 0x3fa9ff, speed: 6.5, fly: 0.6, w: 14, ic: '💨' },
+            g: { n: 'Goldene Ente', pts: 10, col: 0xffc400, speed: 4.5, fly: 0.5, w: 4, ic: '⭐', gold: 1 },
+            t: { n: 'Zeit-Ente', pts: 2, col: 0x46e07a, speed: 3, fly: 0.3, w: 5, ic: '⏱', sp: 'time' },
+            b: { n: 'Bomben-Ente', pts: 2, col: 0x2a2a2a, speed: 2.4, fly: 0, w: 5, ic: '💣', sp: 'bomb' },
+            r: { n: 'Rausch-Ente', pts: 2, col: 0xb04aff, speed: 3.5, fly: 0.4, w: 5, ic: '🔥', sp: 'frenzy' },
+            i: { n: 'Eis-Ente', pts: 2, col: 0x9fe8ff, speed: 3, fly: 0.3, w: 4, ic: '❄️', sp: 'ice' },
+            k: { n: 'Lockvogel', pts: -5, col: 0xd03030, speed: 3, fly: 0, w: 6, ic: '🚫', decoy: 1 }
+        };
+        const DH_LOOKS = [[0xffd84a, 0xffd84a, 0xf5c93a], [0x8a6a4a, 0x1f6b3a, 0x6b7f9a], [0xf3f3ef, 0xf3f3ef, 0xe2e2dc]]; // Badeente, Stockente, Hausente
+        const DH = { on: false, ducks: [], t: 0, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, me: { pts: 0, n: 0, gold: 0, sp: 0, best: 0 }, ended: false };
+        const dhMe = () => NET.on ? NET.pid : 'me';
+        const DH_ICON = {}; function dhIcon(e) { if (DH_ICON[e]) return DH_ICON[e]; const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); g.font = '46px serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(e, 32, 36); return DH_ICON[e] = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthWrite: false, transparent: true }); }
+        function dhMesh(d) { // kleine Ente aus Boxen, Flügel schlagen, Specials mit Symbol darüber
+            const T = DH_TYPES[d.t], L = T.col ? [T.col, T.col, T.col] : DH_LOOKS[d.look], g = new THREE.Group();
+            const M = (c, em) => new THREE.MeshLambertMaterial({ color: c, emissive: em || (T.gold ? 0x5a3c00 : 0) }), orange = M(0xf2a227);
+            const mk = (w, h, dd, m, x, y, z, part) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, dd), m); b.position.set(x, y, z); b.castShadow = true; g.add(b); if (part) { b.userData.part = part; b.userData.ent = d; } return b; };
+            const body = mk(0.55, 0.42, 0.75, M(L[0]), 0, 0.42, 0, 'body'), head = mk(0.34, 0.32, 0.34, M(L[1]), 0, 0.82, 0.3, 'head');
+            mk(0.2, 0.08, 0.2, orange, 0, 0.78, 0.53); mk(0.25, 0.18, 0.2, M(L[0]), 0, 0.55, -0.42);
+            const eye = new THREE.MeshBasicMaterial({ color: 0x111111 }); mk(0.05, 0.06, 0.02, eye, -0.1, 0.88, 0.47); mk(0.05, 0.06, 0.02, eye, 0.1, 0.88, 0.47);
+            const wl = mk(0.08, 0.28, 0.5, M(L[2]), -0.31, 0.47, -0.02), wr = mk(0.08, 0.28, 0.5, M(L[2]), 0.31, 0.47, -0.02);
+            mk(0.06, 0.2, 0.06, orange, -0.12, 0.1, 0); mk(0.06, 0.2, 0.06, orange, 0.12, 0.1, 0);
+            if (T.ic) { const ic = new THREE.Sprite(dhIcon(T.ic)); ic.scale.set(0.55, 0.55, 1); ic.position.set(0, 1.35, 0); g.add(ic); }
+            scene.add(g); d.mesh = g; d.hit = [body, head]; d.wl = wl; d.wr = wr;
+        }
+        function dhPickType() { let x = Math.random() * Object.values(DH_TYPES).reduce((a, t) => a + t.w, 0); for (const k in DH_TYPES) { x -= DH_TYPES[k].w; if (x <= 0) return k; } return 'n'; }
+        function dhSpawn() { // nur Offline/Host
+            const t = dhPickType(), T = DH_TYPES[t], c = rnd(openCells), fly = Math.random() < T.fly, a = Math.random() * Math.PI * 2;
+            const d = { dh: 1, id: ++DH.id, t, look: Math.random() * 3 | 0, x: cx(c.c), z: cx(c.r), y: fly ? 6 + Math.random() * 3 : 0, fly, alive: true, r: 0.35, life: 12 + Math.random() * 6, yaw: a, vx: Math.sin(a), vz: Math.cos(a), ph: Math.random() * 6, tx: 0, tz: 0, retarget: 0 };
+            dhMesh(d); DH.ducks.push(d);
+        }
+        function dhRemove(d, fx) { d.alive = false; if (fx) burst(d.x, d.y + 0.5, d.z, DH_TYPES[d.t].gold ? 0xffd040 : 0xffffff, 12, 3); scene.remove(d.mesh); DH.ducks = DH.ducks.filter(x => x !== d); }
+        function quack(p = 1) { if (!AC) return; tone(560 * p, 0.12, 0.22, 0, 'sawtooth', 380 * p); setTimeout(() => AC && tone(500 * p, 0.1, 0.18, 0, 'sawtooth', 340 * p), 130); }
+        function dhMove(d, dt) { // Laufen (mit Kollision) oder Fliegen (über den Wänden)
+            const T = DH_TYPES[d.t], spd = T.speed * (DH.ice > 0 ? 0.35 : 1); d.ph += dt * (d.fly ? 14 : 8);
+            if (d.fly) {
+                d.x += d.vx * spd * dt; d.z += d.vz * spd * dt; d.y += Math.sin(d.ph * 0.25) * dt * 0.8;
+                if (d.x < 3 || d.x > WORLD_W - 3) d.vx *= -1; if (d.z < 3 || d.z > WORLD_D - 3) d.vz *= -1; d.x = clamp(d.x, 3, WORLD_W - 3); d.z = clamp(d.z, 3, WORLD_D - 3);
+                d.yaw = Math.atan2(d.vx, d.vz);
+            } else {
+                d.retarget -= dt; if (d.retarget <= 0 || Math.hypot(d.tx - d.x, d.tz - d.z) < 0.5) { const a = Math.random() * Math.PI * 2, r = 3 + Math.random() * 7; d.tx = d.x + Math.sin(a) * r; d.tz = d.z + Math.cos(a) * r; d.retarget = 2 + Math.random() * 3; }
+                const dx = d.tx - d.x, dz = d.tz - d.z, l = Math.hypot(dx, dz) || 1, ox = d.x, oz = d.z; collideMove(d, dx / l * spd * dt, dz / l * spd * dt);
+                if (Math.hypot(d.x - ox, d.z - oz) < spd * dt * 0.3) d.retarget = 0; // gegen Wand → neues Ziel
+                d.y = groundAt(d); d.yaw = lerpAngle(d.yaw, Math.atan2(dx, dz), Math.min(1, dt * 8));
+            }
+        }
+        function dhPose(d) { d.mesh.position.set(d.x, d.y, d.z); d.mesh.rotation.set(0, d.yaw, d.fly ? 0 : Math.sin(d.ph) * 0.12); const f = d.fly ? Math.sin(d.ph) * 0.9 : Math.sin(d.ph) * 0.15; d.wl.rotation.z = f; d.wr.rotation.z = -f; }
+        // Treffer (nur Offline/Host): Punkte, Combo, Spezialeffekte
+        function dhKill(d, by, head) {
+            if (!d.alive) return; const T = DH_TYPES[d.t], now2 = performance.now() / 1000, cb = DH.combo[by] || (DH.combo[by] = { n: 0, t: 0 });
+            if (T.decoy) cb.n = 0; else { cb.n = now2 - cb.t < 2.5 ? cb.n + 1 : 1; cb.t = now2; }
+            const mult = T.decoy ? 1 : Math.min(4, 1 + Math.floor((cb.n - 1) / 5)) * (DH.frz[by] > 0 ? 2 : 1), pts = T.decoy ? T.pts : (T.pts + (head ? 1 : 0)) * mult;
+            DH.sc[by] = Math.max(0, (DH.sc[by] || 0) + pts); dhRemove(d, true);
+            if (T.sp === 'time') DH.t += 6; if (T.sp === 'ice') DH.ice = 6; if (T.sp === 'frenzy') DH.frz[by] = 8;
+            if (T.sp === 'bomb') { burst(d.x, d.y + 0.5, d.z, 0xff8a30, 26, 6); sfx('explosion', d.x, d.z); for (const o of DH.ducks.slice()) if (o.alive && !DH_TYPES[o.t].decoy && Math.hypot(o.x - d.x, o.z - d.z) < 7) dhKill(o, by, false); }
+            if (NET.on) netSend({ type: 'dhdie', id: d.id, by, pts, t: d.t, x: d.x, y: d.y, z: d.z, m: mult });
+            dhCredit(by, d.t, pts, mult);
+        }
+        // Rückmeldung für den Schützen (eigene Statistik, Belohnungen, Anzeige)
+        function dhCredit(by, t, pts, mult) {
+            if (by !== dhMe()) return; const T = DH_TYPES[t];
+            if (T.decoy) { sfx('empty'); dhPop(pts + ' Lockvogel!', '#ff6b6b'); return; }
+            DH.me.n++; if (T.gold) DH.me.gold++; if (T.sp) DH.me.sp++; quack(T.gold ? 1.4 : T.sp ? 0.8 : 1); hitT = 0.12; hitHS = false;
+            dhPop('+' + pts + (mult > 1 ? ' ×' + mult : '') + (T.sp ? ' ' + T.ic + ' ' + T.n : T.gold ? ' ⭐ GOLD' : ''), T.gold ? '#ffd040' : T.sp ? '#9fe8ff' : '#fff');
+            xpEvent('duck', { gold: T.gold });
+        }
+        function dhShot(d, head) { // eigener Treffer
+            if (!d.alive) return;
+            if (!NET.on || NET.host) dhKill(d, dhMe(), head); else { netSend({ type: 'dhhit', id: d.id, hs: head ? 1 : 0, pid: NET.pid }); d.alive = false; d.mesh.visible = false; burst(d.x, d.y + 0.5, d.z, 0xffffff, 10, 3); }
+        }
+        function dhPop(txt, col) { const el = $('dhPop'); if (!el) return; el.textContent = txt; el.style.color = col; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
+        function dhHudUpdate() {
+            const el = $('dhHud'); if (!el) return; const me = DH.sc[dhMe()] || 0, cb = DH.combo[dhMe()], mult = cb && performance.now() / 1000 - cb.t < 2.5 ? Math.min(4, 1 + Math.floor((cb.n - 1) / 5)) : 1;
+            const names = { me: player.name }; names[NET.pid] = player.name; for (const rp of NET.players.values()) names[rp.pid] = rp.name;
+            const list = NET.on ? Object.entries(DH.sc).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([p, s], i) => `<div${p === dhMe() ? ' class="me"' : ''}>${i + 1}. ${(names[p] || '?').replace(/</g, '')} <b>${s}</b></div>`).join('') : '';
+            el.innerHTML = `<div class="dhs">🦆 <b>${me}</b> Pkt${mult > 1 ? ` <span class="dhx">×${mult}</span>` : ''}${DH.frz[dhMe()] > 0 ? ' <span class="dhx">🔥×2</span>' : ''}${DH.ice > 0 ? ' <span class="dhi">❄️</span>' : ''}</div>${list ? `<div class="dhl">${list}</div>` : ''}`;
+        }
+        function dhStart() {
+            remeshAll(); initAudio(); const nm = ($('pname') && $('pname').value || '').trim(); if (nm) player.name = nm.slice(0, 14);
+            for (const d of DH.ducks) scene.remove(d.mesh); Object.assign(DH, { on: true, ducks: [], t: DH_TIME, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, me: { pts: 0, n: 0, gold: 0, sp: 0 }, ended: false });
+            DH.sc[dhMe()] = 0; for (const rp of NET.players.values()) DH.sc[rp.pid] = 0;
+            player.team = 'CT'; player.alive = true; player.health = 100; player.weapons[1] = mkWeapon(W.ak47); player.weapons[2] = mkWeapon(W.deagle); player.weapons[4] = player.weapons[5] = null; player.slot = 1; updateVM();
+            const c = rnd(spawnCells.CT.length ? spawnCells.CT : openCells); player.x = cx(c.c); player.z = cx(c.r); player.y = 0; player.vx = player.vz = player.vy = 0;
+            ents = [player, ...NET.players.values()]; G.state = 'live'; G.timer = DH_TIME; G.bomb = { state: 'none', x: 0, z: 0, t: 0, carrier: null };
+            started = true; gameEnded = false; $('overlay').style.display = 'none'; $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
+            if (!$('dhHud')) { const h = document.createElement('div'); h.id = 'dhHud'; $('hud').appendChild(h); const p = document.createElement('div'); p.id = 'dhPop'; $('hud').appendChild(p); }
+            renderer.domElement.requestPointerLock(); msg('🦆 Entenjagd', '2 Minuten · ⭐ Gold = 10 · 🚫 rote Lockvögel meiden!', 4);
+            if (!NET.on || NET.host) for (let i = 0; i < 8; i++) dhSpawn();
+        }
+        function dhTick(dt) {
+            for (const s of [1, 2]) { const w = player.weapons[s]; if (w) w.res = 999; } // unendlich Reserve
+            const host = !NET.on || NET.host;
+            if (host) {
+                DH.t -= dt; DH.ice = Math.max(0, DH.ice - dt); for (const k in DH.frz) DH.frz[k] = Math.max(0, DH.frz[k] - dt);
+                const max = 10 + 3 * NET.players.size; DH.spawnT -= dt; if (DH.spawnT <= 0 && DH.ducks.length < max) { dhSpawn(); DH.spawnT = 0.55; }
+                for (const d of DH.ducks.slice()) { d.life -= dt; if (d.life <= 0) { dhRemove(d, false); continue; } dhMove(d, dt); }
+                if (NET.on) { DH.sendT -= dt; if (DH.sendT <= 0) { DH.sendT = 0.1; netSend({ type: 'dhs', t: DH.t, ice: DH.ice, frz: DH.frz, sc: DH.sc, d: DH.ducks.map(d => [d.id, d.t, d.look, +d.x.toFixed(2), +d.y.toFixed(2), +d.z.toFixed(2), +d.yaw.toFixed(2), d.fly ? 1 : 0]) }); } }
+                if (DH.t <= 0) { if (NET.on) netSend({ type: 'dhend', sc: DH.sc }); dhEnd(); return; }
+            } else for (const d of DH.ducks) { d.x += (d.nx - d.x) * Math.min(1, dt * 12); d.y += (d.ny - d.y) * Math.min(1, dt * 12); d.z += (d.nz - d.z) * Math.min(1, dt * 12); d.ph += dt * (d.fly ? 14 : 8); }
+            for (const d of DH.ducks) dhPose(d);
+            G.timer = Math.max(0, DH.t); dhHudUpdate();
+        }
+        function dhSnap(m) { // Client: Enten-Zustand vom Host übernehmen
+            DH.t = m.t; DH.ice = m.ice; DH.frz = m.frz || {}; DH.sc = m.sc || {}; const seen = new Set();
+            for (const [id, t, look, x, y, z, yaw, fly] of m.d) { seen.add(id); let d = DH.ducks.find(o => o.id === id); if (!d) { if (DH.gone && DH.gone.has(id)) continue; d = { dh: 1, id, t, look, x, y, z, nx: x, ny: y, nz: z, yaw, fly: !!fly, alive: true, ph: 0 }; dhMesh(d); DH.ducks.push(d); } d.nx = x; d.ny = y; d.nz = z; d.yaw = yaw; }
+            for (const d of DH.ducks.slice()) if (!seen.has(d.id)) dhRemove(d, false);
+        }
+        function dhEnd(sc) {
+            if (DH.ended) return; DH.ended = true; if (sc) DH.sc = sc; gameEnded = true; document.exitPointerLock(); for (const d of DH.ducks) scene.remove(d.mesh); DH.ducks = [];
+            const me = DH.sc[dhMe()] || 0, best = Math.max(me, PRG.st.dhBest || 0), newBest = me > (PRG.st.dhBest || 0); PRG.st.dhBest = best;
+            xpEvent('dhend', { score: me }); if (me >= 150) { store.cases++; saveStore(); toast('📦 +1 Case', 'Für 150+ Punkte in der Entenjagd'); }
+            $('hud').style.display = 'none';
+            const names = { me: player.name }; names[NET.pid] = player.name; for (const rp of NET.players.values()) names[rp.pid] = rp.name;
+            const table = NET.on ? `<div class="dhres">${Object.entries(DH.sc).sort((a, b) => b[1] - a[1]).map(([p, s], i) => `<div${p === dhMe() ? ' class="me"' : ''}>${['🥇', '🥈', '🥉'][i] || (i + 1) + '.'} ${(names[p] || '?').replace(/</g, '')} <b>${s}</b></div>`).join('')}</div>` : '';
+            showOverlay(`<h1 style="color:#ffd84a">🦆 ENTENJAGD VORBEI<small>${newBest ? '🎉 NEUER PERSÖNLICHER REKORD!' : 'REKORD: ' + best + ' PUNKTE'}</small></h1>
+ <div class="dhbig">${me}<span>Punkte</span></div>
+ <div class="profstats" style="justify-content:center;margin:6px 0 10px"><span>Enten <b>${DH.me.n}</b></span><span>Gold <b>${DH.me.gold}</b></span><span>Specials <b>${DH.me.sp}</b></span><span>Gesamt <b>${PRG.st.ducks || 0}</b> 🦆</span></div>
+ ${table}<div id="dhLb" class="dhlb">Bestenliste wird geladen…</div>
+ <div><button id="dhAgain" ${NET.on ? 'style="display:none"' : ''}>🔁 Nochmal</button><button id="dhMenu">Zum Menü</button></div>`);
+            $('dhAgain').onclick = () => { DH.on = false; dhStart(); }; $('dhMenu').onclick = leaveGame;
+            const nm = ACC ? ACC.u : (player.name || 'Gast');
+            (me > 0 ? accApi('dhscore', { n: nm, s: me, d: DH.me.n }) : accApi('dhlb', {})).then(r => { const el = $('dhLb'); if (el && r.ok) el.innerHTML = dhLbHtml(r, nm); }).catch(() => { const el = $('dhLb'); if (el) el.textContent = 'Bestenliste nicht erreichbar.'; });
+        }
+        function dhLbHtml(r, nm) {
+            const col = (t, l) => `<div><h4>${t}</h4>${l.length ? l.map((e, i) => `<div${nm && e.n.toLowerCase() === String(nm).toLowerCase() ? ' class="me"' : ''}>${['🥇', '🥈', '🥉'][i] || (i + 1) + '.'} ${e.n} <b>${e.s}</b></div>`).join('') : '<div style="opacity:.6">Noch keine Einträge</div>'}</div>`;
+            return col('📅 HEUTE', r.today || []) + col('🏆 ALLZEIT', r.all || []);
+        }
+        function showDuckLb() {
+            showOverlay(`<h1 style="color:#ffd84a">🏆 BESTENLISTE<small>ENTENJAGD</small></h1><div id="dhLb" class="dhlb">Lade…</div><p style="font-size:12px;color:#8fa3b8">Dein Rekord: <b>${PRG.st.dhBest || 0}</b> Punkte · Enten insgesamt: <b>${PRG.st.ducks || 0}</b></p><div><button id="dhLbBack">Zurück</button></div>`);
+            $('dhLbBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
+            accApi('dhlb', {}).then(r => { const el = $('dhLb'); if (el && r.ok) el.innerHTML = dhLbHtml(r, ACC ? ACC.u : player.name); }).catch(() => { const el = $('dhLb'); if (el) el.textContent = 'Bestenliste nicht erreichbar.'; });
         }
         function startGame(team) {
             remeshAll(); // Agenten-Thema auf Mitspieler anwenden
@@ -5704,8 +5887,13 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             switch (m.type) {
                 case 'joined': NET.on = true; NET.host = m.host; NET.inLobby = true; if (NET.host) netSend({ type: 'lmode', mode: NET.mode }); renderLobby();
                     netSend({ type: 'hello', pid: NET.pid, name: player.name, team: player.team, ag: store.agent }); break;
+                case 'dhstart': if (!NET.host) { if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; } if (m.cfg) Object.assign(CFG, m.cfg); NET.inLobby = false; if (!DH.on || DH.ended) dhStart(); } break;
+                case 'dhs': if (!NET.host && DH.on && !DH.ended) dhSnap(m); break;
+                case 'dhhit': if (NET.host && DH.on && !DH.ended) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhKill(d, m.pid, !!m.hs); } break;
+                case 'dhdie': if (!NET.host && DH.on) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhRemove(d, true); else burst(m.x, m.y + 0.5, m.z, 0xffffff, 10, 3); if (m.t === 'b') burst(m.x, m.y + 0.5, m.z, 0xff8a30, 26, 6); dhCredit(m.by, m.t, m.pts, m.m); } break;
+                case 'dhend': if (!NET.host && DH.on) dhEnd(m.sc); break;
                 case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
-                case 'hello': addRemote(m.pid, m.name, m.team, m.ag); if (NET.host) netSend({ type: 'lcfg', cfg: CFG });
+                case 'hello': addRemote(m.pid, m.name, m.team, m.ag); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG }); }
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: store.agent });
                     if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag); if (NET.inLobby) renderLobby(); } break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
@@ -5810,7 +5998,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 comp: '<button id="btnStart" style="border-color:#9fe08a;color:#9fe08a">▶ WETTKAMPF STARTEN</button>',
                 dm: '<button id="btnDMMp" style="border-color:#ff6b6b;color:#ff6b6b">💀 DEATHMATCH STARTEN</button>',
                 gl: '<select id="glTeamsMp" style="flex:0 0 90px">' + [4, 6, 8].map(n => `<option value="${n}" ${(NET.glN || 4) === n ? 'selected' : ''}>${n} Teams</option>`).join('') + '</select><button id="btnGlMp">⚔️ GAUNTLET STARTEN</button>',
-                v1: '<button id="btnV1Mp" style="border-color:#7ec8e3;color:#7ec8e3">🎯 1V1-TURNIER STARTEN</button>'
+                v1: '<button id="btnV1Mp" style="border-color:#7ec8e3;color:#7ec8e3">🎯 1V1-TURNIER STARTEN</button>',
+                duck: '<button id="btnDuckMp" style="border-color:#ffd84a;color:#ffd84a">🦆 ENTENJAGD STARTEN</button>'
             }[md];
             let rows = card(player.team, player.name + ' (Du)', NET.host);
             for (const rp of NET.players.values()) rows += card(rp.team, rp.name, false);
@@ -5842,6 +6031,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
                 on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
                 on('btnGlMp', 'onclick', () => { const t = +$('glTeamsMp').value; pickArenas(() => glStartMP(t), renderLobby); }); on('btnV1Mp', 'onclick', () => pickArenas(() => { GL.v1 = true; glStartMP(2); }, renderLobby));
+                on('btnDuckMp', 'onclick', () => { NET.inLobby = false; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG }); dhStart(); });
                 on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 1 }); startGame(player.team); });
                 on('glTeamsMp', 'onchange', e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); });
             }
@@ -5925,7 +6115,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             }
             if (IS_TOUCH) { const want = started && !gameEnded ? 'block' : 'none'; if ($('touch').style.display !== want) $('touch').style.display = want; $('touch').classList.toggle('dead', started && !gameEnded && !player.alive && !document.body.classList.contains('edit')); }
             if (started && !paused && !gameEnded) {
-                if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
+                if (DH.on) dhTick(dt); else if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
                 updatePlayer(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
                 separate(); updateFX(dt); updateMates(); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();

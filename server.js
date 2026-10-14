@@ -11,24 +11,24 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.
 // sonst lokal in data/users.json. Render löscht die Festplatte bei jedem Deploy/Neustart, daher der Gist.
 const crypto = require('crypto');
 const PUBLISH_CODE = 'baumeister42'; // Code zum Veröffentlichen von Community-Karten – hier ändern
-const DATA_DIR = path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json');
+const DATA_DIR = path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json'), LB_FILE = path.join(DATA_DIR, 'leaderboard.json');
 const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog'];
 const GIST_ID = process.env.GIST_ID, GIST_TOKEN = process.env.GIST_TOKEN, GIST_FILE = 'users.json';
 const GH = { Authorization: 'Bearer ' + GIST_TOKEN, Accept: 'application/vnd.github+json', 'User-Agent': 'cs-web-offensive' };
-let USERS = {}, PUB = {}, loaded = false, saveT = null, writing = false, again = false;
+let USERS = {}, PUB = {}, LB = { all: [], day: '', today: [] }, loaded = false, saveT = null, writing = false, again = false;
 async function loadUsers() {
- if (!GIST_ID || !GIST_TOKEN) { try { USERS = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { } try { PUB = JSON.parse(fs.readFileSync(PUB_FILE, 'utf8')); } catch { } loaded = true; console.log('Accounts: lokale Datei (' + Object.keys(USERS).length + ')'); return; }
+ if (!GIST_ID || !GIST_TOKEN) { try { USERS = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { } try { PUB = JSON.parse(fs.readFileSync(PUB_FILE, 'utf8')); } catch { } try { LB = JSON.parse(fs.readFileSync(LB_FILE, 'utf8')); } catch { } loaded = true; console.log('Accounts: lokale Datei (' + Object.keys(USERS).length + ')'); return; }
  try {
  const r = await fetch('https://api.github.com/gists/' + GIST_ID, { headers: GH }); if (!r.ok) throw new Error('HTTP ' + r.status);
  const files = (await r.json()).files, read = async f => !f ? '{}' : f.truncated ? await (await fetch(f.raw_url, { headers: GH })).text() : f.content;
- USERS = JSON.parse(await read(files[GIST_FILE]) || '{}'); PUB = JSON.parse(await read(files['maps.json']) || '{}'); loaded = true; console.log('Accounts: Gist geladen (' + Object.keys(USERS).length + ')');
+ USERS = JSON.parse(await read(files[GIST_FILE]) || '{}'); PUB = JSON.parse(await read(files['maps.json']) || '{}'); LB = Object.assign({ all: [], day: '', today: [] }, JSON.parse(await read(files['leaderboard.json']) || '{}')); loaded = true; console.log('Accounts: Gist geladen (' + Object.keys(USERS).length + ')');
  } catch (e) { console.error('Gist laden fehlgeschlagen (' + e.message + ') – neuer Versuch in 10 s'); setTimeout(loadUsers, 10000); } // nie mit leerem Stand überschreiben
 }
 async function writeUsers() {
  if (!loaded) return; if (writing) { again = true; return; } writing = true;
  try {
- if (GIST_ID && GIST_TOKEN) { const r = await fetch('https://api.github.com/gists/' + GIST_ID, { method: 'PATCH', headers: GH, body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(USERS) }, 'maps.json': { content: JSON.stringify(PUB) } } }) }); if (!r.ok) throw new Error('HTTP ' + r.status); }
- else { fs.mkdirSync(DATA_DIR, { recursive: true }); const tmp = USERS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(USERS)); fs.renameSync(tmp, USERS_FILE); fs.writeFileSync(PUB_FILE, JSON.stringify(PUB)); }
+ if (GIST_ID && GIST_TOKEN) { const r = await fetch('https://api.github.com/gists/' + GIST_ID, { method: 'PATCH', headers: GH, body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(USERS) }, 'maps.json': { content: JSON.stringify(PUB) }, 'leaderboard.json': { content: JSON.stringify(LB) } } }) }); if (!r.ok) throw new Error('HTTP ' + r.status); }
+ else { fs.mkdirSync(DATA_DIR, { recursive: true }); const tmp = USERS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(USERS)); fs.renameSync(tmp, USERS_FILE); fs.writeFileSync(PUB_FILE, JSON.stringify(PUB)); fs.writeFileSync(LB_FILE, JSON.stringify(LB)); }
  } catch (e) { console.error('Accounts speichern fehlgeschlagen: ' + e.message); again = true; }
  writing = false; if (again) { again = false; persist(); }
 }
@@ -59,6 +59,18 @@ function api(p, b, ip) {
  }
  // ── Community-Karten: jeder sieht sie, veröffentlichen/entfernen nur mit Code ──
  if (p === '/api/maps') return { ok: 1, maps: PUB };
+ // ── Entenjagd-Bestenliste: Top 10 heute + Top 10 aller Zeiten (pro Name nur der beste Wert) ──
+ const today = new Date().toISOString().slice(0, 10); if (LB.day !== today) { LB.day = today; LB.today = []; }
+ if (p === '/api/dhlb') return { ok: 1, all: LB.all, today: LB.today };
+ if (p === '/api/dhscore') {
+ if (limited(ip)) return { err: 'Zu viele Anfragen.' };
+ const name = String(b.n || 'Gast').replace(/[<>"'&`]/g, '').trim().slice(0, 16) || 'Gast', sc = Math.floor(+b.s), ducks = Math.floor(+b.d) || 0;
+ if (!(sc > 0) || sc > 5000 || ducks > 400) return { err: 'Ungültige Punktzahl.' }; // Plausibilität: 2 Min Entenjagd
+ const put = list => { const old = list.find(e => e.n.toLowerCase() === name.toLowerCase()); if (old) { if (sc <= old.s) return list; old.s = sc; old.d = ducks; } else list.push({ n: name, s: sc, d: ducks }); return list.sort((a, c) => c.s - a.s).slice(0, 10); };
+ LB.all = put(LB.all); LB.today = put(LB.today); persist();
+ const rank = l => { const i = l.findIndex(e => e.n.toLowerCase() === name.toLowerCase() && e.s === sc); return i < 0 ? 0 : i + 1; };
+ return { ok: 1, all: LB.all, today: LB.today, rAll: rank(LB.all), rToday: rank(LB.today) };
+ }
  if (p === '/api/publish' || p === '/api/unpublish') {
  if (limited(ip)) return { err: 'Zu viele Versuche – bitte kurz warten.' };
  const c = Buffer.from(String(b.code || '')), want = Buffer.from(PUBLISH_CODE);
