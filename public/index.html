@@ -1867,6 +1867,8 @@
             display: none;
         }
 
+        #tzone { position: absolute; left: 0; top: 0; width: 35%; bottom: 0; pointer-events: auto; }
+        body.edit #tzone { pointer-events: none; }
         #tlook {
             position: absolute;
             left: 35%;
@@ -2568,7 +2570,7 @@ body.edit #tlook{ pointer-events:none; }
             <div class="hud-num" id="ammo"></div>
         </div>
         <div id="touch">
-            <div id="tlook"></div>
+            <div id="tzone"></div><div id="tlook"></div>
             <div id="tstick"><i id="tnub"></i></div>
             <div class="tb" id="tFire">◉</div>
             <div class="tb" id="tFire2">◉</div>
@@ -2703,93 +2705,96 @@ body.edit #tlook{ pointer-events:none; }
             "############################",
             "#.........#.KKKKKK.#......c#",
             "#..BBBB...#.KKKKKK.#.AAAA..#",
-            "#..BBBB.c............AAAAC.#",
+            "#..BBBB.c.D........D.AAAAC.#",
             "#.CBBBB...#........#.AAAA..#",
             "#..BBBB...#..c..c..#.AAAA..#",
             "#......hh.##......##..hh...#",
             "##..####.#####..####..##..##",
-            "#....#....#..c..c..#==#....#",
+            "#....#.D..#..c..c..#==#....#",
             "#.c..#.##.#........#==#..C.#",
-            "#.c..#..c.#..##....#44#.##.#",
+            "#.c..#..c.#..##....#44#D##.#",
             "#....#....#...C....#33#....#",
-            "#.#..#.............#22#h...#",
+            "#.#..#....D.....s..#22#h...#",
             "#..cc######..#.....#11#....#",
             "#..cc######..#..........##.#",
-            "#.........#..cc....######..#",
+            "#.........#..cc.s..####W#..#",
             "#....#..c....cc....####....#",
-            "#C...#....##.......####..c.#",
-            "##...######....C...####....#",
+            "#C...W....##.......####..c.#",
+            "##...######....C.h.####....#",
             "#..h.######...##...####.c..#",
-            "##..#########....#######..##",
+            "##..#######W#....#######..##",
             "#....c..#....hh....#..c....#",
             "#..##...#..........#...##..#",
-            "#...C......TTTTTT......C...#",
+            "#...C.b....TTTTTT....c.C...#",
             "#..#.......TTTTTT.......#..#",
             "#....c..##.TTTTTT.##..c....#",
             "#.......#..........#.......#",
-            "############################"];
+            "############################"
+        ];
         MAPS.de_bazaar = [
             "############################",
             "#......#.........C#.#......#",
             "#...C....c.c#..............#",
             "#.BBBB.......c.c...h..#.#..#",
             "#.BBBB.#.....c.c....#.#C...#",
-            "#.BBBB.########.#####.c...c#",
-            "#.BBBB.#.....##...###......#",
-            "#.....h#.#...##...###......#",
+            "#.BBBB.########.#W###.c...c#",
+            "#.BBBB.#.D...##...###...c..#",
+            "#.b...h#.#...##...###......#",
             "#...c.h..#.c.##..c#####..###",
             "#......#.....##...###....#.#",
-            "###.########.###.####......#",
+            "###.########D###D####......#",
             "#.....##.........#..#..TTT.#",
-            "#KK....#............#..TTT.#",
+            "#KK.c..#............#..TTT.#",
             "#KK...c#.c#..##c.c...h.TTT.#",
             "#KK.......#C...c.c.#.h.TTT.#",
-            "#KK...............C#...TTT.#",
-            "#KK...c#.c.............TTT.#",
+            "#KK.h.............C#...TTT.#",
+            "#KK...c#.c..s...b......TTT.#",
             "#KK....#............#......#",
             "#.....##............#....#.#",
-            "###.##########.########..###",
+            "###D##########.########..###",
             "#.......==4321.######......#",
-            "#.AAAA..==4321.######......#",
-            "#.AAAAh#######.######.c...c#",
+            "#.AAAA..==4321.######...s..#",
+            "#.AAAAh#######D######.c...c#",
             "#.AAAAh#....h..#....#.#C...#",
             "#.AAAA....#...##....c.#.#..#",
             "#..C.....C#...#...c........#",
             "#.c....#............#......#",
-            "############################"];
+            "############################"
+        ];
         MAPS.de_frost = [
             "############################",
             "#.c......#...c.#...#.KKKKK.#",
-            "#.AAAAA..............KKKKK.#",
+            "#.AAAAAs.........b...KKKKK.#",
             "#.AAAAA....#..c......KKKKK.#",
             "#.AAAAAC.####...####.......#",
             "#.AAAAA..####...#####.....##",
             "#....hh..####...#####..c..##",
             "##..###..####...#####.....##",
-            "#....#..==....c...###.....##",
+            "#....W..==..D.c...###.....##",
             "#.c..#..==..###...###.....##",
-            "###..#..==..C.....#........#",
+            "###..#..==..C.....W.....c..#",
             "#..C.#c.==........#.BBBBB..#",
-            "#....#..==....cc#...BBBBB.c#",
+            "#....#..==.c..cc#...BBBBB.c#",
             "#..###..==....cc....BBBBB..#",
             "#.h..#..==........#.BBBBBC.#",
-            "#.......==..c.....#...#....#",
+            "#....D..==..c.....#...#....#",
             "#....#.#44#.......##....#.##",
-            "#..c.#.#33#...C##.##.c....##",
+            "#..c.#.#33#.s.C##D##.c....##",
             "#....#.#22#.......####....##",
-            "#..###.#11##.c....##...c..##",
+            "#..###D#11##.c....##...c..##",
             "#....#............##......##",
-            "##..#######...#######...####",
+            "##..#######...#######...#W##",
             "#....c...#........#........#",
-            "#..##......TTTTTT......#...#",
+            "#..##..h...TTTTTT...s..#...#",
             "#...C......TTTTTT.....hh...#",
-            "#........##TTTTTT##........#",
+            "#.b......##TTTTTT##........#",
             "#......c.....#........c....#",
-            "############################"];
+            "############################"
+        ];
         MAPS.de_moisty = [
             "############################",
             "#......#....K......#.......#",
-            "#..K............K......K...#",
+            "#..K.c..........K....h.K.c.#",
             "#......#.K...#####.#.......#",
             "#......#.....#.....#.......#",
             "###.####.....#.....####.####",
@@ -2811,10 +2816,11 @@ body.edit #tlook{ pointer-events:none; }
             "#..............#.....#.c...#",
             "#..c...........#.....#.....#",
             "#..c......hh.......hh......#",
-            "#......#...................#",
+            "#......#.....h...c.......h.#",
             "#..T...#...T...#.....T.....#",
             "#..T...#.......#.....T.....#",
-            "############################"];
+            "############################"
+        ];
         MAPS.de_foundry = [
             "############################",
             "#...KKKK.#........1234=====#",
@@ -2836,14 +2842,15 @@ body.edit #tlook{ pointer-events:none; }
             "#.........#..c#...#C.......#",
             "#.........#...#...#........#",
             "#.........#...#............#",
-            "#............hh............#",
+            "#.c....h.....hh............#",
             "#.........####.####........#",
             "#..cc.....#.......#...cc...#",
             "#..cc.....#...C...#...cc...#",
             "#.........#.......#........#",
-            "#............TTT...........#",
+            "#.c....h.....TTT....c...h..#",
             "#............TTTT..........#",
-            "############################"];
+            "############################"
+        ];
         const THEMES = {
             de_dusty: { sky: 0xa9c8e8, fog: 0xcbbd9c, floor: '#c6a872', wallBase: '#b9a078', wallHue: 34, wallSat: 30, wallLight: 58, crateHue: 26, crateSat: 45, crateLight: 32 },
             de_bazaar: { sky: 0xf2c98f, fog: 0xd9a87a, floor: '#b9906b', wallBase: '#c08a60', wallHue: 16, wallSat: 38, wallLight: 52, crateHue: 32, crateSat: 40, crateLight: 36 },
@@ -2857,7 +2864,7 @@ body.edit #tlook{ pointer-events:none; }
         let CARS = {}, AOFF = []; try { CARS = JSON.parse(localStorage.getItem('customarenas') || '{}') || {}; AOFF = JSON.parse(localStorage.getItem('arenaoff') || '[]') || []; } catch (e) { }
         const isArKey = k => /^(myar|puba)_/.test(k);
         // regMap: Karten (my_/pub_, 28×28) → MAPS, Arenen (myar_/puba_, 11×18, ohne Bombsites) → ARENAS
-        const CMAP_INFO = {}, regMap = (k, d) => { const AR = isArKey(k), H = AR ? 18 : 28, RX = AR ? /^[#.cCh=1-6TK]{11}$/ : /^[#.cCh=1-6ABTK]{28}$/; if (!d || !Array.isArray(d.g) || d.g.length !== H || d.g.some(r => typeof r !== 'string' || !RX.test(r)) || !/^(my|pub|myar|puba)_[a-z0-9_]+$/.test(k)) return; if (AR) ARENAS[k] = { theme: k, rows: d.g }; else MAPS[k] = d.g;
+        const CMAP_INFO = {}, regMap = (k, d) => { const AR = isArKey(k), H = AR ? 18 : 28, RX = AR ? /^[#.cCh=1-6TK]{11}$/ : /^[#.cCh=1-6ABTKsbDW]{28}$/; if (!d || !Array.isArray(d.g) || d.g.length !== H || d.g.some(r => typeof r !== 'string' || !RX.test(r)) || !/^(my|pub|myar|puba)_[a-z0-9_]+$/.test(k)) return; if (AR) ARENAS[k] = { theme: k, rows: d.g }; else MAPS[k] = d.g;
             // geprüfte Zusatzdaten: Thema, eigene Farben, Tageszeit (0 Tag, 1 Abend, 2 Nacht), Emblem
             const HEX = /^#[0-9a-f]{6}$/i, th = /^de_/.test(d.th) && THEMES[d.th] ? d.th : 'de_dusty', c = d.col || {}, col = {}, t = Object.assign({}, THEMES[th]);
             for (const f of ['sky', 'fog', 'floor', 'wall']) if (HEX.test(c[f])) col[f] = c[f];
@@ -2892,7 +2899,8 @@ body.edit #tlook{ pointer-events:none; }
         function applyCfg() { BOT_SKILL = SKILL_VAL[CFG.skill]; ROUND_TIME = CFG.roundTime; FREEZE_TIME = CFG.freeze; BOMB_TIME = CFG.bombTime; MAX_ROUNDS = CFG.rounds; WIN_SCORE = Math.floor(CFG.rounds / 2) + 1; }
         applyCfg();
         function saveCfg() { localStorage.setItem('gamecfg', JSON.stringify(CFG)); applyCfg(); } const cell = (r, c) => (r < 0 || c < 0 || r >= ROWS || c >= COLS) ? '#' : (MAP[r][c] || '.');
-        const solid = ch => ch === '#' || ch === 'c' || ch === 'C' || ch === 'h';
+        const TILE_M = { barrel: [0x8a2b20, 0x2b4a6b, 0x3f5a2e].map(c => new THREE.MeshLambertMaterial({ color: c })), barrelGeo: new THREE.CylinderGeometry(0.42, 0.42, 1.3, 12), ring: new THREE.MeshLambertMaterial({ color: 0x2a2a2a }), ringGeo: new THREE.CylinderGeometry(0.43, 0.43, 0.06, 12), frame: new THREE.MeshLambertMaterial({ color: 0x5b3b1e }) }; // Material neuer Bauelemente
+        const solid = ch => ch === '#' || ch === 'c' || ch === 'C' || ch === 'h' || ch === 's' || ch === 'b' || ch === 'W';
         const cr = v => Math.floor(v / S), cx = i => (i + 0.5) * S;
         const rnd = a => a[Math.floor(Math.random() * a.length)];
         const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -3036,6 +3044,15 @@ body.edit #tlook{ pointer-events:none; }
                 if (ch === 'T') spawnCells.T.push({ r, c }); if (ch === 'K') spawnCells.CT.push({ r, c });
                 if (ch === 'c') { const hh = cellHash(r, c); tiltFit(addBox(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, crateMats[hh % 3]), tiltOf(hh, 5, 7, 0.08)); const ox = (hh >>> 12) & 1 ? 0.6 : -0.6, oz = (hh >>> 13) & 1 ? 0.6 : -0.6; tiltFit(addBox(x + ox - 0.7, x + ox + 0.7, CRATE_H, CRATE_H * 2, z + oz - 0.7, z + oz + 0.7, crateMats[(hh >> 3) % 3]), tiltOf(hh, 9, 9, 0.1)); }
                 if (ch === 'C') { const hh = cellHash(r, c); tiltFit(addBox(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, contMats[hh % contMats.length]), tiltOf(hh, 4, 5, 0.06)); }
+                if (ch === 's') { const hh = cellHash(r, c), ax = '#hsW'.includes(cell(r, c - 1)) || '#hsW'.includes(cell(r, c + 1)) ? 1 : '#hsW'.includes(cell(r - 1, c)) || '#hsW'.includes(cell(r + 1, c)) ? 0 : hh & 1; // Sandsack-Mauer (3 Lagen versetzt)
+                    for (let l = 0; l < 3; l++) for (let i = -1; i <= 1; i++) { const o = i * 0.82 + (l % 2 ? 0.2 : -0.2), y0 = l * 0.35; if (ax) addBox(x + o - 0.4, x + o + 0.4, y0, y0 + 0.34, z - 0.55, z + 0.55, halfMat); else addBox(x - 0.55, x + 0.55, y0, y0 + 0.34, z + o - 0.4, z + o + 0.4, halfMat); } }
+                if (ch === 'b') { const hh = cellHash(r, c), bm = TILE_M.barrel[hh % TILE_M.barrel.length]; for (const [ox, oz] of [[-0.55, -0.45], [0.5, -0.5], [0, 0.55]]) { const m = new THREE.Mesh(TILE_M.barrelGeo, bm); m.position.set(x + ox, 0.65, z + oz); m.rotation.y = hh % 7; m.castShadow = m.receiveShadow = true; scene.add(m); mapMeshes.push(m); aabbs.push({ minX: x + ox - 0.42, maxX: x + ox + 0.42, minZ: z + oz - 0.42, maxZ: z + oz + 0.42, top: 1.3, bot: 0 }); const ring = new THREE.Mesh(TILE_M.ringGeo, TILE_M.ring); ring.position.set(x + ox, 0.95, z + oz); scene.add(ring); } }
+                if (ch === 'D' || ch === 'W') { const wm = sideMat(1, wallSet[cellHash(r, c) % wallSet.length]), WM = [wm, wm, wallTop, wallEnd, wm, wm], ns = cell(r, c - 1) === '#' || cell(r, c + 1) === '#'; // ns: Wand links/rechts → Durchgang Nord-Süd
+                    if (ch === 'D') { addBox(x - S / 2, x + S / 2, 3.1, WALL_H, z - S / 2, z + S / 2, WM); aabbs[aabbs.length - 1].wall = 1; // Sturz: drunter durchlaufen, nie draufklettern
+                        for (const f of [-1, 1]) for (const e of [-1, 1]) { const px = ns ? x + e * (S / 2 - 0.1) : x + f * (S / 2 - 0.12), pz = ns ? z + f * (S / 2 - 0.12) : z + e * (S / 2 - 0.1); addBox(px - (ns ? 0.1 : 0.12), px + (ns ? 0.1 : 0.12), 0, 3.1, pz - (ns ? 0.12 : 0.1), pz + (ns ? 0.12 : 0.1), TILE_M.frame); }
+                        addBox(ns ? x - S / 2 : x - S / 2, ns ? x + S / 2 : x - S / 2 + 0.24, 2.95, 3.1, ns ? z - S / 2 : z - S / 2, ns ? z - S / 2 + 0.24 : z + S / 2, TILE_M.frame); addBox(ns ? x - S / 2 : x + S / 2 - 0.24, ns ? x + S / 2 : x + S / 2, 2.95, 3.1, ns ? z + S / 2 - 0.24 : z - S / 2, ns ? z + S / 2 : z + S / 2, TILE_M.frame); }
+                    else { addBox(x - S / 2, x + S / 2, 0, 1.0, z - S / 2, z + S / 2, WM); addBox(x - S / 2, x + S / 2, 2.3, WALL_H, z - S / 2, z + S / 2, WM); aabbs[aabbs.length - 1].wall = 1; // Fenster: Brüstung + Sturz, dazwischen frei
+                        addBox(ns ? x - S / 2 : x - S / 2, ns ? x + S / 2 : x + S / 2, 1.0, 1.08, ns ? z - S / 2 : z - S / 2, ns ? z + S / 2 : z + S / 2, TILE_M.frame); } }
                 if (ch >= '1' && ch <= '6') stairBoxes(cell, r, c, x, z, ch, (a, b, y0, y1, c0, c1) => addBox(a, b, y0, y1, c0, c1, stepMat));
                 if (ch === 'h') addBox(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, halfMat);
                 if (ch === '=') addBox(x - S / 2, x + S / 2, 2.45, 2.8, z - S / 2, z + S / 2, stegMat);
@@ -3106,7 +3123,7 @@ body.edit #tlook{ pointer-events:none; }
         const radar = $('radar'), rctx = radar.getContext('2d'), RS = radar.width / WORLD_W;
         const radarBase = document.createElement('canvas'); radarBase.width = radarBase.height = radar.width;
         {
-            const g = radarBase.getContext('2d'); for (let r = 0; r < ROWS; r++)for (let c = 0; c < COLS; c++) { const ch = cell(r, c), x = c * S * RS, y = r * S * RS, w = S * RS; if (ch === '#') { g.fillStyle = 'rgba(232,201,138,.75)'; g.fillRect(x, y, w, w); } else if (ch === 'c' || ch === 'C') { g.fillStyle = 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'A' || ch === 'B') { g.fillStyle = 'rgba(220,130,40,.45)'; g.fillRect(x, y, w, w); } else if (ch === 'h') { g.fillStyle = 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch >= '1' && ch <= '6') { g.fillStyle = 'rgba(185,195,205,.5)'; g.fillRect(x, y, w, w); } else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); } }
+            const g = radarBase.getContext('2d'); for (let r = 0; r < ROWS; r++)for (let c = 0; c < COLS; c++) { const ch = cell(r, c), x = c * S * RS, y = r * S * RS, w = S * RS; if (ch === '#') { g.fillStyle = 'rgba(232,201,138,.75)'; g.fillRect(x, y, w, w); } else if (ch === 'c' || ch === 'C' || ch === 'b') { g.fillStyle = 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'W') { g.fillStyle = 'rgba(160,200,230,.6)'; g.fillRect(x, y, w, w); } else if (ch === 's') { g.fillStyle = 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'A' || ch === 'B') { g.fillStyle = 'rgba(220,130,40,.45)'; g.fillRect(x, y, w, w); } else if (ch === 'h') { g.fillStyle = 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch >= '1' && ch <= '6') { g.fillStyle = 'rgba(185,195,205,.5)'; g.fillRect(x, y, w, w); } else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); } }
             g.fillStyle = '#fff'; g.font = 'bold 13px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';[['A', siteCells.A], ['B', siteCells.B]].forEach(([l, cells]) => { const mx = cells.reduce((a, c) => a + cx(c.c), 0) / cells.length, mz = cells.reduce((a, c) => a + cx(c.r), 0) / cells.length; g.fillText(l, mx * RS, mz * RS); });
         }
 
@@ -3780,12 +3797,16 @@ body.edit #tlook{ pointer-events:none; }
         function tracer(x, y, z, end) { const tr = tracerPool.find(t => t.t <= 0) || tracerPool[0]; const a = tr.line.geometry.attributes.position; a.setXYZ(0, x, y, z); a.setXYZ(1, end.x, end.y, end.z); a.needsUpdate = true; tr.line.visible = true; tr.t = 0.06; }
         const boomMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), new THREE.MeshBasicMaterial({ color: 0xffb040, transparent: true, opacity: 0.9 })); boomMesh.visible = false; scene.add(boomMesh);
         let boomT = 0, whiteFlash = 0, dmgFlash = 0, hitT = 0, hitHS = false, shake = 0;
+        function dmgDir(att) { // Bogen am Bildschirmrand zeigt, aus welcher Richtung der Schaden kam
+            let el = $('dmgdir'); if (!el) { el = document.createElement('div'); el.id = 'dmgdir'; el.style.cssText = 'position:fixed;left:50%;top:50%;width:260px;height:260px;margin:-130px 0 0 -130px;pointer-events:none;z-index:5;border-radius:50%;background:radial-gradient(circle at 50% 0%,rgba(255,40,40,.8) 0,rgba(255,40,40,.35) 13%,transparent 28%);opacity:0'; document.body.appendChild(el); }
+            const p = player, ty = Math.atan2(-(att.x - p.x), -(att.z - p.z)); el.style.transform = 'rotate(' + (p.yaw - ty) + 'rad)'; el.style.transition = 'none'; el.style.opacity = 1; void el.offsetWidth; el.style.transition = 'opacity 1s'; el.style.opacity = 0;
+        }
         function applyDamage(e, dmg, att, w, hs) {
             if (!e.alive || (DM.on && e.dmProt > now)) return;
             if (CFG.hsOnly && !hs && w && (w.slot === 1 || w.slot === 2)) return; // Spaß-Modus: nur Headshots zählen
             if (e.armor > 0 && !(hs && !e.helmet)) { const a = Math.min(e.armor, dmg * 0.5); e.armor -= a; dmg -= a; }
             dmg = Math.round(dmg); e.health -= dmg;
-            if (e.isPlayer) { dmgFlash = 1; sfx('hurt'); } else burst(e.x, e.y + (hs ? 1.65 : 1.0), e.z, 0x8a0000, 8, 3);
+            if (e.isPlayer) { dmgFlash = 1; sfx('hurt'); shake = Math.max(shake, Math.min(0.22, 0.04 + dmg / 300)); if (att && att !== e && att.x !== undefined) dmgDir(att); } else burst(e.x, e.y + (hs ? 1.65 : 1.0), e.z, 0x8a0000, 8, 3);
             if (att && att.isPlayer && att !== e) { hitT = 0.12; hitHS = !!hs; sfx(hs ? 'hs' : 'hit'); } if (e.health <= 0) { e.health = 0; kill(e, att, w, hs); }
         }
         function kill(e, att, w, hs) {
@@ -4095,6 +4116,11 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         const OPT = Object.assign({ sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
         // Ansicht-Optionen anwenden (HUD-Farbe, Radar, Killfeed, Handy-Buttons) – nur bei Änderung, nicht pro Frame
         function applyLook() { $('hud').style.color = OPT.hudCol; const r = $('radar'); r.style.display = OPT.radar ? '' : 'none'; if (OPT.radar) r.style.width = r.style.height = Math.round((IS_TOUCH ? 100 : 170) * OPT.radar) + 'px'; $('killfeed').style.display = OPT.kf ? '' : 'none'; let fe = $('fpsBox'); if (OPT.fps && !fe) { fe = document.createElement('div'); fe.id = 'fpsBox'; document.body.appendChild(fe); } if (fe) fe.style.display = OPT.fps ? '' : 'none'; const ds = document.documentElement.style; ds.setProperty('--tbs', OPT.tbs); ds.setProperty('--tba', OPT.tba); }
+        // Handy: alle 2 s FPS prüfen – unter 40 FPS Auflösung senken, über 56 FPS wieder bis zur Grafikstufe anheben
+        const DRS = { t: 0, n: 0 };
+        function dynRes(fdt) { DRS.t += fdt; DRS.n++; if (DRS.t < 2000) return; const fps = DRS.n * 1000 / DRS.t; DRS.t = DRS.n = 0; if (document.hidden) return;
+            const max = OPT.gfx === 0 ? 1 : Math.min(devicePixelRatio, OPT.gfx === 1 ? 1.5 : 2), cur = renderer.getPixelRatio(); let pr = cur;
+            if (fps < 40) pr = Math.max(0.6, cur - 0.15); else if (fps > 56) pr = Math.min(max, cur + 0.1); if (Math.abs(pr - cur) > 0.01) renderer.setPixelRatio(pr); }
         function applyGfx() {
             const g = OPT.gfx;
             renderer.setPixelRatio(g === 0 ? 1 : g === 1 ? Math.min(devicePixelRatio, 1.5) : Math.min(devicePixelRatio, 2));
@@ -4129,15 +4155,17 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  addEventListener('touchend', e => { if (EDITB.drag) for (const t of e.changedTouches) if (t.identifier === EDITB.drag.tid) EDITB.drag = null; });
  applyBtnLayout(); addEventListener('resize', () => { if (!EDITB.on) applyBtnLayout(); });
             addEventListener('touchend', () => { if (started && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => { }); }).catch(() => { }); }, { once: false }); // touchAction nicht global sperren – nur Canvas & Touch-Controls (per CSS), sonst ist nirgends Scrollen möglich
-            let sid = null, scx = 0, scy = 0, lid = null, lx = 0, ly = 0;
+            let sid = null, scx = 0, scy = 0, lid = null, lx = 0, ly = 0, stHome = null;
              $('tstick').addEventListener('touchstart', e => { if (EDITB.on) return; e.preventDefault(); const t = e.changedTouches[0]; sid = t.identifier; const r = $('tstick').getBoundingClientRect(); scx = r.left + r.width / 2; scy = r.top + r.height / 2; }, { passive: false });
+            // Dynamischer Joystick: Tippen irgendwo links setzt den Stick unter den Finger
+            $('tzone').addEventListener('touchstart', e => { if (EDITB.on || sid !== null) return; e.preventDefault(); const t = e.changedTouches[0], st = $('tstick'); if (!stHome) stHome = { l: st.style.left, t: st.style.top, b: st.style.bottom }; st.style.left = (t.clientX - st.offsetWidth / 2) + 'px'; st.style.top = (t.clientY - st.offsetHeight / 2) + 'px'; st.style.bottom = 'auto'; sid = t.identifier; scx = t.clientX; scy = t.clientY; }, { passive: false });
             $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
             function mobPause() { if (!started || gameEnded || paused || buyOpen || EDITB.on || (GL.on && GL.phase !== 'duel')) return; paused = true; mouseDown = false; lid = null; TOUCH.f = TOUCH.s = 0; showOverlay(`<h1>PAUSE</h1><p>Tippe auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button><button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); $('resume').onclick = () => { paused = false; $('overlay').style.display = 'none'; }; $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; }
             addEventListener('touchmove', e => {
                 for (const t of e.changedTouches) {
                     if (t.identifier === sid) {
                         let dx = (t.clientX - scx) / 48, dy = (t.clientY - scy) / 48;
-                        const L = Math.hypot(dx, dy); if (L > 1) { dx /= L; dy /= L; }
+                        const L = Math.hypot(dx, dy); if (L > 1) { dx /= L; dy /= L; } if (L < 0.12) dx = dy = 0; // Deadzone
                         TOUCH.s = dx; TOUCH.f = -dy;
                         $('tnub').style.transform = `translate(${dx * 34}px,${dy * 34}px)`;
                     } else if (t.identifier === lid) {
@@ -4149,7 +4177,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 }
                 if (sid !== null || lid !== null) e.preventDefault();
             }, { passive: false });
-            const tEnd = e => { for (const t of e.changedTouches) { if (t.identifier === sid) { sid = null; TOUCH.f = TOUCH.s = 0; $('tnub').style.transform = ''; } if (t.identifier === lid) lid = null; } };
+            const tEnd = e => { for (const t of e.changedTouches) { if (t.identifier === sid) { sid = null; TOUCH.f = TOUCH.s = 0; $('tnub').style.transform = ''; if (stHome) { const st = $('tstick'); st.style.left = stHome.l; st.style.top = stHome.t; st.style.bottom = stHome.b; stHome = null; } } if (t.identifier === lid) lid = null; } };
             addEventListener('touchend', tEnd); addEventListener('touchcancel', tEnd);
  const hold = (id, on, off) => { const el = $(id); el.addEventListener('touchstart', e => { if (EDITB.on) return; e.preventDefault(); e.stopPropagation(); on(); }, { passive: false }); if (off) { el.addEventListener('touchend', e => { if (EDITB.on) return; e.preventDefault(); off(); }); el.addEventListener('touchcancel', off); } };            hold('tFire', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);
             hold('tFire2', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false); hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
@@ -4164,7 +4192,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
             // Doppeltipp auf die Tab-Ansicht → Pause-Menü (wie Esc am PC)
             let boardTap = 0; $('board').addEventListener('touchend', e => { const t = performance.now(); if (t - boardTap < 350) { e.preventDefault(); boardTap = 0; $('board').style.display = 'none'; mobPause(); } else boardTap = t; });
-        } const ACCEL = 55, FRICTION = 9, AIR_ACCEL = 10;
+        } const ACCEL = 46, FRICTION = 8, AIR_ACCEL = 10; // etwas weicheres Anlaufen/Abbremsen
         // Leichte Zielhilfe (nur Touch): zieht das Fadenkreuz sanft zum nächsten sichtbaren Gegner im kleinen Kegel, beim Schießen etwas stärker
         function aimAssist(dt) {
             const p = player; if (!p.alive || FC.on || DH.on || buyOpen || G.state === 'freeze' || (GL.on && GL.phase !== 'duel')) return;
@@ -4207,7 +4235,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             } else {
                 if (p.camY === undefined) p.camY = p.y;
                 p.camY += (p.y - p.camY) * Math.min(1, dt * 14);
-                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - vmLand * 0.06 + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); camera.rotation.set(p.pitch, p.yaw, 0);
+                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - vmLand * 0.06 + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); const lat = p.vx * Math.cos(p.yaw) - p.vz * Math.sin(p.yaw); p.roll = (p.roll || 0) + ((OPT.tilt === false ? 0 : -clamp(lat, -8, 8) * 0.0035) - (p.roll || 0)) * Math.min(1, dt * 8); camera.rotation.set(p.pitch, p.yaw, p.roll); // leichtes Neigen beim seitlichen Laufen
             }
             if (buyOpen && !canBuy()) closeBuy();
         }
@@ -4893,6 +4921,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // =====================================================================
         const ME_TOOLS = [['.', '🧽 Radierer', '#3a3226'], ['#', 'Wand', '#d8cbb0'], ['c', 'Kiste', '#a8743c'], ['C', 'Container', '#6b4a2a'], ['h', 'Halbe Wand', '#9c8f78'], ['=', 'Steg', '#8291a0'],
         ['1', 'Stufe 1', '#56606a'], ['2', 'Stufe 2', '#66717c'], ['3', 'Stufe 3', '#77838e'], ['4', 'Stufe 4', '#8995a0'], ['5', 'Stufe 5', '#9ba7b2'], ['6', 'Stufe 6', '#adb9c4'],
+        ['s', 'Sandsäcke', '#c9b48a'], ['b', 'Fässer', '#8a2b20'], ['D', 'Tür', '#5b3b1e'], ['W', 'Fenster', '#9fc7e3'],
         ['A', 'Bombsite A', '#e07a2a'], ['B', 'Bombsite B', '#e0a82a'], ['T', 'Spawn T', '#d9822b'], ['K', 'Spawn CT', '#4a7fd0']];
         let edFrom = 'play'; // wohin Karten-Aktionen zurückkehren: Spielen-Tab oder Map-Editor-Liste
         function saveCMaps() { localStorage.setItem('custommaps', JSON.stringify(CMAPS)); }
@@ -4985,7 +5014,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="merow">${cin('meSky', 'Himmel')}${cin('meFog', 'Nebel')}${cin('meFloor', 'Boden')}${cin('meWall', 'Wände')}</div>
  <div class="merow"><select id="meTod" ${ar ? 'style="display:none"' : ''}>${['☀️ Tag', '🌅 Abend', '🌙 Nacht'].map((l, i) => `<option value="${i}" ${i === tod ? 'selected' : ''}>${l}</option>`).join('')}</select>
  <label>Emblem<input id="meEm" maxlength="4" placeholder="🛠" value="${(inf.em || '').replace(/"/g, '')}"></label><label>Farbe<input type="color" id="meEmc" value="${inf.emc || '#2b5d8a'}"></label></div>
- <div id="meTools">${ME_TOOLS.filter(t => !ar || !'AB'.includes(t[0])).map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
+ <div id="meTools">${ME_TOOLS.filter(t => !ar || !'ABsbDW'.includes(t[0])).map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
+ <div class="merow" style="flex-wrap:wrap;gap:4px;align-items:center"><button id="meUndo" style="padding:3px 8px;font-size:12px;margin:0" title="Rückgängig (Strg+Z)">↶</button><button id="meRedo" style="padding:3px 8px;font-size:12px;margin:0" title="Wiederholen (Strg+Y)">↷</button><select id="meSym" style="font-size:12px;padding:3px"><option value="0">Symmetrie: aus</option><option value="1">↔ Links/Rechts</option><option value="2">↕ Oben/Unten</option><option value="3">⟲ Punkt</option></select><button id="meSelB" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit der Maus aufziehen">▭ Bereich</button><button id="meCopy" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich kopieren">📋</button><button id="mePaste" style="padding:3px 8px;font-size:12px;margin:0" title="Einfügen: danach auf die Zielstelle klicken">📥</button><button id="meFlipH" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich waagrecht spiegeln">↔</button><button id="meFlipV" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich senkrecht spiegeln">↕</button><button id="meFill" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit dem gewählten Werkzeug füllen">🪣</button><button id="meRand" style="padding:3px 8px;font-size:12px;margin:0" title="Zufällige Karte als Startvorlage">🎲 Zufall</button></div>
  <p id="meMsg"></p>
  <p class="mehint">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT${ar ? '' : ', Bombsite A & B'}</p>
  <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay" ${ar ? 'style="display:none"' : ''}>▶ Speichern & spielen</button><button id="meShare">📤 Teilen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
@@ -4994,8 +5024,53 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const draw = () => { g.fillStyle = cols.floor; g.fillRect(0, 0, CW, 560); for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= W; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); } for (let i = 0; i <= H; i++) { g.moveTo(0, i * cs); g.lineTo(CW, i * cs); } g.stroke(); };
             const selTool = t => { tool = t; document.querySelectorAll('#meTools button').forEach(b => b.style.background = b.dataset.t === t ? 'rgba(232,201,138,.45)' : ''); };
             document.querySelectorAll('#meTools button').forEach(b => b.onclick = () => selTool(b.dataset.t)); selTool('#');
-            const paint = e => { const R = cv.getBoundingClientRect(), c = Math.floor((e.clientX - R.left) / R.width * W), r = Math.floor((e.clientY - R.top) / R.height * H); if (r < 1 || c < 1 || r > H - 2 || c > W - 2 || grid[r][c] === tool) return; grid[r][c] = tool; draw(); };
-            let painting = false; cv.onpointerdown = e => { e.preventDefault(); painting = true; cv.setPointerCapture(e.pointerId); paint(e); }; cv.onpointermove = e => { if (painting) paint(e); }; cv.onpointerup = cv.onpointercancel = () => painting = false;
+            // ── Editor-Komfort ──
+            const UND = [], RED = []; let sym = 0, sel = null, selA = null, clip = null, pasting = false, painting = false;
+            const snap = () => grid.map(r => r.join('')), load = st => st.forEach((row, r) => { grid[r] = row.split(''); });
+            const pushU = () => { UND.push(snap()); if (UND.length > 60) UND.shift(); RED.length = 0; };
+            const SW = { T: 'K', K: 'T', A: 'B', B: 'A' }, inner = (r, c) => r > 0 && c > 0 && r < H - 1 && c < W - 1, note = (t, ok) => { const m = $('meMsg'); m.style.color = ok ? '#7c7' : '#8fa3b8'; m.textContent = t; };
+            const setC = (r, c, t) => { if (!inner(r, c)) return; grid[r][c] = t; const m = SW[t] || t, put = (rr, cc) => { if (inner(rr, cc) && (rr !== r || cc !== c)) grid[rr][cc] = m; }; // Symmetrie: Spawns & Bombsites werden getauscht (T↔CT, A↔B)
+                if (sym === 1) put(r, W - 1 - c); if (sym === 2) put(H - 1 - r, c); if (sym === 3) put(H - 1 - r, W - 1 - c); };
+            const cellAt = e => { const R = cv.getBoundingClientRect(); return [clamp(Math.floor((e.clientY - R.top) / R.height * H), 0, H - 1), clamp(Math.floor((e.clientX - R.left) / R.width * W), 0, W - 1)]; };
+            const norm = (a, b) => ({ r0: clamp(Math.min(a[0], b[0]), 1, H - 2), r1: clamp(Math.max(a[0], b[0]), 1, H - 2), c0: clamp(Math.min(a[1], b[1]), 1, W - 2), c1: clamp(Math.max(a[1], b[1]), 1, W - 2) });
+            const draw2 = () => { draw(); g.save(); g.lineWidth = 2;
+                if (sym) { g.strokeStyle = 'rgba(126,200,227,.85)'; g.setLineDash([6, 4]); g.beginPath(); if (sym !== 2) { g.moveTo(CW / 2, 0); g.lineTo(CW / 2, 560); } if (sym !== 1) { g.moveTo(0, 280); g.lineTo(CW, 280); } g.stroke(); }
+                if (sel) { g.setLineDash([5, 3]); g.strokeStyle = '#ffe14a'; g.strokeRect(sel.c0 * cs + 1, sel.r0 * cs + 1, (sel.c1 - sel.c0 + 1) * cs - 2, (sel.r1 - sel.r0 + 1) * cs - 2); } g.restore(); };
+            const paint = e => { const [r, c] = cellAt(e); if (!inner(r, c) || (grid[r][c] === tool && !sym)) return; setC(r, c, tool); draw2(); };
+            cv.onpointerdown = e => { e.preventDefault(); cv.setPointerCapture(e.pointerId); const [r, c] = cellAt(e);
+                if (pasting && clip) { pushU(); clip.forEach((row, i) => row.forEach((t, j) => { if (inner(r + i, c + j)) grid[r + i][c + j] = t; })); pasting = false; sel = norm([r, c], [r + clip.length - 1, c + clip[0].length - 1]); note('✓ Eingefügt', 1); draw2(); return; }
+                if (tool === 'sel') { selA = [r, c]; sel = norm(selA, selA); painting = true; draw2(); return; }
+                pushU(); painting = true; paint(e); };
+            cv.onpointermove = e => { if (!painting) return; if (tool === 'sel') { sel = norm(selA, cellAt(e)); draw2(); } else paint(e); };
+            cv.onpointerup = cv.onpointercancel = () => { painting = false; };
+            const selTool2 = t => { selTool(t); $('meSelB').style.background = t === 'sel' ? 'rgba(232,201,138,.45)' : ''; if (t === 'sel') note('Bereich mit der Maus aufziehen – dann 📋 kopieren, ↔ ↕ spiegeln oder 🪣 füllen'); };
+            document.querySelectorAll('#meTools button').forEach(b => b.onclick = () => selTool2(b.dataset.t)); $('meSelB').onclick = () => selTool2('sel');
+            const undo = () => { if (!UND.length) return note('Nichts rückgängig zu machen'); RED.push(snap()); load(UND.pop()); draw2(); }, redo = () => { if (!RED.length) return; UND.push(snap()); load(RED.pop()); draw2(); };
+            $('meUndo').onclick = undo; $('meRedo').onclick = redo; $('meSym').onchange = e => { sym = +e.target.value; draw2(); };
+            const needSel = () => { if (!sel) { note('Zuerst mit ▭ Bereich einen Bereich aufziehen'); return false; } return true; };
+            $('meCopy').onclick = () => { if (!needSel()) return; clip = []; for (let r = sel.r0; r <= sel.r1; r++) clip.push(grid[r].slice(sel.c0, sel.c1 + 1)); note('📋 Kopiert (' + clip[0].length + '×' + clip.length + ') – jetzt 📥 und auf die Zielstelle klicken', 1); };
+            $('mePaste').onclick = () => { if (!clip) return note('Zuerst einen Bereich 📋 kopieren'); pasting = true; note('Klicke auf die Stelle für die linke obere Ecke'); };
+            $('meFlipH').onclick = () => { if (!needSel()) return; pushU(); for (let r = sel.r0; r <= sel.r1; r++) { const seg = grid[r].slice(sel.c0, sel.c1 + 1).reverse(); grid[r].splice(sel.c0, seg.length, ...seg); } draw2(); };
+            $('meFlipV').onclick = () => { if (!needSel()) return; pushU(); const rows = []; for (let r = sel.r0; r <= sel.r1; r++) rows.push(grid[r].slice(sel.c0, sel.c1 + 1)); rows.reverse().forEach((seg, i) => grid[sel.r0 + i].splice(sel.c0, seg.length, ...seg)); draw2(); };
+            $('meFill').onclick = () => { if (!needSel()) return; if (tool === 'sel') return note('Erst ein Werkzeug (z. B. Wand) wählen, dann 🪣'); pushU(); for (let r = sel.r0; r <= sel.r1; r++) for (let c = sel.c0; c <= sel.c1; c++) setC(r, c, tool); draw2(); };
+            // Zufallskarte: Wände mit Durchgängen, Spawns, Bombsites, Deckung – nur gültige Karten (alles erreichbar)
+            const reachOK = () => { let s0 = null; for (let r = 0; r < H && !s0; r++) for (let c = 0; c < W; c++) if (grid[r][c] === 'T') { s0 = [r, c]; break; } if (!s0) return false;
+                const seen = new Set([s0[0] * W + s0[1]]), q = [s0], got = new Set(); while (q.length) { const [r, c] = q.shift(); got.add(grid[r][c]); for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const r2 = r + dr, c2 = c + dc; if (!inner(r2, c2) || seen.has(r2 * W + c2) || solid(grid[r2][c2])) continue; seen.add(r2 * W + c2); q.push([r2, c2]); } }
+                return got.has('K') && (ar || (got.has('A') && got.has('B'))); };
+            const genMap = () => { const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), block = (ch, r0, c0, h, w) => { for (let r = r0; r < r0 + h; r++) for (let c = c0; c < c0 + w; c++) if (inner(r, c)) grid[r][c] = ch; };
+                for (let tries = 0; tries < 80; tries++) {
+                    for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.';
+                    for (let i = 0, nW = ar ? R(4, 6) : R(15, 22); i < nW; i++) { const hor = Math.random() < 0.5, len = ar ? R(3, 6) : R(6, 16), r0 = R(2, H - 3), c0 = R(2, W - 3), gap = R(1, Math.max(1, len - 3)), gw = R(1, 2);
+                        for (let k = 0; k < len; k++) { const r = hor ? r0 : r0 + k, c = hor ? c0 + k : c0; if (!inner(r, c)) break; if (k >= gap && k < gap + gw) { if (!ar && gw === 1 && Math.random() < 0.5) grid[r][c] = 'D'; continue; } grid[r][c] = '#'; } }
+                    if (ar) { const kc = R(2, W - 6), tc = R(2, W - 6); block('.', 1, kc - 1, 3, 6); block('K', 1, kc, 2, 4); block('.', H - 4, tc - 1, 3, 6); block('T', H - 3, tc, 2, 4); }
+                    else { const kc = R(4, W - 11), tc = R(4, W - 11), a0 = R(6, H - 13), b0 = R(6, H - 13); block('.', 1, kc - 1, 4, 8); block('K', 2, kc, 2, 6); block('.', H - 5, tc - 1, 4, 8); block('T', H - 4, tc, 2, 6); block('.', a0 - 1, 1, 6, 6); block('A', a0, 2, 4, 4); block('.', b0 - 1, W - 7, 6, 6); block('B', b0, W - 6, 4, 4); }
+                    const cov = ar ? 'chch' : 'cchhsbsbcC'; for (let k = 0, p = 0; k < 400 && p < (ar ? 5 : 16); k++) { const r = R(2, H - 3), c = R(2, W - 3); let free = true; for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) if (!'.AB'.includes(grid[r + dr][c + dc])) free = false; if (free) grid[r][c] = cov[p++ % cov.length]; }
+                    if (!ar) for (let k = 0, w = 0; k < 300 && w < 3; k++) { const r = R(2, H - 3), c = R(2, W - 3); if (grid[r][c] === '#' && ((grid[r][c - 1] === '#' && grid[r][c + 1] === '#' && grid[r - 1][c] === '.' && grid[r + 1][c] === '.') || (grid[r - 1][c] === '#' && grid[r + 1][c] === '#' && grid[r][c - 1] === '.' && grid[r][c + 1] === '.'))) { grid[r][c] = 'W'; w++; } }
+                    if (reachOK()) return true; }
+                return false; };
+            $('meRand').onclick = () => { if (!confirm('Zufällige ' + (ar ? 'Arena' : 'Karte') + ' erzeugen? (Rückgängig mit ↶ möglich)')) return; pushU(); if (genMap()) { note('🎲 Neue Zufalls-' + (ar ? 'Arena' : 'Karte') + ' – nach Belieben anpassen', 1); } else { load(UND.pop()); note('Keine gültige Karte gefunden – nochmal versuchen'); } sel = null; draw2(); };
+            const edKey = e => { if (!document.body.contains(cv)) { removeEventListener('keydown', edKey); return; } if ((e.ctrlKey || e.metaKey) && !e.target.closest('input,textarea')) { if (e.key === 'z' || e.key === 'Z') { e.preventDefault(); e.shiftKey ? redo() : undo(); } else if (e.key === 'y' || e.key === 'Y') { e.preventDefault(); redo(); } } };
+            addEventListener('keydown', edKey);
             const CIN = { meSky: 'sky', meFog: 'fog', meFloor: 'floor', meWall: 'wall' }, syncCols = () => { for (const id in CIN) $(id).value = cols[CIN[id]]; };
             for (const id in CIN) $(id).oninput = e => { cols[CIN[id]] = e.target.value; if (id === 'meFloor') draw(); };
             $('meTheme').onchange = e => { th = e.target.value; Object.assign(cols, thCol(th)); syncCols(); draw(); }; syncCols(); draw(); // Thema-Wechsel setzt die Farben auf das Thema zurück
@@ -5004,7 +5079,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('meShare').onclick = () => shareMap(mapData());
             let saved = false; // nach dem Speichern beim Zurückgehen neu laden, damit die Karte im Menü erscheint
             $('meBack').onclick = () => { if (ar) return showArenaList(); sessionStorage.setItem('opentab', edFrom); if (saved) location.reload(); else if (edFrom === 'maps') showMapList(); else showMenu(); };
-            $('meClear').onclick = () => { if (!confirm((ar ? 'Arena' : 'Karte') + ' komplett leeren? (Nur die Außenwand bleibt)')) return; for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.'; draw(); };
+            $('meClear').onclick = () => { if (!confirm((ar ? 'Arena' : 'Karte') + ' komplett leeren? (Nur die Außenwand bleibt)')) return; pushU(); sel = null; for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.'; draw(); };
             const save = () => {
                 const n = $('meName').value.trim().slice(0, 20), flat = grid.map(r => r.join('')).join(''), msgEl = $('meMsg'); msgEl.style.color = '#c66';
                 if (!n) { msgEl.textContent = 'Bitte einen Namen eingeben.'; return null; }
@@ -5101,7 +5176,30 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 1.8 „WERKSTATT"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 1.9 „KARTENBAU"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ KARTEN ÜBERARBEITET</p>
+ Alle Karten haben mehr <b>Deckung</b> auf offenen Flächen – lange Sichtlinien sind unterbrochen, Nahkämpfe werden dynamischer. Alle Wege bleiben frei.<br>
+ <b>Dusty, Bazaar & Frost</b> bekommen zusätzlich <b>Türen</b>, <b>Fenster</b>, <b>Sandsäcke</b> und <b>Fässer</b>.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🧱 NEUE BAUELEMENTE</p>
+ <b>🚪 Tür</b>: Durchgang mit Sturz und Holzrahmen · <b>🪟 Fenster</b>: Durchsehen und -schießen, aber nicht durchklettern · <b>Sandsäcke</b> und <b>Fässer</b> als niedrige Deckung.<br>
+ Tür und Fenster einfach <b>in eine Wand malen</b> – die Ausrichtung erkennt das Spiel automatisch.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🛠 EDITOR-KOMFORT</p>
+ <b>↶ Rückgängig / ↷ Wiederholen</b> (Strg+Z / Strg+Y) · <b>Symmetrie-Malen</b> (↔ ↕ ⟲, tauscht T↔CT und A↔B automatisch) · <b>▭ Bereich</b> kopieren, einfügen, spiegeln und füllen · <b>🎲 Zufallskarte</b> als spielbare Startvorlage.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎮 SPIELGEFÜHL</p>
+ Weicheres Anlaufen und Abbremsen, leichtes <b>Kamera-Neigen</b> beim seitlichen Laufen.<br>
+ Getroffen? Dezentes Wackeln und ein <b>roter Richtungsanzeiger</b> zeigt, woher der Schuss kam.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📱 HANDY</p>
+ <b>Dynamischer Joystick</b>: Tippe irgendwo links – der Stick erscheint unter Deinem Finger. Kleine Deadzone gegen Wegrutschen.<br>
+ Die Auflösung passt sich automatisch an, damit das Spiel flüssig bleibt.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.8 „WERKSTATT"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🪙 COINS & SHOP</p>
@@ -5397,7 +5495,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.8 „Werkstatt" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button> </div>`, true);
+ <div id="csver">CS:WO 1.9 „Kartenbau" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -5417,7 +5515,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
                     const ch = map[r][c];
                     if (ch === '#') g.fillStyle = 'rgba(255,255,255,.3)';
-                    else if (ch === 'c' || ch === 'C') g.fillStyle = 'rgba(200,150,80,.5)';
+                    else if (ch === 'c' || ch === 'C' || ch === 'b') g.fillStyle = 'rgba(200,150,80,.5)'; else if (ch === 'W') g.fillStyle = 'rgba(170,210,240,.45)'; else if (ch === 's') g.fillStyle = 'rgba(160,175,190,.55)';
                     else if (ch === 'A' || ch === 'B') g.fillStyle = 'rgba(255,150,40,.6)';
                     else if (ch === 'h' || (ch >= '1' && ch <= '6') || ch === '=') g.fillStyle = 'rgba(160,175,190,.55)';
                     else continue;
@@ -6677,7 +6775,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // FPS-Anzeige: Bilder pro Sekunde + langsamster Frame der letzten Sekunde (zeigt Ruckler)
         const FPS = { n: 0, t: 0, worst: 0 }; function fpsTick(fdt) { FPS.n++; FPS.t += fdt; FPS.worst = Math.max(FPS.worst, fdt); if (FPS.t >= 1000) { const el = $('fpsBox'); if (el) { const f = Math.round(FPS.n * 1000 / FPS.t); el.textContent = f + ' FPS · max ' + Math.round(FPS.worst) + ' ms'; el.style.color = FPS.worst > 60 ? '#ff6b6b' : f < 45 ? '#ffd84a' : '#7c7'; } FPS.n = FPS.t = FPS.worst = 0; } }
         let last = performance.now(), frameN = 0; function loop() {
-            requestAnimationFrame(loop); const t = performance.now(); const fdt = t - last; const dt = Math.min(0.05, fdt / 1000); if (OPT.fps) fpsTick(fdt); last = t; now = t / 1000;
+            requestAnimationFrame(loop); const t = performance.now(); const fdt = t - last; const dt = Math.min(0.05, fdt / 1000); if (OPT.fps) fpsTick(fdt); if (IS_TOUCH && started) dynRes(fdt); last = t; now = t / 1000;
             if (!started) {
                 menuT += dt; const a = menuT * 0.07, r = Math.min(WORLD_W, WORLD_D) * 0.42;
                 camera.position.set(WORLD_W / 2 + Math.cos(a) * r, 22, WORLD_D / 2 + Math.sin(a) * r);
