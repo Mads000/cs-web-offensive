@@ -2797,24 +2797,24 @@ body.edit #tlook{ pointer-events:none; }
             "#..K.c..........K....h.K.c.#",
             "#......#.K...#####.#.......#",
             "#......#.....#.....#.......#",
-            "###.####.....#.....####.####",
+            "###D####.....#...b.####D####",
             "#.AAAA.#.....#.............#",
-            "#.AAAA.#####.#........c....#",
+            "#.AAAA.#####D#........c....#",
             "#.AAAA.#.....#.1234====4321#",
             "#.AAAA.#..cc.#######...#####",
-            "#...C..#..cc.#.........C...#",
+            "#...C..W..cc.#.........C...#",
             "#..c...#..####...C.BBBB....#",
-            "#..c...#..#......c.BBBB....#",
-            "#......#.....######BBBB#####",
-            "####.###..####.#...BBBB....#",
+            "#..c...#..#..D...c.BBBB....#",
+            "#......#.....######BBBB#W###",
+            "##W#.###..####.#...BBBB....#",
             "#..C...#.......#.C..123=...#",
             "#...c..##12344##...#########",
             "#...c..##.....######.......#",
             "#1234======4321#.....#.....#",
-            "#..............#.....#..c..#",
+            "#..............#..s..#..c..#",
             "######.#########.....#.....#",
             "#..............#.....#.c...#",
-            "#..c...........#.....#.....#",
+            "#..c....s......#.....#.....#",
             "#..c......hh.......hh......#",
             "#......#.....h...c.......h.#",
             "#..T...#...T...#.....T.....#",
@@ -2828,22 +2828,22 @@ body.edit #tlook{ pointer-events:none; }
             "#......c....cc.......cC##..#",
             "#......c.#..cc.............#",
             "#........#.........#.##44#.#",
-            "#..hh....##.####.###.......#",
-            "#........#.................#",
-            "###.###..#...cc....##AAAA###",
+            "#..hh....##D####D###.......#",
+            "#........#............s....#",
+            "###D###..#...cc....##AAAA###",
             "###.###..#...cc....##cAAA###",
             "#..BBBB..#...cc....#.AAAA==#",
-            "#..BBBc..#.........#.#####3#",
+            "#..BBBc..W.........#D#####3#",
             "######44##h...######......2#",
             "#..1234==========4321.C...1#",
             "#.........h...#............#",
             "#....##...#...#...##########",
-            "#.........#..c#...#........#",
-            "#.........#..c#...#C.......#",
+            "#.........W..c#...#........#",
+            "#.........#..c#.b.#C..s....#",
             "#.........#...#...#........#",
             "#.........#...#............#",
             "#.c....h.....hh............#",
-            "#.........####.####........#",
+            "#.........#W##.####........#",
             "#..cc.....#.......#...cc...#",
             "#..cc.....#...C...#...cc...#",
             "#.........#.......#........#",
@@ -2864,7 +2864,7 @@ body.edit #tlook{ pointer-events:none; }
         let CARS = {}, AOFF = []; try { CARS = JSON.parse(localStorage.getItem('customarenas') || '{}') || {}; AOFF = JSON.parse(localStorage.getItem('arenaoff') || '[]') || []; } catch (e) { }
         const isArKey = k => /^(myar|puba)_/.test(k);
         // regMap: Karten (my_/pub_, 28×28) → MAPS, Arenen (myar_/puba_, 11×18, ohne Bombsites) → ARENAS
-        const CMAP_INFO = {}, regMap = (k, d) => { const AR = isArKey(k), H = AR ? 18 : 28, RX = AR ? /^[#.cCh=1-6TK]{11}$/ : /^[#.cCh=1-6ABTKsbDW]{28}$/; if (!d || !Array.isArray(d.g) || d.g.length !== H || d.g.some(r => typeof r !== 'string' || !RX.test(r)) || !/^(my|pub|myar|puba)_[a-z0-9_]+$/.test(k)) return; if (AR) ARENAS[k] = { theme: k, rows: d.g }; else MAPS[k] = d.g;
+        const CMAP_INFO = {}, regMap = (k, d) => { const AR = isArKey(k), H = AR ? 18 : 28, RX = AR ? /^[#.cCh=1-6TKsbDW]{11}$/ : /^[#.cCh=1-6ABTKsbDW]{28}$/; if (!d || !Array.isArray(d.g) || d.g.length !== H || d.g.some(r => typeof r !== 'string' || !RX.test(r)) || !/^(my|pub|myar|puba)_[a-z0-9_]+$/.test(k)) return; if (AR) ARENAS[k] = { theme: k, rows: d.g }; else MAPS[k] = d.g;
             // geprüfte Zusatzdaten: Thema, eigene Farben, Tageszeit (0 Tag, 1 Abend, 2 Nacht), Emblem
             const HEX = /^#[0-9a-f]{6}$/i, th = /^de_/.test(d.th) && THEMES[d.th] ? d.th : 'de_dusty', c = d.col || {}, col = {}, t = Object.assign({}, THEMES[th]);
             for (const f of ['sky', 'fog', 'floor', 'wall']) if (HEX.test(c[f])) col[f] = c[f];
@@ -2900,6 +2900,19 @@ body.edit #tlook{ pointer-events:none; }
         applyCfg();
         function saveCfg() { localStorage.setItem('gamecfg', JSON.stringify(CFG)); applyCfg(); } const cell = (r, c) => (r < 0 || c < 0 || r >= ROWS || c >= COLS) ? '#' : (MAP[r][c] || '.');
         const TILE_M = { barrel: [0x8a2b20, 0x2b4a6b, 0x3f5a2e].map(c => new THREE.MeshLambertMaterial({ color: c })), barrelGeo: new THREE.CylinderGeometry(0.42, 0.42, 1.3, 12), ring: new THREE.MeshLambertMaterial({ color: 0x2a2a2a }), ringGeo: new THREE.CylinderGeometry(0.43, 0.43, 0.06, 12), frame: new THREE.MeshLambertMaterial({ color: 0x5b3b1e }) }; // Material neuer Bauelemente
+        // Sandsäcke (s), Fässer (b), Tür (D), Fenster (W) – für Karte und Arena. B: Box-Funktion (Mesh+Kollision), AL: Kollisionsliste, addM: Zusatz-Mesh, wallM: Wandmaterial, sandM: Sandsack-Material
+        function tileExtras(ch, r, c, x, z, cellF, B, AL, addM, wallM, sandM) {
+            const hh = cellHash(r, c), wl = ch2 => '#hsWD'.includes(ch2);
+            if (ch === 's') { const ax = wl(cellF(r, c - 1)) || wl(cellF(r, c + 1)) ? 1 : wl(cellF(r - 1, c)) || wl(cellF(r + 1, c)) ? 0 : hh & 1; // Sandsack-Mauer (3 Lagen versetzt)
+                for (let l = 0; l < 3; l++) for (let i = -1; i <= 1; i++) { const o = i * 0.82 + (l % 2 ? 0.2 : -0.2), y0 = l * 0.35; if (ax) B(x + o - 0.4, x + o + 0.4, y0, y0 + 0.34, z - 0.55, z + 0.55, sandM); else B(x - 0.55, x + 0.55, y0, y0 + 0.34, z + o - 0.4, z + o + 0.4, sandM); } }
+            if (ch === 'b') { const bm = TILE_M.barrel[hh % TILE_M.barrel.length]; for (const [ox, oz] of [[-0.55, -0.45], [0.5, -0.5], [0, 0.55]]) { const m = new THREE.Mesh(TILE_M.barrelGeo, bm); m.position.set(x + ox, 0.65, z + oz); m.rotation.y = hh % 7; m.castShadow = m.receiveShadow = true; addM(m); AL.push({ minX: x + ox - 0.42, maxX: x + ox + 0.42, minZ: z + oz - 0.42, maxZ: z + oz + 0.42, top: 1.3, bot: 0 }); const ring = new THREE.Mesh(TILE_M.ringGeo, TILE_M.ring); ring.position.set(x + ox, 0.95, z + oz); addM(ring); } }
+            if (ch === 'D' || ch === 'W') { const WM = wallM(), ns = cellF(r, c - 1) === '#' || cellF(r, c + 1) === '#'; // ns: Wand links/rechts → Durchgang Nord-Süd
+                if (ch === 'D') { B(x - S / 2, x + S / 2, 3.1, WALL_H, z - S / 2, z + S / 2, WM); AL[AL.length - 1].wall = 1; // Sturz: drunter durchlaufen, nie draufklettern
+                    for (const f of [-1, 1]) for (const e of [-1, 1]) { const px = ns ? x + e * (S / 2 - 0.1) : x + f * (S / 2 - 0.12), pz = ns ? z + f * (S / 2 - 0.12) : z + e * (S / 2 - 0.1); B(px - (ns ? 0.1 : 0.12), px + (ns ? 0.1 : 0.12), 0, 3.1, pz - (ns ? 0.12 : 0.1), pz + (ns ? 0.12 : 0.1), TILE_M.frame); }
+                    B(x - S / 2, ns ? x + S / 2 : x - S / 2 + 0.24, 2.95, 3.1, z - S / 2, ns ? z - S / 2 + 0.24 : z + S / 2, TILE_M.frame); B(ns ? x - S / 2 : x + S / 2 - 0.24, x + S / 2, 2.95, 3.1, ns ? z + S / 2 - 0.24 : z - S / 2, z + S / 2, TILE_M.frame); }
+                else { B(x - S / 2, x + S / 2, 0, 1.0, z - S / 2, z + S / 2, WM); B(x - S / 2, x + S / 2, 2.3, WALL_H, z - S / 2, z + S / 2, WM); AL[AL.length - 1].wall = 1; // Fenster: Brüstung + Sturz, dazwischen frei
+                    B(x - S / 2, x + S / 2, 1.0, 1.08, z - S / 2, z + S / 2, TILE_M.frame); } }
+        }
         const solid = ch => ch === '#' || ch === 'c' || ch === 'C' || ch === 'h' || ch === 's' || ch === 'b' || ch === 'W';
         const cr = v => Math.floor(v / S), cx = i => (i + 0.5) * S;
         const rnd = a => a[Math.floor(Math.random() * a.length)];
@@ -3044,15 +3057,7 @@ body.edit #tlook{ pointer-events:none; }
                 if (ch === 'T') spawnCells.T.push({ r, c }); if (ch === 'K') spawnCells.CT.push({ r, c });
                 if (ch === 'c') { const hh = cellHash(r, c); tiltFit(addBox(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, crateMats[hh % 3]), tiltOf(hh, 5, 7, 0.08)); const ox = (hh >>> 12) & 1 ? 0.6 : -0.6, oz = (hh >>> 13) & 1 ? 0.6 : -0.6; tiltFit(addBox(x + ox - 0.7, x + ox + 0.7, CRATE_H, CRATE_H * 2, z + oz - 0.7, z + oz + 0.7, crateMats[(hh >> 3) % 3]), tiltOf(hh, 9, 9, 0.1)); }
                 if (ch === 'C') { const hh = cellHash(r, c); tiltFit(addBox(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, contMats[hh % contMats.length]), tiltOf(hh, 4, 5, 0.06)); }
-                if (ch === 's') { const hh = cellHash(r, c), ax = '#hsW'.includes(cell(r, c - 1)) || '#hsW'.includes(cell(r, c + 1)) ? 1 : '#hsW'.includes(cell(r - 1, c)) || '#hsW'.includes(cell(r + 1, c)) ? 0 : hh & 1; // Sandsack-Mauer (3 Lagen versetzt)
-                    for (let l = 0; l < 3; l++) for (let i = -1; i <= 1; i++) { const o = i * 0.82 + (l % 2 ? 0.2 : -0.2), y0 = l * 0.35; if (ax) addBox(x + o - 0.4, x + o + 0.4, y0, y0 + 0.34, z - 0.55, z + 0.55, halfMat); else addBox(x - 0.55, x + 0.55, y0, y0 + 0.34, z + o - 0.4, z + o + 0.4, halfMat); } }
-                if (ch === 'b') { const hh = cellHash(r, c), bm = TILE_M.barrel[hh % TILE_M.barrel.length]; for (const [ox, oz] of [[-0.55, -0.45], [0.5, -0.5], [0, 0.55]]) { const m = new THREE.Mesh(TILE_M.barrelGeo, bm); m.position.set(x + ox, 0.65, z + oz); m.rotation.y = hh % 7; m.castShadow = m.receiveShadow = true; scene.add(m); mapMeshes.push(m); aabbs.push({ minX: x + ox - 0.42, maxX: x + ox + 0.42, minZ: z + oz - 0.42, maxZ: z + oz + 0.42, top: 1.3, bot: 0 }); const ring = new THREE.Mesh(TILE_M.ringGeo, TILE_M.ring); ring.position.set(x + ox, 0.95, z + oz); scene.add(ring); } }
-                if (ch === 'D' || ch === 'W') { const wm = sideMat(1, wallSet[cellHash(r, c) % wallSet.length]), WM = [wm, wm, wallTop, wallEnd, wm, wm], ns = cell(r, c - 1) === '#' || cell(r, c + 1) === '#'; // ns: Wand links/rechts → Durchgang Nord-Süd
-                    if (ch === 'D') { addBox(x - S / 2, x + S / 2, 3.1, WALL_H, z - S / 2, z + S / 2, WM); aabbs[aabbs.length - 1].wall = 1; // Sturz: drunter durchlaufen, nie draufklettern
-                        for (const f of [-1, 1]) for (const e of [-1, 1]) { const px = ns ? x + e * (S / 2 - 0.1) : x + f * (S / 2 - 0.12), pz = ns ? z + f * (S / 2 - 0.12) : z + e * (S / 2 - 0.1); addBox(px - (ns ? 0.1 : 0.12), px + (ns ? 0.1 : 0.12), 0, 3.1, pz - (ns ? 0.12 : 0.1), pz + (ns ? 0.12 : 0.1), TILE_M.frame); }
-                        addBox(ns ? x - S / 2 : x - S / 2, ns ? x + S / 2 : x - S / 2 + 0.24, 2.95, 3.1, ns ? z - S / 2 : z - S / 2, ns ? z - S / 2 + 0.24 : z + S / 2, TILE_M.frame); addBox(ns ? x - S / 2 : x + S / 2 - 0.24, ns ? x + S / 2 : x + S / 2, 2.95, 3.1, ns ? z + S / 2 - 0.24 : z - S / 2, ns ? z + S / 2 : z + S / 2, TILE_M.frame); }
-                    else { addBox(x - S / 2, x + S / 2, 0, 1.0, z - S / 2, z + S / 2, WM); addBox(x - S / 2, x + S / 2, 2.3, WALL_H, z - S / 2, z + S / 2, WM); aabbs[aabbs.length - 1].wall = 1; // Fenster: Brüstung + Sturz, dazwischen frei
-                        addBox(ns ? x - S / 2 : x - S / 2, ns ? x + S / 2 : x + S / 2, 1.0, 1.08, ns ? z - S / 2 : z - S / 2, ns ? z + S / 2 : z + S / 2, TILE_M.frame); } }
+                if ('sbDW'.includes(ch)) tileExtras(ch, r, c, x, z, cell, addBox, aabbs, m => { scene.add(m); mapMeshes.push(m); }, () => { const wm = sideMat(1, wallSet[cellHash(r, c) % wallSet.length]); return [wm, wm, wallTop, wallEnd, wm, wm]; }, halfMat);
                 if (ch >= '1' && ch <= '6') stairBoxes(cell, r, c, x, z, ch, (a, b, y0, y1, c0, c1) => addBox(a, b, y0, y1, c0, c1, stepMat));
                 if (ch === 'h') addBox(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, halfMat);
                 if (ch === '=') addBox(x - S / 2, x + S / 2, 2.45, 2.8, z - S / 2, z + S / 2, stegMat);
@@ -4453,8 +4458,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             for (let r = 0; r < A.R; r++) for (let c = 0; c < A.C; c++) {
                 const ch = A.rows[r][c], x = c * S * s, y = r * S * s, w = S * s;
                 if (ch === '#') { g.fillStyle = 'rgba(232,201,138,.75)'; g.fillRect(x, y, w, w); }
-                else if (ch === 'c' || ch === 'C') { g.fillStyle = 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); }
-                else if (ch === 'h') { g.fillStyle = 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); }
+                else if (ch === 'c' || ch === 'C' || ch === 'b') { g.fillStyle = 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); }
+                else if (ch === 'W') { g.fillStyle = 'rgba(160,200,230,.6)'; g.fillRect(x, y, w, w); }
+                else if (ch === 'h' || ch === 's') { g.fillStyle = 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); }
                 else if (ch >= '1' && ch <= '6') { g.fillStyle = 'rgba(185,195,205,.5)'; g.fillRect(x, y, w, w); }
                 else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); }
             }
@@ -5014,7 +5020,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="merow">${cin('meSky', 'Himmel')}${cin('meFog', 'Nebel')}${cin('meFloor', 'Boden')}${cin('meWall', 'Wände')}</div>
  <div class="merow"><select id="meTod" ${ar ? 'style="display:none"' : ''}>${['☀️ Tag', '🌅 Abend', '🌙 Nacht'].map((l, i) => `<option value="${i}" ${i === tod ? 'selected' : ''}>${l}</option>`).join('')}</select>
  <label>Emblem<input id="meEm" maxlength="4" placeholder="🛠" value="${(inf.em || '').replace(/"/g, '')}"></label><label>Farbe<input type="color" id="meEmc" value="${inf.emc || '#2b5d8a'}"></label></div>
- <div id="meTools">${ME_TOOLS.filter(t => !ar || !'ABsbDW'.includes(t[0])).map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
+ <div id="meTools">${ME_TOOLS.filter(t => !ar || !'AB'.includes(t[0])).map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
  <div class="merow" style="flex-wrap:wrap;gap:4px;align-items:center"><button id="meUndo" style="padding:3px 8px;font-size:12px;margin:0" title="Rückgängig (Strg+Z)">↶</button><button id="meRedo" style="padding:3px 8px;font-size:12px;margin:0" title="Wiederholen (Strg+Y)">↷</button><select id="meSym" style="font-size:12px;padding:3px"><option value="0">Symmetrie: aus</option><option value="1">↔ Links/Rechts</option><option value="2">↕ Oben/Unten</option><option value="3">⟲ Punkt</option></select><button id="meSelB" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit der Maus aufziehen">▭ Bereich</button><button id="meCopy" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich kopieren">📋</button><button id="mePaste" style="padding:3px 8px;font-size:12px;margin:0" title="Einfügen: danach auf die Zielstelle klicken">📥</button><button id="meFlipH" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich waagrecht spiegeln">↔</button><button id="meFlipV" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich senkrecht spiegeln">↕</button><button id="meFill" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit dem gewählten Werkzeug füllen">🪣</button><button id="meRand" style="padding:3px 8px;font-size:12px;margin:0" title="Zufällige Karte als Startvorlage">🎲 Zufall</button></div>
  <p id="meMsg"></p>
  <p class="mehint">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT${ar ? '' : ', Bombsite A & B'}</p>
@@ -5181,11 +5187,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ KARTEN ÜBERARBEITET</p>
  Alle Karten haben mehr <b>Deckung</b> auf offenen Flächen – lange Sichtlinien sind unterbrochen, Nahkämpfe werden dynamischer. Alle Wege bleiben frei.<br>
- <b>Dusty, Bazaar & Frost</b> bekommen zusätzlich <b>Türen</b>, <b>Fenster</b>, <b>Sandsäcke</b> und <b>Fässer</b>.<br><br>
+ <b>Alle Karten und alle Arenen</b> bekommen zusätzlich <b>Türen</b>, <b>Fenster</b>, <b>Sandsäcke</b> und <b>Fässer</b>.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🧱 NEUE BAUELEMENTE</p>
  <b>🚪 Tür</b>: Durchgang mit Sturz und Holzrahmen · <b>🪟 Fenster</b>: Durchsehen und -schießen, aber nicht durchklettern · <b>Sandsäcke</b> und <b>Fässer</b> als niedrige Deckung.<br>
- Tür und Fenster einfach <b>in eine Wand malen</b> – die Ausrichtung erkennt das Spiel automatisch.<br><br>
+ Tür und Fenster einfach <b>in eine Wand malen</b> – die Ausrichtung erkennt das Spiel automatisch. Gibt es im Map- <b>und</b> Arena-Editor.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🛠 EDITOR-KOMFORT</p>
  <b>↶ Rückgängig / ↷ Wiederholen</b> (Strg+Z / Strg+Y) · <b>Symmetrie-Malen</b> (↔ ↕ ⟲, tauscht T↔CT und A↔B automatisch) · <b>▭ Bereich</b> kopieren, einfügen, spiegeln und füllen · <b>🎲 Zufallskarte</b> als spielbare Startvorlage.<br><br>
@@ -5809,18 +5815,18 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     "###########",
                     "#TT....c..#",
                     "#TT.##....#",
-                    "#......#..#",
+                    "#....D.#..#",
                     "###..#.#..#",
                     "#..1.#....#",
                     "#..2.#.##.#",
-                    "#..3.#....#",
+                    "#..3.#.D..#",
                     "#..=...#..#",
                     "#..=.c.#..#",
-                    "#..=...####",
+                    "#..=...#W##",
                     "#..3#.....#",
                     "#..2...##.#",
                     "#..1.#....#",
-                    "#....#..KK#",
+                    "#....W..KK#",
                     "#.##.#..KK#",
                     "#....hh...#",
                     "###########"]
@@ -5831,17 +5837,17 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     "#TT..#....#",
                     "#TT..#.c..#",
                     "#.c..#....#",
-                    "#....##.###",
+                    "#....##D###",
                     "#.##.....1#",
-                    "#....##.#2#",
+                    "#.D..##.#2#",
                     "#.#......3#",
                     "#.#.12321.#",
                     "#.#.......#",
-                    "#...###...#",
+                    "#...#W#...#",
                     "##.....#.##",
                     "#...c..#..#",
                     "#.#....#..#",
-                    "#.#.##....#",
+                    "#.W.##....#",
                     "#.#.hh.#KK#",
                     "#......#KK#",
                     "###########"]
@@ -5851,13 +5857,13 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     "###########",
                     "#TT.#.....#",
                     "#TT.#..c..#",
-                    "#......####",
+                    "#......#W##",
                     "####...1..#",
-                    "#....##2..#",
+                    "#..D.##2..#",
                     "#.c#...3#.#",
                     "#..#.##=#.#",
                     "#..#...=#.#",
-                    "#.....#3..#",
+                    "#..D..#3..#",
                     "#.###.#2#.#",
                     "#...#.#1#.#",
                     "##..#...#.#",
@@ -5872,17 +5878,17 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 theme: 'de_foundry', rows: [
                     "###########",
                     "#TT.......#",
-                    "#TT..c....#",
+                    "#TT..c..s.#",
                     "#....#....#",
-                    "#.c..#..1.#",
+                    "#.c..W..1.#",
                     "#....#..2.#",
                     "#.##....3.#",
-                    "#.......=.#",
+                    "#....b..=.#",
                     "#..C....=.#",
                     "#.......=.#",
                     "#.##....3.#",
                     "#....#..2.#",
-                    "#.c..#..1.#",
+                    "#.c..W..1.#",
                     "#....#....#",
                     "#....c....#",
                     "#.......KK#",
@@ -5930,6 +5936,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     if (ch === 'C') box(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, aCrateM);
                     if (ch >= '1' && ch <= '6') stairBoxes(aCell, r, c, x, z, ch, (a, b, y0, y1, c0, c1) => box(a, b, y0, y1, c0, c1, aStepM));
                     if (ch === 'h') box(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, aHalfM);
+                    if ('sbDW'.includes(ch)) tileExtras(ch, r, c, x, z, aCell, box, info.aabbs, m => { grp.add(m); info.meshes.push(m); }, () => { const wm = aSideMat(1); return [wm, wm, aTopM, aEndM, wm, wm]; }, aHalfM);
                     if (ch === '=') box(x - S / 2, x + S / 2, 2.45, 2.8, z - S / 2, z + S / 2, aStegM);
                 }
                 let c = 0; while (c < C) {
