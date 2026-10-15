@@ -2113,6 +2113,9 @@ body.dh #score, body.dh #roundlbl, body.dh #money, body.dh #aliveL, body.dh #ali
 .dhlb h4{ margin:0 0 6px; color:#ffd84a; font:bold 12px Arial; letter-spacing:2px; } .dhlb > div{ min-width:150px; } .dhlb > div > div{ padding:2px 0; }
 .mob .dhbig{ font-size:44px; }
 body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy { display: none !important } /* Erkunden */
+#wlist { position: absolute; right: 0; bottom: calc(100% + 56px); display: flex; flex-direction: column; align-items: flex-end; gap: 3px; white-space: nowrap } .mob #wlist { display: none }
+#wlist .wl { display: flex; align-items: center; gap: 8px; font: 600 13px 'Barlow Condensed', sans-serif; letter-spacing: .14em; text-transform: uppercase; opacity: .4; padding: 2px 10px 2px 0; border-right: 2px solid transparent }
+#wlist .wl.on { opacity: 1; border-right-color: var(--hl) } #wlist .wl i { font-style: normal; font-size: 10px; opacity: .6 } #wlist .nd { display: flex; gap: 6px } #wlist .nd .wl { padding-right: 6px; font-size: 11px }
 #fpsBox{ position:fixed; right:8px; top:6px; z-index:99995; font:bold 12px monospace; background:rgba(0,0,0,.55); padding:2px 8px; border-radius:4px; pointer-events:none; }
 /* Gauntlet-Auswahl: leicht transparent wie die anderen Menüs, Arena dahinter sichtbar */
 .gldraft{ background:rgba(16,23,32,.72) !important; -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); }
@@ -2727,6 +2730,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         <div id="money"></div>
         <div id="abil"></div>
         <div id="br">
+            <div id="wlist"></div>
             <div id="wname"></div>
             <div class="hud-num" id="ammo"></div>
         </div>
@@ -3916,6 +3920,17 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 
         // Granaten & Smokes
         const nades = [], smokes = [], smokeBlock = [], fires = [];
+        const SV = 4 / 3, _sm4 = new THREE.Matrix4(); // Smoke-Raster 1,33 m
+        function smokeSolidAt(x, z) { const A = GA.cur; let ch; if (A) { const c = Math.floor((x - A.ox) / S), r = Math.floor(z / S); ch = (r < 0 || c < 0 || r >= A.R || c >= A.C) ? '#' : A.rows[r][c]; } else ch = cell(Math.floor(z / S), Math.floor(x / S)); return ch === '#' || ch === 'W'; }
+        function smokeFill(x0, z0, R) { // Rauch breitet sich wie Gas aus: festes Volumen, Wände stoppen ihn → in Gängen weiter, um Ecken & durch Türen
+            const budget = Math.round(Math.PI * R * R / (SV * SV)), gx = Math.floor(x0 / SV), gz = Math.floor(z0 / SV), seen = new Set([gx + ',' + gz]), q = [[gx, gz]], out = [];
+            while (q.length && out.length < budget) { const [ix, iz] = q.shift(), x = (ix + 0.5) * SV, z = (iz + 0.5) * SV; if (smokeSolidAt(x, z)) continue; const d = Math.hypot(x - x0, z - z0); if (d > R * 2.2) continue; out.push({ x, z, d, k: ix + ',' + iz });
+                for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const k = (ix + a) + ',' + (iz + b); if (!seen.has(k)) { seen.add(k); q.push([ix + a, iz + b]); } } }
+            return out.length ? out : [{ x: x0, z: z0, d: 0, k: gx + ',' + gz }]; }
+        function smokeShot(len) { // Schuss durch Rauch: Tunnel aus Wolken + kurz Sicht frei (wie CS2), schließt sich wieder
+            const o = _ray.ray.origin, d = _ray.ray.direction;
+            for (const sm of smokes) { for (const p of sm.im.userData.P) { const px = p.x - o.x, py = p.y - o.y, pz = p.z - o.z, t = px * d.x + py * d.y + pz * d.z; if (t < 0 || t > len) continue; const dist = Math.hypot(px - d.x * t, py - d.y * t, pz - d.z * t); if (dist < 1.3) p.hole = Math.max(p.hole, 1 - dist / 1.6); }
+                const steps = Math.ceil(len / (SV * 0.5)); for (let i = 1; i <= steps; i++) { const t = i * len / steps, k = Math.floor((o.x + d.x * t) / SV) + ',' + Math.floor((o.z + d.z * t) / SV); if (sm.blk.vox.has(k)) sm.blk.vox.set(k, 1.4); } } }
         const NADE_GRAV = 26, NADE_POW = 16; const smokePuffGeo = new THREE.SphereGeometry(1, 12, 10);
         function clearNades() { for (const n of nades) scene.remove(n.mesh); nades.length = 0; for (const s of smokes) scene.remove(s.grp); smokes.length = 0; smokeBlock.length = 0; for (const f of fires) scene.remove(f.grp); fires.length = 0; blindT = 0; bots.forEach(b => b.blindT = 0); } const NADE_COL = { he: 0x3f4a35, smoke: 0x6a6f72, flash: 0xb8bcc0, molly: 0x7a4a18 };
         const nadeLv = (owner, key) => (GL.on && owner && owner.glN && owner.glN[key]) ? owner.glN[key] : 1;
@@ -4000,11 +4015,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 sfx('smokepop', n.x, n.z);
                 const wide = lv >= 3 && n.g === 'wide';
                 const R = wide ? 7 : lv >= 2 ? 4.6 : 3.4, poison = lv >= 3 && !wide; const grp = new THREE.Group();
-                const nPuff = lv >= 2 ? 14 : 10;
-                for (let i = 0; i < nPuff; i++) { const m = new THREE.Mesh(smokePuffGeo, new THREE.MeshLambertMaterial({ color: poison ? 0x9acb6a : 0xb8bcc0, transparent: true, opacity: 0.92, depthWrite: false })); const a = Math.random() * Math.PI * 2, r = Math.random() * (R / 2); m.position.set(n.x + Math.cos(a) * r, 0.7 + Math.random() * 1.8, n.z + Math.sin(a) * r); m.scale.setScalar(0.1); m.userData.ts = 1.5 + Math.random() * 1.3; grp.add(m); }
+                const vox = smokeFill(n.x, n.z, R), mat = new THREE.MeshLambertMaterial({ color: poison ? 0x9acb6a : 0xb8bcc0, transparent: true, opacity: 0.92, depthWrite: false }), P = [];
+                for (const v of vox) for (let k = 0; k < (v.d < R * 0.6 ? 2 : 1); k++) P.push({ x: v.x + (Math.random() - 0.5) * 0.5, y: 0.8 + k * 1.3 + Math.random() * 0.5, z: v.z + (Math.random() - 0.5) * 0.5, ts: 1.05 + Math.random() * 0.35, d: v.d, hole: 0 });
+                const im = new THREE.InstancedMesh(smokePuffGeo, mat, P.length); im.userData.P = P; im.frustumCulled = false; grp.add(im);
                 scene.add(grp);
-                const blk = { x: n.x, z: n.z, r: R };
-                smokeBlock.push(blk); smokes.push({ grp, age: 0, blk, poison: poison ? (n.owner || null) : null, ptick: 0 });
+                const blk = { x: n.x, z: n.z, r: R, vox: new Map(vox.map(v => [v.k, 0])) }; // vox: Rauchfelder (Wert > 0 = gerade durchschossen)
+                smokeBlock.push(blk); smokes.push({ grp, im, mat, age: 0, blk, poison: poison ? (n.owner || null) : null, ptick: 0 });
             }
         }
         function updateNades(dt) {
@@ -4030,8 +4046,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                         for (const e of ents) { if (!e.alive || e.remote) continue; if (ot && ot.members.includes(e)) continue; if (!ot && s.poison && e.team === s.poison.team) continue; if (Math.hypot(e.x - s.blk.x, e.z - s.blk.z) < s.blk.r) applyDamage(e, 5, s.poison || player, { name: 'Giftwolke', key: 'smoke' }, false); }
                     }
                 }
-                const k = Math.min(1, s.age / 0.6);
-                s.grp.children.forEach(m => { m.scale.setScalar(m.userData.ts * k); if (s.age > 10) m.material.opacity = Math.max(0, 0.92 * (1 - (s.age - 10) / 2)); });
+                s.im.userData.P.forEach((p, i) => { if (p.hole > 0) p.hole = Math.max(0, p.hole - dt / 1.6); const g = clamp((s.age * 6 - p.d) / 1.5, 0, 1), sc = Math.max(0.001, p.ts * g * (1 - p.hole * 0.95)); _sm4.makeScale(sc, sc, sc).setPosition(p.x, p.y, p.z); s.im.setMatrixAt(i, _sm4); }); s.im.instanceMatrix.needsUpdate = true;
+                if (s.age > 10) s.mat.opacity = Math.max(0, 0.92 * (1 - (s.age - 10) / 2)); for (const [k, t] of s.blk.vox) if (t > 0) s.blk.vox.set(k, Math.max(0, t - dt));
                 if (s.age > 12) { scene.remove(s.grp); smokes.splice(i, 1); const bi = smokeBlock.indexOf(s.blk); if (bi >= 0) smokeBlock.splice(bi, 1); }
             }
             for (let i = fires.length - 1; i >= 0; i--) {
@@ -4100,7 +4116,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // =====================================================================
         const _ray = new THREE.Raycaster(), _o = new THREE.Vector3(), _d = new THREE.Vector3(), _fwd = new THREE.Vector3(), _right = new THREE.Vector3(), _up = new THREE.Vector3();
         function hasLOS(ax, ay, az, bx, by, bz) {
-            for (const s of smokeBlock) { const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1; let t = ((s.x - ax) * dx + (s.z - az) * dz) / L2; t = clamp(t, 0, 1); if (Math.hypot(ax + dx * t - s.x, az + dz * t - s.z) < s.r) return false; }
+            for (const s of smokeBlock) { if (s.vox) { const L = Math.hypot(bx - ax, bz - az), st = Math.ceil(L / (SV * 0.5)); for (let i = 1; i < st; i++) { const t = i / st; if (s.vox.get(Math.floor((ax + (bx - ax) * t) / SV) + ',' + Math.floor((az + (bz - az) * t) / SV)) === 0) return false; } continue; } const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1; let t = ((s.x - ax) * dx + (s.z - az) * dz) / L2; t = clamp(t, 0, 1); if (Math.hypot(ax + dx * t - s.x, az + dz * t - s.z) < s.r) return false; }
             _o.set(ax, ay, az); _d.set(bx - ax, by - ay, bz - az); const L = _d.length(); _d.normalize(); _ray.set(_o, _d); _ray.far = L; return _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false).length === 0;
         } function castShot(spread) { camera.getWorldDirection(_fwd); _right.crossVectors(_fwd, camera.up).normalize(); _up.crossVectors(_right, _fwd).normalize(); const a = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * spread; _d.copy(_fwd).addScaledVector(_right, Math.cos(a) * rr).addScaledVector(_up, Math.sin(a) * rr).normalize(); _ray.set(camera.position, _d); _ray.far = 250; const objs = (GA.cur ? GA.cur.meshes : mapMeshes).slice(); if (DH.on) { for (const d of DH.ducks) if (d.alive) objs.push(...d.hit); return _ray.intersectObjects(objs, false)[0] || null; } for (const b of bots) if (b.alive) objs.push(...b.hit); for (const rp of NET.players.values()) if (rp.alive) objs.push(...rp.hit); for (const dc of decoys) objs.push(...dc.hit); return _ray.intersectObjects(objs, false)[0] || null; }
         const decals = [], decalGeo = new THREE.PlaneGeometry(0.18, 0.18), decalMat = new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
@@ -4596,7 +4612,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (!CFG.infAmmo) w.ammo--; p.lastShotT = now;
             let spread = d.spread; if (d.scope) spread = p.scoped ? d.scopedSpread : d.spread; else { spread *= (1 + p.recoil * 0.9); if (p.speed > 3) spread *= 2.5; else if (p.speed > 0) spread *= 1.5; if (p.crouch) spread *= 0.7; if (!p.onGround) spread *= 4; }
             for (let pi = 0; pi < (d.pellets || 1); pi++) {
-                const h = castShot(spread);
+                const h = castShot(spread); if (smokes.length) smokeShot(h ? h.distance : 80);
                 if (!h) continue;
                 const ud = h.object.userData;
                 if (ud.ent && ud.ent.dh) { dhShot(ud.ent, ud.part === 'head'); continue; }
@@ -4746,7 +4762,10 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             setT('hp', hpv); setT('ar', Math.ceil(p.armor));
             $('hpbar').style.width = Math.min(100, hpv / hpm * 100) + '%';
             $('arbar').style.width = Math.min(100, p.armor) + '%';
-            $('hpwrap').classList.toggle('low', p.alive && hpv < 30); setT('money', `$ ${p.money}`); setT('wname', !w ? '' : (GL.on && w.def.nade) ? `${w.def.name} Lv.${player.glN[w.def.key] || 1}${player.glG && player.glG[w.def.key] ? ' ⚡' + GL_GLITCH[w.def.key][player.glG[w.def.key]] : ''}` : (skinOf(w.def.key) ? skinOf(w.def.key).n : w.def.name)); setT('ammo', !w ? '' : w.def.melee ? '—' : w.def.plant ? 'C4' : w.def.nade ? '×' + p.nades[w.def.key] : `${w.ammo}<span style="font-size:22px;opacity:.7">| ${w.res}</span>`);
+            $('hpwrap').classList.toggle('low', p.alive && hpv < 30); setT('money', `$ ${p.money}`); setT('wname', !w ? '' : (GL.on && w.def.nade) ? `${w.def.name} Lv.${player.glN[w.def.key] || 1}${player.glG && player.glG[w.def.key] ? ' ⚡' + GL_GLITCH[w.def.key][player.glG[w.def.key]] : ''}` : (skinOf(w.def.key) ? skinOf(w.def.key).n : w.def.name)); { const nk = ['he', 'flash', 'smoke', 'molly'], cur = w ? w.def.key : '', sig = [1, 2, 3, 5].map(i => p.weapons[i] ? p.weapons[i].def.key : '').join() + '|' + nk.map(k => p.nades[k]).join() + '|' + cur, el = $('wlist'); // Waffenliste
+                if (el && el.dataset.sig !== sig) { el.dataset.sig = sig; const row = (i, wp, on) => `<div class="wl${on ? ' on' : ''}">${skinOf(wp.def.key) ? skinOf(wp.def.key).n.split('|')[0].trim() : wp.def.name}<i>${i}</i></div>`, NN = { he: 'HE', flash: 'Flash', smoke: 'Smoke', molly: 'Molly' };
+                    el.innerHTML = [1, 2, 3].filter(i => p.weapons[i]).map(i => row(i, p.weapons[i], cur === p.weapons[i].def.key)).join('') + (nk.some(k => p.nades[k] > 0) ? '<div class="nd">' + nk.filter(k => p.nades[k] > 0).map(k => `<div class="wl${cur === k ? ' on' : ''}">${NN[k]}${p.nades[k] > 1 ? ' ×' + p.nades[k] : ''}</div>`).join('') + '<i style="font-style:normal;font-size:10px;opacity:.4;align-self:center">4</i></div>' : '') + (p.weapons[5] ? `<div class="wl${cur === 'c4' ? ' on' : ''}">C4<i>5</i></div>` : ''); } }
+            setT('ammo', !w ? '' : w.def.melee ? '—' : w.def.plant ? 'C4' : w.def.nade ? '×' + p.nades[w.def.key] : `${w.ammo}<span style="font-size:22px;opacity:.7">| ${w.res}</span>`);
             const sec = Math.max(0, Math.ceil(G.timer)); setT('timer', G.bomb.state === 'planted' ? '💣' : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`);
             const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}" style="border-color:${col}">${e.isPlayer ? '★' : (e.name[0] || '?')}</div>`).join('');
             let avL = '', avR = '';
