@@ -3613,7 +3613,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function regSkins(list) { let add = 0; for (const k of list || []) { if (!W[k.w]) continue; const o = SKINS.find(x => x.id === k.id), d = { id: k.id, w: k.w, km: KNIVES[k.km] ? k.km : undefined, n: (KNIVES[k.km] ? KNIVES[k.km] : W[k.w].name) + ' | ' + k.n, c: k.c, c2: k.c2, c3: k.c3, p: k.p, img: k.p === 'paint' ? k.img : undefined, r: k.r, noCase: 1, u: 1, by: k.by, sold: k.sold || 0 }; if (o) o.sold = d.sold; else { SKINS.push(d); add++; } } return add; }
         function dropSkins(ids) { for (let i = SKINS.length - 1; i >= 0; i--) if (SKINS[i].u && !ids.has(SKINS[i].id)) SKINS.splice(i, 1); }
         try { regSkins(JSON.parse(localStorage.getItem('cskins') || '[]')); } catch (e) { }
-        function loadSkins(then) { accApi('skins', {}).then(r => { if (!r.ok) return; try { localStorage.setItem('cskins', JSON.stringify(r.skins)); } catch (e) { } dropSkins(new Set(r.skins.map(k => k.id))); regSkins(r.skins); knifeNames(); applySkins(); if (then) then(); }).catch(() => { }); }
+        let PRICES = (() => { try { return JSON.parse(localStorage.getItem('cprices')) || {}; } catch (e) { return {}; } })(); // Shop-Preise vom Server (Preiseditor)
+        function loadSkins(then) { accApi('skins', {}).then(r => { if (!r.ok) return; if (r.prices) { PRICES = r.prices; try { localStorage.setItem('cprices', JSON.stringify(PRICES)); } catch (e) { } } try { localStorage.setItem('cskins', JSON.stringify(r.skins)); } catch (e) { } dropSkins(new Set(r.skins.map(k => k.id))); regSkins(r.skins); knifeNames(); applySkins(); if (then) then(); }).catch(() => { }); }
         loadSkins();
         knifeNames(); // Messer-Skins nach gewähltem Modell benennen
         function applySkins() {
@@ -4769,15 +4770,45 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         }
         // Coin-Shop: alle Case-Skins direkt kaufen (Belohnungs-Skins ausgenommen)
         const SHOP_PRICE = { 1: 150, 2: 400, 3: 900, 4: 2500 };
+        const rPrice = r => PRICES.r && PRICES.r[r] != null ? PRICES.r[r] : SHOP_PRICE[r], skPrice = sk => PRICES.s && PRICES.s[sk.id] != null ? PRICES.s[sk.id] : rPrice(sk.r);
+        function showPriceCode() { // Schritt 1: Code eingeben
+            showOverlay(`<h1 style="font-size:30px">💲 PREISE ANPASSEN<small>NUR MIT CODE</small></h1>
+ <div><input id="prCode" type="password" placeholder="Code eingeben" style="font:bold 14px Arial;padding:7px 10px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px;width:180px"><button id="prGo">Weiter</button></div><p id="prMsg" style="font-size:13px;color:#e77;min-height:16px"></p>
+ <div><button id="prBack">Zurück</button></div>`);
+            const go = () => { const code = $('prCode').value.trim(); if (!code) return; $('prMsg').textContent = '…'; accApi('setprices', { code, check: 1 }).then(r => { if (!r.ok) return $('prMsg').textContent = r.err || 'Fehler'; showPriceEdit(code); }).catch(() => $('prMsg').textContent = 'Keine Verbindung zum Server'); };
+            $('prGo').onclick = go; $('prCode').onkeydown = e => { if (e.key === 'Enter') go(); }; $('prBack').onclick = () => showShop(true); $('prCode').focus();
+        }
+        function showPriceEdit(code) { // Schritt 2: Preise je Seltenheit + einzelne Skins (leer = Seltenheitspreis)
+            const ORDER = ['knife', 'awp', 'scout', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'], inp = 'width:80px;font:bold 13px Arial;padding:4px 6px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px';
+            const list = SKINS.filter(sk => (!sk.noCase || sk.u) && SHOP_PRICE[sk.r]).sort((a, b) => (!!a.u - !!b.u) || (ORDER.indexOf(a.w) - ORDER.indexOf(b.w)) || (b.r - a.r));
+            const rows = list.map(sk => `<tr><td style="color:${RARITY[sk.r][0]};text-align:left;padding:2px 8px">${sk.n}${sk.u ? ' <span style="color:#8fa3b8">(von ' + sk.by + ')</span>' : ''}</td><td>🪙 <input data-prs="${sk.id}" data-r="${sk.r}" type="number" min="0" step="10" placeholder="${rPrice(sk.r)}" value="${PRICES.s && PRICES.s[sk.id] != null ? PRICES.s[sk.id] : ''}" style="${inp}"></td></tr>`).join('');
+            showOverlay(`<h1 style="font-size:30px">💲 PREISE ANPASSEN<small>GILT FÜR ALLE SPIELER · LEERES FELD = PREIS DER SELTENHEIT</small></h1>
+ <div class="invbox" style="max-height:56vh;overflow-y:auto">
+ <h5 style="margin:4px 0 8px">NACH SELTENHEIT</h5>
+ <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:12px">${[1, 2, 3, 4].map(r => `<label style="color:${RARITY[r][0]};font-size:13px">${RARITY[r][1]} 🪙 <input data-prr="${r}" type="number" min="0" step="10" value="${rPrice(r)}" style="${inp}"></label>`).join('')}</div>
+ <h5 style="margin:4px 0 8px">EINZELNE SKINS</h5>
+ <table style="margin:0 auto;font-size:13px">${rows}</table></div>
+ <p id="prMsg" style="font-size:13px;min-height:16px"></p>
+ <div><button id="prSave">💾 Für alle speichern</button><button id="prReset">↺ Standardpreise</button><button id="prBack">Zurück</button></div>`);
+            const sync = () => document.querySelectorAll('[data-prs]').forEach(el => { const v = document.querySelector('[data-prr="' + el.dataset.r + '"]').value; el.placeholder = v === '' ? SHOP_PRICE[el.dataset.r] : v; });
+            document.querySelectorAll('[data-prr]').forEach(el => el.oninput = sync);
+            const send = prices => { $('prMsg').style.color = ''; $('prMsg').textContent = 'Speichern …'; accApi('setprices', { code, prices }).then(r => { if (!r.ok) { $('prMsg').style.color = '#e77'; return $('prMsg').textContent = r.err || 'Fehler'; }
+                PRICES = r.prices; try { localStorage.setItem('cprices', JSON.stringify(PRICES)); } catch (e) { } sfx('win'); toast('💲 Preise gespeichert', 'Gilt ab sofort für alle Spieler'); showShop(true); }).catch(() => { $('prMsg').style.color = '#e77'; $('prMsg').textContent = 'Keine Verbindung zum Server'; }); };
+            $('prSave').onclick = () => { const p = { r: {}, s: {} };
+                document.querySelectorAll('[data-prr]').forEach(el => { if (el.value !== '' && +el.value !== SHOP_PRICE[el.dataset.prr]) p.r[el.dataset.prr] = Math.max(0, Math.round(+el.value)); });
+                document.querySelectorAll('[data-prs]').forEach(el => { if (el.value !== '') p.s[el.dataset.prs] = Math.max(0, Math.round(+el.value)); }); send(p); };
+            $('prReset').onclick = () => { if (confirm('Alle Preise für alle Spieler auf Standard zurücksetzen?')) send({ r: {}, s: {} }); };
+            $('prBack').onclick = () => showShop(true);
+        }
         function shopClaim() { if (ACC) accApi('claim', { tok: ACC.tok }).then(r => { if (r.ok && r.coins > 0) { PRG.st.coins = (PRG.st.coins || 0) + r.coins; localStorage.setItem('prog', JSON.stringify(PRG)); toast('🪙 +' + r.coins + ' Coins', 'Andere haben Deine Skins gekauft!'); if ($('shopBox')) showShop(true); } }).catch(() => { }); }
         function showShop(noFetch) {
             if (!noFetch) { loadSkins(() => { if ($('shopBox')) showShop(true); }); shopClaim(); }
             const coins = PRG.st.coins || 0, own = new Set(store.inv), ORDER = ['knife', 'awp', 'scout', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
             const list = SKINS.filter(sk => !sk.noCase && SHOP_PRICE[sk.r]).sort((a, b) => (ORDER.indexOf(a.w) - ORDER.indexOf(b.w)) || (b.r - a.r));
-            const cards = list.map(sk => { const has = own.has(sk.id), pr = SHOP_PRICE[sk.r], ok = !has && coins >= pr;
+            const cards = list.map(sk => { const has = own.has(sk.id), pr = skPrice(sk), ok = !has && coins >= pr;
                 return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; }).join('');
             const me = ACC ? ACC.u : null, com = SKINS.filter(sk => sk.u).sort((a, b) => (b.sold - a.sold) || (b.r - a.r));
-            const ccards = com.map(sk => { const has = own.has(sk.id), pr = SHOP_PRICE[sk.r], mine = sk.by === me;
+            const ccards = com.map(sk => { const has = own.has(sk.id), pr = skPrice(sk), mine = sk.by === me;
                 return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Löschen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; }).join('');
             showOverlay(`<h1 style="font-size:34px">🪙 SHOP<small>SKINS FÜR COINS · SIEG +100 · NIEDERLAGE +20 · KILL +10</small></h1>
  <p>Du hast <b style="color:var(--hl)">🪙 ${coins}</b> Coins</p>
@@ -4786,10 +4817,10 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <div class="invrow" style="flex-wrap:wrap;justify-content:center;margin-bottom:14px">${ccards || '<span style="color:#8fa3b8">Noch keine Community-Skins – erstelle den ersten!</span>'}</div>
  <h5 style="margin:4px 0 8px">📦 OFFIZIELLE SKINS</h5>
  <div class="invrow" style="flex-wrap:wrap;justify-content:center">${cards}</div></div>
- <div><button id="btnInvGo">🎒 Inventar</button><button id="btnCasesGo">📦 Cases</button><button id="btnBack">Zurück</button></div>`);
-            $('btnInvGo').onclick = showInventory; $('btnCasesGo').onclick = showCases; $('btnBack').onclick = navBack;
+ <div><button id="btnInvGo">🎒 Inventar</button><button id="btnCasesGo">📦 Cases</button><button id="btnPrices">💲 Preise anpassen</button><button id="btnBack">Zurück</button></div>`);
+            $('btnInvGo').onclick = showInventory; $('btnCasesGo').onclick = showCases; $('btnPrices').onclick = showPriceCode; $('btnBack').onclick = navBack;
             document.querySelectorAll('[data-shop]').forEach(el => el.onclick = () => {
-                const sk = SKINS.find(x => x.id === el.dataset.shop), pr = SHOP_PRICE[sk.r];
+                const sk = SKINS.find(x => x.id === el.dataset.shop), pr = skPrice(sk);
                 if (store.inv.includes(sk.id)) return toast('Schon im Inventar', sk.n);
                 if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
                 PRG.st.coins -= pr; localStorage.setItem('prog', JSON.stringify(PRG)); store.inv.push(sk.id); saveStore(); sfx('win'); toast('🎁 Gekauft: ' + sk.n, 'Jetzt im Inventar – dort ausrüsten'); showShop(true);
@@ -4797,7 +4828,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             $('btnMkSkin').onclick = () => showSkinMaker();
             document.querySelectorAll('[data-rmsk]').forEach(el => el.onclick = e => { e.stopPropagation(); if (!confirm('Skin wirklich aus dem Shop löschen?')) return; accApi('rmskin', { tok: ACC.tok, id: el.dataset.rmsk }).then(r => { if (!r.ok) return toast('Fehler', r.err || ''); loadSkins(() => showShop(true)); }); });
             document.querySelectorAll('[data-cshop]').forEach(el => el.onclick = () => {
-                const sk = SKINS.find(x => x.id === el.dataset.cshop), pr = SHOP_PRICE[sk.r];
+                const sk = SKINS.find(x => x.id === el.dataset.cshop), pr = skPrice(sk);
                 if (store.inv.includes(sk.id)) return toast('Schon im Inventar', sk.n);
                 if (!ACC) return toast('🔒 Bitte einloggen', 'Community-Skins brauchen einen Account');
                 if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
@@ -4826,7 +4857,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <tr><td>Art</td><td><select id="skMode" style="${inp}"><option value="pat">Muster</option><option value="paint">🖌 Selbst malen</option></select></td></tr>
  <tr><td>Muster</td><td><select id="skP" style="${inp}">${SK_PAT.map(([k, t]) => `<option value="${k}">${t}</option>`).join('')}</select></td></tr>
  <tr><td>Farben</td><td><input type="color" id="skC1" value="#e8c98a" title="Farbe 1 (beim Malen: Untergrund)"> <input type="color" id="skC2" value="#1d2b3a"> <input type="color" id="skC3" value="#ff5a5a"></td></tr>
- <tr><td>Seltenheit</td><td><select id="skR" style="${inp}">${[1, 2, 3, 4].map(r => `<option value="${r}">${RARITY[r][1]} · 🪙 ${SHOP_PRICE[r]}</option>`).join('')}</select></td></tr></table></div>
+ <tr><td>Seltenheit</td><td><select id="skR" style="${inp}">${[1, 2, 3, 4].map(r => `<option value="${r}">${RARITY[r][1]} · 🪙 ${rPrice(r)}</option>`).join('')}</select></td></tr></table></div>
  <p id="skMsg" style="font-size:13px;color:#8fa3b8">Max. 10 eigene Skins · Du bekommst Deinen Skin selbst gratis ins Inventar</p>
  <div><button id="skPub">🚀 Im Shop veröffentlichen</button><button id="btnBack">Zurück</button></div>`);
             const cv = $('skCv'), g = cv.getContext('2d'), undo = []; let tool = 'pen', mir = false, painted = false, last = null;
