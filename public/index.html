@@ -948,10 +948,10 @@
         }
 
         /* News: die letzten drei Patches als Karten nebeneinander */
-        #csnews { position: absolute; left: 28px; right: 28px; top: 84px; gap: 14px; align-items: flex-start; overflow-x: auto }
+        #csnews { position: absolute; left: 50%; right: auto; transform: translateX(-50%); width: min(1180px, 94vw); top: 84px; max-height: calc(100vh - 100px); gap: 22px; flex-wrap: wrap; justify-content: center; align-content: flex-start; overflow-y: auto; padding: 6px 4px 20px; box-sizing: border-box }
         #csnews .newscard { position: static; flex: 1 1 0; min-width: 260px; width: auto; max-width: none; max-height: calc(100vh - 150px); overflow-y: auto }
         #csnews .newscard:first-child { border-color: rgba(232, 201, 138, .55) }
-        .mob #csnews { top: 48px; left: 10px; right: 10px; gap: 8px }
+        .mob #csnews { top: 48px; width: 96vw; max-height: calc(100vh - 56px); gap: 10px }
         .mob #csnews .newscard { min-width: 240px; max-height: calc(100vh - 64px); padding: 10px 12px }
 
         .cspanel h3 {
@@ -2141,6 +2141,27 @@ body.dh #score, body.dh #roundlbl, body.dh #money, body.dh #aliveL, body.dh #ali
 .dhw{ width:190px; padding:14px 12px; background:rgba(20,30,40,.85); border:1px solid rgba(255,216,74,.4); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
 .dhw:hover{ border-color:#ffd84a; background:rgba(255,216,74,.12); } .dhw i{ font-style:normal; font-size:38px; } .dhw b{ font:bold 17px Arial; color:#fff; } .dhw span{ font:12px Arial; color:#8fa3b8; min-height:30px; } .dhw em{ font:bold 12px Arial; color:#ffd84a; font-style:normal; }
 .mob #dhBan{ font-size:18px; top:20%; } .mob .dhw{ width:150px; padding:10px 8px; } .mob .dhw i{ font-size:28px; }
+/* ── News-Kacheln & Vollbild-Ansicht (Valorant-Stil) ── */
+.ntile{ width:360px; background:rgba(10,14,19,.82); border:1px solid rgba(255,255,255,.1); cursor:pointer; text-align:left; transition:transform .15s, border-color .15s; }
+.ntile:hover{ transform:translateY(-3px); border-color:#e8c98a; }
+.nban{ height:170px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#111; text-shadow:0 1px 0 rgba(255,255,255,.3); }
+.nban b{ font:900 64px 'Arial Black', Impact, sans-serif; line-height:1; } .nban span{ font:bold 15px Arial; letter-spacing:4px; margin-top:4px; }
+.nban.big{ height:240px; } .nban.big b{ font-size:96px; } .nban.big span{ font-size:20px; }
+.nmeta{ display:flex; gap:10px; align-items:center; padding:12px 16px 0; font:bold 13px Arial; letter-spacing:1px; }
+.nmeta em{ color:#ff5a5a; font-style:normal; } .nmeta i{ font-style:normal; color:#111; background:#e8c98a; padding:1px 7px; font-size:11px; }
+.ntile h4{ margin:6px 16px 4px; font:bold 20px Arial; color:#fff; line-height:1.25; } .ntile p{ margin:0 16px 16px; font:13px Arial; color:#aab4c0; line-height:1.5; }
+#newsRead{ position:fixed; inset:0; z-index:9990; background:rgba(6,9,13,.96); overflow-y:auto; text-align:left; }
+#newsRead .nrin{ width:min(900px,94vw); margin:0 auto; padding:24px 0 60px; position:relative; }
+#newsRead h2{ margin:8px 0 14px; font:bold 34px Arial; color:#fff; } #newsRead .nmeta{ padding:16px 0 0; }
+#newsRead .nrbody{ font-size:16px !important; line-height:1.8 !important; color:#cfd8e3; } #newsRead .nrbody p{ font-size:18px !important; margin:18px 0 6px !important; }
+.nrback{ position:sticky; top:12px; float:right; z-index:2; font:bold 15px Rajdhani, Arial; letter-spacing:1px; padding:8px 16px; background:#1d2b3a; color:#e8c98a; border:2px solid #e8c98a; cursor:pointer; }
+.nrback:hover{ background:#e8c98a; color:#111; }
+/* Lobby: Team-Kästen im Wettkampf */
+.lobteams{ display:flex; gap:8px; } .lobteam{ flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; padding:8px; border:1px solid rgba(255,255,255,.15); cursor:pointer; background:rgba(10,14,19,.5); }
+.lobteam.ct{ border-top:3px solid #8ab4ff; } .lobteam.t{ border-top:3px solid #ffb076; } .lobteam.mine{ background:rgba(232,201,138,.1); border-color:rgba(232,201,138,.5); } .lobteam:hover{ border-color:#e8c98a; }
+.lobteam h4{ margin:0 0 2px; display:flex; justify-content:space-between; font:bold 11px Arial; letter-spacing:1px; color:#cfd8e3; } .lobteam.ct h4{ color:#8ab4ff; } .lobteam.t h4{ color:#ffb076; }
+.lobteam em{ font:12px Arial; color:#e8c98a; font-style:normal; text-align:center; padding:6px 0; border:1px dashed rgba(232,201,138,.4); }
+.mob .ntile{ width:46vw; } .mob .nban{ height:110px; } .mob .nban b{ font-size:40px; } .mob .ntile h4{ font-size:15px; } .mob #newsRead h2{ font-size:24px; } .mob .nban.big{ height:150px; } .mob .nban.big b{ font-size:60px; }
 /* ── Regeln: präsenter ── */
 #overlay button.rulesbtn{ border-color:#e8c98a; color:#111; background:linear-gradient(#f1d79e,#d9b56c); box-shadow:0 0 14px rgba(232,201,138,.35); font-weight:bold; }
 .rchips{ display:flex; flex-wrap:wrap; gap:5px; margin:8px 0 2px; cursor:pointer; }
@@ -4764,6 +4785,25 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('meSave').onclick = save;
             $('mePlay').onclick = () => { const k = save(); if (!k) return; localStorage.setItem('map', k); sessionStorage.setItem('opentab', 'play'); location.reload(); };
         }
+        // News im Kachel-Stil: Banner (Version + Name), Kategorie, Titel, Kurzinhalt – Klick öffnet den Patch im Vollbild
+        const NEWS_COL = ['#e8c98a,#b8862e', '#7ec8e3,#2b5d8a', '#ff7a8a,#8a2b4a', '#9fe08a,#2e6b3a', '#c49bff,#4a2b8a', '#ffb076,#8a4a1e', '#8fa3b8,#2a3a4a'];
+        function newsTiles() {
+            const box = $('csnews'); if (!box || box.dataset.tiles) return; box.dataset.tiles = 1;
+            [...box.querySelectorAll('.newscard')].forEach((c, i) => {
+                const h = c.querySelector('h3'), t = h ? h.textContent : '', isNew = /^\s*NEU\s*·/.test(t), mm = t.match(/PATCH\s*([\d.]+)\s*„?([^"“”]*)/i), ver = mm ? mm[1] : '', name = mm ? mm[2].trim() : t;
+                const secs = [...c.querySelectorAll('p')].map(p => p.textContent.replace(/^[^A-Za-zÄÖÜ]+/, '').trim()).filter(x => x && x.length < 40).slice(0, 4);
+                const tile = document.createElement('div'); tile.className = 'ntile'; const [c1, c2] = NEWS_COL[i % NEWS_COL.length].split(',');
+                tile.innerHTML = `<div class="nban" style="background:linear-gradient(135deg,${c1},${c2})"><b>${ver}</b><span>${name}</span></div><div class="nmeta"><em>PATCHNOTES</em>${isNew ? '<i>NEU</i>' : ''}</div><h4>Patch ${ver} – ${name.charAt(0) + name.slice(1).toLowerCase()}</h4><p>${secs.join(' · ')}</p>`;
+                tile.onclick = () => newsRead(c, c1, c2, ver, name); c.style.display = 'none'; box.insertBefore(tile, c);
+            });
+        }
+        function newsRead(card, c1, c2, ver, name) {
+            const old = $('newsRead'); if (old) old.remove(); const d = document.createElement('div'); d.id = 'newsRead';
+            const body = card.querySelector('h3 + div') || card.lastElementChild;
+            d.innerHTML = `<div class="nrin"><button class="nrback">✕ Zurück</button><div class="nban big" style="background:linear-gradient(135deg,${c1},${c2})"><b>${ver}</b><span>${name}</span></div><div class="nmeta"><em>PATCHNOTES</em></div><h2>Patch ${ver} – ${name}</h2><div class="nrbody">${body ? body.innerHTML : ''}</div></div>`;
+            document.body.appendChild(d); const close = () => { d.remove(); removeEventListener('keydown', esc, true); }, esc = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+            d.querySelector('.nrback').onclick = close; addEventListener('keydown', esc, true); d.onclick = e => { if (e.target === d) close(); };
+        }
         function showMenu() {
             edFrom = 'play';
             $('hud').style.display = 'none'; setupMenuScene();
@@ -5100,7 +5140,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const setTab = nav => {
                 document.querySelectorAll('#cstabs a').forEach(x => x.classList.toggle('on', x.dataset.nav === nav));
                 $('csplayview').style.display = nav === 'play' ? 'flex' : 'none';
-                $('csnews').style.display = nav === 'news' ? 'flex' : 'none';
+                $('csnews').style.display = nav === 'news' ? 'flex' : 'none'; if (nav === 'news') newsTiles();
                 $('cschar').style.display = nav === 'play' ? 'none' : 'block';
                 const lg = $('cslogo'); if (lg) lg.style.display = nav === 'home' ? 'block' : 'none';
             };
@@ -5149,7 +5189,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 $('barOff').style.display = !PM.on && !arena ? 'inline-flex' : 'none';
                 $('btnCT').style.display = $('btnT').style.display = PM.cat === 'comp' ? '' : 'none'; $('btnDM').style.display = PM.cat === 'dm' ? '' : 'none'; $('btnDuck').style.display = $('btnDuckLb').style.display = PM.cat === 'duck' ? '' : 'none';
                 $('barOn').style.display = PM.on ? 'inline-flex' : 'none';
-                $('mpT').style.display = PM.cat === 'comp' ? '' : 'none'; $('mpCT').textContent = PM.cat === 'comp' ? 'Beitreten: CT' : 'Lobby beitreten';
+                $('mpT').style.display = 'none'; $('mpCT').textContent = 'Lobby beitreten'; /* Team wird jetzt in der Lobby gewählt */
                 $('catdesc').textContent = MODES[PM.cat][2] + (PM.on ? ' · Online: Tritt einer Lobby bei – der Host startet dort.' : arena ? ' · Arena wird automatisch gewählt.' : ' · Wähle eine Karte.');
                 if (PM.on) fetchRooms();
             };
@@ -6115,6 +6155,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'dhhit': if (NET.host && DH.on && !DH.ended) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhKill(d, m.pid, !!m.hs); } break;
                 case 'dhdie': if (!NET.host && DH.on) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhRemove(d, true); else burst(m.x, m.y + 0.5, m.z, 0xffffff, 10, 3); if (m.t === 'b') burst(m.x, m.y + 0.5, m.z, 0xff8a30, 26, 6); dhCredit(m.by, m.t, m.pts, m.m, m.n); } break;
                 case 'dhend': if (!NET.host && DH.on) dhEnd(m.sc); break;
+                case 'team': { const rp = NET.players.get(m.pid); if (rp && (m.team === 'CT' || m.team === 'T')) { rp.team = m.team; if (rp.mesh) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, rp.ag, false, rp.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } if (NET.inLobby) renderLobby(); } break; }
                 case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
                 case 'hello': addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w: DH.w }); }
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: store.agent, hat: duckHat() ? 1 : 0 });
@@ -6227,6 +6268,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             }[md];
             let rows = card(player.team, player.name + ' (Du)', NET.host);
             for (const rp of NET.players.values()) rows += card(rp.team, rp.name, false);
+            if (md === 'comp') { // Wettkampf: zwei Team-Kästen, Klick = Team wechseln (wie im Gauntlet)
+                const all = [{ team: player.team, name: player.name + ' (Du)', host: NET.host, me: 1 }, ...[...NET.players.values()].map(rp => ({ team: rp.team, name: rp.name }))];
+                rows = '<div class="lobteams">' + ['CT', 'T'].map(tm => { const mem = all.filter(p => p.team === tm);
+                    return `<div class="lobteam ${tm === 'CT' ? 'ct' : 't'} ${player.team === tm ? 'mine' : ''}" data-lteam="${tm}"><h4>${tm === 'CT' ? 'COUNTER-TERRORISTS' : 'TERRORISTEN'}<span>${mem.length}</span></h4>${mem.map(p => `<div class="lobp" style="border-left-color:${tm === 'CT' ? '#8ab4ff' : '#ffb076'}"><b>${p.name}</b><span>${p.host ? '👑 Host' : p.me ? 'Du' : 'Bereit'}</span></div>`).join('')}${player.team === tm ? '' : '<em>＋ Klicken zum Beitreten</em>'}</div>`; }).join('') + '</div>';
+            }
             const frs = [player.name, ...[...NET.players.values()].map(r => r.name)].map(n => `<div class="fr" title="${n}">${(n[0] || '?').toUpperCase()}</div>`).join('');
             showOverlay(`
  <div id="csmenu">
@@ -6251,6 +6297,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div id="csver">LOBBY | ${modeName(md)} | ${md === 'gl' || md === 'v1' ? 'Arenen' : MAPLABEL} | ${NET.srv}</div>
  </div>`, true);
             $('lobRules').onclick = () => { if (NET.host || NET.hostCfg) showGameSettings({ cfg: NET.host ? CFG : NET.hostCfg, ro: !NET.host, back: renderLobby }); };
+            document.querySelectorAll('[data-lteam]').forEach(el => el.onclick = () => { const tm = el.dataset.lteam; if (tm === player.team) return; player.team = tm; netSend({ type: 'team', pid: NET.pid, team: tm }); renderLobby(); });
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
                 on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
