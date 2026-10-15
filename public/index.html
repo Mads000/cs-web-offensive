@@ -2596,7 +2596,7 @@ body.edit #tlook{ pointer-events:none; }
  <div id="editbar"><b>Buttons ziehen & ablegen</b><button id="editDone">✓ Fertig</button><button id="editReset">↺ Reset</button></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        'use strict';
+        (() => { 'use strict'; // Anti-Cheat: alles lokal in dieser Funktion – Konsolen-Skripte kommen nicht an player, bots, updatePlayer & Co.
         // =====================================================================
         //  ACCOUNT / CLOUD-SAVE (Server speichert in data/users.json, keine Datenbank)
         // =====================================================================
@@ -3809,6 +3809,15 @@ body.edit #tlook{ pointer-events:none; }
         function tracer(x, y, z, end) { const tr = tracerPool.find(t => t.t <= 0) || tracerPool[0]; const a = tr.line.geometry.attributes.position; a.setXYZ(0, x, y, z); a.setXYZ(1, end.x, end.y, end.z); a.needsUpdate = true; tr.line.visible = true; tr.t = 0.06; }
         const boomMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), new THREE.MeshBasicMaterial({ color: 0xffb040, transparent: true, opacity: 0.9 })); boomMesh.visible = false; scene.add(boomMesh);
         let boomT = 0, whiteFlash = 0, dmgFlash = 0, hitT = 0, hitHS = false, shake = 0;
+        // Anti-Cheat: Schaden, den andere schicken, muss zur Waffe passen (Höchstschaden & Feuerrate) – sonst wird er verworfen
+        const DMG_LOG = new Map();
+        function dmgOk(from, d, wn) {
+            if (typeof d !== 'number' || !isFinite(d) || d <= 0) return false;
+            const def = Object.values(W).find(x => x.name === wn) || (/^(Butterfly|Karambit)$/.test(wn) ? W.knife : null), gun = def && !def.nade && !def.plant;
+            if (d > (gun ? (def.key === 'awp' ? 9999 : def.dmg * 4 * 1.6) : 150)) return false;
+            const L = (DMG_LOG.get(from) || []).filter(t => now - t < 1); L.push(now); DMG_LOG.set(from, L);
+            return L.length <= (gun ? Math.ceil((def.pellets || 1) / Math.max(0.05, def.rate) * 1.5) + 3 : 12);
+        }
         function dmgDir(att) { // Bogen am Bildschirmrand zeigt, aus welcher Richtung der Schaden kam
             let el = $('dmgdir'); if (!el) { el = document.createElement('div'); el.id = 'dmgdir'; el.style.cssText = 'position:fixed;left:50%;top:50%;width:260px;height:260px;margin:-130px 0 0 -130px;pointer-events:none;z-index:5;border-radius:50%;background:radial-gradient(circle at 50% 0%,rgba(255,40,40,.8) 0,rgba(255,40,40,.35) 13%,transparent 28%);opacity:0'; document.body.appendChild(el); }
             const p = player, ty = Math.atan2(-(att.x - p.x), -(att.z - p.z)); el.style.transform = 'rotate(' + (p.yaw - ty) + 'rad)'; el.style.transition = 'none'; el.style.opacity = 1; void el.offsetWidth; el.style.transition = 'opacity 1s'; el.style.opacity = 0;
@@ -5189,7 +5198,25 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 1.9 „KARTENBAU"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 2.0 „FAIRPLAY"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🛡️ ANTI-CHEAT</p>
+ Das Spiel ist jetzt <b>abgeschottet</b>: Skripte aus der Browser-Konsole kommen nicht mehr an Spieler, Bots oder Spielfunktionen heran – Aimbot, Wallhack, God Mode, Rapid Fire & Co. funktionieren nicht mehr.<br>
+ <b>Online-Schaden wird geprüft:</b> Treffer von Mitspielern müssen zur Waffe passen (Höchstschaden und Feuerrate). Gefälschter Schaden wird verworfen.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">💻 PC-APP</p>
+ CS:WO gibt es jetzt als <b>Desktop-App für Windows</b> – Download unten rechts im Hauptmenü: <b>💻 PC-App herunterladen</b>.<br>
+ Nutzt automatisch die <b>starke Grafikkarte</b> (vor allem bei Laptops), läuft ohne Browser-Ballast und wird im Hintergrund nicht gedrosselt.<br>
+ <b>Updates kommen automatisch</b> – die App lädt immer die neueste Version. F11 = Vollbild, F5 = neu laden.<br>
+ Beim ersten Start meldet Windows evtl. „Unbekannter Herausgeber“ → <b>Weitere Informationen → Trotzdem ausführen</b>.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎮 SPIELGEFÜHL</p>
+ <b>Knackigeres Movement</b> wie in CS: schnell auf Tempo, sofortiger Stopp beim Loslassen (Counter-Strafing) und ein schnellerer Sprung bei gleicher Höhe. Kamera-Neigung entfernt.<br>
+ Weiterhin flüssiger dank Schatten- und Kollisions-Optimierungen – prüfbar mit der <b>FPS-Anzeige</b> oben rechts.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.9 „KARTENBAU"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🗺️ KARTEN ÜBERARBEITET</p>
@@ -5514,7 +5541,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.9 „Kartenbau" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CS:WO 2.0 „Fairplay" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -6603,14 +6630,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     const rp = NET.players.get(m.pid); sfx(m.snd, m.x, m.z);
                     if (rp) { rp.lastShotT = now; rp.flash.visible = true; setTimeout(() => rp.flash.visible = false, 60); } break;
                 }
-                case 'dmg': if (m.to === NET.pid && player.alive) applyDamage(player, m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
+                case 'dmg': if (m.to === NET.pid && player.alive && NET.players.has(m.from) && dmgOk(m.from, m.d, m.w)) applyDamage(player, m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
                 case 'kf': {
                     killfeed(m.an ? { name: m.an, team: m.at } : null, { name: m.vn, team: m.vt }, m.w ? { name: m.w } : null, m.hs);
                     if (NET.host && !m.ap && m.an && (DM.on || m.at !== m.vt)) { const kb = bots.find(x => x.name === m.an); if (kb) kb.kills++; }
                     if (m.ap === NET.pid) { if (m.at !== m.vt || GL.on || DM.on) { player.kills++; player.money = Math.min(16000, player.money + m.rw); sfx('kill'); killPop(m.vn, m.hs); if (GL.on && player.glP && player.glP.vamp && player.alive) player.health = Math.min(player.maxHP || 100, player.health + 10 * player.glP.vamp); } else player.kills--; } break;
                 }
 
-                case 'botdmg2': if (m.to === NET.pid && player.alive) applyDamage(player, m.d, { name: m.bn, team: m.bt, isPlayer: false }, { name: m.w, key: '' }, m.hs); break; case 'botdmg': if (NET.host && bots[m.id] && bots[m.id].alive) applyDamage(bots[m.id], m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
+                case 'botdmg2': if (m.to === NET.pid && player.alive && dmgOk('bot:' + m.bn, m.d, m.w)) applyDamage(player, m.d, { name: m.bn, team: m.bt, isPlayer: false }, { name: m.w, key: '' }, m.hs); break; case 'botdmg': if (NET.host && bots[m.id] && bots[m.id].alive && NET.players.has(m.from) && dmgOk(m.from, m.d, m.w)) applyDamage(bots[m.id], m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
                 case 'glstart': if (!NET.host) {
                     if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
                     NET.inLobby = false; GL.on = true; GL.v1 = !!m.v1; GL.v1n = undefined; GL.stage = 0; GL.rerolls = 3; CFG.agTheme = m.ag | 0; remeshAll(); if (bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); }
@@ -6827,7 +6854,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         addEventListener('appinstalled', () => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; toast('📲 Installiert!', 'CS:WO ist jetzt als App auf Deinem Gerät.'); });
         const mj = sessionStorage.getItem('mpjoin');
         if (mj) { sessionStorage.removeItem('mpjoin'); try { const j = JSON.parse(mj); $('pname').value = j.name; $('srv').value = j.srv; $('room').value = j.room; startMP(j.team); } catch (e) { } }
-        loop();    </script>
+        loop();
+        window.closeBuy = closeBuy; window.startTutorial = startTutorial; // nur was die HTML-Buttons brauchen
+        })();
+    </script>
 </body>
 
 </html>
