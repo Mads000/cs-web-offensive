@@ -3361,11 +3361,12 @@ body.edit #tlook{ pointer-events:none; }
                 else if (P === 'gold') { const gr = g.createLinearGradient(0, 0, w, hh); gr.addColorStop(0, colS(sk.c, 1.2)); gr.addColorStop(0.5, A); gr.addColorStop(1, colS(sk.c, 0.8)); g.fillStyle = gr; g.fillRect(0, 0, w, hh); g.strokeStyle = B; g.lineWidth = 2; for (let y = 0; y <= hh; y += 32) for (let x = 0; x <= w; x += 32) { g.beginPath(); g.arc(x, y, 12, 0, 7); g.stroke(); g.beginPath(); g.arc(x + 16, y + 16, 5, 0, 7); g.stroke(); } }
                 else if (P === 'dragon') { g.fillStyle = A; g.fillRect(0, 0, w, hh); g.strokeStyle = B; g.lineWidth = 2; for (let y = 0; y < hh + 12; y += 12) for (let x = (y / 12) % 2 ? 0 : 8; x < w + 16; x += 16) { g.beginPath(); g.arc(x, y, 8, 0, Math.PI); g.stroke(); } g.fillStyle = C; g.beginPath(); g.moveTo(20, 100); g.quadraticCurveTo(60, 40, 110, 70); g.quadraticCurveTo(70, 70, 40, 110); g.fill(); }
                 else if (P === 'asiimov') { g.fillStyle = '#f2f2f2'; g.fillRect(0, 0, w, hh); g.fillStyle = A; g.fillRect(0, 70, w, 30); g.fillRect(80, 0, 22, 70); g.fillStyle = B; g.fillRect(0, 100, w, 8); g.fillRect(102, 0, 6, 100); g.fillRect(20, 30, 40, 6); }
+                else if (P === 'paint' && sk.img) { g.fillStyle = A; g.fillRect(0, 0, w, hh); const im = new Image(); im.onload = () => { g.imageSmoothingEnabled = false; g.drawImage(im, 0, 0, w, hh); const tx = SKTEX[sk.id]; if (tx) tx.needsUpdate = true; delete SKSW[sk.id]; }; im.src = sk.img; }
                 else { const gr = g.createLinearGradient(0, 0, w, hh); gr.addColorStop(0, colS(sk.c, 1.15)); gr.addColorStop(1, colS(sk.c, 0.85)); g.fillStyle = gr; g.fillRect(0, 0, w, hh); }
             });
             return SKTEX[sk.id] = t;
         }
-        function skinSwatch(sk) { return SKSW[sk.id] || (SKSW[sk.id] = skinTex(sk).image.toDataURL()); }
+        function skinSwatch(sk) { if (sk.img) return sk.img; return SKSW[sk.id] || (SKSW[sk.id] = skinTex(sk).image.toDataURL()); }
         function skinMat(o, sk, i) {
             const m = o.material; m.emissiveMap = null;
             if (sk) { m.map = skinTex(sk); m.color.setHex(i % 3 === 2 ? 0x777777 : 0xffffff); if (sk.p === 'neon' || sk.r >= 3) { m.emissiveMap = skinTex(sk); m.emissive.setHex(sk.p === 'neon' ? 0x777777 : 0x2a2a2a); } else m.emissive.setHex(0x000000); }
@@ -3373,10 +3374,10 @@ body.edit #tlook{ pointer-events:none; }
             m.needsUpdate = true;
         }
         // Community-Skins: als normale Skins registriert (u: 1, nicht in Cases/Gamble)
-        function regSkins(list) { let add = 0; for (const k of list || []) { if (!W[k.w]) continue; const o = SKINS.find(x => x.id === k.id), d = { id: k.id, w: k.w, km: KNIVES[k.km] ? k.km : undefined, n: (KNIVES[k.km] ? KNIVES[k.km] : W[k.w].name) + ' | ' + k.n, c: k.c, c2: k.c2, c3: k.c3, p: k.p, r: k.r, noCase: 1, u: 1, by: k.by, sold: k.sold || 0 }; if (o) o.sold = d.sold; else { SKINS.push(d); add++; } } return add; }
+        function regSkins(list) { let add = 0; for (const k of list || []) { if (!W[k.w]) continue; const o = SKINS.find(x => x.id === k.id), d = { id: k.id, w: k.w, km: KNIVES[k.km] ? k.km : undefined, n: (KNIVES[k.km] ? KNIVES[k.km] : W[k.w].name) + ' | ' + k.n, c: k.c, c2: k.c2, c3: k.c3, p: k.p, img: k.p === 'paint' ? k.img : undefined, r: k.r, noCase: 1, u: 1, by: k.by, sold: k.sold || 0 }; if (o) o.sold = d.sold; else { SKINS.push(d); add++; } } return add; }
         function dropSkins(ids) { for (let i = SKINS.length - 1; i >= 0; i--) if (SKINS[i].u && !ids.has(SKINS[i].id)) SKINS.splice(i, 1); }
         try { regSkins(JSON.parse(localStorage.getItem('cskins') || '[]')); } catch (e) { }
-        function loadSkins(then) { accApi('skins', {}).then(r => { if (!r.ok) return; localStorage.setItem('cskins', JSON.stringify(r.skins)); dropSkins(new Set(r.skins.map(k => k.id))); regSkins(r.skins); knifeNames(); applySkins(); if (then) then(); }).catch(() => { }); }
+        function loadSkins(then) { accApi('skins', {}).then(r => { if (!r.ok) return; try { localStorage.setItem('cskins', JSON.stringify(r.skins)); } catch (e) { } dropSkins(new Set(r.skins.map(k => k.id))); regSkins(r.skins); knifeNames(); applySkins(); if (then) then(); }).catch(() => { }); }
         loadSkins();
         knifeNames(); // Messer-Skins nach gewähltem Modell benennen
         function applySkins() {
@@ -4518,22 +4519,49 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         let skPv = 0;
         function showSkinMaker() {
             if (!ACC) return toast('🔒 Bitte einloggen', 'Zum Erstellen brauchst Du einen Account');
-            const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock', ...Object.keys(KNIVES).map(k => 'knife:' + k), 'he', 'flash', 'smoke', 'molly', 'c4'], inp = 'font:bold 14px Arial;padding:6px 8px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px';
-            showOverlay(`<h1 style="font-size:32px">🎨 SKIN ERSTELLEN<small>ERSCHEINT FÜR ALLE IM SHOP · DU BEKOMMST 50 % JEDES VERKAUFS</small></h1>
- <div class="invbox" style="display:flex;gap:22px;flex-wrap:wrap;justify-content:center;align-items:center;padding:14px">
- <div style="text-align:center"><img id="skPrev" style="width:180px;height:180px;border:2px solid #e8c98a;image-rendering:pixelated"><div id="skPrevN" style="margin-top:6px;font:bold 14px Arial"></div></div>
+            const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock', ...Object.keys(KNIVES).map(k => 'knife:' + k), 'he', 'flash', 'smoke', 'molly', 'c4'], inp = 'font:bold 14px Arial;padding:6px 8px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px', bt = 'margin:0;padding:4px 9px;font-size:13px';
+            showOverlay(`<h1 style="font-size:32px">🎨 SKIN-EDITOR<small>MUSTER WÄHLEN ODER SELBST MALEN · ERSCHEINT FÜR ALLE IM SHOP · 50 % JEDES VERKAUFS FÜR DICH</small></h1>
+ <div class="invbox" style="display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-start;padding:12px">
+ <div style="text-align:center"><div style="font:bold 11px Arial;color:#8fa3b8;letter-spacing:1px;margin-bottom:4px">VORSCHAU</div><img id="skPrev" style="width:120px;height:120px;border:2px solid #e8c98a;image-rendering:pixelated"><div id="skPrevN" style="margin-top:6px;font:bold 13px Arial;max-width:140px"></div></div>
+ <div id="skPaint" style="display:none;text-align:center"><canvas id="skCv" width="64" height="64" style="width:256px;height:256px;image-rendering:pixelated;border:2px solid #e8c98a;cursor:crosshair;touch-action:none"></canvas>
+ <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;max-width:270px;align-items:center">
+ <input type="color" id="skBc" value="#ff5a5a" title="Pinselfarbe"><select id="skBs" style="${inp};padding:3px" title="Pinselgröße">${[1, 2, 3, 5, 8].map(v => `<option value="${v}" ${v === 2 ? 'selected' : ''}>${v} px</option>`).join('')}</select>
+ <button data-tool="pen" style="${bt}" title="Pinsel">🖌</button><button data-tool="erase" style="${bt}" title="Radierer (zeigt Farbe 1)">🧽</button><button data-tool="pick" style="${bt}" title="Pipette">💧</button>
+ <button id="skFill" style="${bt}" title="Alles mit Pinselfarbe füllen">🪣</button><button id="skMir" style="${bt}" title="Symmetrisch malen">↔ aus</button><button id="skUndo" style="${bt}" title="Rückgängig">↶</button>
+ <button id="skTpl" style="${bt}">Muster übernehmen</button><button id="skClr" style="${bt}">Leeren</button></div></div>
  <table style="text-align:left;font-size:14px"><tr><td>Waffe</td><td><select id="skW" style="${inp}">${WK.map(k => `<option value="${k}">${k.startsWith('knife:') ? '★ ' + KNIVES[k.slice(6)] : W[k].name}</option>`).join('')}</select></td></tr>
  <tr><td>Name</td><td><input id="skN" maxlength="20" placeholder="z. B. Nachtfalke" style="${inp}"></td></tr>
+ <tr><td>Art</td><td><select id="skMode" style="${inp}"><option value="pat">Muster</option><option value="paint">🖌 Selbst malen</option></select></td></tr>
  <tr><td>Muster</td><td><select id="skP" style="${inp}">${SK_PAT.map(([k, t]) => `<option value="${k}">${t}</option>`).join('')}</select></td></tr>
- <tr><td>Farben</td><td><input type="color" id="skC1" value="#e8c98a"> <input type="color" id="skC2" value="#1d2b3a"> <input type="color" id="skC3" value="#ff5a5a"></td></tr>
+ <tr><td>Farben</td><td><input type="color" id="skC1" value="#e8c98a" title="Farbe 1 (beim Malen: Untergrund)"> <input type="color" id="skC2" value="#1d2b3a"> <input type="color" id="skC3" value="#ff5a5a"></td></tr>
  <tr><td>Seltenheit</td><td><select id="skR" style="${inp}">${[1, 2, 3, 4].map(r => `<option value="${r}">${RARITY[r][1]} · 🪙 ${SHOP_PRICE[r]}</option>`).join('')}</select></td></tr></table></div>
  <p id="skMsg" style="font-size:13px;color:#8fa3b8">Max. 10 eigene Skins · Du bekommst Deinen Skin selbst gratis ins Inventar</p>
  <div><button id="skPub">🚀 Im Shop veröffentlichen</button><button id="btnBack">Zurück</button></div>`);
-            const val = () => ({ w: $('skW').value.split(':')[0], km: $('skW').value.split(':')[1], n: $('skN').value.trim(), p: $('skP').value, c: parseInt($('skC1').value.slice(1), 16), c2: parseInt($('skC2').value.slice(1), 16), c3: parseInt($('skC3').value.slice(1), 16), r: +$('skR').value });
-            const prev = () => { const v = val(), id = 'pv_' + (++skPv); delete SKTEX['pv_' + (skPv - 1)]; delete SKSW['pv_' + (skPv - 1)]; $('skPrev').src = skinSwatch(Object.assign({ id }, v)); $('skPrevN').textContent = (v.km ? KNIVES[v.km] : W[v.w].name) + ' | ' + (v.n || '…'); $('skPrevN').style.color = RARITY[v.r][0]; };
+            const cv = $('skCv'), g = cv.getContext('2d'), undo = []; let tool = 'pen', mir = false, painted = false, last = null;
+            const paint = () => $('skMode').value === 'paint';
+            const val = () => ({ w: $('skW').value.split(':')[0], km: $('skW').value.split(':')[1], n: $('skN').value.trim(), p: paint() ? 'paint' : $('skP').value, img: paint() ? cv.toDataURL('image/png') : undefined, c: parseInt($('skC1').value.slice(1), 16), c2: parseInt($('skC2').value.slice(1), 16), c3: parseInt($('skC3').value.slice(1), 16), r: +$('skR').value });
+            const prev = () => { const v = val(), id = 'pv_' + (++skPv); delete SKTEX['pv_' + (skPv - 1)]; delete SKSW['pv_' + (skPv - 1)]; $('skPrev').src = skinSwatch(Object.assign({ id }, v)); $('skPrevN').textContent = (v.km ? KNIVES[v.km] : W[v.w].name) + ' | ' + (v.n || '…'); $('skPrevN').style.color = RARITY[v.r][0]; cv.style.background = $('skC1').value; };
+            const tpl = () => { const id = 'tpl_' + (++skPv), t = skinTex(Object.assign(val(), { id, p: $('skP').value, img: undefined })); g.clearRect(0, 0, 64, 64); g.imageSmoothingEnabled = false; g.drawImage(t.image, 0, 0, 64, 64); delete SKTEX[id]; painted = true; };
+            const save = () => { undo.push(g.getImageData(0, 0, 64, 64)); if (undo.length > 40) undo.shift(); };
+            const tools = () => document.querySelectorAll('[data-tool]').forEach(el => { el.style.background = el.dataset.tool === tool ? '#e8c98a' : ''; el.style.color = el.dataset.tool === tool ? '#111' : ''; });
+            const dot = (x, y) => { const sz = +$('skBs').value, o = Math.floor((sz - 1) / 2); for (const px of mir ? [x, 63 - x] : [x]) { if (tool === 'erase') g.clearRect(px - o, y - o, sz, sz); else { g.fillStyle = $('skBc').value; g.fillRect(px - o, y - o, sz, sz); } } };
+            const at = e => { const r = cv.getBoundingClientRect(); return [Math.max(0, Math.min(63, Math.floor((e.clientX - r.left) / r.width * 64))), Math.max(0, Math.min(63, Math.floor((e.clientY - r.top) / r.height * 64)))]; };
+            cv.onpointerdown = e => { e.preventDefault(); const [x, y] = at(e);
+                if (tool === 'pick') { const d = g.getImageData(x, y, 1, 1).data; $('skBc').value = d[3] ? '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join('') : $('skC1').value; tool = 'pen'; tools(); return; }
+                save(); cv.setPointerCapture(e.pointerId); last = [x, y]; dot(x, y); painted = true; };
+            cv.onpointermove = e => { if (!last) return; const [x, y] = at(e), st = Math.max(Math.abs(x - last[0]), Math.abs(y - last[1])) || 1; for (let i = 1; i <= st; i++) dot(Math.round(last[0] + (x - last[0]) * i / st), Math.round(last[1] + (y - last[1]) * i / st)); last = [x, y]; };
+            cv.onpointerup = cv.onpointercancel = () => { if (last) { last = null; prev(); } };
+            document.querySelectorAll('[data-tool]').forEach(el => el.onclick = () => { tool = el.dataset.tool; tools(); }); tools();
+            $('skFill').onclick = () => { save(); g.fillStyle = $('skBc').value; g.fillRect(0, 0, 64, 64); painted = true; prev(); };
+            $('skMir').onclick = () => { mir = !mir; $('skMir').textContent = '↔ ' + (mir ? 'an' : 'aus'); };
+            $('skUndo').onclick = () => { const d = undo.pop(); if (d) { g.putImageData(d, 0, 0); prev(); } };
+            $('skTpl').onclick = () => { save(); tpl(); prev(); };
+            $('skClr').onclick = () => { save(); g.clearRect(0, 0, 64, 64); prev(); };
+            $('skMode').onchange = () => { const on = paint(); $('skPaint').style.display = on ? '' : 'none'; if (on && !painted) tpl(); prev(); };
             ['skW', 'skN', 'skP', 'skC1', 'skC2', 'skC3', 'skR'].forEach(i => $(i).oninput = prev); prev();
             $('btnBack').onclick = () => showShop();
             $('skPub').onclick = () => { const v = val(), m = $('skMsg'); if (v.n.length < 2) { m.style.color = '#c66'; m.textContent = 'Bitte einen Namen eingeben (mind. 2 Zeichen)'; return; }
+                if (v.img && v.img.length > 16000) { m.style.color = '#c66'; m.textContent = 'Bild zu detailreich (' + Math.round(v.img.length / 1000) + ' / 16 KB) – größere Farbflächen nutzen'; return; }
                 $('skPub').disabled = true; accApi('mkskin', { tok: ACC.tok, s: v }).then(r => { if (!r.ok) { $('skPub').disabled = false; m.style.color = '#c66'; m.textContent = r.err || 'Fehler'; return; }
                     regSkins([r.skin]); knifeNames(); store.inv.push(r.skin.id); saveStore(); sfx('win'); toast('🎨 Skin veröffentlicht!', 'Er ist jetzt im Shop und in Deinem Inventar'); loadSkins(); showShop(true); }).catch(() => { $('skPub').disabled = false; m.style.color = '#c66'; m.textContent = 'Keine Verbindung zum Server'; }); };
         }
