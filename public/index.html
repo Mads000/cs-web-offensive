@@ -3349,6 +3349,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const { vol, pan } = spatial(x, z); if (vol <= 0.01) return; switch (n) {
                 case 'rifle': gun(vol, pan, [0.35, 0.12, 4200, 0.5, 500, 130, 0.12, 0.5, 45, 0.28, 0.22]); break;
                 case 'pistol': gun(vol, pan, [0.4, 0.09, 5000, 0.42, 700, 170, 0.08, 0.35, 60, 0.2, 0.15]); break;
+                case 'scout': gun(vol, pan, [0.38, 0.24, 3300, 0.55, 140, 95, 0.26, 0.6, 22, 0.55, 0.28]); setTimeout(() => { tone(1100, 0.025, 0.07 * vol, pan, 'square'); setTimeout(() => noise(0.05, 3000, 0.07 * vol, pan, 'bandpass'), 110); }, 520); break;
                 case 'awp': gun(vol, pan, [0.5, 0.3, 2600, 0.75, 120, 85, 0.35, 0.75, 28, 0.7, 0.35]); setTimeout(() => { tone(900, 0.03, 0.08 * vol, pan, 'square'); setTimeout(() => noise(0.07, 2500, 0.08 * vol, pan, 'bandpass'), 130); }, 650); break;
                 case 'pump': gun(vol, pan, [0.45, 0.22, 2400, 0.7, 150, 100, 0.2, 0.6, 35, 0.45, 0.3]); setTimeout(() => { tone(700, 0.04, 0.1 * vol, pan, 'square'); setTimeout(() => tone(500, 0.05, 0.1 * vol, pan, 'square'), 90); }, 350); break;
                 case 'smg': gun(vol, pan, [0.3, 0.07, 5200, 0.32, 800, 200, 0.06, 0.25, 80, 0.14, 0.12]); break;
@@ -3386,6 +3387,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             ak47: { key: 'ak47', name: 'AK-47', slot: 1, dmg: 36, rate: 0.1, mag: 30, res: 90, reload: 2.5, spread: 0.009, auto: true, price: 2500, recoil: 0.017, snd: 'rifle', acc: 0.35, speed: 6 },
             m4a1: { key: 'm4a1', name: 'M4A1', slot: 1, dmg: 33, rate: 0.09, mag: 30, res: 90, reload: 3.0, spread: 0.008, auto: true, price: 3100, recoil: 0.013, snd: 'rifle', acc: 0.37, speed: 6 },
             awp: { key: 'awp', name: 'AWP', slot: 1, dmg: 115, rate: 1.45, mag: 10, res: 30, reload: 3.6, spread: 0.08, scopedSpread: 0.0006, auto: false, price: 4750, recoil: 0.06, snd: 'awp', acc: 0.55, scope: true, speed: 5 },
+            scout: { key: 'scout', name: 'Scout', slot: 1, dmg: 88, rate: 1.15, mag: 10, res: 30, reload: 2.9, spread: 0.05, scopedSpread: 0.0008, auto: false, price: 1700, recoil: 0.045, snd: 'scout', acc: 0.75, scope: true, speed: 6.2 },
             he: { key: 'he', name: 'HE-Granate', slot: 4, nade: true, price: 300, speed: 6.8 },
             smoke: { key: 'smoke', name: 'Smoke', slot: 4, nade: true, price: 300, speed: 6.8 },
             flash: { key: 'flash', name: 'Flashbang', slot: 4, nade: true, price: 200, speed: 6.8 },
@@ -3497,6 +3499,13 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                     C(0.013, 0.2, metal, 0, 0.03, -0.5);
                     C(0.025, 0.22, dark, 0, 0.03, -0.7);
                     g.userData.barrel = new THREE.Vector3(0, 0.03, -0.82); break;
+                case 'scout': { const sc = M(0x5a6470);
+                    B(0.05, 0.09, 0.5, sc, 0, 0, -0.12); B(0.05, 0.085, 0.26, sc, 0, -0.01, 0.24);
+                    C(0.024, 0.22, dark, 0, 0.085, -0.1); C(0.03, 0.02, dark2, 0, 0.085, -0.2); C(0.03, 0.02, dark2, 0, 0.085, 0);
+                    B(0.014, 0.035, 0.025, dark2, 0, 0.055, -0.15); B(0.014, 0.035, 0.025, dark2, 0, 0.055, -0.05);
+                    B(0.045, 0.06, 0.09, dark2, 0, -0.07, -0.04, 0.1); B(0.035, 0.13, 0.05, metal, 0, -0.11, 0, 0.1);
+                    C(0.011, 0.42, metal, 0, 0.02, -0.58); B(0.022, 0.022, 0.05, dark2, 0, 0.02, -0.8);
+                    g.userData.barrel = new THREE.Vector3(0, 0.02, -0.83); break; }
                 case 'awp':
                     B(0.06, 0.11, 0.6, green, 0, 0, -0.15);
                     B(0.06, 0.1, 0.3, green, 0, -0.01, 0.27);
@@ -3545,6 +3554,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             { id: 'ak_red', w: 'ak47', n: 'AK-47 | Redline', c: 0xd03030, r: 2 },
             { id: 'm4_asiimov', w: 'm4a1', n: 'M4A1 | Asiimov', c: 0xff8c20, r: 2 },
             { id: 'awp_neon', w: 'awp', n: 'AWP | Neon Rider', c: 0x9933ff, r: 2 },
+            { id: 'scout_frost', w: 'scout', n: 'Scout | Frostbite', c: 0x9fd3ff, r: 1 },
+            { id: 'scout_ember', w: 'scout', n: 'Scout | Ember', c: 0xff6a2a, c2: 0x1a0a05, p: 'tiger', r: 2 },
+            { id: 'scout_viper', w: 'scout', n: 'Scout | Viper', c: 0x3dff9a, c2: 0x0a140f, p: 'neon', r: 3 },
             { id: 'deagle_blaze', w: 'deagle', n: 'Desert Eagle | Blaze', c: 0xff7020, r: 3 },
             { id: 'awp_dragon', w: 'awp', n: 'AWP | Dragon Lore', c: 0xe0b84a, r: 3 },
             { id: 'ak_gold', w: 'ak47', n: 'AK-47 | Gold Arabesque', c: 0xd4af37, r: 3 },
@@ -4097,7 +4109,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function funLoadout(e) { if (!CFG.wpn) return; if (e.isPlayer) e.weapons[1] = CFG.wpn === 2 ? mkWeapon(W.awp) : null; else if (!e.remote) { e.weapon = CFG.wpn === 2 ? W.awp : e.weapon.slot === 1 ? (e.team === 'T' ? W.glock : W.usp) : e.weapon; e.ammo = e.weapon.mag; } }
         function botBuy(b) {
             const rifle = b.team === 'T' ? W.ak47 : W.m4a1;
-            if (b.weapon.slot !== 1) { const r = Math.random(); if (b.money >= 5400 && r < 0.15) { b.money -= 4750; b.weapon = W.awp; } else if (b.money >= rifle.price) { b.money -= rifle.price; b.weapon = rifle; } else if (b.money >= 1700 && r < 0.4) { b.money -= 1700; b.weapon = W.pump; } else if (b.money >= 1500) { b.money -= 1500; b.weapon = W.mp5; } else if (b.money >= 650 && r < 0.6) { b.money -= 650; b.weapon = W.deagle; } }
+            if (b.weapon.slot !== 1) { const r = Math.random(); if (b.money >= 5400 && r < 0.15) { b.money -= 4750; b.weapon = W.awp; } else if (b.money >= rifle.price) { b.money -= rifle.price; b.weapon = rifle; } else if (b.money >= 1700 && r < 0.2) { b.money -= 1700; b.weapon = W.scout; } else if (b.money >= 1700 && r < 0.4) { b.money -= 1700; b.weapon = W.pump; } else if (b.money >= 1500) { b.money -= 1500; b.weapon = W.mp5; } else if (b.money >= 650 && r < 0.6) { b.money -= 650; b.weapon = W.deagle; } }
             if (b.armor < 50 && b.money >= 1000) { b.money -= 1000; b.armor = 100; b.helmet = true; } else if (b.armor < 50 && b.money >= 650) { b.money -= 650; b.armor = 100; }
             if (b.team === 'CT' && !b.kit && b.money >= 400) { b.money -= 400; b.kit = true; }
             b.nades = []; b.nadeT = 2 + Math.random() * 6;
@@ -4492,7 +4504,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 else if (!ud.ent) { addDecal(h.point, h.face.normal); burst(h.point.x, h.point.y, h.point.z, d.pellets ? 1 : 4, 2.5); }
 
             } p.pitch = Math.min(1.5, p.pitch + d.recoil); p.yaw += (Math.random() - 0.5) * d.recoil * 0.6; p.recoil = Math.min(6, p.recoil + 1);
-            sfx(d.snd); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: d.snd, x: p.x, z: p.z }); p.kick = 1; shake = Math.max(shake, d.key === 'awp' ? 0.22 : d.slot === 1 ? 0.07 : 0.05); if (!p.scoped) ejectShell(d.key === 'pump'); const m = vmModels[d.key]; if (m.userData.barrel) { muzzleSprite.position.copy(m.userData.barrel); muzzleSprite.visible = true; } muzzleLight.intensity = 2.5; flashT = 0.05;
+            sfx(d.snd); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: d.snd, x: p.x, z: p.z }); p.kick = 1; shake = Math.max(shake, d.key === 'awp' ? 0.22 : d.key === 'scout' ? 0.14 : d.slot === 1 ? 0.07 : 0.05); if (!p.scoped) ejectShell(d.key === 'pump'); const m = vmModels[d.key]; if (m.userData.barrel) { muzzleSprite.position.copy(m.userData.barrel); muzzleSprite.visible = true; } muzzleLight.intensity = 2.5; flashT = 0.05;
             if (d.scope && p.scoped) setScoped(false);
         }
         function startReload() { const w = player.weapons[player.slot]; if (!w || w.def.melee || w.def.plant || w.reloading || w.ammo >= w.def.mag || w.res <= 0) return; w.reloading = true; w.reloadT = w.def.reload; sfx('reload'); setScoped(false); }
@@ -4543,7 +4555,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // =====================================================================
         const SHOP = [
             { name: 'PISTOLEN', items: [{ w: 'glock' }, { w: 'usp' }, { w: 'deagle' }] },
-            { name: 'MITTELKLASSE', items: [{ w: 'mp5' }, { w: 'pump' }] }, { name: 'GEWEHRE', items: [{ w: 'ak47' }, { w: 'm4a1' }, { w: 'awp' }] },
+            { name: 'MITTELKLASSE', items: [{ w: 'mp5' }, { w: 'pump' }] }, { name: 'GEWEHRE', items: [{ w: 'ak47' }, { w: 'm4a1' }, { w: 'scout' }, { w: 'awp' }] },
             { name: 'GRANATEN', items: [{ w: 'he' }, { w: 'flash' }, { w: 'smoke' }, { w: 'molly' }] }, {
                 name: 'AUSRÜSTUNG', items: [
                     { g: 'kevlar', label: 'Kevlar-Weste', price: 650 },
@@ -4744,7 +4756,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function shopClaim() { if (ACC) accApi('claim', { tok: ACC.tok }).then(r => { if (r.ok && r.coins > 0) { PRG.st.coins = (PRG.st.coins || 0) + r.coins; localStorage.setItem('prog', JSON.stringify(PRG)); toast('🪙 +' + r.coins + ' Coins', 'Andere haben Deine Skins gekauft!'); if ($('shopBox')) showShop(true); } }).catch(() => { }); }
         function showShop(noFetch) {
             if (!noFetch) { loadSkins(() => { if ($('shopBox')) showShop(true); }); shopClaim(); }
-            const coins = PRG.st.coins || 0, own = new Set(store.inv), ORDER = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
+            const coins = PRG.st.coins || 0, own = new Set(store.inv), ORDER = ['knife', 'awp', 'scout', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
             const list = SKINS.filter(sk => !sk.noCase && SHOP_PRICE[sk.r]).sort((a, b) => (ORDER.indexOf(a.w) - ORDER.indexOf(b.w)) || (b.r - a.r));
             const cards = list.map(sk => { const has = own.has(sk.id), pr = SHOP_PRICE[sk.r], ok = !has && coins >= pr;
                 return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; }).join('');
@@ -4783,7 +4795,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         let skPv = 0;
         function showSkinMaker() {
             if (!ACC) return toast('🔒 Bitte einloggen', 'Zum Erstellen brauchst Du einen Account');
-            const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock', ...Object.keys(KNIVES).map(k => 'knife:' + k), 'he', 'flash', 'smoke', 'molly', 'c4'], inp = 'font:bold 14px Arial;padding:6px 8px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px', bt = 'margin:0;padding:4px 9px;font-size:13px';
+            const WK = ['ak47', 'm4a1', 'awp', 'scout', 'pump', 'mp5', 'deagle', 'usp', 'glock', ...Object.keys(KNIVES).map(k => 'knife:' + k), 'he', 'flash', 'smoke', 'molly', 'c4'], inp = 'font:bold 14px Arial;padding:6px 8px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px', bt = 'margin:0;padding:4px 9px;font-size:13px';
             showOverlay(`<h1 style="font-size:32px">🎨 SKIN-EDITOR<small>MUSTER WÄHLEN ODER SELBST MALEN · ERSCHEINT FÜR ALLE IM SHOP · 50 % JEDES VERKAUFS FÜR DICH</small></h1>
  <div class="invbox" style="display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-start;padding:12px">
  <div style="text-align:center"><div style="font:bold 11px Arial;color:#8fa3b8;letter-spacing:1px;margin-bottom:4px">VORSCHAU</div><img id="skPrev" style="width:120px;height:120px;border:2px solid var(--hl);image-rendering:pixelated"><div id="skPrevN" style="margin-top:6px;font:bold 13px Arial;max-width:140px"></div></div>
@@ -4832,7 +4844,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // Inventar: Reiter (Skins / Agenten / Wraps), Skins als Ausrüstungs-Übersicht mit Sammelfortschritt
         let INV = { tab: 'sk', wk: null };
         function showInventory() {
-            const ORDER = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock', ...['he', 'flash', 'smoke', 'molly', 'c4'].filter(k => store.inv.some(id => { const x = SKINS.find(q => q.id === id); return x && x.w === k; }))]; // Granaten/C4 nur, wenn ein Skin dafür da ist
+            const ORDER = ['knife', 'awp', 'scout', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock', ...['he', 'flash', 'smoke', 'molly', 'c4'].filter(k => store.inv.some(id => { const x = SKINS.find(q => q.id === id); return x && x.w === k; }))]; // Granaten/C4 nur, wenn ein Skin dafür da ist
             const counts = {}; for (const id of store.inv) counts[id] = (counts[id] || 0) + 1;
             const owned = SKINS.filter(s => counts[s.id]).length, rare = SKINS.filter(s => counts[s.id] && s.r >= 3).length, lbl = s => s.n.split(' | ')[1] || s.n;
             if (!INV.wk) INV.wk = ORDER.find(k => SKINS.some(s => s.w === k && counts[s.id])) || 'ak47';
@@ -4853,7 +4865,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 body = `<div class="invpanel" style="width:100%"><h5>🎩 ZUBEHÖR · eins aufsetzbar</h5><div class="invrow" style="margin-bottom:10px">${ACCS.map(a => { const ok = accOk(a), on = duckHat() === a.id; return `<div class="inv ${on ? 'eq' : ''} ${ok ? '' : 'locked'}" data-acc="${a.id}" style="border-color:#ffd84a;min-width:110px"><div class="agprev" style="font-size:26px;line-height:44px">${a.ic}</div><b style="color:#ffd84a">${a.n}</b><span>${ok ? (on ? '✓ Aufgesetzt' : 'Klicken zum Aufsetzen') : '🔒 ' + a.need + (a.k ? ' (' + Math.min(a.max, PRG.st[a.k] || 0) + '/' + a.max + ')' : ' (Lvl ' + lvlOf(PRG.xp) + ')')}</span></div>`; }).join('')}</div><h5>SPIELERMODELL · ${CFG.agTheme ? '⚠ Der Host kann ein Agenten-Thema erzwingen' : 'gilt in allen Modi'}</h5><div class="invrow">${AGENTS.map(a => { const on = store.agent === a.id; return `<div class="inv ${on ? 'eq' : ''}" data-agent="${a.id}" style="border-color:${on ? 'var(--hl)' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? 'var(--hl)' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>`;
             } else {
                 // Wraps: jede Waffe ein Feld – Bild oder „+ PNG"
-                const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
+                const WK = ['ak47', 'm4a1', 'awp', 'scout', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
                 body = `<div class="invpanel" style="width:100%"><h5>EIGENE PNGs AUF DEN WAFFEN · ein Wrap ersetzt den Skin</h5><div class="wrapgrid">${WK.map(k => store.stick[k]
                     ? `<div class="wrapc"><img src="${store.stick[k]}"><b>${W[k].name}</b><div><button data-wch="${k}">Ändern</button><button data-wdel="${k}" class="del">🗑</button></div></div>`
                     : `<div class="wrapc empty" data-wch="${k}"><i>＋</i><b>${W[k].name}</b><span>PNG hochladen</span></div>`).join('')}</div><input type="file" id="stf" accept="image/*" style="display:none"></div>`;
@@ -5422,6 +5434,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  Glatte Böden, ruhigere Wände, neue <b>Kisten in Orange & Blau</b>, Betonblöcke statt Sandsäcke · Sienna & Kasbah mit neuen Farben.<br>
  <b>Bombsites</b> mit leuchtendem Rand und kleinem A/B-Schild · <b>weniger Kisten-Haufen</b> für klarere Wege · Bäume entfernt.<br>
  <b>Minimap</b> zeigt jetzt nur die begehbaren Wege.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔭 NEUE WAFFE: SCOUT</p>
+ Leichtes Scharfschützengewehr für <b>$ 1700</b> – mit Zielfernrohr, schneller nachgeladen und beweglicher als die AWP. Kopftreffer tödlich, Körpertreffer nicht.<br>
+ Drei neue Skins: <b>Frostbite</b>, <b>Ember</b> und <b>Viper</b> – in Cases, im Shop und im Skin-Editor.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏟️ ARENEN</p>
  Gleiches Rework für Gauntlet & 1v1 – neue Namen: <b>Sienna Yard</b>, <b>Tundra Box</b>, <b>Mire Pit</b>, <b>Skyline</b>.<br><br>
@@ -6467,7 +6483,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const GL = { on: false, stage: 0, teams: [], pairs: [], duelIdx: 0, phase: 'off', t: 0, myTeam: null, duel: null };
         const GL_LIVES = 3, GL_TIME = 60;
         // 1v1-Aim-Duell: gleiche Waffe für beide, rotiert pro Runde; Erster mit V1_WIN Siegen gewinnt
-        const V1_WIN = 5, V1_W = ['deagle', 'ak47', 'awp', 'm4a1', 'usp', 'mp5', 'pump', 'glock'];
+        const V1_WIN = 5, V1_W = ['deagle', 'ak47', 'awp', 'scout', 'm4a1', 'usp', 'mp5', 'pump', 'glock'];
         const V1_BUY = 10; // Sekunden Kaufphase (eingefroren) zu Beginn jeder 1v1-Runde
         function v1Round(m, t) {
             if (m.remote) return; const first = !GL.v1n, won = !first && t.wins > (t.v1pw || 0); t.v1pw = t.wins;
@@ -6483,7 +6499,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (m.isPlayer) { m.weapons[1] = def.slot === 1 ? mkWeapon(def) : null; m.weapons[2] = def.slot === 2 ? mkWeapon(def) : null; m.weapons[5] = null; m.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; syncNadeSlot(); m.slot = def.slot; setScoped(false); updateVM(); }
             else { m.weapon = def; m.ammo = def.mag; m.nades = []; }
         }
-        function glWeaponPool() { return GL.stage <= 2 ? ['glock', 'usp', 'deagle'] : GL.stage <= 4 ? ['glock', 'usp', 'deagle', 'mp5', 'pump'] : ['deagle', 'mp5', 'pump', 'ak47', 'm4a1', 'awp']; }
+        function glWeaponPool() { return GL.stage <= 2 ? ['glock', 'usp', 'deagle'] : GL.stage <= 4 ? ['glock', 'usp', 'deagle', 'mp5', 'pump'] : ['deagle', 'mp5', 'pump', 'ak47', 'm4a1', 'scout', 'awp']; }
         function glStart(teamCount) {
             GL.on = true; GL.stage = 0; GL.v1n = undefined; GL.teams = []; GL.phase = 'setup'; GL.rerolls = 3; initAudio(); const nm = ($('pname') && $('pname').value || '').trim(); if (nm) player.name = nm.slice(0, 14);
             player.team = 'CT';

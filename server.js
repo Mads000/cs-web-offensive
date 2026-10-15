@@ -92,7 +92,7 @@ function api(p, b, ip) {
  if (p === '/api/pull') return { ok: 1, ver: u.ver, data: u.data };
  // Community-Skins: erstellen (max. 10 je Spieler, 300 gesamt), löschen, kaufen, Verkaufs-Coins abholen
  if (p === '/api/mkskin') {
- const k = b.s || {}, W = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock', 'he', 'flash', 'smoke', 'molly', 'c4'], P = ['solid', 'fade', 'stripes', 'tiger', 'carbon', 'neon', 'camo', 'doppler', 'gold', 'dragon', 'asiimov', 'paint'], col = v => Math.max(0, Math.min(0xffffff, Math.floor(+v) || 0));
+ const k = b.s || {}, W = ['knife', 'awp', 'scout', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock', 'he', 'flash', 'smoke', 'molly', 'c4'], P = ['solid', 'fade', 'stripes', 'tiger', 'carbon', 'neon', 'camo', 'doppler', 'gold', 'dragon', 'asiimov', 'paint'], col = v => Math.max(0, Math.min(0xffffff, Math.floor(+v) || 0));
  if (!W.includes(k.w) || !P.includes(k.p) || ![1, 2, 3, 4].includes(+k.r)) return { err: 'Ungültiger Skin.' };
  const img = k.p === 'paint' ? String(k.img || '') : ''; if (k.p === 'paint' && (img.length > 16000 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(img))) return { err: 'Bild ungültig oder zu groß.' };
  const name = String(k.n || '').replace(/[<>"'&`|]/g, '').trim().slice(0, 20); if (name.length < 2) return { err: 'Name: mindestens 2 Zeichen.' };
