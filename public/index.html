@@ -3043,7 +3043,7 @@ body.edit #tlook{ pointer-events:none; }
                     const s = c; while (c < COLS && cell(r, c) === '#') c++;
                     const len = c - s, hv = WALL_H + ((r * 7 + s * 13) % 3) * 0.6;
                     const sm = sideMat(len, wallSet[cellHash(r, s) % wallSet.length]);
-                    addBox(s * S, c * S, 0, hv, r * S, (r + 1) * S, [wallEnd, wallEnd, wallTop, wallEnd, sm, sm]);
+                    addBox(s * S, c * S, 0, hv, r * S, (r + 1) * S, [wallEnd, wallEnd, wallTop, wallEnd, sm, sm]); aabbs[aabbs.length - 1].wall = 1;
                     const deco = (w2, h2, d2, x2, y2, z2, m2) => { const mm = new THREE.Mesh(new THREE.BoxGeometry(w2, h2, d2), m2); mm.position.set(x2, y2, z2); mm.castShadow = mm.receiveShadow = true; scene.add(mm); };
                     deco(len * S + 0.1, 1.05, S + 0.12, (s + c) / 2 * S, 0.525, (r + 0.5) * S, brickMat(len));
                     deco(len * S + 0.16, 0.22, S + 0.16, (s + c) / 2 * S, hv + 0.11, (r + 0.5) * S, trimMat);
@@ -3680,8 +3680,9 @@ body.edit #tlook{ pointer-events:none; }
         function activeAabbs() { return GA.cur ? GA.cur.aabbs : aabbs; }
         const STEP_H = 0.75, BODY_H = 1.7; function blockedBy(e, b) {
             const y = e.y || 0;
-            if (y >= b.top - STEP_H) return false;                         // Stufe: hochgleiten statt anstoßen
+            if (y >= b.top - STEP_H && !b.wall) return false;              // Stufe: hochgleiten statt anstoßen
             if (b.bot !== undefined && y + BODY_H <= b.bot) return false;  // Steg/Brücke: drunter durchlaufen
+            if (b.wall) return true;                                       // Wände nie erklimmen (kein Rausfallen aus der Karte)
             return true;
         }
         function collideMove(e, dx, dz) {
@@ -3744,7 +3745,7 @@ body.edit #tlook{ pointer-events:none; }
         }
         function kill(e, att, w, hs) {
             if (e.isPlayer) roundKills = 0; e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
-            if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
+            if (DM.on) { /* Deathmatch: keine Waffen-Drops */ } else if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
             else if (!e.remote && e.weapon && e.weapon.slot === 1) { const dd = dropWeapon(e.weapon, e.x, e.z, e.weapon.mag, 0, null); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } }
             if (att && att !== e) { if (att.team !== e.team || GL.on || DM.on) { att.kills++; att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
             if (NET.on && (e.isPlayer || (NET.host && !e.remote))) netSend({ type: 'kf', ap: att ? (att.isPlayer ? NET.pid : att.pid || null) : null, an: att ? att.name : null, at: att ? att.team : '', vn: e.name, vt: e.team, w: w ? w.name : null, hs: !!hs, rw: w && (w.key === 'knife' || w.name === 'Butterfly') ? 1500 : w && (w.key === 'awp' || w.name === 'AWP') ? 100 : 300 }); if (G.bomb.carrier === e && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); if (e.isPlayer) e.weapons[5] = null; }
@@ -4260,7 +4261,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 });
                 h += `</div>`;
             });
-            h += `</div><div class="bfoot"><span>🖱️ Klicken zum Kaufen</span><span>[B] schließen</span></div>`;
+            h += `</div><div class="bfoot"><span>🖱️ Klicken zum Kaufen${IS_TOUCH ? '' : ' · Rechtsklick verkaufen'}</span><span>[B] schließen</span></div>`;
             if (h !== buyCache) { buyCache = h; $('buy').innerHTML = h; }
         }
         function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); } function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
@@ -4274,8 +4275,23 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             else if (it.g === 'helm') { p.money -= price; p.armor = 100; p.helmet = true; }
             else if (it.g === 'kit') { p.money -= price; p.kit = true; }
             else if (it.g === 'ammo') { p.money -= price; for (const s of [1, 2]) { const w = p.weapons[s]; if (w) w.res = w.def.res; } }
+            const bk = it.w || it.g; if (!p.bRd || p.bRd.r !== G.round) p.bRd = { r: G.round }; (p.bRd[bk] = p.bRd[bk] || []).push(price);
             sfx('reload'); buyCache = ''; renderBuy();
         }
+        function sell(it) { // Rechtsklick im Kaufmenü: in dieser Runde Gekauftes zurückgeben
+            const p = player, bk = it.w || it.g; if (!canBuy() || !p.bRd || p.bRd.r !== G.round || !(p.bRd[bk] && p.bRd[bk].length)) return;
+            if (it.w) { const d = W[it.w];
+                if (d.nade) { if (!(p.nades[d.key] > 0)) return; p.nades[d.key]--; syncNadeSlot(); }
+                else { const cur = p.weapons[d.slot]; if (!cur || cur.def.key !== d.key) return; p.weapons[d.slot] = d.slot === 2 ? mkWeapon(p.team === 'T' ? W.glock : W.usp) : null; if (!p.weapons[p.slot]) p.slot = p.weapons[1] ? 1 : 2; p.switchT = 1; setScoped(false); updateVM(); }
+            } else if (it.g === 'kevlar') { if (p.helmet) { sfx('empty'); return; } p.armor = 0; }
+            else if (it.g === 'helm') { const paid = p.bRd[bk][p.bRd[bk].length - 1]; p.helmet = false; if (paid > 350) p.armor = 0; }
+            else if (it.g === 'kit') p.kit = false; else return;
+            p.money = Math.min(16000, p.money + p.bRd[bk].pop()); sfx('ui'); buyCache = ''; renderBuy();
+        }
+        $('buy').addEventListener('contextmenu', e => {
+            const c = e.target.closest('[data-b]'); if (!c) return; e.preventDefault();
+            const [ci, ii] = c.dataset.b.split('-').map(Number); sell(SHOP[ci].items[ii]);
+        });
         $('buy').addEventListener('click', e => {
             const c = e.target.closest('[data-b]'); if (!c) return;
             const [ci, ii] = c.dataset.b.split('-').map(Number);
@@ -4385,7 +4401,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         });
         addEventListener('keyup', e => { keys[e.code] = false; if (e.code === BIND.board) $('board').style.display = 'none'; }); addEventListener('mousedown', e => { if (GL.on && GL.phase !== 'duel') return; if (started && !paused && !gameEnded && !player.alive) { if (FC.on) { if (!locked) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) cycleSpec(); return; } if (!locked) { if (started && !paused && !buyOpen && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) { mouseDown = true; clickQueued = true; } if (e.button === 2) toggleScope(); }); addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; }); addEventListener('contextmenu', e => e.preventDefault());
         addEventListener('wheel', e => { if (!locked) return; const order = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); let i = order.indexOf(player.slot); i = (i + (e.deltaY > 0 ? 1 : -1) + order.length) % order.length; selectSlot(order[i]); });
-        addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button><button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
+        addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button><button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
         document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button,.mapc,[data-cat],.subnav b,#cstabs a,.inv,.gltb')) { initAudio(); sfx('ui'); } }, true);
         function showOverlay(html, trans) { const o = $('overlay'); o.classList.remove('oldui'); o.innerHTML = html; o.style.display = 'flex'; o.style.background = trans ? 'none' : 'rgba(8,11,15,.82)'; } function leaveGame() {
             if (NET.ws) { NET.on = false; NET.ws.close(); }
@@ -4867,7 +4883,23 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 1.6 „FEINSCHLIFF"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 1.7 „BUGFIXES"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🛠 BUGFIXES</p>
+ <b>Kaufmenü:</b> Funktioniert jetzt sofort zum Rundenstart – kein Schließen und erneutes Öffnen mehr nötig.<br>
+ <b>Deathmatch:</b> Gestorbene Spieler und Bots lassen keine Waffen mehr fallen.<br>
+ <b>Kein Rausfallen mehr:</b> Wände lassen sich nicht mehr erklimmen – man kann nicht mehr über den Kartenrand laufen. Kisten, Stufen und Stege bleiben begehbar.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">💰 VERKAUFEN</p>
+ Am PC per <b>Rechtsklick</b> im Kaufmenü: In dieser Runde Gekauftes (Waffen, Granaten, Weste, Helm, Kit) wird zum vollen Preis erstattet.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🌐 LOBBY & NEWS</p>
+ <b>Wettkampf online:</b> Nur noch ein „Lobby beitreten“-Button – das Team wählst Du direkt in der Lobby (wie im Gauntlet).<br>
+ <b>News:</b> Neues Kachel-Layout in der Mitte, Klick öffnet die Patchnotes im Vollbild.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.6 „FEINSCHLIFF"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🦆 ENTENJAGD 2.0</p>
@@ -5110,7 +5142,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.6 „Feinschliff" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
+ <div id="csver">CS:WO 1.7 „Bugfixes" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -5551,7 +5583,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                         const s0 = c; while (c < C && aCell(r, c) === '#') c++;
                         const len = c - s0, hv = WALL_H + ((r * 7 + s0 * 13) % 3) * 0.6;
                         const sm = aSideMat(len);
-                        box(ox + s0 * S, ox + c * S, 0, hv, r * S, (r + 1) * S, [aEndM, aEndM, aTopM, aEndM, sm, sm]);
+                        box(ox + s0 * S, ox + c * S, 0, hv, r * S, (r + 1) * S, [aEndM, aEndM, aTopM, aEndM, sm, sm]); info.aabbs[info.aabbs.length - 1].wall = 1;
                         solidDeco(len * S + 0.1, 1.05, S + 0.12, ox + (s0 + c) / 2 * S, 0.525, (r + 0.5) * S, aBrickMat(len));
                         solidDeco(len * S + 0.16, 0.22, S + 0.16, ox + (s0 + c) / 2 * S, hv + 0.11, (r + 0.5) * S, aTrimM);
                         if (len >= 3 && hv > WALL_H) for (const zz of [r * S - 0.02, (r + 1) * S + 0.02]) {
