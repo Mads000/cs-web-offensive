@@ -3016,6 +3016,13 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             "#............TTTT..........#",
             "############################"
         ];
+        function fillOpen(g) { // Pflanzinseln: Mitte großer freier Flächen (5×5 ohne Wände, Spawns, Sites, Stufen) → Deckung 'h'; g = Raster aus Zeichen (wird geändert)
+            const R = g.length, C = g[0].length, at = (r, c) => (r < 0 || c < 0 || r >= R || c >= C) ? '#' : g[r][c], pick = [];
+            for (let r = 2; r < R - 2; r++) for (let c = 2; c < C - 2; c++) { if (at(r, c) !== '.') continue; let ok = true;
+                for (let a = -2; a <= 2 && ok; a++) for (let b = -2; b <= 2; b++) { const ch = at(r + a, c + b); if (!(ch === '.' || ((Math.abs(a) === 2 || Math.abs(b) === 2) && !'#ABTK123456=R'.includes(ch)))) { ok = false; break; } }
+                if (ok && !pick.some(([pr, pc]) => Math.abs(pr - r) + Math.abs(pc - c) < 6)) pick.push([r, c]); }
+            for (const [r, c] of pick) g[r][c] = 'h'; return pick; }
+        for (const k of ['de_dusty', 'de_bazaar', 'de_frost', 'de_moisty', 'de_foundry']) { const g = MAPS[k].map(r => r.split('')); fillOpen(g); MAPS[k] = g.map(r => r.join('')); }
         const THEMES = {
             de_dusty: { sky: 0xa9c8e8, fog: 0xcbbd9c, floor: '#c6a872', wallBase: '#b9a078', wallHue: 34, wallSat: 30, wallLight: 58, crateHue: 26, crateSat: 45, crateLight: 32 },
             de_bazaar: { sky: 0xf2c98f, fog: 0xd9a87a, floor: '#b9906b', wallBase: '#c08a60', wallHue: 16, wallSat: 38, wallLight: 52, crateHue: 32, crateSat: 40, crateLight: 36 },
@@ -3281,6 +3288,69 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                     }
                 } else c++;
             }
+        }
+        function cityDeco(cellF, R, C, ox, parent, dens, full) { // Deko (keine Kollision, keine Treffer – wird mit zusammengefasst und bekommt Konturen); dens = Anteil der Wände, full = Kulisse + Site-Schilder
+            const dm = c => new THREE.MeshLambertMaterial({ color: c }), dark = dm(0x2b2f36), pipe = dm(0x69707a), ac = dm(0xc4c8cd), lamp = dm(0xffe6b0); lamp.emissive = new THREE.Color(0xffc060);
+            const stripe = c => new THREE.MeshLambertMaterial({ map: makeTex(64, 64, g => { for (let i = 0; i < 4; i++) { g.fillStyle = i % 2 ? '#f1e8d6' : c; g.fillRect(i * 16, 0, 16, 64); } }) }), awn = ['#d9603b', '#3f7fb0', '#4f8a5b'].map(stripe);
+            const poster = ['#d9603b', '#3f7fb0', '#e8c25a', '#2f3a48'].map(c => new THREE.MeshLambertMaterial({ map: makeTex(64, 96, g => { g.fillStyle = c; g.fillRect(0, 0, 64, 96); g.fillStyle = 'rgba(255,255,255,.85)'; g.fillRect(8, 60, 48, 6); g.fillRect(8, 72, 30, 4); g.beginPath(); g.arc(32, 30, 14, 0, 7); g.fill(); }) }));
+            const D = (w, h, d, x, y, z, m, rx = 0, rz = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x + ox, y, z); o.rotation.set(rx, 0, rz); o.castShadow = true; parent.add(o); };
+            const walk = ch => !!ch && !'#cCbhsW'.includes(ch);
+            const tx = (w, h, f, o = {}) => new THREE.MeshLambertMaterial(Object.assign({ map: makeTex(w, h, f) }, o)), wood = dm(0xa9784a), bricks = dm(0xb5583e);
+            const rw = tx(64, 16, g => { for (let i = 0; i < 4; i++) { g.fillStyle = i % 2 ? '#f1ece2' : '#d23b2f'; g.fillRect(i * 16, 0, 16, 16); } }), cone = tx(16, 64, g => { g.fillStyle = '#ee6a24'; g.fillRect(0, 0, 16, 64); g.fillStyle = '#f4f1ea'; g.fillRect(0, 22, 16, 12); });
+            const fence = tx(64, 64, g => { g.strokeStyle = '#cfd3d8'; g.lineWidth = 3; g.strokeRect(2, 2, 60, 60); g.lineWidth = 1.5; for (let i = 8; i < 64; i += 8) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 64); g.moveTo(0, i); g.lineTo(64, i); g.stroke(); } }, { transparent: true, alphaTest: 0.4, side: THREE.DoubleSide });
+            const label = (t, bg, fg, w = 256) => tx(w, 48, g => { g.fillStyle = bg; g.fillRect(0, 0, w, 48); g.fillStyle = fg; g.font = 'bold 30px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(t, w / 2, 26); });
+            const shopSign = [['CAFÉ', '#2f3a48'], ['PIZZA', '#b8432f'], ['RAMEN', '#1d2530'], ['BAR', '#3f7fb0'], ['KIOSK', '#4f8a5b'], ['BÄCKEREI', '#a9784a'], ['BISTRO', '#6b3f5a'], ['MARKT', '#d9603b']].map(([t, c]) => label(t, c, '#f1e8d6'));
+            const neon = [['OPEN', '#ff4f8b'], ['24/7', '#4fd8ff'], ['NOODLES', '#ffd24f'], ['HOTEL', '#7dff8a']].map(([t, c]) => { const m = label(t, '#141a22', c); m.emissive = new THREE.Color(c).multiplyScalar(0.35); return m; });
+            const shopGlass = dm(0x3e5a6e); shopGlass.emissive = new THREE.Color(0x40311c); const glow = dm(0xf6f1e0); glow.emissive = new THREE.Color(0x6a6450);
+            const chair = [dm(0x2f3a48), dm(0xb8432f)], umb = [dm(0xd9603b), dm(0xf1e8d6), dm(0x3f7fb0)], planter = dm(0x8c8f94), leaf = dm(0x5f9a52), vend = [dm(0xc23b33), dm(0x2f6fb0)], bin = [dm(0x3d6b4a), dm(0x56606b)], fruit = [dm(0xe0732a), dm(0xd7c33a), dm(0x7fae3c)];
+            const warn = tx(64, 64, g => { g.translate(32, 32); g.rotate(Math.PI / 4); g.fillStyle = '#1d2530'; g.fillRect(-21, -21, 42, 42); g.fillStyle = '#f2c230'; g.fillRect(-18, -18, 36, 36); g.rotate(-Math.PI / 4); g.fillStyle = '#1d2530'; g.font = 'bold 26px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('!', 0, 2); }, { transparent: true, alphaTest: 0.4 });
+            const P = (dr, dc, t, w, h, off, y, r, c, m, tilt = 0) => D(dc ? t : w, h, dr ? t : w, (c + 0.5) * S + dc * (S / 2 + off), y, (r + 0.5) * S + dr * (S / 2 + off), m, dr ? -dr * tilt : 0, dc ? dc * tilt : 0); // Teil an der Wandseite (t = Tiefe weg von der Wand)
+            for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+                if (cellF(r, c) !== '#' || cellHash(r + 11, c + 29) % 100 >= dens * 100) continue; const h = cellHash(r, c) % 100, dir = [[1, 0], [-1, 0], [0, 1], [0, -1]].find(([dr, dc]) => walk(cellF(r + dr, c + dc))); if (!dir) continue; const [dr, dc] = dir;
+                if (h < 8) { P(dr, dc, 0.4, 0.08, 0.08, 0.2, 3.05, r, c, dark); P(dr, dc, 0.22, 0.24, 0.3, 0.42, 2.88, r, c, lamp); } // Wandlampe
+                else if (h < 14) P(dr, dc, 0.16, 0.16, WALL_H, 0.1, WALL_H / 2, r, c, pipe); // Fallrohr
+                else if (h < 21) P(dr, dc, 1.3, S * 0.85, 0.07, 0.62, 2.75, r, c, awn[h % 3], 0.28); // Markise
+                else if (h < 27) P(dr, dc, 0.04, 1.1, 1.6, 0.02, 2.0, r, c, poster[h % 4]); // Poster
+                if (h >= 27) { const h2 = cellHash(c + 101, r + 37) % 100; // Baustelle (nur wo noch keine Wand-Deko hängt)
+                    const Q = (t, w, hh, off, lat, y, m, geo) => { const o = new THREE.Mesh(geo || new THREE.BoxGeometry(dc ? t : w, hh, dr ? t : w), m); o.position.set(ox + (c + 0.5) * S + dc * (S / 2 + off) + (dr ? lat : 0), y, (r + 0.5) * S + dr * (S / 2 + off) + (dc ? lat : 0)); o.castShadow = true; parent.add(o); };
+                    const cyl = (a, b, hh, k = 12) => new THREE.CylinderGeometry(a, b, hh, k);
+                    if (h2 < 16) { for (const l of [-1.9, 1.9]) for (const o of [0.08, 0.72]) Q(0.09, 0.09, 4.3, o, l, 2.15, pipe); for (const y of [2.3, 3.5]) { Q(0.75, S, 0.08, 0.4, 0, y, wood); Q(0.06, S, 0.06, 0.72, 0, y + 0.85, pipe); } } // Gerüst (selten)
+                    else if (h2 < 20) { for (const l of [-1.3, -0.5, 1.1]) { Q(0.42, 0.42, 0.05, 0.3, l, 0.025, dark); Q(0, 0, 0, 0.3, l, 0.33, cone, new THREE.ConeGeometry(0.17, 0.6, 10)); } } // Leitkegel (selten)
+                    else if (h2 < 30) { Q(0.05, 3.2, 1.7, 0.03, 0, 1.4, shopGlass); Q(0.1, 3.5, 0.12, 0.05, 0, 0.5, dark); Q(0.09, 3.5, 0.6, 0.05, 0, 2.62, shopSign[h2 % shopSign.length]); } // Ladenfront mit Schild
+                    else if (h2 < 37) { Q(0, 0, 0, 1.05, 0, 0.74, ac, cyl(0.45, 0.45, 0.05)); Q(0.08, 0.08, 0.72, 1.05, 0, 0.36, dark); for (const l of [-0.8, 0.8]) { Q(0.42, 0.42, 0.06, 1.05, l, 0.46, chair[h2 % 2]); Q(0.06, 0.06, 0.45, 1.05, l, 0.22, dark); } Q(0.05, 0.05, 2.4, 1.05, 0, 1.2, dark); Q(0, 0, 0, 1.05, 0, 2.38, umb[h2 % 3], new THREE.ConeGeometry(1.35, 0.45, 8)); } // Café-Tisch mit Schirm
+                    else if (h2 < 42) { Q(0.45, 1.8, 0.07, 0.3, 0, 0.46, wood); Q(0.06, 1.8, 0.42, 0.1, 0, 0.78, wood); for (const l of [-0.75, 0.75]) Q(0.42, 0.07, 0.43, 0.3, l, 0.21, dark); } // Bank
+                    else if (h2 < 47) { Q(0.6, 2.4, 0.6, 0.32, 0, 0.3, planter); for (const l of [-0.75, 0, 0.75]) Q(0, 0, 0, 0.32, l, 0.78, leaf, new THREE.IcosahedronGeometry(0.4, 0)); } // Pflanzkübel
+                    else if (h2 < 50) { Q(0.75, 0.95, 1.9, 0.38, 0.9, 0.95, vend[h2 % 2]); Q(0.02, 0.62, 0.95, 0.76, 0.9, 1.3, glow); } // Getränkeautomat
+                    else if (h2 < 53) { for (const l of [-0.4, 0.4]) Q(0, 0, 0, 0.32, l, 0.45, bin[(h2 + (l > 0)) % 2], cyl(0.27, 0.24, 0.9, 10)); } // Mülleimer
+                    else if (h2 < 57) Q(0.05, 1.8, 0.55, 0.03, 0, 3.15, neon[h2 % neon.length]); // Leuchtreklame
+                    else if (h2 < 61) { Q(0.9, 2.6, 0.08, 0.55, 0, 0.88, wood); for (const l of [-1.15, 1.15]) Q(0.08, 0.08, 2.4, 0.95, l, 1.2, dark); for (const [i, l] of [-0.85, 0, 0.85].entries()) { Q(0.5, 0.65, 0.26, 0.55, l, 1.05, wood); Q(0.4, 0.55, 0.1, 0.55, l, 1.2, fruit[(h2 + i) % 3]); } Q(1.1, 2.8, 0.06, 0.6, 0, 2.45, awn[h2 % 3], null); } // Marktstand
+
+                }
+                if (h % 23 === 0) { let s0 = c; while (s0 > 0 && cellF(r, s0 - 1) === '#') s0--; const hv = WALL_H + ((r * 7 + s0 * 13) % 3) * 0.6; D(1.1, 0.7, 0.9, (c + 0.5) * S, hv + 0.35, (r + 0.5) * S, ac); D(0.7, 0.05, 0.6, (c + 0.5) * S, hv + 0.73, (r + 0.5) * S, dark); } // Klimagerät auf dem Dach
+            }
+            if (full) for (const L of ['A', 'B']) { // große Site-Schilder an angrenzenden Wänden
+                const tex = makeTex(128, 128, g => { g.fillStyle = '#1d2530'; g.fillRect(0, 0, 128, 128); g.strokeStyle = '#ece8e1'; g.lineWidth = 6; g.strokeRect(10, 10, 108, 108); g.fillStyle = '#ece8e1'; g.font = 'bold 84px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(L, 64, 70); }), m = new THREE.MeshLambertMaterial({ map: tex });
+                const spots = []; for (const { r, c } of siteCells[L]) for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (cellF(r + dr, c + dc) === '#') spots.push([r + dr, c + dc, -dr, -dc]);
+                [spots[0], spots[spots.length >> 1]].forEach(sp => sp && P(sp[2], sp[3], 0.06, 1.4, 1.4, 0.03, 2.6, sp[0], sp[1], m));
+            }
+            const bw = [0, 1, 2].map(k => new THREE.MeshLambertMaterial({ map: vWallTex(THEME, k) })); // Stadtkulisse rund um die Karte
+            if (full) for (let side = 0; side < 4; side++) for (let i = 0; i < 9; i++) { const t = (i + 0.5) / 9, hh = cellHash(side * 9, i) % 100, H = 8 + hh % 14, W2 = 8 + hh % 5, o = 9 + (hh % 3) * 5, x = side < 2 ? t * WORLD_W : side === 2 ? -o : WORLD_W + o, z = side < 2 ? (side ? WORLD_D + o : -o) : t * WORLD_D;
+                D(W2, H, W2, x, H / 2, z, bw[hh % 3]); D(W2 + 0.4, 0.4, W2 + 0.4, x, H + 0.2, z, wallTop); if (hh % 2) D(2, 1.2, 1.6, x + 1, H + 1, z - 1, ac); if (hh % 5 === 0) D(1.6, 2.4, 1.6, x - 2, H + 1.6, z + 1.5, pipe); }
+        }
+        if (DSV) cityDeco(cell, ROWS, COLS, 0, scene, 1, true);
+        if (DSV) { // Pflanzinseln (Erde, Blumen, Laterne) + flache Bodendetails auf freien Flächen (ohne Einfluss aufs Spiel)
+            const dm = c => new THREE.MeshLambertMaterial({ color: c }), soil = dm(0x5b4636), leaf = dm(0x5f9a52), bloom = [dm(0xe0683a), dm(0xf2c230), dm(0xe8e2d6)], dark = dm(0x2b2f36), lamp = dm(0xffe6b0); lamp.emissive = new THREE.Color(0xffc060);
+            const D = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = true; scene.add(o); };
+            const plantAt = []; for (let r = 1; r < ROWS - 1; r++) for (let c = 1; c < COLS - 1; c++) { if (cell(r, c) !== 'h') continue; let ok = true; for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) if ((a || b) && cell(r + a, c + b) !== '.') ok = false; if (ok) plantAt.push([r, c]); } // freistehende Deckung = Pflanzinsel
+            for (const [r, c] of plantAt) { const x = (c + 0.5) * S, z = (r + 0.5) * S; D(new THREE.BoxGeometry(S - 0.8, 0.06, S - 0.8), soil, x, 1.23, z);
+                for (const [i, [a, b]] of [[-1, -1], [1, -1], [-1, 1], [1, 1]].entries()) D(new THREE.IcosahedronGeometry(0.3, 0), i % 2 ? leaf : bloom[(r + c + i) % 3], x + a * 0.9, 1.45, z + b * 0.9);
+                D(new THREE.BoxGeometry(0.12, 2.7, 0.12), dark, x, 2.6, z); D(new THREE.BoxGeometry(0.9, 0.08, 0.1), dark, x, 3.9, z); for (const a of [-0.42, 0.42]) D(new THREE.BoxGeometry(0.26, 0.3, 0.26), lamp, x + a, 3.72, z); }
+            const inlay = new THREE.MeshLambertMaterial({ map: makeTex(128, 128, g => { g.translate(64, 64); for (let i = 0; i < 3; i++) { g.strokeStyle = i % 2 ? 'rgba(255,248,235,.35)' : 'rgba(30,25,20,.18)'; g.lineWidth = 6; g.beginPath(); g.arc(0, 0, 58 - i * 16, 0, 7); g.stroke(); } g.rotate(Math.PI / 4); g.fillStyle = 'rgba(255,248,235,.3)'; g.fillRect(-10, -10, 20, 20); }), transparent: true, depthWrite: false });
+            const manM = dm(0x3a3d42), grate = dm(0x26282c), freeC = (r, c) => { for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) if (cell(r + a, c + b) !== '.') return false; return true; };
+            for (let r = 1; r < ROWS - 1; r++) for (let c = 1; c < COLS - 1; c++) { if (!freeC(r, c)) continue; const h = cellHash(c + 7, r + 3) % 31, x = (c + 0.5) * S, z = (r + 0.5) * S;
+                if (h === 0) { const m = new THREE.Mesh(new THREE.PlaneGeometry(5.5, 5.5), inlay); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.015, z); scene.add(m); } // Bodenmosaik
+                else if (h < 3) D(new THREE.CylinderGeometry(0.45, 0.45, 0.03, 14), manM, x + 0.8, 0.015, z - 0.6); // Kanaldeckel
+                else if (h < 5) D(new THREE.BoxGeometry(0.9, 0.025, 0.35), grate, x - 0.7, 0.013, z + 0.9); } // Abflussgitter
         }
         { const st = scene.children.slice(staticFrom).filter(o => o.isMesh); st.forEach(o => o.updateMatrixWorld(true)); if (DSV) outlines(st); mergeStatic(st); st.forEach(o => scene.remove(o)); }
         const texFloor = makeTex(256, 256, (g, w, h2) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h2); g.strokeStyle = 'rgba(0,0,0,.07)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 2); i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h2); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); } }, COLS / 2, ROWS / 2);
@@ -3762,8 +3832,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const body = mk(0.7, 0.85, 0.4, bodyMat, 0, 1.05, 0, 'body'); mk(0.74, 0.46, 0.44, vestMat, 0, 1.22, 0, 0, 0, 1); mk(0.72, 0.1, 0.42, dark, 0, 0.8, 0); /* Trefferzonen exakt wie vorher */
             mk(0.15, 0.1, 0.15, skin, 0, 1.5, 0); const head = mk(0.34, 0.34, 0.34, headMat, 0, 1.66, 0, 'head');
             if (col.h !== 0x101012 && col.h !== 0x101018) { mk(0.06, 0.04, 0.01, dark, -0.07, 1.69, 0.175); mk(0.06, 0.04, 0.01, dark, 0.07, 1.69, 0.175); }
-            if (!AG) { // Standard-Ausrüstung: CT Helm + blaue Brille, T rotes Stirnband + Halstuch
-                if (T) { mk(0.36, 0.07, 0.36, M(0xb52222), 0, 1.75, 0); mk(0.36, 0.12, 0.36, M(0x3a3226), 0, 1.56, 0.005); }
+            if (!AG) { // Standard-Ausrüstung: Defender Helm + blaue Brille, Attacker rotes Stirnband
+                if (T) mk(0.36, 0.07, 0.36, M(0xb52222), 0, 1.75, 0); // Attacker: Stirnband (ohne Halstuch)
+                if (DSV) mk(0.76, 0.07, 0.46, M(T ? 0xe0683a : 0x3fb5c7), 0, 1.41, 0); // Teamfarbe: Attacker orange, Defender türkis
                 else { mk(0.38, 0.13, 0.38, M(0x2a3446), 0, 1.86, 0); mk(0.38, 0.04, 0.08, M(0x2a3446), 0, 1.8, 0.19); mk(0.3, 0.07, 0.04, M(0x6fa0ff), 0, 1.7, 0.185); }
             }
             // Arme halten die Waffe (links am Vorderschaft, rechts am Abzug), Handschuhe
@@ -4173,11 +4244,11 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (G.state !== 'live') return; G.state = 'end'; G.t = 5; G.score[winner]++; if (winner === player.team) xpEvent('round'); const loser = winner === 'CT' ? 'T' : 'CT'; G.loss[winner] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
             const winBonus = reason.includes('explodiert') ? 3500 : 3250, loseBonus = 1400 + 500 * (G.loss[loser] - 1);
             for (const e of ents) { e.money = Math.min(16000, e.money + (e.team === winner ? winBonus : loseBonus)); if (e.team === 'T' && G.bomb.state !== 'carried' && G.bomb.state !== 'dropped') e.money = Math.min(16000, e.money + 300); }
-            msg(winner === 'CT' ? 'Counter-Terrorists gewinnen' : 'Terroristen gewinnen', reason, 5); sfx(player.team === winner ? 'win' : 'lose'); hideProgress(); closeBuy();
+            msg(winner === 'CT' ? 'Defender gewinnen' : 'Attacker gewinnen', reason, 5); sfx(player.team === winner ? 'win' : 'lose'); hideProgress(); closeBuy();
             if (NET.on && NET.host) netSend({ type: 'end', w: winner, rs: reason });
         }
         function nextRound() { if (G.score.CT >= WIN_SCORE || G.score.T >= WIN_SCORE || G.round >= MAX_ROUNDS) gameOver(); else { G.round++; startRound(); } }
-        function checkRoundEnd() { if (GL.on || DM.on || DH.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; if (aCT === 0) endRound('T', 'Alle Counter-Terroristen eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Terroristen eliminiert'); }
+        function checkRoundEnd() { if (GL.on || DM.on || DH.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; if (aCT === 0) endRound('T', 'Alle Defender eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Attacker eliminiert'); }
         function plantBomb(e) {
             if (G.state !== 'live') return; G.bomb.state = 'planted'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.t = BOMB_TIME; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); bombMesh.rotation.set(0, 0, 0); e.plantT = 0; e.money = Math.min(16000, e.money + 300);
             if (e.isPlayer) { e.weapons[5] = null; e.slot = e.weapons[1] ? 1 : 2; e.switchT = 1; updateVM(); }
@@ -4380,7 +4451,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // =====================================================================
         const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF', walk: 'ShiftLeft', inspect: 'KeyF' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)', walk: 'Langsam gehen (leise)', inspect: 'Waffe inspizieren' };
         const BIND = Object.assign({}, BIND_DEF, JSON.parse(localStorage.getItem('cs_binds') || '{}'));
-        const OPT = Object.assign({ sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
+        const OPT = Object.assign({ tsens: 1.8, sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
         // Ansicht-Optionen anwenden (HUD-Farbe, Radar, Killfeed, Handy-Buttons) – nur bei Änderung, nicht pro Frame
         function applyLook() { $('hud').style.color = OPT.hudCol === '#e8c98a' && document.documentElement.classList.contains('dsV') ? '#ece8e1' : OPT.hudCol; const r = $('radar'); r.style.display = OPT.radar ? '' : 'none'; if (OPT.radar) r.style.width = r.style.height = Math.round((IS_TOUCH ? 100 : 170) * OPT.radar) + 'px'; $('killfeed').style.display = OPT.kf ? '' : 'none'; let fe = $('fpsBox'); if (OPT.fps && !fe) { fe = document.createElement('div'); fe.id = 'fpsBox'; document.body.appendChild(fe); } if (fe) fe.style.display = OPT.fps ? '' : 'none'; const ds = document.documentElement.style; ds.setProperty('--tbs', OPT.tbs); ds.setProperty('--tba', OPT.tba); }
         // Handy: alle 2 s FPS prüfen – unter 40 FPS Auflösung senken, über 56 FPS wieder bis zur Grafikstufe anheben
@@ -4436,7 +4507,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                         TOUCH.s = dx; TOUCH.f = -dy;
                         $('tnub').style.transform = `translate(${dx * 34}px,${dy * 34}px)`;
                     } else if (t.identifier === lid) {
-                        const k = 0.0045 * OPT.sens * (player.scoped ? 0.4 : 1);
+                        const k = 0.0045 * OPT.tsens * (player.scoped ? 0.4 : 1); // eigene Handy-Empfindlichkeit
                         if (FC.on) { FC.yaw -= (t.clientX - lx) * k; FC.pitch = clamp(FC.pitch - (t.clientY - ly) * k, -1.5, 1.5); }
                         else { player.yaw -= (t.clientX - lx) * k; player.pitch = clamp(player.pitch - (t.clientY - ly) * k, -1.5, 1.5); }
                         lx = t.clientX; ly = t.clientY;
@@ -4692,7 +4763,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                     setT('abil', `<div class="abw ${ready ? 'rdy' : ''}" style="--f:${deg}deg"><div class="abr"><span>${GL_ABIL[A.key].ico}</span></div><b>${ready ? '[' + keyName(BIND.abil) + ']' + (A.g ? ' ⚡' : '') : Math.ceil(A.cd) + 's'}</b></div>`);
                 } else setT('abil', ''); const tm = GL.myTeam, L = Math.max(0, tm.lives); setT('score', GL.duel && !GL.duel.over ? (GL.v1 ? `${GL.duel.teams[0].name} ${GL.duel.teams[0].wins} : ${GL.duel.teams[1].wins} ${GL.duel.teams[1].name}` : `${GL.duel.teams[0].name} vs. ${GL.duel.teams[1].name}`) : (GL.v1 ? '🎯 1V1' : '⚔️ GAUNTLET')); setT('roundlbl', GL.v1 ? `1V1 · Erster mit ${V1_WIN} Siegen${GL.v1w ? ' · ' + W[GL.v1w].name : ''}` : `Stage ${GL.stage} · Dein Team: ${'❤'.repeat(L)}${'🖤'.repeat(GL_LIVES - L)}`);
             }
-            else { setT('abil', ''); if (EX.on) { setT('score', '🧭 Erkunden'); setT('roundlbl', (EX.ar ? (CMAP_INFO[EX.ar] ? CMAP_INFO[EX.ar].n : MAP_NAMES[EX.ar] || EX.ar) : MAPLABEL) + ' · Editor: ' + (IS_TOUCH ? '☰' : 'Esc')); } else if (DM.on) { setT('score', `💀 ${player.kills} / ${DM.limit} Kills`); setT('roundlbl', `Deathmatch · Platz ${dmRank().indexOf(player) + 1} / ${ents.length}${G.state === 'freeze' ? ' – Start in ' + Math.ceil(G.t) : ''}`); } else { setT('score', `<span class="ct">CT ${G.score.CT}</span> | <span class="t">${G.score.T} T</span>`); setT('roundlbl', `Runde ${G.round} / ${MAX_ROUNDS}${G.state === 'freeze' ? ' – Freeze ' + Math.ceil(G.t) : ''}`); } } const be = $('bomb'); be.style.display = G.bomb.state === 'planted' ? 'block' : 'none'; if (G.bomb.state === 'planted') be.style.opacity = Math.sin(now * 8) > 0 ? 1 : 0.35;
+            else { setT('abil', ''); if (EX.on) { setT('score', '🧭 Erkunden'); setT('roundlbl', (EX.ar ? (CMAP_INFO[EX.ar] ? CMAP_INFO[EX.ar].n : MAP_NAMES[EX.ar] || EX.ar) : MAPLABEL) + ' · Editor: ' + (IS_TOUCH ? '☰' : 'Esc')); } else if (DM.on) { setT('score', `💀 ${player.kills} / ${DM.limit} Kills`); setT('roundlbl', `Deathmatch · Platz ${dmRank().indexOf(player) + 1} / ${ents.length}${G.state === 'freeze' ? ' – Start in ' + Math.ceil(G.t) : ''}`); } else { setT('score', `<span class="ct">DEF ${G.score.CT}</span> | <span class="t">${G.score.T} ATK</span>`); setT('roundlbl', `Runde ${G.round} / ${MAX_ROUNDS}${G.state === 'freeze' ? ' – Freeze ' + Math.ceil(G.t) : ''}`); } } const be = $('bomb'); be.style.display = G.bomb.state === 'planted' ? 'block' : 'none'; if (G.bomb.state === 'planted') be.style.opacity = Math.sin(now * 8) > 0 ? 1 : 0.35;
             $('cross').style.display = (p.alive && !p.scoped) ? 'block' : 'none';
             const g = Math.max(0, OPT.chGap + (OPT.chDyn ? p.recoil * 3 + (p.speed > 3 ? 8 : p.speed > 0 ? 3 : 0) + (!p.onGround ? 12 : 0) - (p.crouch ? 2 : 0) : 0)), L = OPT.chLen, T = OPT.chThick, hT = T / 2, bg = `;background:${OPT.chCol}`;
             crossEls[0].style.cssText = `left:${-hT}px;top:${-(g + L)}px;width:${T}px;height:${L}px${bg}`; crossEls[1].style.cssText = `left:${-hT}px;top:${g}px;width:${T}px;height:${L}px${bg}`; crossEls[2].style.cssText = `left:${-(g + L)}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[3].style.cssText = `left:${g}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[4].style.cssText = `display:${OPT.chDot ? "block" : "none"};left:${-hT}px;top:${-hT}px;width:${T}px;height:${T}px${bg}`;
@@ -4706,7 +4777,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (GL.on) { $('board').innerHTML = glBoard(); return; }
             if (DM.on) { $('board').innerHTML = `<h3 style="margin:0 0 8px">💀 Deathmatch – ${MAPLABEL}</h3><table><tr><th>Spieler</th><th>K</th><th>T</th></tr>${dmRank().map((e, i) => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${i + 1}. ${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td></tr>`).join('')}</table>${IS_TOUCH ? '<p style="font-size:11px;color:#8fa3b8">Doppeltipp: Einstellungen</p>' : ''}`; return; }
             const rows = t => ents.filter(e => e.team === t).sort((a, b) => b.kills - a.kills).map(e => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td><td>$ ${e.money}</td></tr>`).join('');
-            $('board').innerHTML = `<h3 style="margin:0 0 8px">${MAPLABEL} – Runde ${G.round}</h3><table><tr><th class="ct">Counter-Terrorists (${G.score.CT})</th><th>K</th><th>T</th><th>$</th></tr>${rows('CT')}<tr><th class="t" style="padding-top:12px">Terroristen (${G.score.T})</th><th>K</th><th>T</th><th>$</th></tr>${rows('T')}</table>`;
+            $('board').innerHTML = `<h3 style="margin:0 0 8px">${MAPLABEL} – Runde ${G.round}</h3><table><tr><th class="ct">Defender (${G.score.CT})</th><th>K</th><th>T</th><th>$</th></tr>${rows('CT')}<tr><th class="t" style="padding-top:12px">Attacker (${G.score.T})</th><th>K</th><th>T</th><th>$</th></tr>${rows('T')}</table>`;
         }
         const arenaBase = document.createElement('canvas'); arenaBase.width = arenaBase.height = radar.width;
         let RB = null;
@@ -5094,6 +5165,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <div style="width:340px;text-align:left;font:13px Arial;color:#ddd;margin-bottom:10px">
  <label style="display:block;margin:6px 0">🖱️ Empfindlichkeit: <b id="sensval">${OPT.sens.toFixed(2)}</b><br>
  <input id="sensSlider" type="range" min="0.1" max="3" step="0.05" value="${OPT.sens}" style="width:100%"></label>
+ ${IS_TOUCH ? `<label style="display:block;margin:6px 0">📱 Handy-Empfindlichkeit (Drehen): <b id="tsensval">${OPT.tsens.toFixed(2)}</b><br>
+ <input id="tsensSlider" type="range" min="0.3" max="5" step="0.1" value="${OPT.tsens}" style="width:100%"></label>` : ''}
  <label style="display:block;margin:6px 0">🔊 Lautstärke: <b id="volval">${Math.round(OPT.vol * 100)}%</b><br>
  <input id="volSlider" type="range" min="0" max="1" step="0.05" value="${OPT.vol}" style="width:100%"></label>
  <label style="display:block;margin:6px 0">🖥️ Grafik:
@@ -5131,6 +5204,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div>${IS_TOUCH ? '<button id="btnEditGo">📱 Buttons anpassen</button>' : ''}<button id="setReset" style="border-color:#c66;color:#c66">Zurücksetzen</button><button id="setBack">Zurück</button></div>`);
  const beg = $('btnEditGo'); if (beg) beg.onclick = () => btnEditStart();
             document.querySelectorAll('[data-opt]').forEach(el => el.oninput = el.onchange = () => { const k = el.dataset.opt; OPT[k] = el.type === 'checkbox' ? (el.checked ? 1 : 0) : el.type === 'color' ? el.value : +el.value; const v = $(k + 'V'); if (v) v.textContent = el.value; saveOpts(); applyLook(); if (k === 'hitSnd' && el.type !== 'range') { initAudio(); sfx('hit'); } });            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
+            if ($('tsensSlider')) $('tsensSlider').oninput = e => { OPT.tsens = +e.target.value; $('tsensval').textContent = OPT.tsens.toFixed(2); saveOpts(); };
             $('sensSlider').oninput = e => { OPT.sens = +e.target.value; $('sensval').textContent = OPT.sens.toFixed(2); saveOpts(); };
             $('volSlider').oninput = e => { OPT.vol = +e.target.value; $('volval').textContent = Math.round(OPT.vol * 100) + '%'; saveOpts(); initAudio(); sfx('hit'); };
             $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); };
@@ -5212,7 +5286,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  clearTimeout(to); ws.close();
  const max = CFG.teamSize * 2;
  const rows = m.rooms.length
- ? m.rooms.filter(r => !r.mode || r.mode === (sessionStorage.getItem('playcat') || 'comp')).map(r => { const nm = String(r.name).replace(/[<>&"]/g, ''); const st = r.st ? '<span style="color:#ffb076">🎮 Im Spiel</span>' : '<span style="color:#9fe08a">🟢 Lobby</span>'; return `<div class="lobrow" style="border-left-color:${r.st ? '#ffb076' : '#9fe08a'}"><b>${nm}</b>${st}<span>👥 ${r.n}/${max}${r.mode ? ' · ' + modeName(r.mode) : ''}</span>${(sessionStorage.getItem('playcat') || 'comp') === 'comp' ? `<button class="bct" data-jct="${nm}">Beitreten: CT</button><button class="bt" data-jt="${nm}">Beitreten: T</button>` : `<button class="bct" data-jct="${nm}">Beitreten</button>`}</div>`; }).join('') : '<span style="color:#8fa3b8;font-size:12px">Keine offenen Lobbys – gib unten einen Raumnamen ein und erstelle die erste!</span>';
+ ? m.rooms.filter(r => !r.mode || r.mode === (sessionStorage.getItem('playcat') || 'comp')).map(r => { const nm = String(r.name).replace(/[<>&"]/g, ''); const st = r.st ? '<span style="color:#ffb076">🎮 Im Spiel</span>' : '<span style="color:#9fe08a">🟢 Lobby</span>'; return `<div class="lobrow" style="border-left-color:${r.st ? '#ffb076' : '#9fe08a'}"><b>${nm}</b>${st}<span>👥 ${r.n}/${max}${r.mode ? ' · ' + modeName(r.mode) : ''}</span>${(sessionStorage.getItem('playcat') || 'comp') === 'comp' ? `<button class="bct" data-jct="${nm}">Beitreten: Defender</button><button class="bt" data-jt="${nm}">Beitreten: Attacker</button>` : `<button class="bct" data-jct="${nm}">Beitreten</button>`}</div>`; }).join('') : '<span style="color:#8fa3b8;font-size:12px">Keine offenen Lobbys – gib unten einen Raumnamen ein und erstelle die erste!</span>';
  el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div>' + rows;
  const go = (nm, team) => { $('room').value = nm; startMP(team); };
  el.querySelectorAll('[data-jct]').forEach(b => b.onclick = () => go(b.dataset.jct, 'CT'));
@@ -5225,7 +5299,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // =====================================================================
         //  MAP-EDITOR (eigene Karten, nur lokal gespeichert)
         // =====================================================================
-        const ME_TOOLS = [['.', '🧽 Radierer', '#3a3226'], ['#', 'Wand', '#d8cbb0'], ['c', 'Kiste', '#a8743c'], ['C', 'Container', '#6b4a2a'], ['h', 'Halbe Wand', '#9c8f78'], ['=', 'Steg', '#8291a0'],
+        const ME_TOOLS = [['.', '🧽 Radierer', '#3a3226'], ['#', 'Wand', '#d8cbb0'], ['c', 'Kiste', '#a8743c'], ['C', 'Container', '#6b4a2a'], ['h', 'Halbe Wand / Pflanzinsel', '#5f9a52'], ['=', 'Steg', '#8291a0'],
         ['1', 'Stufe 1', '#56606a'], ['2', 'Stufe 2', '#66717c'], ['3', 'Stufe 3', '#77838e'], ['4', 'Stufe 4', '#8995a0'], ['5', 'Stufe 5', '#9ba7b2'], ['6', 'Stufe 6', '#adb9c4'],
         ['s', 'Sandsäcke', '#c9b48a'], ['b', 'Fässer', '#8a2b20'], ['D', 'Tür', '#5b3b1e'], ['W', 'Fenster', '#9fc7e3'], ['R', 'Innenraum (Dach)', '#6f6a62'],
         ['A', 'Bombsite A', '#e07a2a'], ['B', 'Bombsite B', '#e0a82a'], ['T', 'Spawn T', '#d9822b'], ['K', 'Spawn CT', '#4a7fd0']];
@@ -5331,7 +5405,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="merow" style="flex-wrap:wrap;gap:4px;align-items:center"><button id="meUndo" style="padding:3px 8px;font-size:12px;margin:0" title="Rückgängig (Strg+Z)">↶</button><button id="meRedo" style="padding:3px 8px;font-size:12px;margin:0" title="Wiederholen (Strg+Y)">↷</button><select id="meSym" style="font-size:12px;padding:3px"><option value="0">Symmetrie: aus</option><option value="1">↔ Links/Rechts</option><option value="2">↕ Oben/Unten</option><option value="3">⟲ Punkt</option></select><button id="meSelB" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit der Maus aufziehen">▭ Bereich</button><button id="meCopy" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich kopieren">📋</button><button id="mePaste" style="padding:3px 8px;font-size:12px;margin:0" title="Einfügen: danach auf die Zielstelle klicken">📥</button><button id="meFlipH" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich waagrecht spiegeln">↔</button><button id="meFlipV" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich senkrecht spiegeln">↕</button><button id="meFill" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit dem gewählten Werkzeug füllen">🪣</button><button id="meRand" style="padding:3px 8px;font-size:12px;margin:0" title="Zufällige Karte als Startvorlage">🎲 Zufall</button></div>
  <p id="meMsg"></p>
  <p class="mehint">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT${ar ? '' : ', Bombsite A & B'}</p>
- <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay" ${ar ? 'style="display:none"' : ''}>▶ Speichern & spielen</button>${sessionStorage.getItem('exret') ? '<button id="meExSave">💾 Speichern & erkunden</button><button id="meExBack">🧭 Zurück zum Erkunden</button>' : ''}<button id="meShare">📤 Teilen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
+ <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay" ${ar ? 'style="display:none"' : ''}>▶ Speichern & spielen</button>${sessionStorage.getItem('exret') ? '<button id="meExSave">💾 Speichern & erkunden</button><button id="meExBack">🧭 Zurück zum Erkunden</button>' : ''}<button id="meShare">📤 Teilen</button><button id="meFill" title="Große freie Flächen mit Pflanzinseln füllen">🌿 Auto-Füllen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
  </div></div>`);
             const cv = $('meCv'), g = cv.getContext('2d');
             const draw = () => { g.fillStyle = cols.floor; g.fillRect(0, 0, CW, 560); for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= W; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); } for (let i = 0; i <= H; i++) { g.moveTo(0, i * cs); g.lineTo(CW, i * cs); } g.stroke(); };
@@ -5392,6 +5466,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('meShare').onclick = () => shareMap(mapData());
             let saved = false; // nach dem Speichern beim Zurückgehen neu laden, damit die Karte im Menü erscheint
             $('meBack').onclick = () => { if (sessionStorage.getItem('exret')) return exGo(editKey || src); if (ar) return showArenaList(); sessionStorage.setItem('opentab', edFrom); if (saved) location.reload(); else if (edFrom === 'maps') showMapList(); else showMenu(); };
+            $('meFill').onclick = () => { pushU(); const p = fillOpen(grid); draw(); const m = $('meMsg'); m.style.color = p.length ? '#7c7' : '#c66';
+                m.textContent = p.length ? '✓ ' + p.length + ' Pflanzinsel' + (p.length > 1 ? 'n' : '') + ' gesetzt · Läden, Lampen, Gerüste & Co. verteilt das Spiel automatisch an den Wänden' : 'Keine großen freien Flächen (mind. 5×5 Felder frei) gefunden'; };
             $('meClear').onclick = () => { if (!confirm((ar ? 'Arena' : 'Karte') + ' komplett leeren? (Nur die Außenwand bleibt)')) return; pushU(); sel = null; for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.'; draw(); };
             const save = () => {
                 const n = $('meName').value.trim().slice(0, 20), flat = grid.map(r => r.join('')).join(''), msgEl = $('meMsg'); msgEl.style.color = '#c66';
@@ -5473,8 +5549,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div> <div id="playbar">
  <input id="pname" maxlength="14" value="${savedName}" placeholder="Dein Name">
  <span id="barOff">
- <button id="btnCT">Start: Counter-Terrorists</button>
- <button id="btnT">Start: Terroristen</button>
+ <button id="btnCT">Start: Defender</button>
+ <button id="btnT">Start: Attacker</button>
  <button id="btnDM">💀 Deathmatch starten</button>
  <button id="btnEx">🧭 Karte erkunden</button>
  <button id="btnExAr">🏟 Arena erkunden</button>
@@ -5484,8 +5560,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <span id="barOn" style="display:none">
  <input id="srv" value="${DEF_WS}" placeholder="wss://…">
  <input id="room" value="sienna" placeholder="Raum">
- <button id="mpCT">Beitreten: CT</button>
- <button id="mpT">Beitreten: T</button>
+ <button id="mpCT">Beitreten: Defender</button>
+ <button id="mpT">Beitreten: Attacker</button>
  </span>
  <span style="color:#394a5c">|</span>
  <button id="btnGSet" class="rulesbtn">🎮 REGELN</button><button id="btnSet">⌨️ Tasten</button>
@@ -5493,7 +5569,34 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 2.3 „COMIC"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 2.4 „STADTLEBEN"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏙️ LEBENDIGE KARTEN</p>
+ Alle Karten sind jetzt eine <b>echte Stadt</b>: Ladenfronten mit beleuchteten Schaufenstern (Café, Pizza, Ramen, Bar, Kiosk …), Café-Tische mit Sonnenschirmen, Bänke, Pflanzkübel, Getränkeautomaten, Marktstände mit Obst und Leuchtreklamen.<br>
+ An den Wänden: Lampen, Markisen, Poster, Fallrohre und jede Menge <b>Baugerüste</b> – auf den Dächern Klimageräte.<br>
+ Rund um jede Karte eine <b>Stadtkulisse</b> · große <b>A/B-Schilder</b> an den Bombsites.<br>
+ Alles nur Deko – keine Kollision, Laufwege bleiben frei.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🌿 PFLANZINSELN & PLÄTZE</p>
+ Große, leere Flächen haben jetzt <b>Pflanzinseln mit Laterne</b> als neue Deckung · dazu Bodenmosaike, Kanaldeckel und Abflussgitter.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚔️ ATTACKER & DEFENDER</p>
+ Aus T und CT werden <b>Attacker</b> und <b>Defender</b> – im HUD, in der Tabelle, beim Start und in der Lobby.<br>
+ Die Standard-Agenten tragen einen <b>Schulterstreifen in Teamfarbe</b> (Attacker orange, Defender türkis) · Attacker ohne Halstuch.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏟️ ARENEN</p>
+ Gauntlet & 1v1 haben jetzt auch den <b>Comic-Look</b> (gemalte Wände, Konturen, neuer Boden) und <b>dezente Stadt-Deko</b> – ruhiger als auf den großen Karten.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🛠️ MAP-EDITOR</p>
+ Neuer Button <b>🌿 Auto-Füllen</b>: füllt große freie Flächen automatisch mit Pflanzinseln – Läden, Lampen, Gerüste & Co. verteilt das Spiel dann von selbst an den Wänden.<br>
+ Freistehende halbe Wände werden auch in eigenen Karten zu Pflanzinseln · „Halbe Wand" ist im Editor jetzt <b>grün</b> und gut sichtbar.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📱 HANDY</p>
+ <b>Schneller drehen:</b> eigene <b>Handy-Empfindlichkeit</b> in den Einstellungen (Standard jetzt deutlich schneller).
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 2.3 „COMIC"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎨 NEUER COMIC-LOOK</p>
@@ -5920,7 +6023,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 2.3 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 2.4 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -6400,6 +6503,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     for (let b3 = 0; b3 < 3; b3++) { const bl = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.4 + Math.random() * 0.25, 4), M2(0x7a8f4a)); bl.position.set((Math.random() - 0.5) * 0.4, 0.2, (Math.random() - 0.5) * 0.4); bl.rotation.z = (Math.random() - 0.5) * 0.4; g2.add(bl); } place(g2);
                 }
             } const fl = new THREE.Mesh(new THREE.PlaneGeometry(C * S, R * S), new THREE.MeshLambertMaterial(DSV ? { map: (t => { vFloorPaint(t); return t; })(makeTex(256, 256, (g, w, h) => { g.fillStyle = th.floor; g.fillRect(0, 0, w, h); }, C / 2, R / 2)) } : { color: new THREE.Color(th.floor) })); fl.rotation.x = -Math.PI / 2; fl.position.set(ox + C * S / 2, 0.01, R * S / 2); fl.receiveShadow = true; grp.add(fl); info.meshes.push(fl);
+            if (DSV) cityDeco(aCell, R, C, ox, grp, 0.4, false); // Arena: dezente Deko
             { const st = grp.children.filter(o => o.isMesh && o !== fl); grp.updateMatrixWorld(true); if (DSV) outlines(st, grp); mergeStatic(st, grp); st.forEach(o => grp.remove(o)); } // Rendern zusammengefasst, Treffer weiter über info.meshes
             info.grp = grp; grp.visible = false;
             GA.built[key] = info; return info;
@@ -6998,7 +7102,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     G.state = 'end'; const loser = m.w === 'CT' ? 'T' : 'CT'; if (m.w === player.team) xpEvent('round');
                     G.loss[m.w] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
                     player.money = Math.min(16000, player.money + (player.team === m.w ? (m.rs.includes('explodiert') ? 3500 : 3250) : 1400 + 500 * (G.loss[loser] - 1)));
-                    msg(m.w === 'CT' ? 'Counter-Terrorists gewinnen' : 'Terroristen gewinnen', m.rs, 5);
+                    msg(m.w === 'CT' ? 'Defender gewinnen' : 'Attacker gewinnen', m.rs, 5);
                     sfx(player.team === m.w ? 'win' : 'lose'); hideProgress(); closeBuy(); player.plantT = player.defuseT = 0;
                 } break;
                 case 'over': if (!NET.host) { G.score = m.sc; gameOver(); } break; case 'st': {
@@ -7083,7 +7187,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); // aktuelle Regeln an alle (auch neue Spieler)
             $('hud').style.display = 'none'; setupMenuScene();
             const md = MODES[NET.mode] ? NET.mode : 'comp', isGl = md === 'gl';
-            const card = (team, name, crown) => `<div class="lobp" style="border-left-color:${md !== 'comp' ? 'var(--hl)' : team === 'CT' ? '#8ab4ff' : '#ffb076'}"><b>${name}</b><span>${md !== 'comp' ? 'Bereit' : team === 'CT' ? 'Counter-Terrorist' : 'Terrorist'}${crown ? ' · 👑 Host' : ''}</span></div>`;
+            const card = (team, name, crown) => `<div class="lobp" style="border-left-color:${md !== 'comp' ? 'var(--hl)' : team === 'CT' ? '#8ab4ff' : '#ffb076'}"><b>${name}</b><span>${md !== 'comp' ? 'Bereit' : team === 'CT' ? 'Defender' : 'Attacker'}${crown ? ' · 👑 Host' : ''}</span></div>`;
             const hostBtns = {
                 comp: '<button id="btnStart" style="border-color:#9fe08a;color:#9fe08a">▶ WETTKAMPF STARTEN</button>',
                 dm: '<button id="btnDMMp" style="border-color:#ff6b6b;color:#ff6b6b">💀 DEATHMATCH STARTEN</button>',
