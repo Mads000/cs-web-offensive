@@ -4697,6 +4697,46 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             gbTake(GB.sel); if (out) gbGive(out); saveStore(); applySkins();
             let n = 0; const tk = setInterval(() => { const s = rnd(SKINS.filter(s => !s.u)), el = $('gbRoll'); if (el) { el.textContent = s.n; el.style.color = RARITY[s.r][0]; } tone(700 + n * 15, 0.02, 0.05, 0, 'square'); if (++n > 18) { clearInterval(tk); GB.busy = false; GB.sel = []; GB.tgt = null; sfx(ok ? 'win' : 'lose'); showGamble(ok ? { ok: true, txt: `✓ ${out.n}` } : { ok: false, txt: '✗ Upgrade fehlgeschlagen – Skin verloren' }); } }, 90);
         }
+        // ── Tutorial: führt Schritt für Schritt durch das Spiel, hebt im Hauptmenü den passenden Menüpunkt hervor ──
+        function tutSteps() {
+            const k = a => '<b class="tk">' + keyName(BIND[a]) + '</b>';
+            return [
+                { t: '👋 Willkommen bei CS:WO', d: 'Counter-Strike direkt im Browser – offline gegen Bots oder online mit Freunden. Dieses Tutorial zeigt Dir in ein paar Schritten alles, was Du machen kannst.<br><br>Mit <b>Weiter</b> oder den Pfeiltasten geht\'s durch, <b>Esc</b> beendet.' },
+                { sel: '[data-nav="play"]', t: '▶ Spielen', d: 'Hier startest Du ein Spiel – <b>Offline</b> gegen Bots oder <b>Online</b> über eine Lobby:<br>• <b>Wettkampf</b>: T legen die Bombe, CT verteidigen oder entschärfen<br>• <b>Deathmatch</b>: jeder gegen jeden, Waffen gratis<br>• <b>Gauntlet</b>: Duo-Turnier mit Draft, Perks & Fähigkeiten<br>• <b>1v1</b>: Duelle mit Kaufphase, Erster mit 5 Siegen<br>• <b>Entenjagd</b>: entspannt Enten jagen, mit Bestenliste<br>Online wählst Du Dein Team direkt in der Lobby.' },
+                IS_TOUCH
+                    ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
+                    : { t: '⌨️ Steuerung', d: 'Laufen ' + ['fwd', 'left', 'back', 'right'].map(k).join(' ') + ' · Umsehen mit der Maus · Schießen <b class="tk">Linksklick</b> · Zielfernrohr <b class="tk">Rechtsklick</b><br>Springen ' + k('jump') + ' · Ducken ' + k('crouch') + ' · Leise gehen ' + k('walk') + '<br>Nachladen ' + k('reload') + ' · Benutzen/Entschärfen ' + k('use') + ' · Waffe fallen lassen ' + k('drop') + '<br>Letzte Waffe ' + k('lastw') + ' · Waffe inspizieren ' + k('inspect') + ' · Waffen <b class="tk">1–5</b> · Scoreboard ' + k('board') + '<br>Alle Tasten kannst Du in den Einstellungen ändern.' },
+                { t: '💰 Kaufen', d: 'Zu Rundenbeginn öffnet sich das <b>Kaufmenü</b> (' + (IS_TOUCH ? 'Button 🛒' : k('buy')) + '). Mit Deinem Geld kaufst Du Waffen, Rüstung, Granaten und das Entschärfer-Kit.<br>' + (IS_TOUCH ? '' : '<b>Rechtsklick</b> verkauft, was Du in dieser Runde gekauft hast.<br>') + 'Geld gibt es für Kills und Rundenausgänge – wer gewinnt, bekommt mehr.' },
+                { sel: '[data-nav="inv"]', t: '🎒 Inventar', d: '<b>Skins</b>: für jede Waffe einen Skin ausrüsten – beim Messer wählst Du zusätzlich <b>Butterfly</b> oder <b>Karambit</b>.<br><b>Agenten</b>: Dein Spielermodell und <b>Zubehör</b> wie Partyhut, Sonnenbrille oder Krone (über Erfolge freischaltbar).<br><b>Wraps</b>: eigene PNG-Bilder auf Deine Waffen legen.' },
+                { sel: '[data-nav="store"]', t: '📦 Cases', d: 'Für jedes beendete Match bekommst Du ein <b>Case</b>. Öffne es hier und sammle Skins in vier Seltenheiten – bis zum ★ Messer.<br>Bei <b>Gamble</b> kannst Du Skins eintauschen und auf bessere hoffen.' },
+                { sel: '[data-nav="shop"]', t: '🪙 Shop & Skin-Editor', d: 'Du verdienst <b>Coins</b> durchs Spielen: Sieg +100, Niederlage +20, jeder Kill +10.<br>Im Shop kaufst Du Skins direkt – auch <b>Community-Skins</b> anderer Spieler.<br>Mit <b>＋ Skin erstellen</b> baust Du eigene Skins aus Mustern oder <b>malst sie selbst</b>. Kauft jemand Deinen Skin, bekommst Du 50 % als Coins.' },
+                { sel: '#ctAcc', t: '⭐ Fortschritt & Account', d: 'Für alles im Spiel gibt es <b>XP</b> – steige im Level auf, verdiene Ränge bis zur Global Elite und schalte <b>Erfolge</b> frei.<br>Mit einem <b>Account</b> wird alles gespeichert und ist auf jedem Gerät da (Skins, Coins, Fortschritt, Einstellungen).' },
+                { sel: '[data-nav="maps"]', t: '🛠 Map- & Arena-Editor', d: 'Baue eigene <b>Karten</b> für Wettkampf & Deathmatch oder <b>Arenen</b> für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites.<br>Deine Karten kannst Du direkt spielen und mit Freunden online nutzen.' },
+                { sel: '[data-nav="news"]', t: '📰 News', d: 'Hier stehen alle <b>Patchnotes</b> – was neu ist und was verbessert wurde. Ein Klick auf eine Kachel öffnet sie im Vollbild.' },
+                { t: '🎉 Fertig!', d: 'Das war\'s – jetzt weißt Du, was alles geht.<br>Tipp: Fang mit einem <b>Wettkampf offline</b> an, um Dich einzuspielen.<br><br>Das Tutorial findest Du jederzeit wieder unter <b>⚙️ Einstellungen → ❓ Wie funktioniert alles?</b><br><b>Viel Spaß!</b>' }];
+        }
+        function startTutorial() {
+            const inGame = started && !gameEnded; if (!inGame) showMenu();
+            const old = $('tut'); if (old) old.remove(); const steps = tutSteps(); let i = 0;
+            const d = document.createElement('div'); d.id = 'tut'; d.style.cssText = 'position:fixed;inset:0;z-index:9995;pointer-events:auto';
+            d.innerHTML = '<div id="tutHi" style="position:absolute;border:2px solid #e8c98a;border-radius:6px;box-shadow:0 0 0 9999px rgba(4,7,11,.72),0 0 22px rgba(232,201,138,.8);transition:all .3s;pointer-events:none"></div><div id="tutCard" style="position:absolute;width:min(460px,92vw);background:rgba(12,16,22,.97);border:1px solid #e8c98a;border-radius:8px;padding:18px 20px;box-shadow:0 10px 50px rgba(0,0,0,.8);color:#cfd8e3;font:14px/1.6 Arial;text-align:left;transition:top .3s,left .3s"></div><style>#tut .tk{display:inline-block;min-width:16px;padding:0 6px;margin:1px 1px;border:1px solid #e8c98a;border-radius:3px;color:#e8c98a;font-size:12px;text-align:center}#tut button{margin:0 4px 0 0;padding:6px 14px;font-size:13px}</style>';
+            document.body.appendChild(d);
+            const close = () => { d.remove(); removeEventListener('keydown', key, true); removeEventListener('resize', draw); };
+            const draw = () => {
+                const st = steps[i], hi = $('tutHi'), card = $('tutCard'), el = st.sel && !inGame ? document.querySelector(st.sel) : null, r = el ? el.getBoundingClientRect() : null, ok = r && r.width > 0;
+                card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:19px;color:#fff">${st.t}</b><span style="font-size:12px;color:#8fa3b8">${i + 1} / ${steps.length}</span></div><div>${st.d}</div>
+ <div style="display:flex;gap:4px;margin:12px 0 10px">${steps.map((_, j) => `<i style="flex:1;height:3px;background:${j <= i ? '#e8c98a' : 'rgba(255,255,255,.15)'}"></i>`).join('')}</div>
+ <div style="display:flex;justify-content:space-between"><button id="tutSkip" style="opacity:.7">Beenden</button><span>${i ? '<button id="tutPrev">← Zurück</button>' : ''}<button id="tutNext" style="background:#e8c98a;color:#111">${i === steps.length - 1 ? 'Los geht\'s!' : 'Weiter →'}</button></span></div>`;
+                if (ok) { hi.style.display = ''; Object.assign(hi.style, { left: r.left - 6 + 'px', top: r.top - 6 + 'px', width: r.width + 12 + 'px', height: r.height + 12 + 'px' }); }
+                else { hi.style.display = ''; Object.assign(hi.style, { left: '50%', top: '50%', width: '0px', height: '0px' }); }
+                const cw = card.offsetWidth, ch = card.offsetHeight; let x = (innerWidth - cw) / 2, y = (innerHeight - ch) / 2;
+                if (ok) { x = Math.max(10, Math.min(innerWidth - cw - 10, r.left + r.width / 2 - cw / 2)); y = r.bottom + 18 + ch < innerHeight ? r.bottom + 18 : Math.max(10, r.top - ch - 18); }
+                card.style.left = x + 'px'; card.style.top = y + 'px';
+                $('tutSkip').onclick = close; $('tutNext').onclick = () => { if (i < steps.length - 1) { i++; draw(); } else close(); }; if ($('tutPrev')) $('tutPrev').onclick = () => { i--; draw(); };
+            };
+            const key = e => { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); close(); } else if (e.key === 'ArrowRight' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); $('tutNext').click(); } else if (e.key === 'ArrowLeft' && i) { e.preventDefault(); e.stopPropagation(); i--; draw(); } };
+            addEventListener('keydown', key, true); addEventListener('resize', draw); draw();
+        }
         let rebindKey = null;
         function showSettings() {
             const rows = Object.keys(BIND_DEF).map(a =>
@@ -4740,7 +4780,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <table style="border-collapse:collapse">${rows}</table>
  <p style="font-size:12px;color:#999">Klicke auf eine Taste und drücke die neue Belegung · <kbd>Esc</kbd> bricht ab
 Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
- <div>${IS_TOUCH ? '<button id="btnEditGo">📱 Buttons anpassen</button>' : ''}<button id="setReset" style="border-color:#c66;color:#c66">Zurücksetzen</button><button id="setBack">Zurück</button></div>`);
+ <div>${IS_TOUCH ? '<button id="btnEditGo">📱 Buttons anpassen</button>' : ''}<button id="btnTut">❓ Wie funktioniert alles?</button><button id="setReset" style="border-color:#c66;color:#c66">Zurücksetzen</button><button id="setBack">Zurück</button></div>`);
  const beg = $('btnEditGo'); if (beg) beg.onclick = () => btnEditStart();
             document.querySelectorAll('[data-opt]').forEach(el => el.oninput = el.onchange = () => { const k = el.dataset.opt; OPT[k] = el.type === 'checkbox' ? (el.checked ? 1 : 0) : el.type === 'color' ? el.value : +el.value; const v = $(k + 'V'); if (v) v.textContent = el.value; saveOpts(); applyLook(); if (k === 'hitSnd' && el.type !== 'range') { initAudio(); sfx('hit'); } });            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
             $('sensSlider').oninput = e => { OPT.sens = +e.target.value; $('sensval').textContent = OPT.sens.toFixed(2); saveOpts(); };
@@ -4748,7 +4788,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); };
             const chPrev = () => { const g = OPT.chGap, L = OPT.chLen, T = OPT.chThick, c = OPT.chCol, p = (x, y, w, h) => `<i style="position:absolute;left:${45 + x}px;top:${45 + y}px;width:${w}px;height:${h}px;background:${c};box-shadow:0 0 2px #000"></i>`; $('chPrev').innerHTML = p(-T / 2, -(g + L), T, L) + p(-T / 2, g, T, L) + p(-(g + L), -T / 2, L, T) + p(g, -T / 2, L, T) + (OPT.chDot ? p(-T / 2, -T / 2, T, T) : ''); }; chPrev();
             document.querySelectorAll('[data-ch]').forEach(el => el.oninput = () => { OPT[el.dataset.ch] = +el.value; $(el.dataset.ch + 'V').textContent = el.value; saveOpts(); chPrev(); });
-            $('chCol').oninput = e => { OPT.chCol = e.target.value; saveOpts(); chPrev(); }; $('chDot').onchange = e => { OPT.chDot = e.target.checked; saveOpts(); chPrev(); }; $('chDyn').onchange = e => { OPT.chDyn = e.target.checked; saveOpts(); }; $('setBack').onclick = () => { rebindKey = null; if (!started || gameEnded) { showMenu(); return; } if (IS_TOUCH) { paused = false; $('overlay').style.display = 'none'; } else renderer.domElement.requestPointerLock(); };
+            $('chCol').oninput = e => { OPT.chCol = e.target.value; saveOpts(); chPrev(); }; $('chDot').onchange = e => { OPT.chDot = e.target.checked; saveOpts(); chPrev(); }; $('chDyn').onchange = e => { OPT.chDyn = e.target.checked; saveOpts(); }; $('btnTut').onclick = () => { rebindKey = null; startTutorial(); }; $('setBack').onclick = () => { rebindKey = null; if (!started || gameEnded) { showMenu(); return; } if (IS_TOUCH) { paused = false; $('overlay').style.display = 'none'; } else renderer.domElement.requestPointerLock(); };
             $('setReset').onclick = () => { Object.assign(BIND, BIND_DEF); saveBinds(); rebindKey = null; showSettings(); };
         }
         addEventListener('keydown', e => {
@@ -5069,7 +5109,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  Leichte <b>Zielhilfe</b> am Handy: Ist ein sichtbarer Gegner nah am Fadenkreuz, wird es sanft zu ihm gezogen – beim Schießen etwas stärker. Am PC unverändert.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🛠 FIXES</p>
- <b>1v1:</b> Waffen vom Rundenende bleiben nicht mehr liegen und können in der nächsten Runde nicht mehr aufgesammelt werden.
+ <b>1v1:</b> Waffen vom Rundenende bleiben nicht mehr liegen und können in der nächsten Runde nicht mehr aufgesammelt werden.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">❓ TUTORIAL</p>
+ Neu unter <b>⚙️ Einstellungen → ❓ Wie funktioniert alles?</b>: Eine Schritt-für-Schritt-Führung zeigt Dir alle Modi, die Steuerung, Kaufen, Inventar, Cases, Shop & Skin-Editor, Fortschritt und die Editoren – mit hervorgehobenen Menüpunkten.
 
  </div></div>
  <div class="cspanel newscard"><h3>PATCH 1.7 „BUGFIXES"</h3>
