@@ -1023,6 +1023,8 @@
 
         #csTut { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); zoom: var(--ui, 1); margin: 0; padding: 8px 18px; font-size: 14px; background: rgba(12, 16, 22, .85) }
         .mob #csTut { bottom: 6px; padding: 5px 12px; font-size: 12px }
+        #csApp { position: absolute; right: 12px; bottom: 12px; zoom: var(--ui, 1); padding: 7px 14px; font: bold 13px Arial; color: #e8c98a; background: rgba(12, 16, 22, .85); border: 1px solid rgba(232, 201, 138, .6); border-radius: 4px; text-decoration: none }
+        #csApp:hover { background: #e8c98a; color: #111 }
         #csver {
             position: absolute;
             left: 12px;
@@ -5512,7 +5514,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.9 „Kartenbau" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button> </div>`, true);
+ <div id="csver">CS:WO 1.9 „Kartenbau" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
