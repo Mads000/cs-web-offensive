@@ -12,7 +12,7 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.
 const crypto = require('crypto');
 const PUBLISH_CODE = 'baumeister42'; // Code zum Veröffentlichen von Community-Karten – hier ändern
 const DATA_DIR = path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json'), LB_FILE = path.join(DATA_DIR, 'leaderboard.json');
-const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat'];
+const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype'];
 const GIST_ID = process.env.GIST_ID, GIST_TOKEN = process.env.GIST_TOKEN, GIST_FILE = 'users.json';
 const GH = { Authorization: 'Bearer ' + GIST_TOKEN, Accept: 'application/vnd.github+json', 'User-Agent': 'cs-web-offensive' };
 let USERS = {}, PUB = {}, LB = { all: [], day: '', today: [] }, loaded = false, saveT = null, writing = false, again = false;
