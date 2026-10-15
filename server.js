@@ -82,7 +82,7 @@ function api(p, b, ip) {
  const k = String(b.k || ''); if (!/^puba?_[a-z0-9_]{1,40}$/.test(k)) return { err: 'Ungültige Karte.' }; const AR = k.startsWith('puba_'); // puba_ = Arena (11×18, ohne Bombsites)
  if (p === '/api/unpublish') { delete PUB[k]; persist(); return { ok: 1 }; }
  const m = b.map || {}, HEX = /^#[0-9a-f]{6}$/i;
- if (!Array.isArray(m.g) || m.g.length !== (AR ? 18 : 28) || !m.g.every(r => typeof r === 'string' && (AR ? /^[#.cCh=1-6TKsbDW]{11}$/ : /^[#.cCh=1-6ABTKsbDW]{28}$/).test(r))) return { err: 'Ungültige Kartendaten.' };
+ if (!Array.isArray(m.g) || m.g.length !== (AR ? 18 : 28) || !m.g.every(r => typeof r === 'string' && (AR ? /^[#.cCh=1-6TKsbDW]{11}$/ : /^[#.cCh=1-6ABTKsbDWR]{28}$/).test(r))) return { err: 'Ungültige Kartendaten.' };
  if (!PUB[k] && Object.keys(PUB).length >= 50) return { err: 'Maximal 50 Community-Karten.' };
  const col = {}; for (const f of ['sky', 'fog', 'floor', 'wall']) if (m.col && HEX.test(m.col[f])) col[f] = m.col[f];
  PUB[k] = { n: String(m.n || 'Karte').replace(/[<>"'&`]/g, '').slice(0, 20), th: /^de_[a-z]+$/.test(m.th) ? m.th : 'de_dusty', col, tod: [0, 1, 2].includes(+m.tod) ? +m.tod : 0, em: Array.from(String(m.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(m.emc) ? m.emc : '', by: String(b.by || '').replace(/[<>"'&`]/g, '').slice(0, 16), g: m.g };
