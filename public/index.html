@@ -2576,6 +2576,19 @@ html.dsV #wname { font-size: 12px; letter-spacing: .22em; text-transform: upperc
 html.dsV #ammo { font-weight: 600 }
 html.dsV body:not(.mob) #ammo { font-size: 40px }
 html.dsV body:not(.mob) #money { right: 26px; bottom: 92px; font-size: 18px; font-weight: 600; color: var(--cream); opacity: .85 }
+/* Handy: Leben/Weste unten mittig, Kaufmenü kompakt */
+html.dsV body.mob #bl { left: 50%; transform: translateX(-50%) scale(.6); transform-origin: bottom center; bottom: 4px; gap: 0; align-items: flex-end }
+html.dsV body.mob #bl > div { display: flex; flex-direction: column; align-items: center; padding: 0 16px }
+html.dsV body.mob #bl > div + div { border-left: 1px solid rgba(236,232,225,.22) }
+html.dsV body.mob .card { min-height: 0; padding: 4px 8px }
+html.dsV body.mob .card b { font-size: 11px }
+html.dsV body.mob .cprice { font-size: 11px }
+html.dsV body.mob .cstats { margin: 3px 0 }
+html.dsV body.mob .bgrid { gap: 6px; padding: 6px 8px }
+html.dsV body.mob .bcol { gap: 4px }
+html.dsV body.mob .bcol h4 { padding: 3px 0; font-size: 10px }
+html.dsV body.mob .bhead { padding: 6px 12px }
+html.dsV body.mob .bhead h3 { font-size: 13px } html.dsV body.mob .bmoney { font-size: 15px }
 /* Oben: Zeit-Kasten, Teamleisten mit dezentem Teamfarbton */
 html.dsV body:not(.mob) #timer { min-width: 92px; padding: 3px 20px; font-size: 26px; font-weight: 700; background: rgba(15,25,35,.78); border: 1px solid rgba(236,232,225,.16); border-bottom: 2px solid var(--hl) }
 html.dsV body:not(.mob) #score { font-size: 13px; letter-spacing: .14em; margin-top: 4px }
@@ -2656,6 +2669,7 @@ html.dsV #csmenu .mapc.sel b { box-shadow: inset 0 -3px 0 var(--hl) }
 html.dsV #csmenu .mapc.sel span { color: var(--hl) }
 html.dsV body.mob #csmenu .mapc b { padding: 40px 8px 22px }
 html.dsV body.mob #csmenu .mapc span { left: 8px; bottom: 6px }
+html.dsV #csmenu .mapc canvas { z-index: 0 } html.dsV #csmenu .mapc b, html.dsV #csmenu .mapc span { z-index: 2; -webkit-transform: translateZ(0); transform: translateZ(0) } /* iOS: Text über dem gezoomten Vorschaubild halten */
 html.dsV #csmenu .mapc.custom::after { color: #0f1923; border-radius: 0; z-index: 1 }
 /* Seitenleiste, Name, Fußzeile */
 html.dsV #csfriends { background: rgba(15,25,35,.82); border-left: 1px solid rgba(236,232,225,.1) }
