@@ -3745,6 +3745,11 @@ body.edit #tlook{ pointer-events:none; }
         //  KOLLISION & PATHFINDING
         // =====================================================================
         function activeAabbs() { return GA.cur ? GA.cur.aabbs : aabbs; }
+        // Kollisions-Boxen in 4-m-Felder einsortiert (mit 1,5 m Rand) → pro Bewegung nur die Boxen in der Nähe prüfen statt alle
+        const AGRID = new WeakMap(), NO_AABB = [];
+        function aabbsNear(x, z) { const L = activeAabbs(); let G = AGRID.get(L);
+            if (!G || G.n !== L.length) { G = { n: L.length, m: new Map() }; for (const b of L) for (let i = Math.floor((b.minX - 1.5) / S); i <= Math.floor((b.maxX + 1.5) / S); i++) for (let j = Math.floor((b.minZ - 1.5) / S); j <= Math.floor((b.maxZ + 1.5) / S); j++) { const k = i * 100003 + j; let a = G.m.get(k); if (!a) G.m.set(k, a = []); a.push(b); } AGRID.set(L, G); }
+            return G.m.get(Math.floor(x / S) * 100003 + Math.floor(z / S)) || NO_AABB; }
         const STEP_H = 0.75, BODY_H = 1.7; function blockedBy(e, b) {
             const y = e.y || 0;
             if (y >= b.top - STEP_H && !b.wall) return false;              // Stufe: hochgleiten statt anstoßen
@@ -3753,11 +3758,11 @@ body.edit #tlook{ pointer-events:none; }
             return true;
         }
         function collideMove(e, dx, dz) {
-            const r = e.r;
-            e.x += dx; for (const b of activeAabbs()) { if (!blockedBy(e, b)) continue; if (e.x + r > b.minX && e.x - r < b.maxX && e.z + r > b.minZ && e.z - r < b.maxZ) { const l = e.x + r - b.minX, rt = b.maxX - (e.x - r); e.x = l < rt ? b.minX - r : b.maxX + r; } }
-            e.z += dz; for (const b of activeAabbs()) { if (!blockedBy(e, b)) continue; if (e.x + r > b.minX && e.x - r < b.maxX && e.z + r > b.minZ && e.z - r < b.maxZ) { const l = e.z + r - b.minZ, rt = b.maxZ - (e.z - r); e.z = l < rt ? b.minZ - r : b.maxZ + r; } }
+            const r = e.r, near = aabbsNear(e.x, e.z);
+            e.x += dx; for (const b of near) { if (!blockedBy(e, b)) continue; if (e.x + r > b.minX && e.x - r < b.maxX && e.z + r > b.minZ && e.z - r < b.maxZ) { const l = e.x + r - b.minX, rt = b.maxX - (e.x - r); e.x = l < rt ? b.minX - r : b.maxX + r; } }
+            e.z += dz; for (const b of near) { if (!blockedBy(e, b)) continue; if (e.x + r > b.minX && e.x - r < b.maxX && e.z + r > b.minZ && e.z - r < b.maxZ) { const l = e.z + r - b.minZ, rt = b.maxZ - (e.z - r); e.z = l < rt ? b.minZ - r : b.maxZ + r; } }
         }
-        function groundAt(e) { let g = 0; const rr = e.r * 0.6, y = e.y || 0; for (const b of activeAabbs()) { if (y < b.top - STEP_H - 0.05) continue; if (e.x + rr > b.minX && e.x - rr < b.maxX && e.z + rr > b.minZ && e.z - rr < b.maxZ) g = Math.max(g, b.top); } return g; }
+        function groundAt(e) { let g = 0; const rr = e.r * 0.6, y = e.y || 0; for (const b of aabbsNear(e.x, e.z)) { if (y < b.top - STEP_H - 0.05) continue; if (e.x + rr > b.minX && e.x - rr < b.maxX && e.z + rr > b.minZ && e.z - rr < b.maxZ) g = Math.max(g, b.top); } return g; }
         // Wegsuche mit Höhen (Treppen/Stege) – gemeinsam für Karten und Arenen (cell/ROWS/COLS werden übergeben)
         function bfs(sr, sc, tr, tc, onTop) { return bfsGrid(cell, ROWS, COLS, sr, sc, tr, tc, onTop); }
         function bfsGrid(cell, ROWS, COLS, sr, sc, tr, tc, onTop) {
@@ -4125,7 +4130,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         const DRS = { t: 0, n: 0 };
         function dynRes(fdt) { DRS.t += fdt; DRS.n++; if (DRS.t < 2000) return; const fps = DRS.n * 1000 / DRS.t; DRS.t = DRS.n = 0; if (document.hidden) return;
             const max = OPT.gfx === 0 ? 1 : Math.min(devicePixelRatio, OPT.gfx === 1 ? 1.5 : 2), cur = renderer.getPixelRatio(); let pr = cur;
-            if (fps < 40) pr = Math.max(0.6, cur - 0.15); else if (fps > 56) pr = Math.min(max, cur + 0.1); if (Math.abs(pr - cur) > 0.01) renderer.setPixelRatio(pr); }
+            if (fps < 40) pr = Math.max(IS_TOUCH ? 0.6 : 0.75, cur - 0.15); else if (fps > 56) pr = Math.min(max, cur + 0.1); if (Math.abs(pr - cur) > 0.01) renderer.setPixelRatio(pr); }
         function applyGfx() {
             const g = OPT.gfx;
             renderer.setPixelRatio(g === 0 ? 1 : g === 1 ? Math.min(devicePixelRatio, 1.5) : Math.min(devicePixelRatio, 2));
@@ -4137,7 +4142,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             scene.traverse(o => { if (o.material) o.material.needsUpdate = true; });
             renderer.setSize(innerWidth, innerHeight);
         }
-        applyGfx(); function saveOpts() { localStorage.setItem('cs_opts', JSON.stringify(OPT)); } function saveBinds() { localStorage.setItem('cs_binds', JSON.stringify(BIND)); }
+        applyGfx(); if (!localStorage.getItem('fpsOn')) { OPT.fps = 1; localStorage.setItem('fpsOn', '1'); localStorage.setItem('cs_opts', JSON.stringify(OPT)); } /* FPS-Anzeige einmalig einschalten (zum Prüfen, in ⚙️ abschaltbar) */ function saveOpts() { localStorage.setItem('cs_opts', JSON.stringify(OPT)); } function saveBinds() { localStorage.setItem('cs_binds', JSON.stringify(BIND)); }
         function keyName(c) { if (c === 'Space') return 'Leertaste'; if (c === 'Tab') return 'Tab'; if (c.startsWith('Key')) return c.slice(3); if (c.startsWith('Digit')) return c.slice(5); if (c.startsWith('Control')) return 'Strg ' + (c.includes('Left') ? '(links)' : '(rechts)'); if (c.startsWith('Shift')) return 'Shift ' + (c.includes('Left') ? '(links)' : '(rechts)'); if (c.startsWith('Alt')) return 'Alt'; if (c.startsWith('Arrow')) return { ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→' }[c]; return c; }
         const down = a => !!keys[BIND[a]];
         const keys = {}; let mouseDown = false, clickQueued = false, buyOpen = false, specTarget = null; function curDef() { const w = player.weapons[player.slot]; return w ? w.def : W.knife; }
@@ -4197,7 +4202,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
             // Doppeltipp auf die Tab-Ansicht → Pause-Menü (wie Esc am PC)
             let boardTap = 0; $('board').addEventListener('touchend', e => { const t = performance.now(); if (t - boardTap < 350) { e.preventDefault(); boardTap = 0; $('board').style.display = 'none'; mobPause(); } else boardTap = t; });
-        } const ACCEL = 46, FRICTION = 8, AIR_ACCEL = 10; // etwas weicheres Anlaufen/Abbremsen
+        } const ACCEL = 62, FRICTION = 9, STOP_FRICTION = 17, AIR_ACCEL = 10; // CS-typisch: schnell auf Tempo, ohne Eingabe sofortiger Stopp
         // Leichte Zielhilfe (nur Touch): zieht das Fadenkreuz sanft zum nächsten sichtbaren Gegner im kleinen Kegel, beim Schießen etwas stärker
         function aimAssist(dt) {
             const p = player; if (!p.alive || FC.on || DH.on || buyOpen || G.state === 'freeze' || (GL.on && GL.phase !== 'duel')) return;
@@ -4219,14 +4224,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const f = canMove ? ((down('fwd') ? 1 : 0) - (down('back') ? 1 : 0) + TOUCH.f) : 0;
             const s = canMove ? ((down('right') ? 1 : 0) - (down('left') ? 1 : 0) + TOUCH.s) : 0;
             const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
-            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); let max = (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * CFG.speed / 100; p.walk = canMove && !p.crouch && down('walk'); if (p.crouch) max *= 0.45; else if (p.walk) max *= 0.52; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - FRICTION * dt); p.vx *= fr; p.vz *= fr; }
+            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); let max = (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * CFG.speed / 100; p.walk = canMove && !p.crouch && down('walk'); if (p.crouch) max *= 0.45; else if (p.walk) max *= 0.52; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - (wl > 0 ? FRICTION : STOP_FRICTION) * dt); p.vx *= fr; p.vz *= fr; }
             const acc = p.onGround ? ACCEL : AIR_ACCEL;
             p.vx += wx * acc * dt; p.vz += wz * acc * dt;
             const vl = Math.hypot(p.vx, p.vz); if (vl > max) { p.vx *= max / vl; p.vz *= max / vl; }
             if (vl > 0.02) collideMove(p, p.vx * dt, p.vz * dt); else { p.vx = 0; p.vz = 0; }
             if (p.dashT > 0) { const step = Math.min(dt, p.dashT); const n = Math.ceil(step * 60); for (let s = 0; s < n; s++) collideMove(p, p.dashVX * step / n, p.dashVZ * step / n); p.dashT -= dt; if (p.dashT <= 0) { p.vx = p.dashVX * 0.12; p.vz = p.dashVZ * 0.12; } }
             p.speed = Math.hypot(p.vx, p.vz);
-            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.2 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 16 * CFG.grav / 100 * dt; p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { sfx('step'); fovKick = Math.max(fovKick, 3); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
+            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { sfx('step'); fovKick = Math.max(fovKick, 3); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
             const te = p.alive ? (p.crouch ? 1.15 : 1.7) : 0.35; p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
             if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.42; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
@@ -4240,7 +4245,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             } else {
                 if (p.camY === undefined) p.camY = p.y;
                 p.camY += (p.y - p.camY) * Math.min(1, dt * 14);
-                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - vmLand * 0.06 + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); const lat = p.vx * Math.cos(p.yaw) - p.vz * Math.sin(p.yaw); p.roll = (p.roll || 0) + ((OPT.tilt === false ? 0 : -clamp(lat, -8, 8) * 0.0035) - (p.roll || 0)) * Math.min(1, dt * 8); camera.rotation.set(p.pitch, p.yaw, p.roll); // leichtes Neigen beim seitlichen Laufen
+                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - vmLand * 0.06 + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); camera.rotation.set(p.pitch, p.yaw, 0);
             }
             if (buyOpen && !canBuy()) closeBuy();
         }
@@ -5197,12 +5202,18 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <b>↶ Rückgängig / ↷ Wiederholen</b> (Strg+Z / Strg+Y) · <b>Symmetrie-Malen</b> (↔ ↕ ⟲, tauscht T↔CT und A↔B automatisch) · <b>▭ Bereich</b> kopieren, einfügen, spiegeln und füllen · <b>🎲 Zufallskarte</b> als spielbare Startvorlage.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎮 SPIELGEFÜHL</p>
- Weicheres Anlaufen und Abbremsen, leichtes <b>Kamera-Neigen</b> beim seitlichen Laufen.<br>
+ <b>Knackigeres Movement</b> wie in CS: schnell auf Tempo, sofortiger Stopp beim Loslassen und ein schnellerer Sprung bei gleicher Sprunghöhe.<br>
  Getroffen? Dezentes Wackeln und ein <b>roter Richtungsanzeiger</b> zeigt, woher der Schuss kam.<br><br>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📱 HANDY</p>
  <b>Dynamischer Joystick</b>: Tippe irgendwo links – der Stick erscheint unter Deinem Finger. Kleine Deadzone gegen Wegrutschen.<br>
- Die Auflösung passt sich automatisch an, damit das Spiel flüssig bleibt.
+ Die Auflösung passt sich automatisch an, damit das Spiel flüssig bleibt.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">⚡ PERFORMANCE</p>
+ <b>Flüssigeres Hauptmenü:</b> Schatten werden im Menü und in der Pause nur noch einmal berechnet statt in jedem Bild.<br>
+ <b>Mehr FPS im Spiel:</b> Schatten werden nur noch jedes zweite Bild aktualisiert, die Kollision prüft nur noch Hindernisse in der Nähe (rund 30× schneller) – spürbar bei vielen Bots.<br>
+ <b>Automatische Auflösung</b> jetzt auf allen Geräten: Fallen die FPS unter 40, wird die Auflösung leicht gesenkt und steigt wieder, sobald es flüssig läuft.<br>
+ <b>FPS-Anzeige</b> oben rechts mit FPS, langsamstem Bild und aktueller Auflösung (in ⚙️ abschaltbar).
 
  </div></div>
  <div class="cspanel newscard"><h3>PATCH 1.8 „WERKSTATT"</h3>
@@ -6780,9 +6791,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             menuChar.group.visible = true;
         }
         // FPS-Anzeige: Bilder pro Sekunde + langsamster Frame der letzten Sekunde (zeigt Ruckler)
-        const FPS = { n: 0, t: 0, worst: 0 }; function fpsTick(fdt) { FPS.n++; FPS.t += fdt; FPS.worst = Math.max(FPS.worst, fdt); if (FPS.t >= 1000) { const el = $('fpsBox'); if (el) { const f = Math.round(FPS.n * 1000 / FPS.t); el.textContent = f + ' FPS · max ' + Math.round(FPS.worst) + ' ms'; el.style.color = FPS.worst > 60 ? '#ff6b6b' : f < 45 ? '#ffd84a' : '#7c7'; } FPS.n = FPS.t = FPS.worst = 0; } }
+        const FPS = { n: 0, t: 0, worst: 0 }; function fpsTick(fdt) { FPS.n++; FPS.t += fdt; FPS.worst = Math.max(FPS.worst, fdt); if (FPS.t >= 1000) { const el = $('fpsBox'); if (el) { const f = Math.round(FPS.n * 1000 / FPS.t); el.textContent = f + ' FPS · max ' + Math.round(FPS.worst) + ' ms · ' + renderer.getPixelRatio().toFixed(2) + 'x'; el.style.color = FPS.worst > 60 ? '#ff6b6b' : f < 45 ? '#ffd84a' : '#7c7'; } FPS.n = FPS.t = FPS.worst = 0; } }
+        const SHD = { k: '', f: 0, on: 0 }; // Schatten-Takt
         let last = performance.now(), frameN = 0; function loop() {
-            requestAnimationFrame(loop); const t = performance.now(); const fdt = t - last; const dt = Math.min(0.05, fdt / 1000); if (OPT.fps) fpsTick(fdt); if (IS_TOUCH && started) dynRes(fdt); last = t; now = t / 1000;
+            requestAnimationFrame(loop); const t = performance.now(); const fdt = t - last; const dt = Math.min(0.05, fdt / 1000); if (OPT.fps) fpsTick(fdt); dynRes(fdt); last = t; now = t / 1000;
             if (!started) {
                 menuT += dt; const a = menuT * 0.07, r = Math.min(WORLD_W, WORLD_D) * 0.42;
                 camera.position.set(WORLD_W / 2 + Math.cos(a) * r, 22, WORLD_D / 2 + Math.sin(a) * r);
@@ -6797,6 +6809,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 updatePlayer(dt); if (IS_TOUCH && OPT.aim !== false) aimAssist(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
                 separate(); updateFX(dt); updateMates(); animChars(dt); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
             }
+            if (renderer.shadowMap.enabled) { renderer.shadowMap.autoUpdate = false; const st = started && !paused ? 'g' : 'm';
+                if (st !== SHD.k || !SHD.on) { SHD.k = st; SHD.on = 1; renderer.shadowMap.needsUpdate = true; } else if (st === 'g' && (SHD.f = (SHD.f + 1) & 1) === 0) renderer.shadowMap.needsUpdate = true; } else SHD.on = 0;
             renderer.render(scene, camera);
         }
         showMenu();
