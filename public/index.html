@@ -4938,7 +4938,16 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🌐 LOBBY & NEWS</p>
  <b>Wettkampf online:</b> Nur noch ein „Lobby beitreten“-Button – das Team wählst Du direkt in der Lobby (wie im Gauntlet).<br>
- <b>News:</b> Neues Kachel-Layout in der Mitte, Klick öffnet die Patchnotes im Vollbild.
+ <b>News:</b> Neues Kachel-Layout in der Mitte, Klick öffnet die Patchnotes im Vollbild.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎩 NEUES ZUBEHÖR</p>
+ 7 neue Teile für Deinen Agenten: 🎉 Partyhut, 😎 Sonnenbrille, 🎧 Headset, 🤠 Cowboyhut, 😈 Teufelshörner, 😇 Heiligenschein und 👑 Krone – freischaltbar über Kills, Matches, Siege und Level (Inventar → Agenten).<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🔪 ZWEITES MESSER: KARAMBIT</p>
+ Im Inventar unter Messer zwischen <b>Butterfly</b> und <b>Karambit</b> wählen – alle Messer-Skins passen auf beide.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">⏸ ONLINE-PAUSE</p>
+ Wer online Esc drückt, sieht die anderen weiter laufen – das Spiel bleibt nicht mehr für alle stehen (offline wie bisher).
 
  </div></div>
  <div class="cspanel newscard"><h3>PATCH 1.6 „FEINSCHLIFF"</h3>
@@ -6461,7 +6470,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (menuChar) menuChar.group.visible = false;
             }
             if (IS_TOUCH) { const want = started && !gameEnded ? 'block' : 'none'; if ($('touch').style.display !== want) $('touch').style.display = want; $('touch').classList.toggle('dead', started && !gameEnded && !player.alive && !document.body.classList.contains('edit')); }
-            if (started && !paused && !gameEnded) {
+            if (started && (!paused || NET.on) && !gameEnded) { // online läuft das Spiel im Pausemenü weiter (nur eigene Eingaben ruhen)
+                if (paused) { for (const k in keys) keys[k] = false; mouseDown = false; clickQueued = false; }
                 if (DH.on) dhTick(dt); else if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
                 updatePlayer(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
