@@ -36,7 +36,7 @@
         button, a, [data-nav], [data-cat], .mapc, .arc, label, select { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z' fill='%23ffffff' stroke='%23111' stroke-width='1.5'/%3E%3C/svg%3E") 2 2, pointer }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700&family=Rajdhani:wght@500;600;700&family=Noto+Emoji:wght@400;600&display=swap" rel="stylesheet">
     <!-- Design: neu (Standard) oder altes CS-Design per ?design=cs – wird gespeichert, zurück mit ?design=neu -->
     <script>try { const q = new URLSearchParams(location.search).get('design'); if (q) localStorage.setItem('clutch_design', q); if (localStorage.getItem('clutch_design') !== 'cs') document.documentElement.classList.add('dsV'); } catch (e) { document.documentElement.classList.add('dsV'); }</script>
 
@@ -2526,7 +2526,7 @@ body.edit #tlook{ pointer-events:none; }
 #overlay .lobhead button{ margin:0; font-size:11px; padding:4px 10px; }
 /* ═══ DESIGN-SYSTEM „V" (ganzes Spiel) – Graublau = Akzent (--hl), Creme = Text/Buttons, Navy = Flächen; Schrift Barlow ═══ */
 html.dsV { --hl: #8aa1b8; --hl-rgb: 138, 161, 184; --cream: #ece8e1; --navy: #0f1923; --acc: #8aa1b8; --panel: rgba(15,25,35,.9); --panel2: rgba(236,232,225,.06); --line: rgba(236,232,225,.16); --text: #ece8e1; --mut: rgba(236,232,225,.6) }
-html.dsV body, html.dsV body *:not(#fpsBox) { font-family: 'Barlow', 'Segoe UI', sans-serif !important }
+html.dsV body, html.dsV body *:not(#fpsBox) { font-family: 'Barlow', 'Noto Emoji', 'Segoe UI', sans-serif !important }
 /* Grundfarben */
 html.dsV #overlay { color: var(--cream) }
 html.dsV #overlay h1 { color: var(--cream); font-weight: 800; letter-spacing: .08em }
@@ -2640,7 +2640,7 @@ html.dsV #cslogo div:nth-child(3) { width: 90px !important; height: 4px !importa
 html.dsV body.mob #cslogo div:nth-child(2) { font-size: 34px !important }
 /* Menü-Panels */
 html.dsV #csmenu .cspanel { background: rgba(15,25,35,.78); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 1px solid rgba(236,232,225,.14); border-radius: 0 }
-html.dsV #csmenu .cspanel h3 { font-family: 'Barlow Condensed', sans-serif !important; font-weight: 700; font-size: 16px; letter-spacing: .16em; color: var(--cream); background: rgba(236,232,225,.08); border-bottom: 1px solid rgba(236,232,225,.12); margin: -16px -18px 12px; padding: 10px 18px }
+html.dsV #csmenu .cspanel h3 { font-family: 'Barlow Condensed', 'Noto Emoji', sans-serif !important; font-weight: 700; font-size: 16px; letter-spacing: .16em; color: var(--cream); background: rgba(236,232,225,.08); border-bottom: 1px solid rgba(236,232,225,.12); margin: -16px -18px 12px; padding: 10px 18px }
 html.dsV #csmenu .cspanel label { color: rgba(236,232,225,.55); letter-spacing: .12em }
 html.dsV #csnews .newscard:first-child { border-color: rgba(var(--hl-rgb),.6) }
 html.dsV #csplayview { background: linear-gradient(180deg, rgba(15,25,35,.62), rgba(15,25,35,.42)); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); border: 1px solid rgba(236,232,225,.22); border-radius: 0 }
@@ -5272,7 +5272,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; 
         
 
-        const MODES = { comp: ['🏆', 'Wettkampf', 'CT gegen T · Bombe legen & entschärfen'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'], ex: ['🧭', 'Erkunden', 'Allein · Karten & Arenen in Ruhe ansehen · Map-Editor jederzeit über das Pausenmenü'] };
+        const MODES = { comp: ['🏆', 'Wettkampf', 'Attacker gegen Defender · Bombe legen & entschärfen'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'], ex: ['🧭', 'Erkunden', 'Allein · Karten & Arenen in Ruhe ansehen · Map-Editor jederzeit über das Pausenmenü'] };
         const modeName = k => MODES[k] ? MODES[k][0] + ' ' + MODES[k][1] : '';
          function fetchRooms() {
  const el = $('roomlist'); if (!el) return;
