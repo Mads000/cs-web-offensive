@@ -2755,6 +2755,10 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
  <div id="editbar"><b>Buttons ziehen & ablegen</b><button id="editDone">✓ Fertig</button><button id="editReset">↺ Reset</button></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
+        if (document.documentElement.classList.contains('dsV')) { // Comic-Look (neues Design): Cel-Shading – alle Lambert-Materialien werden Toon-Materialien mit 3 harten Lichtstufen
+            const grad = new THREE.DataTexture(new Uint8Array([110, 110, 110, 255, 165, 165, 165, 255, 215, 215, 215, 255]), 3, 1, THREE.RGBAFormat); grad.minFilter = grad.magFilter = THREE.NearestFilter; grad.generateMipmaps = false; grad.needsUpdate = true;
+            THREE.MeshLambertMaterial = class extends THREE.MeshToonMaterial { constructor(p) { const fs2 = p && p.flatShading; if (p) delete p.flatShading; super(p); this.gradientMap = grad; if (fs2) this.flatShading = true; } };
+        }
         (() => { 'use strict'; // Anti-Cheat: alles lokal in dieser Funktion – Konsolen-Skripte kommen nicht an player, bots, updatePlayer & Co.
         // =====================================================================
         //  ACCOUNT / CLOUD-SAVE (Server speichert in data/users.json, keine Datenbank)
@@ -3148,6 +3152,13 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             for (let y = 0; y < h2; y += bh) { const off = ((y / bh) % 2) * bw / 2; for (let x = -bw; x < w + bw; x += bw) { g.fillStyle = `hsl(${12 + Math.random() * (DSV ? 2 : 6)},${28 + Math.random() * (DSV ? 2 : 6)}%,${46 + Math.random() * (DSV ? 2 : 6)}%)`; g.fillRect(x + off + 1, y + 1, bw - 2, bh - 2); } }
         });
         const WALL_SETS = { de_dusty: [texWall, texPlaster, texBrickTall], de_bazaar: [texPlaster, texBrickTall, texWall], de_frost: [texConcrete, texMetal, texWall], de_moisty: [texWood, texWall, texConcrete], de_foundry: [texMetal, texConcrete, texBrickTall] }; if (DSV) { WALL_SETS.de_dusty = [texWall, texPlaster, texPlaster]; WALL_SETS.de_bazaar = [texPlaster, texWall, texPlaster]; } // neues Design: Putz statt Ziegel
+        if (DSV) { // Valorant-Stil: gemalter Verlauf (oben hell, unten dunkler), wenige große Fugen, heller Kantenlicht-Streifen
+            const vWall = k => makeTex(128, 256, (g, w, h) => { const H = THEME.wallHue, Sa = THEME.wallSat * 0.55, L = THEME.wallLight + [0, -5, 4][k], gr = g.createLinearGradient(0, 0, 0, h);
+                gr.addColorStop(0, HS(H, Sa, L + 7)); gr.addColorStop(0.7, HS(H, Sa, L)); gr.addColorStop(1, HS(H, Sa, L - 9)); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+                g.fillStyle = HS(H, Sa, L - 11); if (k === 1) { g.fillRect(0, 0, 2, h); g.fillRect(w / 2 - 1, 0, 2, h); } if (k === 2) { g.fillRect(0, h * 0.42, w, 2); g.fillRect(0, 0, 2, h * 0.42); g.fillRect(w / 2, h * 0.42, 2, h); }
+                g.fillStyle = 'rgba(255,255,255,.07)'; if (k === 1) { g.fillRect(2, 0, 3, h); g.fillRect(w / 2 + 1, 0, 3, h); } g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(0, 0, w, 5); });
+            const VW = [vWall(0), vWall(1), vWall(2)]; for (const k in WALL_SETS) WALL_SETS[k] = VW;
+        }
         const wallSet = WALL_SETS[MAPNAME] || WALL_SETS[(CMAP_INFO[MAPNAME] || {}).th] || WALL_SETS.de_dusty;
         const texCrateDark = makeTex(128, 128, (g, w, h2) => {
             for (let i = 0; i < 6; i++) { g.fillStyle = HS(THEME.crateHue, THEME.crateSat * 0.8, THEME.crateLight - 10 + Math.random() * 6); g.fillRect(0, i * 22, w, 21); }
@@ -3200,6 +3211,13 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 if (dir[1]) { const x0 = dir[1] > 0 ? x + a : x - b, x1 = dir[1] > 0 ? x + b : x - a; add(x0, x1, 0, top, z - S / 2, z + S / 2); }
                 else { const z0 = dir[0] > 0 ? z + a : z - b, z1 = dir[0] > 0 ? z + b : z - a; add(x - S / 2, x + S / 2, 0, top, z0, z1); }
             }
+        }
+        function outlines(list) { // neues Design: feine dunkle Kanten (Comic/Low-Poly), minimal nach außen versetzt gegen Flimmern
+            const pos = [], v = new THREE.Vector3(), ctr = new THREE.Vector3();
+            for (const o of list) { if (!o.geometry || o.geometry.type !== 'BoxGeometry') continue; const e = new THREE.EdgesGeometry(o.geometry), a = e.attributes.position; ctr.setFromMatrixPosition(o.matrixWorld);
+                for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).applyMatrix4(o.matrixWorld).sub(ctr).multiplyScalar(1.004).add(ctr); pos.push(v.x, v.y, v.z); } e.dispose(); }
+            const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+            scene.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0x121419, transparent: true, opacity: 0.9 })));
         }
         function addBox(x0, x1, y0, y1, z0, z1, mat) { const m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), mat); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); m.castShadow = m.receiveShadow = true; scene.add(m); mapMeshes.push(m); aabbs.push({ minX: x0, maxX: x1, minZ: z0, maxZ: z1, top: y1, bot: y0 }); return m; }
         // Rendern: zusammengeführte Meshes je Material (wenige Draw-Calls). Treffer/Sicht: weiter die Einzel-Meshes (unsichtbar, in mapMeshes)
@@ -3264,8 +3282,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 } else c++;
             }
         }
-        { const st = scene.children.slice(staticFrom).filter(o => o.isMesh); st.forEach(o => o.updateMatrixWorld(true)); mergeStatic(st); st.forEach(o => scene.remove(o)); }
+        { const st = scene.children.slice(staticFrom).filter(o => o.isMesh); st.forEach(o => o.updateMatrixWorld(true)); if (DSV) outlines(st); mergeStatic(st); st.forEach(o => scene.remove(o)); }
         const texFloor = makeTex(256, 256, (g, w, h2) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h2); g.strokeStyle = 'rgba(0,0,0,.07)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 2); i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h2); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); } }, COLS / 2, ROWS / 2);
+        if (DSV) { const cv = texFloor.image, g = cv.getContext('2d'); g.fillStyle = 'rgba(70,55,45,.16)'; g.fillRect(0, 0, 256, 256); for (let i = 0; i < 18; i++) { const x = Math.random() * 256, y = Math.random() * 256, r = 40 + Math.random() * 70, lt = i % 2; for (const [ox, oy] of [[0, 0], [256, 0], [-256, 0], [0, 256], [0, -256]]) { const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); gr.addColorStop(0, lt ? 'rgba(255,250,240,.07)' : 'rgba(40,30,20,.06)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); } } texFloor.needsUpdate = true; } // nahtlos gekachelt
         const floor = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W, WORLD_D), new THREE.MeshLambertMaterial({ map: texFloor })); floor.rotation.x = -Math.PI / 2; floor.position.set(WORLD_W / 2, 0, WORLD_D / 2); floor.receiveShadow = true; scene.add(floor); mapMeshes.push(floor);
         function siteMarker(cells, letter) {
             let minR = 99, maxR = -1, minC = 99, maxC = -1; cells.forEach(({ r, c }) => { minR = Math.min(minR, r); maxR = Math.max(maxR, r); minC = Math.min(minC, c); maxC = Math.max(maxC, c); }); const w = (maxC - minC + 1) * S, d = (maxR - minR + 1) * S;
@@ -3319,8 +3338,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 const g2 = new THREE.Group();
                 for (let b3 = 0; b3 < 3; b3++) { const bl = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.4 + Math.random() * 0.25, 4), M(0x7a8f4a)); bl.position.set((Math.random() - 0.5) * 0.4, 0.2, (Math.random() - 0.5) * 0.4); bl.rotation.z = (Math.random() - 0.5) * 0.4; g2.add(bl); } place(g2);
             }
-        } scene.add(new THREE.HemisphereLight(0xdbeaff, 0x9a7b4f, 0.7));
-        const sun = new THREE.DirectionalLight(0xfff2d8, 1.0); sun.position.set(WORLD_W / 2 + 50, 90, WORLD_D / 2 + 35); sun.target.position.set(WORLD_W / 2, 0, WORLD_D / 2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+        } scene.add(new THREE.HemisphereLight(0xdbeaff, 0x9a7b4f, DSV ? 0.55 : 0.7)); // Comic-Look: Toon-Licht ist kräftiger
+        const sun = new THREE.DirectionalLight(0xfff2d8, DSV ? 0.72 : 1.0); sun.position.set(WORLD_W / 2 + 50, 90, WORLD_D / 2 + 35); sun.target.position.set(WORLD_W / 2, 0, WORLD_D / 2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
         { const tod = (CMAP_INFO[MAPNAME] || {}).tod; if (tod) { /* Tageszeit eigener Karten: Abend / Nacht */ const night = tod === 2, hemi = scene.children.find(o => o.isHemisphereLight), tint = new THREE.Color(night ? 0x0a1022 : 0xff8a4a); sun.color.set(night ? 0x8fa8ff : 0xffa060); sun.intensity = night ? 0.35 : 0.8; if (hemi) hemi.intensity = night ? 0.3 : 0.55; scene.background.lerp(tint, night ? 0.85 : 0.45); scene.fog.color.lerp(tint, night ? 0.8 : 0.35); } }
         Object.assign(sun.shadow.camera, { left: -80, right: 80, top: 80, bottom: -80, near: 20, far: 260 }); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -0.0005; scene.add(sun, sun.target);
 
@@ -3542,7 +3561,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             g.visible = false; return g;
         }
         const vm = new THREE.Group(); camera.add(vm); const vmModels = {}; for (const k in W) { vmModels[k] = makeViewModel(k); vm.add(vmModels[k]); }
-        for (const k in vmModels) vmModels[k].traverse(o => { if (o.isMesh && o.material.isMeshLambertMaterial && o.material.color.getHex() !== 0xd2a679) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });// ================= SKINS & CASES =================
+        for (const k in vmModels) vmModels[k].traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });// ================= SKINS & CASES =================
         const SKINS = [
             { id: 'glock_candy', w: 'glock', n: 'Glock-18 | Candy Apple', c: 0xc23b22, r: 1 },
             { id: 'usp_royal', w: 'usp', n: 'USP .45 | Royal Blue', c: 0x2255cc, r: 1 },
@@ -3780,8 +3799,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (g.userData.hand) g.remove(g.userData.hand);
             g.visible = true; g.scale.setScalar(1.8);
             const sk = own ? skinOf(key) : (sid ? SKINS.find(s => s.id === sid) : null); let i = 0;
-            g.traverse(o => { if (o.isMesh) { o.castShadow = true; if (sk && o.material.isMeshLambertMaterial) { o.material = o.material.clone(); skinMat(o, sk, i); i++; } } });
-            const st = own ? store.stick[key] : null; if (st) { if (!stickerTex[key]) stickerTex[key] = new THREE.TextureLoader().load(st); g.traverse(o => { if (o.isMesh && o.material.isMeshLambertMaterial) { o.material = o.material.clone(); o.material.map = stickerTex[key]; o.material.color.setHex(0xffffff); } }); } return g;
+            g.traverse(o => { if (o.isMesh) { o.castShadow = true; if (sk && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); skinMat(o, sk, i); i++; } } });
+            const st = own ? store.stick[key] : null; if (st) { if (!stickerTex[key]) stickerTex[key] = new THREE.TextureLoader().load(st); g.traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); o.material.map = stickerTex[key]; o.material.color.setHex(0xffffff); } }); } return g;
         }
         function dropWeapon(def, x, z, ammo, res, sid) {
             if (!def || (def.slot !== 1 && def.slot !== 2)) return null;
@@ -4552,7 +4571,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function knifeNames() { for (const sk of SKINS) if (sk.w === 'knife' && !sk.km) sk.n = sk.n.replace(/^(Butterfly|Karambit)/, W.knife.name); }
         function setKnife(t) { // Messer wechseln: Viewmodel neu bauen, Namen anpassen
             if (!KNIVES[t]) return; localStorage.setItem('knifetype', t); W.knife.name = KNIVES[t]; knifeNames();
-            const old = vmModels.knife, g = makeViewModel('knife'); g.traverse(o => { if (o.isMesh && o.material.isMeshLambertMaterial && o.material.color.getHex() !== 0xd2a679) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });
+            const old = vmModels.knife, g = makeViewModel('knife'); g.traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });
             g.visible = old.visible; vm.remove(old); vm.add(g); vmModels.knife = g; applySkins(); if (started && player.weapons[player.slot]) updateVM();
         }
         function vmSkin(key, sid) {
