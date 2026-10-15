@@ -1,6 +1,6 @@
 // Service Worker: macht das Spiel installierbar und lädt es schnell / offline.
 // Spielseite: erst Netz (damit Updates sofort ankommen), sonst Zwischenspeicher. Bibliotheken & Icons: Zwischenspeicher zuerst.
-const CACHE = 'cswo-v2'; // Version erhöhen → alter Zwischenspeicher wird beim Update gelöscht
+const CACHE = 'clutch-v3'; // Version erhöhen → alter Zwischenspeicher wird beim Update gelöscht
 const CORE = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png', 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'];
 
 self.addEventListener('install', e => {
