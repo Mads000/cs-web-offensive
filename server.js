@@ -11,24 +11,25 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.
 // sonst lokal in data/users.json. Render löscht die Festplatte bei jedem Deploy/Neustart, daher der Gist.
 const crypto = require('crypto');
 const PUBLISH_CODE = 'baumeister42'; // Code zum Veröffentlichen von Community-Karten – hier ändern
-const DATA_DIR = path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json'), LB_FILE = path.join(DATA_DIR, 'leaderboard.json');
+const DATA_DIR = path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json'), LB_FILE = path.join(DATA_DIR, 'leaderboard.json'), SKIN_FILE = path.join(DATA_DIR, 'skins.json');
 const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype'];
 const GIST_ID = process.env.GIST_ID, GIST_TOKEN = process.env.GIST_TOKEN, GIST_FILE = 'users.json';
 const GH = { Authorization: 'Bearer ' + GIST_TOKEN, Accept: 'application/vnd.github+json', 'User-Agent': 'cs-web-offensive' };
+let CSK = {}; // Community-Skins: id → { id, w, n, c, c2, c3, p, r, by, sold, t }
 let USERS = {}, PUB = {}, LB = { all: [], day: '', today: [] }, loaded = false, saveT = null, writing = false, again = false;
 async function loadUsers() {
- if (!GIST_ID || !GIST_TOKEN) { try { USERS = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { } try { PUB = JSON.parse(fs.readFileSync(PUB_FILE, 'utf8')); } catch { } try { LB = JSON.parse(fs.readFileSync(LB_FILE, 'utf8')); } catch { } loaded = true; console.log('Accounts: lokale Datei (' + Object.keys(USERS).length + ')'); return; }
+ if (!GIST_ID || !GIST_TOKEN) { try { USERS = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { } try { PUB = JSON.parse(fs.readFileSync(PUB_FILE, 'utf8')); } catch { } try { LB = JSON.parse(fs.readFileSync(LB_FILE, 'utf8')); } catch { } try { CSK = JSON.parse(fs.readFileSync(SKIN_FILE, 'utf8')); } catch { } loaded = true; console.log('Accounts: lokale Datei (' + Object.keys(USERS).length + ')'); return; }
  try {
  const r = await fetch('https://api.github.com/gists/' + GIST_ID, { headers: GH }); if (!r.ok) throw new Error('HTTP ' + r.status);
  const files = (await r.json()).files, read = async f => !f ? '{}' : f.truncated ? await (await fetch(f.raw_url, { headers: GH })).text() : f.content;
- USERS = JSON.parse(await read(files[GIST_FILE]) || '{}'); PUB = JSON.parse(await read(files['maps.json']) || '{}'); LB = Object.assign({ all: [], day: '', today: [] }, JSON.parse(await read(files['leaderboard.json']) || '{}')); loaded = true; console.log('Accounts: Gist geladen (' + Object.keys(USERS).length + ')');
+ USERS = JSON.parse(await read(files[GIST_FILE]) || '{}'); PUB = JSON.parse(await read(files['maps.json']) || '{}'); LB = Object.assign({ all: [], day: '', today: [] }, JSON.parse(await read(files['leaderboard.json']) || '{}')); CSK = JSON.parse(await read(files['skins.json']) || '{}'); loaded = true; console.log('Accounts: Gist geladen (' + Object.keys(USERS).length + ')');
  } catch (e) { console.error('Gist laden fehlgeschlagen (' + e.message + ') – neuer Versuch in 10 s'); setTimeout(loadUsers, 10000); } // nie mit leerem Stand überschreiben
 }
 async function writeUsers() {
  if (!loaded) return; if (writing) { again = true; return; } writing = true;
  try {
- if (GIST_ID && GIST_TOKEN) { const r = await fetch('https://api.github.com/gists/' + GIST_ID, { method: 'PATCH', headers: GH, body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(USERS) }, 'maps.json': { content: JSON.stringify(PUB) }, 'leaderboard.json': { content: JSON.stringify(LB) } } }) }); if (!r.ok) throw new Error('HTTP ' + r.status); }
- else { fs.mkdirSync(DATA_DIR, { recursive: true }); const tmp = USERS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(USERS)); fs.renameSync(tmp, USERS_FILE); fs.writeFileSync(PUB_FILE, JSON.stringify(PUB)); fs.writeFileSync(LB_FILE, JSON.stringify(LB)); }
+ if (GIST_ID && GIST_TOKEN) { const r = await fetch('https://api.github.com/gists/' + GIST_ID, { method: 'PATCH', headers: GH, body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(USERS) }, 'maps.json': { content: JSON.stringify(PUB) }, 'leaderboard.json': { content: JSON.stringify(LB) }, 'skins.json': { content: JSON.stringify(CSK) } } }) }); if (!r.ok) throw new Error('HTTP ' + r.status); }
+ else { fs.mkdirSync(DATA_DIR, { recursive: true }); const tmp = USERS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(USERS)); fs.renameSync(tmp, USERS_FILE); fs.writeFileSync(PUB_FILE, JSON.stringify(PUB)); fs.writeFileSync(LB_FILE, JSON.stringify(LB)); fs.writeFileSync(SKIN_FILE, JSON.stringify(CSK)); }
  } catch (e) { console.error('Accounts speichern fehlgeschlagen: ' + e.message); again = true; }
  writing = false; if (again) { again = false; persist(); }
 }
@@ -57,6 +58,8 @@ function api(p, b, ip) {
  const u = USERS[key]; if (!u || !crypto.timingSafeEqual(Buffer.from(hashPw(pw, u.salt), 'hex'), Buffer.from(u.hash, 'hex'))) return { err: 'Name oder Passwort falsch.' };
  const tok = newTok(u); persist(); return { ok: 1, u: u.name, tok, ver: u.ver, data: u.data };
  }
+ // ── Community-Skins: Liste für alle ──
+ if (p === '/api/skins') return { ok: 1, skins: Object.values(CSK) };
  // ── Community-Karten: jeder sieht sie, veröffentlichen/entfernen nur mit Code ──
  if (p === '/api/maps') return { ok: 1, maps: PUB };
  // ── Entenjagd-Bestenliste: Top 10 heute + Top 10 aller Zeiten (pro Name nur der beste Wert) ──
@@ -87,6 +90,20 @@ function api(p, b, ip) {
  }
  const u = byTok(b.tok); if (!u) return { err: 'Bitte neu einloggen.', relog: 1 };
  if (p === '/api/pull') return { ok: 1, ver: u.ver, data: u.data };
+ // Community-Skins: erstellen (max. 10 je Spieler, 300 gesamt), löschen, kaufen, Verkaufs-Coins abholen
+ if (p === '/api/mkskin') {
+ const k = b.s || {}, W = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'], P = ['solid', 'fade', 'stripes', 'tiger', 'carbon', 'neon', 'camo', 'doppler', 'gold', 'dragon', 'asiimov'], col = v => Math.max(0, Math.min(0xffffff, Math.floor(+v) || 0));
+ if (!W.includes(k.w) || !P.includes(k.p) || ![1, 2, 3, 4].includes(+k.r)) return { err: 'Ungültiger Skin.' };
+ const name = String(k.n || '').replace(/[<>"'&`|]/g, '').trim().slice(0, 20); if (name.length < 2) return { err: 'Name: mindestens 2 Zeichen.' };
+ const all = Object.values(CSK); if (all.filter(x => x.by === u.name).length >= 10) return { err: 'Maximal 10 eigene Skins.' }; if (all.length >= 300) return { err: 'Der Shop ist voll (300 Skins).' };
+ const id = 'u_' + crypto.randomBytes(5).toString('hex'); CSK[id] = { id, w: k.w, n: name, c: col(k.c), c2: col(k.c2), c3: col(k.c3), p: k.p, r: +k.r, by: u.name, sold: 0, t: Date.now() }; persist(); return { ok: 1, skin: CSK[id] };
+ }
+ if (p === '/api/rmskin') { const k = CSK[b.id]; if (!k || k.by !== u.name) return { err: 'Nicht Dein Skin.' }; delete CSK[b.id]; persist(); return { ok: 1 }; }
+ if (p === '/api/buyskin') {
+ const k = CSK[b.id]; if (!k) return { err: 'Skin gibt es nicht mehr.' }; k.sold++;
+ const owner = USERS[k.by.toLowerCase()]; if (owner && owner !== u) owner.earn = (owner.earn || 0) + Math.floor(({ 1: 150, 2: 400, 3: 900, 4: 2500 })[k.r] / 2); persist(); return { ok: 1 };
+ }
+ if (p === '/api/claim') { const c = u.earn || 0; if (c) { u.earn = 0; persist(); } return { ok: 1, coins: c }; }
  if (p === '/api/save') { u.data = cleanData(b.data); u.ver++; persist(); return { ok: 1, ver: u.ver }; }
  if (p === '/api/logout') { u.toks = u.toks.filter(t => t !== b.tok); persist(); return { ok: 1 }; }
  return { err: 'Unbekannt' };

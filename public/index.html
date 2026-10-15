@@ -2637,14 +2637,14 @@ body.edit #tlook{ pointer-events:none; }
         // Spielereignis → Statistik, XP, Level-Up und Erfolge
         function xpEvent(ev, x = {}) {
             const st = PRG.st, add = (k, v = 1) => st[k] = (st[k] || 0) + v; let xp = 0;
-            if (ev === 'kill') { add('kills'); xp += 10; if (x.hs) { add('hs'); xp += 5; } if (x.w === 'knife') { add('knife'); xp += 15; } if (x.w === 'awp') add('awp'); if (++roundKills === 5) { add('ace'); xp += 50; } }
+            if (ev === 'kill') { add('kills'); add('coins', 10); xp += 10; if (x.hs) { add('hs'); xp += 5; } if (x.w === 'knife') { add('knife'); xp += 15; } if (x.w === 'awp') add('awp'); if (++roundKills === 5) { add('ace'); xp += 50; } }
             else if (ev === 'round') xp += 20; else if (ev === 'plant' || ev === 'defuse') { add(ev); xp += 15; } else if (ev === 'case') add('cases'); else if (ev === 'made') add('made');
             else if (ev === 'duck') { add('ducks'); xp += 2; if (x.gold) { add('gducks'); xp += 8; } if (st.ducks >= 10 && !store.inv.includes('knife_duck')) { store.inv.push('knife_duck'); saveStore(); toast('🎁 Belohnung freigeschaltet!', 'Butterfly | Quietscheente – jetzt im Inventar'); }
                 if (st.ducks >= 20 && !st.duckHat) { st.duckHat = 1; toast('🎁 Entenhut freigeschaltet!', 'Inventar → Agenten: aufsetzen'); }
                 if (st.ducks >= 100 && !st.goldDuck) { st.goldDuck = 1; toast('🎁 Goldente freigeschaltet!', 'Neuer Agent im Inventar'); }
                 if (st.ducks >= 500 && !store.inv.includes('awp_duck')) { store.inv.push('awp_duck'); saveStore(); toast('🎁 AWP | Ententeich freigeschaltet!', 'Jetzt im Inventar'); } }
             else if (ev === 'dhend') { add('dhgames'); xp += Math.min(150, Math.round((x.score || 0) / 2)); }
-            else if (ev === 'match' || ev === 'glmatch') { add('matches'); xp += 50; if (x.won) { add(ev === 'match' ? 'wins' : 'glwins'); xp += 100; } }
+            else if (ev === 'match' || ev === 'glmatch') { add('matches'); add('coins', x.won ? 100 : 20); toast('🪙 +' + (x.won ? 100 : 20) + ' Coins', (x.won ? 'Sieg' : 'Niederlage') + ' · Kills geben je 10 Coins · Shop im Hauptmenü'); xp += 50; if (x.won) { add(ev === 'match' ? 'wins' : 'glwins'); xp += 100; } }
             const before = lvlOf(PRG.xp); PRG.xp += xp; const lv = lvlOf(PRG.xp);
             if (lv > before) toast('⬆ LEVEL ' + lv, rankOf(lv) !== rankOf(before) ? 'Neuer Rang: ' + rankOf(lv) : 'Weiter so!');
             for (const a of ACHS) if (!PRG.ach[a[0]] && a[4](st, lv)) { PRG.ach[a[0]] = Date.now(); toast(a[1] + ' Erfolg: ' + a[2], a[3]); }
@@ -3372,6 +3372,12 @@ body.edit #tlook{ pointer-events:none; }
             else { m.map = null; m.color.setHex(o.userData.oc !== undefined ? o.userData.oc : m.color.getHex()); m.emissive.setHex(0x000000); }
             m.needsUpdate = true;
         }
+        // Community-Skins: als normale Skins registriert (u: 1, nicht in Cases/Gamble)
+        function regSkins(list) { let add = 0; for (const k of list || []) { if (!W[k.w]) continue; const o = SKINS.find(x => x.id === k.id), d = { id: k.id, w: k.w, n: W[k.w].name + ' | ' + k.n, c: k.c, c2: k.c2, c3: k.c3, p: k.p, r: k.r, noCase: 1, u: 1, by: k.by, sold: k.sold || 0 }; if (o) o.sold = d.sold; else { SKINS.push(d); add++; } } return add; }
+        function dropSkins(ids) { for (let i = SKINS.length - 1; i >= 0; i--) if (SKINS[i].u && !ids.has(SKINS[i].id)) SKINS.splice(i, 1); }
+        try { regSkins(JSON.parse(localStorage.getItem('cskins') || '[]')); } catch (e) { }
+        function loadSkins(then) { accApi('skins', {}).then(r => { if (!r.ok) return; localStorage.setItem('cskins', JSON.stringify(r.skins)); dropSkins(new Set(r.skins.map(k => k.id))); regSkins(r.skins); knifeNames(); applySkins(); if (then) then(); }).catch(() => { }); }
+        loadSkins();
         knifeNames(); // Messer-Skins nach gewähltem Modell benennen
         function applySkins() {
             for (const k in vmModels) {
@@ -4081,7 +4087,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // =====================================================================
         //  SPIELER
         // =====================================================================
-        const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)' };
+        const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF', walk: 'ShiftLeft', inspect: 'KeyF' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)', walk: 'Langsam gehen (leise)', inspect: 'Waffe inspizieren' };
         const BIND = Object.assign({}, BIND_DEF, JSON.parse(localStorage.getItem('cs_binds') || '{}'));
         const OPT = Object.assign({ sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
         // Ansicht-Optionen anwenden (HUD-Farbe, Radar, Killfeed, Handy-Buttons) – nur bei Änderung, nicht pro Frame
@@ -4162,7 +4168,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const f = canMove ? ((down('fwd') ? 1 : 0) - (down('back') ? 1 : 0) + TOUCH.f) : 0;
             const s = canMove ? ((down('right') ? 1 : 0) - (down('left') ? 1 : 0) + TOUCH.s) : 0;
             const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
-            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); let max = (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * CFG.speed / 100; if (p.crouch) max *= 0.45; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - FRICTION * dt); p.vx *= fr; p.vz *= fr; }
+            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); let max = (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * CFG.speed / 100; p.walk = canMove && !p.crouch && down('walk'); if (p.crouch) max *= 0.45; else if (p.walk) max *= 0.52; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - FRICTION * dt); p.vx *= fr; p.vz *= fr; }
             const acc = p.onGround ? ACCEL : AIR_ACCEL;
             p.vx += wx * acc * dt; p.vz += wz * acc * dt;
             const vl = Math.hypot(p.vx, p.vz); if (vl > max) { p.vx *= max / vl; p.vz *= max / vl; }
@@ -4171,7 +4177,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             p.speed = Math.hypot(p.vx, p.vz);
             if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.2 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 16 * CFG.grav / 100 * dt; p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { sfx('step'); fovKick = Math.max(fovKick, 3); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
             const te = p.alive ? (p.crouch ? 1.15 : 1.7) : 0.35; p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
-            if (p.speed > 4 && p.onGround) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.42; sfx('step'); } } else p.stepT = 0.1;
+            if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.42; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
             p.recoil = Math.max(0, p.recoil - dt * 5); p.moving = p.speed > 0;
             specHide(!p.alive && !FC.on ? specTarget : null);
@@ -4226,11 +4232,20 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (d.scope && p.scoped) setScoped(false);
         }
         function startReload() { const w = player.weapons[player.slot]; if (!w || w.def.melee || w.def.plant || w.reloading || w.ammo >= w.def.mag || w.res <= 0) return; w.reloading = true; w.reloadT = w.def.reload; sfx('reload'); setScoped(false); }
+        function inspectWeapon() { // Waffe drehen & betrachten (bricht bei Schuss, Nachladen, Wechsel, Zielfernrohr ab)
+            const p = player, w = p.weapons[p.slot]; if (!p.alive || !w || w.reloading || p.scoped || buyOpen || p.switchT > 0) return;
+            const k = curDef().key; if (p.inspK && p.inspK !== k) { const o = vmModels[p.inspK]; if (o) { o.rotation.x = o.rotation.y = 0; o.position.x = 0; } }
+            p.inspK = k; p.inspT = 2.4; const sk = w.sk !== undefined ? (w.sk ? SKINS.find(x => x.id === w.sk) : null) : skinOf(k); msg('', sk ? sk.n : w.def.name, 2);
+        }
         function updateWeapon(dt) {
             const p = player, w = p.weapons[p.slot];
             if (w && w.reloading) { w.reloadT -= dt; if (w.reloadT <= 0) { w.reloading = false; const need = w.def.mag - w.ammo, take = Math.min(need, w.res); w.ammo += take; w.res -= take; } }
             p.kick = Math.max(0, p.kick - dt * 8); p.switchT = Math.max(0, p.switchT - dt * 4);
             if (curDef().key === 'knife') vmModels.knife.rotation.z = p.switchT * Math.PI * 2;
+            if (p.inspK) { const m = vmModels[p.inspK]; if (mouseDown || p.switchT > 0 || p.scoped || !p.alive || (w && w.reloading) || p.inspK !== curDef().key) p.inspT = 0; p.inspT = Math.max(0, p.inspT - dt);
+                const u = 1 - p.inspT / 2.4, e = Math.sin(u * Math.PI);
+                if (m) { m.rotation.y = e * 1.3; m.rotation.x = Math.sin(u * Math.PI * 2) * 0.3; m.position.x = -e * 0.12; if (p.inspK === 'knife' && u > 0.45) m.rotation.z = (u - 0.45) / 0.55 * Math.PI * 2; }
+                if (p.inspT <= 0) { if (m) { m.rotation.x = m.rotation.y = 0; m.position.x = 0; if (p.inspK === 'knife') m.rotation.z = 0; } p.inspK = null; } }
             if (flashT > 0) { flashT -= dt; if (flashT <= 0) { muzzleSprite.visible = false; muzzleLight.intensity = 0; } }
             vm.visible = p.alive && !p.scoped; const mv = p.onGround ? Math.min(1, p.speed / 5) : 0;
             vm.position.set(0.3 + OPT.vmX + Math.cos(p.bob * 0.5) * 0.018 * mv, -0.3 + OPT.vmY + Math.abs(Math.sin(p.bob)) * 0.022 * mv - p.switchT * 0.35 - (p.onGround ? 0 : 0.035), -0.5 + OPT.vmZ + p.kick * 0.08);
@@ -4439,7 +4454,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (e.code === BIND.buy) { buyOpen ? closeBuy() : openBuy(); }
             if (e.code === BIND.reload) startReload();
             if (e.code === BIND.lastw) selectSlot(player.lastSlot);
-            if (e.code === BIND.drop) dropCurrent(); if (e.code === BIND.abil) glUseAbility(); if (/^Digit[0-9]$/.test(e.code)) { const n = +e.code[5]; if (!buyOpen && [1, 2, 3, 4, 5].includes(n)) { if (n === 4 && player.slot === 4) cycleNade(); else selectSlot(n); } }
+            if (e.code === BIND.drop) dropCurrent(); if (e.code === BIND.abil) glUseAbility(); if (e.code === BIND.inspect && !(GL.on && e.code === BIND.abil)) inspectWeapon(); if (/^Digit[0-9]$/.test(e.code)) { const n = +e.code[5]; if (!buyOpen && [1, 2, 3, 4, 5].includes(n)) { if (n === 4 && player.slot === 4) cycleNade(); else selectSlot(n); } }
         });
         addEventListener('keyup', e => { keys[e.code] = false; if (e.code === BIND.board) $('board').style.display = 'none'; }); addEventListener('mousedown', e => { if (GL.on && GL.phase !== 'duel') return; if (started && !paused && !gameEnded && !player.alive) { if (FC.on) { if (!locked) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) cycleSpec(); return; } if (!locked) { if (started && !paused && !buyOpen && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) { mouseDown = true; clickQueued = true; } if (e.button === 2) toggleScope(); }); addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; }); addEventListener('contextmenu', e => e.preventDefault());
         addEventListener('wheel', e => { if (!locked) return; const order = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); let i = order.indexOf(player.slot); i = (i + (e.deltaY > 0 ? 1 : -1) + order.length) % order.length; selectSlot(order[i]); });
@@ -4459,6 +4474,69 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             $('btnCode').onclick = () => { const c = $('caseCode').value.toLowerCase().replace(/\s+/g, ''), m = $('codeMsg'); if (c === 'cases10') { store.cases += 10; saveStore(); $('caseCnt').textContent = store.cases; if ($('btnBack').style.display !== 'none') { $('btnOpen').disabled = false; $('btnOpen').style.opacity = ''; } m.style.color = '#7c7'; m.textContent = '+10 Cases!'; sfx('win'); } else { m.style.color = '#c66'; m.textContent = 'Ungültiger Code'; } $('caseCode').value = ''; };
             $('btnOpen').onclick = openCase; $('btnInvGo').onclick = showInventory; $('btnGbGo').onclick = () => showGamble(); $('btnBack').onclick = navBack;
         }
+        // Coin-Shop: alle Case-Skins direkt kaufen (Belohnungs-Skins ausgenommen)
+        const SHOP_PRICE = { 1: 150, 2: 400, 3: 900, 4: 2500 };
+        function shopClaim() { if (ACC) accApi('claim', { tok: ACC.tok }).then(r => { if (r.ok && r.coins > 0) { PRG.st.coins = (PRG.st.coins || 0) + r.coins; localStorage.setItem('prog', JSON.stringify(PRG)); toast('🪙 +' + r.coins + ' Coins', 'Andere haben Deine Skins gekauft!'); if ($('shopBox')) showShop(true); } }).catch(() => { }); }
+        function showShop(noFetch) {
+            if (!noFetch) { loadSkins(() => { if ($('shopBox')) showShop(true); }); shopClaim(); }
+            const coins = PRG.st.coins || 0, own = new Set(store.inv), ORDER = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
+            const list = SKINS.filter(sk => !sk.noCase && SHOP_PRICE[sk.r]).sort((a, b) => (ORDER.indexOf(a.w) - ORDER.indexOf(b.w)) || (b.r - a.r));
+            const cards = list.map(sk => { const has = own.has(sk.id), pr = SHOP_PRICE[sk.r], ok = !has && coins >= pr;
+                return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; }).join('');
+            const me = ACC ? ACC.u : null, com = SKINS.filter(sk => sk.u).sort((a, b) => (b.sold - a.sold) || (b.r - a.r));
+            const ccards = com.map(sk => { const has = own.has(sk.id), pr = SHOP_PRICE[sk.r], mine = sk.by === me;
+                return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Löschen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; }).join('');
+            showOverlay(`<h1 style="font-size:34px">🪙 SHOP<small>SKINS FÜR COINS · SIEG +100 · NIEDERLAGE +20 · KILL +10</small></h1>
+ <p>Du hast <b style="color:#e8c98a">🪙 ${coins}</b> Coins</p>
+ <div class="invbox" id="shopBox" style="max-height:56vh;overflow-y:auto">
+ <h5 style="margin:4px 0 8px">🎨 COMMUNITY-SKINS · Ersteller bekommt 50 % als Coins <button id="btnMkSkin" style="margin-left:10px;padding:3px 12px;font-size:13px">＋ Skin erstellen</button></h5>
+ <div class="invrow" style="flex-wrap:wrap;justify-content:center;margin-bottom:14px">${ccards || '<span style="color:#8fa3b8">Noch keine Community-Skins – erstelle den ersten!</span>'}</div>
+ <h5 style="margin:4px 0 8px">📦 OFFIZIELLE SKINS</h5>
+ <div class="invrow" style="flex-wrap:wrap;justify-content:center">${cards}</div></div>
+ <div><button id="btnInvGo">🎒 Inventar</button><button id="btnCasesGo">📦 Cases</button><button id="btnBack">Zurück</button></div>`);
+            $('btnInvGo').onclick = showInventory; $('btnCasesGo').onclick = showCases; $('btnBack').onclick = navBack;
+            document.querySelectorAll('[data-shop]').forEach(el => el.onclick = () => {
+                const sk = SKINS.find(x => x.id === el.dataset.shop), pr = SHOP_PRICE[sk.r];
+                if (store.inv.includes(sk.id)) return toast('Schon im Inventar', sk.n);
+                if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
+                PRG.st.coins -= pr; localStorage.setItem('prog', JSON.stringify(PRG)); store.inv.push(sk.id); saveStore(); sfx('win'); toast('🎁 Gekauft: ' + sk.n, 'Jetzt im Inventar – dort ausrüsten'); showShop(true);
+            });
+            $('btnMkSkin').onclick = () => showSkinMaker();
+            document.querySelectorAll('[data-rmsk]').forEach(el => el.onclick = e => { e.stopPropagation(); if (!confirm('Skin wirklich aus dem Shop löschen?')) return; accApi('rmskin', { tok: ACC.tok, id: el.dataset.rmsk }).then(r => { if (!r.ok) return toast('Fehler', r.err || ''); loadSkins(() => showShop(true)); }); });
+            document.querySelectorAll('[data-cshop]').forEach(el => el.onclick = () => {
+                const sk = SKINS.find(x => x.id === el.dataset.cshop), pr = SHOP_PRICE[sk.r];
+                if (store.inv.includes(sk.id)) return toast('Schon im Inventar', sk.n);
+                if (!ACC) return toast('🔒 Bitte einloggen', 'Community-Skins brauchen einen Account');
+                if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
+                el.style.pointerEvents = 'none';
+                accApi('buyskin', { tok: ACC.tok, id: sk.id }).then(r => { if (!r.ok) { el.style.pointerEvents = ''; return toast('Fehler', r.err || ''); }
+                    PRG.st.coins -= pr; sk.sold++; localStorage.setItem('prog', JSON.stringify(PRG)); store.inv.push(sk.id); saveStore(); sfx('win'); toast('🎁 Gekauft: ' + sk.n, 'von ' + sk.by + ' – jetzt im Inventar'); showShop(true); }).catch(() => { el.style.pointerEvents = ''; toast('Keine Verbindung', 'Bitte später nochmal'); });
+            });
+        }
+        // Skin-Editor: Waffe, Name, Muster, 3 Farben, Seltenheit (= Preis) → Live-Vorschau → im Shop veröffentlichen
+        const SK_PAT = [['solid', 'Einfarbig'], ['fade', 'Fade'], ['stripes', 'Streifen'], ['tiger', 'Tiger'], ['carbon', 'Carbon'], ['neon', 'Neon-Gitter'], ['camo', 'Camo'], ['doppler', 'Doppler'], ['gold', 'Gold'], ['dragon', 'Drachen'], ['asiimov', 'Asiimov']];
+        let skPv = 0;
+        function showSkinMaker() {
+            if (!ACC) return toast('🔒 Bitte einloggen', 'Zum Erstellen brauchst Du einen Account');
+            const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock', 'knife'], inp = 'font:bold 14px Arial;padding:6px 8px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px';
+            showOverlay(`<h1 style="font-size:32px">🎨 SKIN ERSTELLEN<small>ERSCHEINT FÜR ALLE IM SHOP · DU BEKOMMST 50 % JEDES VERKAUFS</small></h1>
+ <div class="invbox" style="display:flex;gap:22px;flex-wrap:wrap;justify-content:center;align-items:center;padding:14px">
+ <div style="text-align:center"><img id="skPrev" style="width:180px;height:180px;border:2px solid #e8c98a;image-rendering:pixelated"><div id="skPrevN" style="margin-top:6px;font:bold 14px Arial"></div></div>
+ <table style="text-align:left;font-size:14px"><tr><td>Waffe</td><td><select id="skW" style="${inp}">${WK.map(k => `<option value="${k}">${W[k].name}</option>`).join('')}</select></td></tr>
+ <tr><td>Name</td><td><input id="skN" maxlength="20" placeholder="z. B. Nachtfalke" style="${inp}"></td></tr>
+ <tr><td>Muster</td><td><select id="skP" style="${inp}">${SK_PAT.map(([k, t]) => `<option value="${k}">${t}</option>`).join('')}</select></td></tr>
+ <tr><td>Farben</td><td><input type="color" id="skC1" value="#e8c98a"> <input type="color" id="skC2" value="#1d2b3a"> <input type="color" id="skC3" value="#ff5a5a"></td></tr>
+ <tr><td>Seltenheit</td><td><select id="skR" style="${inp}">${[1, 2, 3, 4].map(r => `<option value="${r}">${RARITY[r][1]} · 🪙 ${SHOP_PRICE[r]}</option>`).join('')}</select></td></tr></table></div>
+ <p id="skMsg" style="font-size:13px;color:#8fa3b8">Max. 10 eigene Skins · Du bekommst Deinen Skin selbst gratis ins Inventar</p>
+ <div><button id="skPub">🚀 Im Shop veröffentlichen</button><button id="btnBack">Zurück</button></div>`);
+            const val = () => ({ w: $('skW').value, n: $('skN').value.trim(), p: $('skP').value, c: parseInt($('skC1').value.slice(1), 16), c2: parseInt($('skC2').value.slice(1), 16), c3: parseInt($('skC3').value.slice(1), 16), r: +$('skR').value });
+            const prev = () => { const v = val(), id = 'pv_' + (++skPv); delete SKTEX['pv_' + (skPv - 1)]; delete SKSW['pv_' + (skPv - 1)]; $('skPrev').src = skinSwatch(Object.assign({ id }, v)); $('skPrevN').textContent = W[v.w].name + ' | ' + (v.n || '…'); $('skPrevN').style.color = RARITY[v.r][0]; };
+            ['skW', 'skN', 'skP', 'skC1', 'skC2', 'skC3', 'skR'].forEach(i => $(i).oninput = prev); prev();
+            $('btnBack').onclick = () => showShop();
+            $('skPub').onclick = () => { const v = val(), m = $('skMsg'); if (v.n.length < 2) { m.style.color = '#c66'; m.textContent = 'Bitte einen Namen eingeben (mind. 2 Zeichen)'; return; }
+                $('skPub').disabled = true; accApi('mkskin', { tok: ACC.tok, s: v }).then(r => { if (!r.ok) { $('skPub').disabled = false; m.style.color = '#c66'; m.textContent = r.err || 'Fehler'; return; }
+                    regSkins([r.skin]); knifeNames(); store.inv.push(r.skin.id); saveStore(); sfx('win'); toast('🎨 Skin veröffentlicht!', 'Er ist jetzt im Shop und in Deinem Inventar'); loadSkins(); showShop(true); }).catch(() => { $('skPub').disabled = false; m.style.color = '#c66'; m.textContent = 'Keine Verbindung zum Server'; }); };
+        }
         // Inventar: Reiter (Skins / Agenten / Wraps), Skins als Ausrüstungs-Übersicht mit Sammelfortschritt
         let INV = { tab: 'sk', wk: null };
         function showInventory() {
@@ -4470,11 +4548,11 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             let body = '';
             if (INV.tab === 'sk') {
                 // links: alle Waffen mit ausgerüstetem Skin, rechts: Skins der gewählten Waffe (gesammelt + noch fehlend)
-                const list = ORDER.map(wk => { const eq = skinOf(wk), have = SKINS.filter(s => s.w === wk && counts[s.id]).length, all = SKINS.filter(s => s.w === wk).length;
+                const list = ORDER.map(wk => { const eq = skinOf(wk), have = SKINS.filter(s => s.w === wk && counts[s.id]).length, all = SKINS.filter(s => s.w === wk && (!s.u || counts[s.id])).length;
                     return `<div class="invw ${INV.wk === wk ? 'on' : ''}" data-wk="${wk}"><span class="sksw" style="${eq ? `background-image:url(${skinSwatch(eq)})` : 'background:#2a3038'}"></span><div><b>${W[wk].name}</b><span style="color:${eq ? RARITY[eq.r][0] : '#8fa3b8'}">${eq ? lbl(eq) : 'Standard'}</span></div><em>${have}/${all}</em></div>`; }).join('');
                 const wk = INV.wk, std = !store.equip[wk];
                 const cards = `<div class="inv ${std ? 'eq' : ''}" data-eqnone="${wk}" style="border-color:#556"><span class="sksw" style="background:#2a3038"></span><b style="color:#cfd8e3">Standard</b><span>${std ? '✓ Ausgerüstet' : 'Ohne Skin'}</span></div>` +
-                    SKINS.filter(s => s.w === wk).sort((a, b) => b.r - a.r).map(s => { const n = counts[s.id], eq = store.equip[wk] === s.id;
+                    SKINS.filter(s => s.w === wk && (!s.u || counts[s.id])).sort((a, b) => b.r - a.r).map(s => { const n = counts[s.id], eq = store.equip[wk] === s.id;
                         return n ? `<div class="inv ${eq ? 'eq' : ''}" data-eq="${s.id}" style="border-color:${RARITY[s.r][0]}"><span class="sksw" style="background-image:url(${skinSwatch(s)})"></span><b style="color:${RARITY[s.r][0]}">${lbl(s)}${n > 1 ? ` <em>×${n}</em>` : ''}</b><span>${RARITY[s.r][1]} · ${eq ? '✓ Ausgerüstet' : 'Ausrüsten'}</span></div>`
                             : `<div class="inv locked" style="border-color:${RARITY[s.r][0]}"><span class="sksw" style="background-image:url(${skinSwatch(s)})"></span><b style="color:${RARITY[s.r][0]}">🔒 ${lbl(s)}</b><span>${RARITY[s.r][1]} · ${s.noCase ? 'Entenjagd-Belohnung' : 'aus Cases'}</span></div>`; }).join('');
                 body = `<div class="invgrid"><div class="invlist">${list}</div><div class="invpanel"><h5>${W[wk].name.toUpperCase()}${wk === 'knife' ? ' · MODELL: ' + Object.entries(KNIVES).map(([k, nm]) => `<button data-knife="${k}" style="margin:0 0 0 6px;padding:2px 10px;font-size:12px;${knifeType() === k ? 'background:#e8c98a;color:#111' : ''}">${nm}</button>`).join('') : ''}${store.stick[wk] ? ' <span style="color:#ffd84a;letter-spacing:0">· 🖼 Wrap aktiv – ersetzt den Skin</span>' : ''}</h5><div class="invrow">${cards}</div></div></div>`;
@@ -4515,7 +4593,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (store.cases < 1) return; store.cases--; saveStore(); initAudio(); xpEvent('case');
             const win = rollSkin(), N = 40, WIN = 34, cw = 128;
             let cards = '';
-            for (let i = 0; i < N; i++) { const s = i === WIN ? win : rnd(SKINS); cards += `<div class="ccard" style="border-color:${RARITY[s.r][0]}"><span class="sksw" style="background-image:url(${skinSwatch(s)})"></span><i style="background:${RARITY[s.r][0]}"></i>${s.n}</div>`; }
+            for (let i = 0; i < N; i++) { const s = i === WIN ? win : rnd(SKINS.filter(s => !s.u)); cards += `<div class="ccard" style="border-color:${RARITY[s.r][0]}"><span class="sksw" style="background-image:url(${skinSwatch(s)})"></span><i style="background:${RARITY[s.r][0]}"></i>${s.n}</div>`; }
             const reel = $('reel'); reel.style.transition = 'none'; reel.style.transform = 'translateX(0)'; reel.innerHTML = cards;
             $('btnOpen').disabled = true; $('btnOpen').style.opacity = .4; $('btnBack').style.display = 'none'; $('btnInvGo').style.display = 'none'; const off = WIN * cw + cw / 2 - $('reelbox').clientWidth / 2 - (Math.random() * 60 - 30);
             requestAnimationFrame(() => requestAnimationFrame(() => { reel.style.transition = 'transform 5s cubic-bezier(.08,.6,.1,1)'; reel.style.transform = `translateX(${-off}px)`; }));
@@ -4574,7 +4652,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             else if (GB.tab === 'tu') out = rnd(SKINS.filter(s => s.r === gbSk(GB.sel[0]).r + 1 && !s.noCase));
             else { const o = gbCtOdds(); let x = Math.random(), r = 1; for (; r < 4; r++) { if (x < o[r]) break; x -= o[r]; } out = rnd(SKINS.filter(s => s.r === r && !s.noCase)); }
             gbTake(GB.sel); if (out) gbGive(out); saveStore(); applySkins();
-            let n = 0; const tk = setInterval(() => { const s = rnd(SKINS), el = $('gbRoll'); if (el) { el.textContent = s.n; el.style.color = RARITY[s.r][0]; } tone(700 + n * 15, 0.02, 0.05, 0, 'square'); if (++n > 18) { clearInterval(tk); GB.busy = false; GB.sel = []; GB.tgt = null; sfx(ok ? 'win' : 'lose'); showGamble(ok ? { ok: true, txt: `✓ ${out.n}` } : { ok: false, txt: '✗ Upgrade fehlgeschlagen – Skin verloren' }); } }, 90);
+            let n = 0; const tk = setInterval(() => { const s = rnd(SKINS.filter(s => !s.u)), el = $('gbRoll'); if (el) { el.textContent = s.n; el.style.color = RARITY[s.r][0]; } tone(700 + n * 15, 0.02, 0.05, 0, 'square'); if (++n > 18) { clearInterval(tk); GB.busy = false; GB.sel = []; GB.tgt = null; sfx(ok ? 'win' : 'lose'); showGamble(ok ? { ok: true, txt: `✓ ${out.n}` } : { ok: false, txt: '✗ Upgrade fehlgeschlagen – Skin verloren' }); } }, 90);
         }
         let rebindKey = null;
         function showSettings() {
@@ -4879,6 +4957,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <a data-nav="inv">INVENTAR</a>
  <a data-nav="play">SPIELEN</a>
  <a data-nav="store">CASES</a>
+ <a data-nav="shop">SHOP</a>
  <a data-nav="news">NEWS</a>
  <a data-nav="maps">MAP-EDITOR</a>
  <a data-nav="arenas">ARENA-EDITOR</a>
@@ -4925,7 +5004,26 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 1.7 „BUGFIXES"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 1.8 „WERKSTATT"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🪙 COINS & SHOP</p>
+ Neue Währung: <b>Coins</b> – Sieg +100, Niederlage +20, jeder Kill +10.<br>
+ Neuer Menüpunkt <b>SHOP</b>: Alle Case-Skins direkt kaufen (Militär 150 · Limitiert 400 · Verdeckt 900 · ★ Selten 2500). Dein Kontostand steht unten im Menü.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎨 SKIN-WERKSTATT</p>
+ Erstelle eigene Skins: Waffe, Name, Muster (Tiger, Carbon, Doppler, Asiimov …), drei Farben und Seltenheit – mit Live-Vorschau.<br>
+ Veröffentlichte Skins erscheinen <b>für alle</b> im Shop. Für jeden Verkauf bekommst Du <b>50 % als Coins</b>. Bis zu 10 eigene Skins, Account nötig.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎯 1V1: WAFFEN SELBST WÄHLEN</p>
+ Vor dem Start legst Du fest, mit welchen Waffen gespielt wird – eine Waffe für die ganze Partie oder mehrere als Rotation (auch zufällig). Online wählt der Host.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🎮 NEUE STEUERUNG</p>
+ <b>Shift</b> = langsam &amp; lautlos gehen – keine Schritte mehr hörbar.<br>
+ <b>F</b> = Waffe inspizieren, inkl. Skin-Name (im Gauntlet bleibt F die Fähigkeit). Beides in den Einstellungen umbelegbar.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 1.7 „BUGFIXES"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🛠 BUGFIXES</p>
@@ -5193,7 +5291,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 1.7 „Bugfixes" | ${MAPLABEL} | 📦 ${store.cases} Cases</div> </div>`, true);
+ <div id="csver">CS:WO 1.8 „Werkstatt" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div> </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -5231,6 +5329,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const nav = a.dataset.nav;
                 if (nav === 'inv') { showInventory(); return; }
                 if (nav === 'store') { showCases(); return; }
+                if (nav === 'shop') { showShop(); return; }
                 if (nav === 'maps') { showMapList(); return; } if (nav === 'arenas') { showArenaList(); return; }
                 setTab(nav);
             });
@@ -5281,7 +5380,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('modeOn').onclick = () => { PM.on = true; setMode(); };
             setMode();
             const backPlay = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
-            $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => { GL.v1 = true; glStart(2); }, backPlay);
+            $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => pickV1Weapons(() => { GL.v1 = true; glStart(2); }, backPlay), backPlay);
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
             $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
@@ -5855,6 +5954,19 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const GL_LIVES = 3, GL_TIME = 60;
         // 1v1-Aim-Duell: gleiche Waffe für beide, rotiert pro Runde; Erster mit V1_WIN Siegen gewinnt
         const V1_WIN = 5, V1_W = ['deagle', 'ak47', 'awp', 'm4a1', 'usp', 'mp5', 'pump', 'glock'];
+        // 1v1: Waffen selbst wählen (eine = ganze Partie nur diese, mehrere = Rotation oder zufällig) – gespeichert, online wählt der Host
+        function pickV1Weapons(go, back) {
+            let sel = []; try { sel = JSON.parse(localStorage.getItem('v1wpn') || '[]').filter(k => V1_W.includes(k)); } catch (e) { } if (!sel.length) sel = V1_W.slice(); let rndO = localStorage.getItem('v1rnd') === '1';
+            const draw = () => { showOverlay(`<h1 style="font-size:34px">🎯 1V1 – WAFFEN<small>WÄHLE, MIT WELCHEN WAFFEN GESPIELT WIRD</small></h1>
+ <p style="font-size:13px;color:#8fa3b8">Eine Waffe = die ganze Partie nur diese · Mehrere = jede Runde die nächste</p>
+ <div class="invbox"><div class="invrow" style="flex-wrap:wrap;justify-content:center">${V1_W.map(k => `<div class="inv ${sel.includes(k) ? 'eq' : ''}" data-v1w="${k}" style="min-width:110px;border-color:${sel.includes(k) ? '#e8c98a' : '#556'}"><b>${W[k].name}</b><span>${sel.includes(k) ? '✓ Dabei' : 'Klicken zum Hinzufügen'}</span></div>`).join('')}</div></div>
+ <p><label style="cursor:pointer"><input type="checkbox" id="v1Rnd" ${rndO ? 'checked' : ''}> Zufällige Reihenfolge</label></p>
+ <div><button id="v1All">Alle</button><button id="v1Go" ${sel.length ? '' : 'disabled style="opacity:.4"'}>▶ Start (${sel.length} Waffe${sel.length === 1 ? '' : 'n'})</button><button id="btnBack">Zurück</button></div>`);
+                document.querySelectorAll('[data-v1w]').forEach(el => el.onclick = () => { const k = el.dataset.v1w; sel = sel.includes(k) ? sel.filter(x => x !== k) : V1_W.filter(x => x === k || sel.includes(x)); draw(); });
+                $('v1Rnd').onchange = e => { rndO = e.target.checked; }; $('v1All').onclick = () => { sel = V1_W.slice(); draw(); }; $('btnBack').onclick = back;
+                $('v1Go').onclick = () => { if (!sel.length) return; localStorage.setItem('v1wpn', JSON.stringify(sel)); localStorage.setItem('v1rnd', rndO ? '1' : '0'); GL.v1list = sel.slice(); GL.v1rnd = rndO && sel.length > 1; go(); }; };
+            draw();
+        }
         function v1Loadout(m, key) {
             if (m.remote) return; const def = W[key];
             if (m.isPlayer) { m.weapons[1] = def.slot === 1 ? mkWeapon(def) : null; m.weapons[2] = def.slot === 2 ? mkWeapon(def) : null; m.weapons[5] = null; m.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; syncNadeSlot(); m.slot = def.slot; setScoped(false); updateVM(); }
@@ -6081,7 +6193,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     else { m.mesh.visible = true; m.mesh.rotation.set(0, 0, 0); m.mesh.scale.y = 1; m.fireT = 0.5; m.reloadT = 0; m.waitT = 0; m.stuckT = 0; m.lastX = m.x; m.lastZ = m.z; }
                 });
             });
-            if (GL.v1) { GL.v1n = (GL.v1n === undefined ? -1 : GL.v1n) + 1; GL.v1w = V1_W[GL.v1n % V1_W.length]; for (const t of pair) for (const m of t.members) { m.armor = 100; m.helmet = true; v1Loadout(m, GL.v1w); } }
+            if (GL.v1) { GL.v1n = (GL.v1n === undefined ? -1 : GL.v1n) + 1; const VL = GL.v1list && GL.v1list.length ? GL.v1list : V1_W; GL.v1w = GL.v1rnd ? rnd(VL) : VL[GL.v1n % VL.length]; for (const t of pair) for (const m of t.members) { m.armor = 100; m.helmet = true; v1Loadout(m, GL.v1w); } }
             const mine = pair.includes(GL.myTeam);
             GL.phase = 'duel'; G.state = 'live'; G.timer = GL_TIME; G.bomb.state = 'none';
             specTarget = null; stopFreecam();
@@ -6384,7 +6496,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
                 on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
-                on('btnGlMp', 'onclick', () => { const t = +$('glTeamsMp').value; pickArenas(() => glStartMP(t), renderLobby); }); on('btnV1Mp', 'onclick', () => pickArenas(() => { GL.v1 = true; glStartMP(2); }, renderLobby));
+                on('btnGlMp', 'onclick', () => { const t = +$('glTeamsMp').value; pickArenas(() => glStartMP(t), renderLobby); }); on('btnV1Mp', 'onclick', () => pickArenas(() => pickV1Weapons(() => { GL.v1 = true; glStartMP(2); }, renderLobby), renderLobby));
                 on('btnDuckMp', 'onclick', () => dhPick(w => { NET.inLobby = false; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w }); dhStart(w); }, renderLobby));
                 on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 1 }); startGame(player.team); });
                 on('glTeamsMp', 'onchange', e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); });
