@@ -7180,6 +7180,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (st !== SHD.k || !SHD.on) { SHD.k = st; SHD.on = 1; renderer.shadowMap.needsUpdate = true; } else if (st === 'g' && (SHD.f = (SHD.f + 1) & 1) === 0) renderer.shadowMap.needsUpdate = true; } else SHD.on = 0;
             renderer.render(scene, camera);
         }
+        if (window.cswoApp && window.cswoApp.presence) { let rpLast = ''; const rpTick = () => { // Discord-Status (PC-App): Modus, Karte, Spielstand
+                let a = { d: 'Im Hauptmenü' };
+                if (G.state !== 'menu') { const md = EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : 'Competitive', mp = EX.ar ? (CMAP_INFO[EX.ar] ? CMAP_INFO[EX.ar].n : MAP_NAMES[EX.ar] || EX.ar) : GL.on || DH.on ? '' : MAPLABEL;
+                    a = { d: md + (mp ? ' · ' + mp : '') + (NET.on ? ' · Online' : ''), s: EX.on || DH.on || GL.on ? '' : DM.on ? (player.kills || 0) + ' Kills' : 'Runde ' + G.round + ' · ' + G.score[player.team] + ':' + G.score[player.team === 'T' ? 'CT' : 'T'] }; }
+                const k = JSON.stringify(a); if (k !== rpLast) { rpLast = k; window.cswoApp.presence(a); } }; rpTick(); setInterval(rpTick, 5000); }
         showMenu(); { const xq = sessionStorage.getItem('explore'); sessionStorage.removeItem('exret'); if (xq) { sessionStorage.removeItem('explore'); setTimeout(() => exStart(xq.startsWith('ar:') ? xq.slice(3) : null), 300); } } if (window.cswoApp && window.cswoApp.offline) toast('📴 Offline-Modus', 'Kein Internet – Spiele gegen Bots gehen, Online & Account nicht. F5 = erneut verbinden');
         // Ladebildschirm ausblenden, sobald das Menü steht
         { const ld = $('loader'); if (ld) { ld.classList.add('done'); setTimeout(() => ld.remove(), 600); } }

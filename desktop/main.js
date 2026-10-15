@@ -79,6 +79,27 @@ function createWindow() {
 ipcMain.on('cswo:getSet', e => { e.returnValue = { fpsUnlock: !!SET.fpsUnlock, offline }; });
 ipcMain.on('cswo:setFps', (e, v) => { SET.fpsUnlock = !!v; saveSet(); app.relaunch(); app.exit(0); });
 
+// Discord Rich Presence: spricht direkt mit dem lokal laufenden Discord (IPC-Pipe), keine Zusatzpakete
+const DISCORD_ID = '1560304931993428048';
+const RP = { sock: null, ready: false, act: null, d: '', start: Math.floor(Date.now() / 1000), retry: null };
+function rpSend(op, obj) { const j = Buffer.from(JSON.stringify(obj)), h = Buffer.alloc(8); h.writeInt32LE(op, 0); h.writeInt32LE(j.length, 4); RP.sock.write(Buffer.concat([h, j])); }
+function rpPush() { if (RP.ready && RP.act) rpSend(1, { cmd: 'SET_ACTIVITY', args: { pid: process.pid, activity: RP.act }, nonce: String(Date.now()) }); }
+function rpConnect(i = 0) {
+  clearTimeout(RP.retry); if (RP.sock) return;
+  const pipe = process.platform === 'win32' ? '\\\\?\\pipe\\discord-ipc-' + i : path.join(process.env.XDG_RUNTIME_DIR || process.env.TMPDIR || '/tmp', 'discord-ipc-' + i);
+  const s = require('net').connect(pipe); let ok = false;
+  s.on('connect', () => { ok = true; RP.sock = s; rpSend(0, { v: 1, client_id: DISCORD_ID }); });
+  s.on('data', d => { if (!RP.ready && d.length > 8 && d.readInt32LE(0) === 1) { RP.ready = true; rpPush(); } }); // erste Antwort = READY
+  s.on('error', () => { });
+  s.on('close', () => { if (RP.sock === s) { RP.sock = null; RP.ready = false; } if (!ok && i < 9) return rpConnect(i + 1); RP.retry = setTimeout(rpConnect, 30000); }); // Discord zu/nicht offen → später nochmal
+}
+ipcMain.on('cswo:presence', (e, a) => {
+  const t = v => typeof v === 'string' && v.length >= 2 ? v.slice(0, 120) : undefined; a = a || {};
+  if (a.d !== RP.d) { RP.d = a.d; RP.start = Math.floor(Date.now() / 1000); } // Zeit zählt ab Modus-/Kartenwechsel
+  RP.act = { details: t(a.d), state: t(a.s), timestamps: { start: RP.start }, assets: { large_image: 'clutch', large_text: 'CLUTCH' }, buttons: [{ label: 'Im Browser spielen', url: GAME_URL }] };
+  rpPush();
+});
+
 // App-Updates: prüft beim Start GitHub Releases, lädt im Hintergrund und installiert beim Beenden
 function checkAppUpdate() {
   if (!app.isPackaged) return;
@@ -87,6 +108,7 @@ function checkAppUpdate() {
 
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 app.whenReady().then(() => {
+  rpConnect();
   // Lokale Dateien ausliefern: index.html bevorzugt aus dem Cache (neueste Online-Version), sonst aus der App
   protocol.handle('app', req => {
     const rel = decodeURIComponent(new URL(req.url).pathname).replace(/^\/+/, '') || 'index.html';

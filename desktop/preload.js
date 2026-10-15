@@ -5,5 +5,6 @@ contextBridge.exposeInMainWorld('cswoApp', {
   desktop: true,
   offline: !!s.offline,
   fpsUnlock: !!s.fpsUnlock,
-  setFpsUnlock: v => ipcRenderer.send('cswo:setFps', !!v) // speichert und startet die App neu
+  setFpsUnlock: v => ipcRenderer.send('cswo:setFps', !!v), // speichert und startet die App neu
+  presence: a => ipcRenderer.send('cswo:presence', a) // Discord-Status
 });
