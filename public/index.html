@@ -4777,6 +4777,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const d = document.createElement('div'); d.id = 'tut'; d.style.cssText = 'position:fixed;inset:0;z-index:9995;pointer-events:auto';
             d.innerHTML = '<div id="tutHi" style="position:absolute;border:2px solid #e8c98a;border-radius:6px;box-shadow:0 0 0 9999px rgba(4,7,11,.68),0 0 22px rgba(232,201,138,.8);transition:all .3s;pointer-events:none"></div><div id="tutCard" style="position:absolute;width:min(440px,92vw);background:rgba(12,16,22,.97);border:1px solid #e8c98a;border-radius:8px;padding:16px 18px;box-shadow:0 10px 50px rgba(0,0,0,.8);color:#cfd8e3;font:14px/1.55 Arial;text-align:left;transition:top .3s,left .3s"></div><style>#tut .tk{display:inline-block;min-width:16px;padding:0 6px;margin:1px;border:1px solid #e8c98a;border-radius:3px;color:#e8c98a;font-size:12px;text-align:center}#tut button{margin:0 4px 0 0;padding:6px 14px;font-size:13px}</style>';
             document.body.appendChild(d);
+            // Karte verschieben (Finger/Maus), um das Element dahinter zu sehen – gilt bis zum nächsten Schritt
+            let moved = false; const cd = $('tutCard'); cd.style.touchAction = 'none'; cd.style.cursor = 'move';
+            cd.addEventListener('pointerdown', e => {
+                if (e.target.closest('button')) return; const sx = e.clientX - cd.offsetLeft, sy = e.clientY - cd.offsetTop; cd.style.transition = 'none'; try { cd.setPointerCapture(e.pointerId); } catch (er) { }
+                const mv = ev => { moved = true; cd.style.left = Math.max(60 - cd.offsetWidth, Math.min(innerWidth - 60, ev.clientX - sx)) + 'px'; cd.style.top = Math.max(0, Math.min(innerHeight - 40, ev.clientY - sy)) + 'px'; };
+                const up = () => { cd.removeEventListener('pointermove', mv); cd.removeEventListener('pointerup', up); cd.removeEventListener('pointercancel', up); cd.style.transition = 'top .3s,left .3s'; };
+                cd.addEventListener('pointermove', mv); cd.addEventListener('pointerup', up); cd.addEventListener('pointercancel', up);
+            });
             const close = () => { clearTimeout(tm); d.remove(); removeEventListener('keydown', key, true); removeEventListener('resize', place); if (!inGame) showMenu(); };
             const place = () => { // Hervorhebung + Karte neben das Element setzen
                 const st = steps[i], hi = $('tutHi'), card = $('tutCard'); if (!hi) return; const sel = typeof st.sel === 'function' ? st.sel() : st.sel;
@@ -4787,12 +4795,12 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                     if (r.bottom + 16 + ch < innerHeight) y = r.bottom + 16; else if (r.top - ch - 16 > 0) y = r.top - ch - 16;
                     else if (r.right + 16 + cw < innerWidth) { x = r.right + 16; y = Math.max(10, Math.min(innerHeight - ch - 10, r.top)); } else if (r.left - cw - 16 > 0) { x = r.left - cw - 16; y = Math.max(10, Math.min(innerHeight - ch - 10, r.top)); }
                     else { x = innerWidth - cw - 10; y = innerHeight - ch - 10; } }
-                card.style.left = x + 'px'; card.style.top = y + 'px';
+                if (!moved) { card.style.left = x + 'px'; card.style.top = y + 'px'; }
             };
             const draw = () => {
-                const st = steps[i], card = $('tutCard');
+                const st = steps[i], card = $('tutCard'); moved = false;
                 if (!inGame && st.go) { try { st.go(); } catch (e) { } }
-                card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:18px;color:#fff">${st.t}</b><span style="font-size:12px;color:#8fa3b8">${i + 1} / ${steps.length}</span></div><div>${st.d}</div>
+                card.innerHTML = `<div title="Verschieben" style="width:42px;height:4px;border-radius:2px;background:rgba(232,201,138,.45);margin:-6px auto 8px"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:18px;color:#fff">${st.t}</b><span style="font-size:12px;color:#8fa3b8">${i + 1} / ${steps.length}</span></div><div>${st.d}</div>
  <div style="display:flex;gap:3px;margin:12px 0 10px">${steps.map((_, j) => `<i style="flex:1;height:3px;background:${j <= i ? '#e8c98a' : 'rgba(255,255,255,.15)'}"></i>`).join('')}</div>
  <div style="display:flex;justify-content:space-between"><button id="tutSkip" style="opacity:.7">Beenden</button><span>${i ? '<button id="tutPrev">← Zurück</button>' : ''}<button id="tutNext" style="background:#e8c98a;color:#111">${i === steps.length - 1 ? 'Los geht\'s!' : 'Weiter →'}</button></span></div>`;
                 $('tutSkip').onclick = close; $('tutNext').onclick = () => { if (i < steps.length - 1) { i++; draw(); } else close(); }; if ($('tutPrev')) $('tutPrev').onclick = () => { i--; draw(); };
@@ -5597,6 +5605,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 $('csnews').style.display = nav === 'news' ? 'flex' : 'none'; if (nav === 'news') newsTiles();
                 $('cschar').style.display = nav === 'play' ? 'none' : 'block';
                 const lg = $('cslogo'); if (lg) lg.style.display = nav === 'home' ? 'block' : 'none';
+                const tb = $('csTut'); if (tb) tb.style.display = nav === 'home' ? '' : 'none'; // Tutorial-Button nur auf der Startseite
             };
             document.querySelectorAll('#cstabs a').forEach(a => a.onclick = () => {
                 const nav = a.dataset.nav;
