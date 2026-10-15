@@ -3373,7 +3373,7 @@ body.edit #tlook{ pointer-events:none; }
             m.needsUpdate = true;
         }
         // Community-Skins: als normale Skins registriert (u: 1, nicht in Cases/Gamble)
-        function regSkins(list) { let add = 0; for (const k of list || []) { if (!W[k.w]) continue; const o = SKINS.find(x => x.id === k.id), d = { id: k.id, w: k.w, n: W[k.w].name + ' | ' + k.n, c: k.c, c2: k.c2, c3: k.c3, p: k.p, r: k.r, noCase: 1, u: 1, by: k.by, sold: k.sold || 0 }; if (o) o.sold = d.sold; else { SKINS.push(d); add++; } } return add; }
+        function regSkins(list) { let add = 0; for (const k of list || []) { if (!W[k.w]) continue; const o = SKINS.find(x => x.id === k.id), d = { id: k.id, w: k.w, km: KNIVES[k.km] ? k.km : undefined, n: (KNIVES[k.km] ? KNIVES[k.km] : W[k.w].name) + ' | ' + k.n, c: k.c, c2: k.c2, c3: k.c3, p: k.p, r: k.r, noCase: 1, u: 1, by: k.by, sold: k.sold || 0 }; if (o) o.sold = d.sold; else { SKINS.push(d); add++; } } return add; }
         function dropSkins(ids) { for (let i = SKINS.length - 1; i >= 0; i--) if (SKINS[i].u && !ids.has(SKINS[i].id)) SKINS.splice(i, 1); }
         try { regSkins(JSON.parse(localStorage.getItem('cskins') || '[]')); } catch (e) { }
         function loadSkins(then) { accApi('skins', {}).then(r => { if (!r.ok) return; localStorage.setItem('cskins', JSON.stringify(r.skins)); dropSkins(new Set(r.skins.map(k => k.id))); regSkins(r.skins); knifeNames(); applySkins(); if (then) then(); }).catch(() => { }); }
@@ -4256,7 +4256,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             vm.position.x -= sx * 0.0005; vm.position.y += sy * 0.0004 - vmLand * 0.05; vm.rotation.y -= sx * 0.0011; vm.rotation.x -= sy * 0.0006;
             for (const s of shells) { if (!s.m.visible) continue; s.t -= dt; s.v.y -= 7 * dt; s.m.position.addScaledVector(s.v, dt); s.m.rotation.x += 14 * dt; s.m.rotation.z += 9 * dt; if (s.t <= 0) s.m.visible = false; }
         }
-        function knifeNames() { for (const sk of SKINS) if (sk.w === 'knife') sk.n = sk.n.replace(/^(Butterfly|Karambit)/, W.knife.name); }
+        function knifeNames() { for (const sk of SKINS) if (sk.w === 'knife' && !sk.km) sk.n = sk.n.replace(/^(Butterfly|Karambit)/, W.knife.name); }
         function setKnife(t) { // Messer wechseln: Viewmodel neu bauen, Namen anpassen
             if (!KNIVES[t]) return; localStorage.setItem('knifetype', t); W.knife.name = KNIVES[t]; knifeNames();
             const old = vmModels.knife, g = makeViewModel('knife'); g.traverse(o => { if (o.isMesh && o.material.isMeshLambertMaterial && o.material.color.getHex() !== 0xd2a679) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });
@@ -4518,19 +4518,19 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         let skPv = 0;
         function showSkinMaker() {
             if (!ACC) return toast('🔒 Bitte einloggen', 'Zum Erstellen brauchst Du einen Account');
-            const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock', 'knife'], inp = 'font:bold 14px Arial;padding:6px 8px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px';
+            const WK = ['ak47', 'm4a1', 'awp', 'pump', 'mp5', 'deagle', 'usp', 'glock', ...Object.keys(KNIVES).map(k => 'knife:' + k), 'he', 'flash', 'smoke', 'molly', 'c4'], inp = 'font:bold 14px Arial;padding:6px 8px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px';
             showOverlay(`<h1 style="font-size:32px">🎨 SKIN ERSTELLEN<small>ERSCHEINT FÜR ALLE IM SHOP · DU BEKOMMST 50 % JEDES VERKAUFS</small></h1>
  <div class="invbox" style="display:flex;gap:22px;flex-wrap:wrap;justify-content:center;align-items:center;padding:14px">
  <div style="text-align:center"><img id="skPrev" style="width:180px;height:180px;border:2px solid #e8c98a;image-rendering:pixelated"><div id="skPrevN" style="margin-top:6px;font:bold 14px Arial"></div></div>
- <table style="text-align:left;font-size:14px"><tr><td>Waffe</td><td><select id="skW" style="${inp}">${WK.map(k => `<option value="${k}">${W[k].name}</option>`).join('')}</select></td></tr>
+ <table style="text-align:left;font-size:14px"><tr><td>Waffe</td><td><select id="skW" style="${inp}">${WK.map(k => `<option value="${k}">${k.startsWith('knife:') ? '★ ' + KNIVES[k.slice(6)] : W[k].name}</option>`).join('')}</select></td></tr>
  <tr><td>Name</td><td><input id="skN" maxlength="20" placeholder="z. B. Nachtfalke" style="${inp}"></td></tr>
  <tr><td>Muster</td><td><select id="skP" style="${inp}">${SK_PAT.map(([k, t]) => `<option value="${k}">${t}</option>`).join('')}</select></td></tr>
  <tr><td>Farben</td><td><input type="color" id="skC1" value="#e8c98a"> <input type="color" id="skC2" value="#1d2b3a"> <input type="color" id="skC3" value="#ff5a5a"></td></tr>
  <tr><td>Seltenheit</td><td><select id="skR" style="${inp}">${[1, 2, 3, 4].map(r => `<option value="${r}">${RARITY[r][1]} · 🪙 ${SHOP_PRICE[r]}</option>`).join('')}</select></td></tr></table></div>
  <p id="skMsg" style="font-size:13px;color:#8fa3b8">Max. 10 eigene Skins · Du bekommst Deinen Skin selbst gratis ins Inventar</p>
  <div><button id="skPub">🚀 Im Shop veröffentlichen</button><button id="btnBack">Zurück</button></div>`);
-            const val = () => ({ w: $('skW').value, n: $('skN').value.trim(), p: $('skP').value, c: parseInt($('skC1').value.slice(1), 16), c2: parseInt($('skC2').value.slice(1), 16), c3: parseInt($('skC3').value.slice(1), 16), r: +$('skR').value });
-            const prev = () => { const v = val(), id = 'pv_' + (++skPv); delete SKTEX['pv_' + (skPv - 1)]; delete SKSW['pv_' + (skPv - 1)]; $('skPrev').src = skinSwatch(Object.assign({ id }, v)); $('skPrevN').textContent = W[v.w].name + ' | ' + (v.n || '…'); $('skPrevN').style.color = RARITY[v.r][0]; };
+            const val = () => ({ w: $('skW').value.split(':')[0], km: $('skW').value.split(':')[1], n: $('skN').value.trim(), p: $('skP').value, c: parseInt($('skC1').value.slice(1), 16), c2: parseInt($('skC2').value.slice(1), 16), c3: parseInt($('skC3').value.slice(1), 16), r: +$('skR').value });
+            const prev = () => { const v = val(), id = 'pv_' + (++skPv); delete SKTEX['pv_' + (skPv - 1)]; delete SKSW['pv_' + (skPv - 1)]; $('skPrev').src = skinSwatch(Object.assign({ id }, v)); $('skPrevN').textContent = (v.km ? KNIVES[v.km] : W[v.w].name) + ' | ' + (v.n || '…'); $('skPrevN').style.color = RARITY[v.r][0]; };
             ['skW', 'skN', 'skP', 'skC1', 'skC2', 'skC3', 'skR'].forEach(i => $(i).oninput = prev); prev();
             $('btnBack').onclick = () => showShop();
             $('skPub').onclick = () => { const v = val(), m = $('skMsg'); if (v.n.length < 2) { m.style.color = '#c66'; m.textContent = 'Bitte einen Namen eingeben (mind. 2 Zeichen)'; return; }
@@ -4540,7 +4540,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // Inventar: Reiter (Skins / Agenten / Wraps), Skins als Ausrüstungs-Übersicht mit Sammelfortschritt
         let INV = { tab: 'sk', wk: null };
         function showInventory() {
-            const ORDER = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
+            const ORDER = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock', ...['he', 'flash', 'smoke', 'molly', 'c4'].filter(k => store.inv.some(id => { const x = SKINS.find(q => q.id === id); return x && x.w === k; }))]; // Granaten/C4 nur, wenn ein Skin dafür da ist
             const counts = {}; for (const id of store.inv) counts[id] = (counts[id] || 0) + 1;
             const owned = SKINS.filter(s => counts[s.id]).length, rare = SKINS.filter(s => counts[s.id] && s.r >= 3).length, lbl = s => s.n.split(' | ')[1] || s.n;
             if (!INV.wk) INV.wk = ORDER.find(k => SKINS.some(s => s.w === k && counts[s.id])) || 'ak47';
@@ -4574,7 +4574,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             document.querySelectorAll('[data-itab]').forEach(el => el.onclick = () => { INV.tab = el.dataset.itab; showInventory(); });
             document.querySelectorAll('[data-wk]').forEach(el => el.onclick = () => { INV.wk = el.dataset.wk; showInventory(); });
             document.querySelectorAll('[data-knife]').forEach(el => el.onclick = () => { setKnife(el.dataset.knife); showInventory(); });
-            document.querySelectorAll('[data-eq]').forEach(el => el.onclick = () => { const id = el.dataset.eq, s = SKINS.find(x => x.id === id); store.equip[s.w] = store.equip[s.w] === id ? undefined : id; saveStore(); applySkins(); showInventory(); });
+            document.querySelectorAll('[data-eq]').forEach(el => el.onclick = () => { const id = el.dataset.eq, s = SKINS.find(x => x.id === id); store.equip[s.w] = store.equip[s.w] === id ? undefined : id; if (s.km && store.equip[s.w] === id && knifeType() !== s.km) setKnife(s.km); saveStore(); applySkins(); showInventory(); });
             document.querySelectorAll('[data-eqnone]').forEach(el => el.onclick = () => { store.equip[el.dataset.eqnone] = undefined; saveStore(); applySkins(); showInventory(); });
             { const gd = document.querySelector('[data-agent="duck_gold"]'); if (gd && !((PRG.st.ducks || 0) >= 100)) { gd.classList.add('locked'); const sp = gd.querySelector('span:last-child'); if (sp) sp.textContent = '🔒 100 Enten erlegen (' + (PRG.st.ducks || 0) + '/100)'; } }
             document.querySelectorAll('[data-acc]').forEach(el => el.onclick = () => { const a = ACCS.find(x => x.id === el.dataset.acc); if (!accOk(a)) return toast('🔒 ' + a.n, a.need); localStorage.setItem('duckhat', duckHat() === a.id ? '0' : a.id); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent, hat: duckHat() || 0 }); showInventory(); });

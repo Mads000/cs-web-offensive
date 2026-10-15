@@ -92,11 +92,11 @@ function api(p, b, ip) {
  if (p === '/api/pull') return { ok: 1, ver: u.ver, data: u.data };
  // Community-Skins: erstellen (max. 10 je Spieler, 300 gesamt), löschen, kaufen, Verkaufs-Coins abholen
  if (p === '/api/mkskin') {
- const k = b.s || {}, W = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'], P = ['solid', 'fade', 'stripes', 'tiger', 'carbon', 'neon', 'camo', 'doppler', 'gold', 'dragon', 'asiimov'], col = v => Math.max(0, Math.min(0xffffff, Math.floor(+v) || 0));
+ const k = b.s || {}, W = ['knife', 'awp', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock', 'he', 'flash', 'smoke', 'molly', 'c4'], P = ['solid', 'fade', 'stripes', 'tiger', 'carbon', 'neon', 'camo', 'doppler', 'gold', 'dragon', 'asiimov'], col = v => Math.max(0, Math.min(0xffffff, Math.floor(+v) || 0));
  if (!W.includes(k.w) || !P.includes(k.p) || ![1, 2, 3, 4].includes(+k.r)) return { err: 'Ungültiger Skin.' };
  const name = String(k.n || '').replace(/[<>"'&`|]/g, '').trim().slice(0, 20); if (name.length < 2) return { err: 'Name: mindestens 2 Zeichen.' };
  const all = Object.values(CSK); if (all.filter(x => x.by === u.name).length >= 10) return { err: 'Maximal 10 eigene Skins.' }; if (all.length >= 300) return { err: 'Der Shop ist voll (300 Skins).' };
- const id = 'u_' + crypto.randomBytes(5).toString('hex'); CSK[id] = { id, w: k.w, n: name, c: col(k.c), c2: col(k.c2), c3: col(k.c3), p: k.p, r: +k.r, by: u.name, sold: 0, t: Date.now() }; persist(); return { ok: 1, skin: CSK[id] };
+ const id = 'u_' + crypto.randomBytes(5).toString('hex'); CSK[id] = { id, w: k.w, km: k.w === 'knife' && ['butterfly', 'karambit'].includes(k.km) ? k.km : undefined, n: name, c: col(k.c), c2: col(k.c2), c3: col(k.c3), p: k.p, r: +k.r, by: u.name, sold: 0, t: Date.now() }; persist(); return { ok: 1, skin: CSK[id] };
  }
  if (p === '/api/rmskin') { const k = CSK[b.id]; if (!k || k.by !== u.name) return { err: 'Nicht Dein Skin.' }; delete CSK[b.id]; persist(); return { ok: 1 }; }
  if (p === '/api/buyskin') {
