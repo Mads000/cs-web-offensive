@@ -58,6 +58,14 @@ function api(p, b, ip) {
  const u = USERS[key]; if (!u || !crypto.timingSafeEqual(Buffer.from(hashPw(pw, u.salt), 'hex'), Buffer.from(u.hash, 'hex'))) return { err: 'Name oder Passwort falsch.' };
  const tok = newTok(u); persist(); return { ok: 1, u: u.name, tok, ver: u.ver, data: u.data };
  }
+ // ── Weitere Codes (Code nur als Render-Umgebungsvariable, Inhalt als Render-Secret-File) ──
+ if (p === '/api/code') {
+ if (limited(ip)) return { err: 'Zu viele Versuche – bitte kurz warten.' };
+ const want = Buffer.from(String(process.env.DEBUG_CODE || '')), c = Buffer.from(String(b.code || '').toLowerCase());
+ if (!want.length || c.length !== want.length || !crypto.timingSafeEqual(c, want)) return { err: 1 };
+ for (const f of ['/etc/secrets/cheats.js', path.join(__dirname, 'cheats.js')]) { try { return { ok: 1, js: fs.readFileSync(f, 'utf8') }; } catch { } }
+ return { err: 1 };
+ }
  // ── Community-Skins: Liste für alle ──
  if (p === '/api/skins') return { ok: 1, skins: Object.values(CSK), prices: PRICES };
  // ── Shop-Preise: mit Code prüfen (check) oder für alle speichern ──
