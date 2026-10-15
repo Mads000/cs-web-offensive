@@ -1,14 +1,14 @@
 {
   "name": "cswo-desktop",
   "productName": "CS-WO",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Counter-Strike: Web Offensive – Desktop-App",
   "main": "main.js",
   "author": "Mads",
   "license": "ISC",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win nsis"
+    "dist": "electron-builder --win nsis --publish never"
   },
   "devDependencies": {
     "electron": "^33.2.0",
@@ -23,6 +23,7 @@
     },
     "files": [
       "main.js",
+      "preload.js",
       "package.json"
     ],
     "win": {
@@ -36,9 +37,35 @@
       "createStartMenuShortcut": true,
       "shortcutName": "CS-WO",
       "runAfterFinish": true
-    }
+    },
+    "extraResources": [
+      {
+        "from": "../public",
+        "to": "game",
+        "filter": [
+          "index.html",
+          "manifest.json",
+          "sw.js",
+          "icon-*.png"
+        ]
+      },
+      {
+        "from": "vendor",
+        "to": "vendor"
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Mads000",
+        "repo": "cs-web-offensive"
+      }
+    ]
   },
   "allowScripts": {
     "electron@33.4.11": true
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
   }
 }

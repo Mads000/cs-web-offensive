@@ -4835,7 +4835,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <label style="display:block">Waffe nah/fern: <b id="vmZV">${OPT.vmZ}</b><input data-opt="vmZ" type="range" min="-0.2" max="0.2" step="0.02" value="${OPT.vmZ}" style="width:100%"></label>
  <label style="display:block;margin:4px 0">HUD-Farbe: <input data-opt="hudCol" type="color" value="${OPT.hudCol}" style="vertical-align:middle;width:40px;height:22px;padding:0;border:0;background:none"></label>
  <label style="display:block;margin:4px 0">Radar: <select data-opt="radar" style="font:bold 13px Arial;padding:4px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px">${[[0, 'Aus'], [0.7, 'Klein'], [1, 'Normal'], [1.4, 'Groß']].map(([v, l]) => `<option value="${v}" ${OPT.radar === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
- <input data-opt="kf" type="checkbox" ${OPT.kf ? 'checked' : ''} style="margin-left:12px"> Killfeed <input data-opt="fps" type="checkbox" ${OPT.fps ? 'checked' : ''} style="margin-left:12px"> FPS anzeigen</label>
+ <input data-opt="kf" type="checkbox" ${OPT.kf ? 'checked' : ''} style="margin-left:12px"> Killfeed <input data-opt="fps" type="checkbox" ${OPT.fps ? 'checked' : ''} style="margin-left:12px"> FPS anzeigen</label>${window.cswoApp ? '<label title="Für Monitore mit 144 Hz und mehr – die App startet dafür neu"><input type="checkbox" id="appFps" ' + (window.cswoApp.fpsUnlock ? 'checked' : '') + '> 💻 FPS-Limit aufheben (PC-App, Neustart)</label>' : ''}
  <label style="display:block;margin:4px 0">Treffer-Sound: <select data-opt="hitSnd" style="font:bold 13px Arial;padding:4px;background:#141e28;color:#e8c98a;border:1px solid rgba(232,201,138,.5);border-radius:4px">${['Standard', 'Ding', 'Klick', 'Aus'].map((l, v) => `<option value="${v}" ${OPT.hitSnd === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
  <input data-opt="killSnd" type="checkbox" ${OPT.killSnd ? 'checked' : ''} style="margin-left:12px"> Kill-Sound</label>
  ${IS_TOUCH ? `<label style="display:block">Button-Größe: <b id="tbsV">${OPT.tbs}</b><input data-opt="tbs" type="range" min="0.6" max="1.6" step="0.05" value="${OPT.tbs}" style="width:100%"></label>
@@ -4852,7 +4852,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); };
             const chPrev = () => { const g = OPT.chGap, L = OPT.chLen, T = OPT.chThick, c = OPT.chCol, p = (x, y, w, h) => `<i style="position:absolute;left:${45 + x}px;top:${45 + y}px;width:${w}px;height:${h}px;background:${c};box-shadow:0 0 2px #000"></i>`; $('chPrev').innerHTML = p(-T / 2, -(g + L), T, L) + p(-T / 2, g, T, L) + p(-(g + L), -T / 2, L, T) + p(g, -T / 2, L, T) + (OPT.chDot ? p(-T / 2, -T / 2, T, T) : ''); }; chPrev();
             document.querySelectorAll('[data-ch]').forEach(el => el.oninput = () => { OPT[el.dataset.ch] = +el.value; $(el.dataset.ch + 'V').textContent = el.value; saveOpts(); chPrev(); });
-            $('chCol').oninput = e => { OPT.chCol = e.target.value; saveOpts(); chPrev(); }; $('chDot').onchange = e => { OPT.chDot = e.target.checked; saveOpts(); chPrev(); }; $('chDyn').onchange = e => { OPT.chDyn = e.target.checked; saveOpts(); }; $('setBack').onclick = () => { rebindKey = null; if (!started || gameEnded) { showMenu(); return; } if (IS_TOUCH) { paused = false; $('overlay').style.display = 'none'; } else renderer.domElement.requestPointerLock(); };
+            $('chCol').oninput = e => { OPT.chCol = e.target.value; saveOpts(); chPrev(); }; $('chDot').onchange = e => { OPT.chDot = e.target.checked; saveOpts(); chPrev(); }; $('chDyn').onchange = e => { OPT.chDyn = e.target.checked; saveOpts(); }; if ($('appFps')) $('appFps').onchange = e => { if (confirm('Die App startet dafür neu. Fortfahren?')) window.cswoApp.setFpsUnlock(e.target.checked); else e.target.checked = !e.target.checked; }; $('setBack').onclick = () => { rebindKey = null; if (!started || gameEnded) { showMenu(); return; } if (IS_TOUCH) { paused = false; $('overlay').style.display = 'none'; } else renderer.domElement.requestPointerLock(); };
             $('setReset').onclick = () => { Object.assign(BIND, BIND_DEF); saveBinds(); rebindKey = null; showSettings(); };
         }
         addEventListener('keydown', e => {
@@ -6842,7 +6842,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (st !== SHD.k || !SHD.on) { SHD.k = st; SHD.on = 1; renderer.shadowMap.needsUpdate = true; } else if (st === 'g' && (SHD.f = (SHD.f + 1) & 1) === 0) renderer.shadowMap.needsUpdate = true; } else SHD.on = 0;
             renderer.render(scene, camera);
         }
-        showMenu();
+        showMenu(); if (window.cswoApp && window.cswoApp.offline) toast('📴 Offline-Modus', 'Kein Internet – Spiele gegen Bots gehen, Online & Account nicht. F5 = erneut verbinden');
         // Ladebildschirm ausblenden, sobald das Menü steht
         { const ld = $('loader'); if (ld) { ld.classList.add('done'); setTimeout(() => ld.remove(), 600); } }
         // App-Gefühl: kein Browser-Rechtsklickmenü (außer in Eingabefeldern), kein Pinch-Zoom (iOS)
