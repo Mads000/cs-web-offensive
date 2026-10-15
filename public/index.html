@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Counter-Strike: Web Offensive – de_dusty</title>
+    <title>CLUTCH – Taktik-Shooter</title>
 
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔫</text></svg>">
@@ -16,7 +16,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CS:WO">
+    <meta name="apple-mobile-web-app-title" content="CLUTCH">
     <style>
         /* Ladebildschirm – steht vor allem anderen, damit er sofort sichtbar ist */
         #loader { position: fixed; inset: 0; z-index: 100000; background: radial-gradient(circle at 50% 40%, #1a2430, #0b1015 70%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; transition: opacity .5s; font-family: Arial, sans-serif }
@@ -2524,7 +2524,7 @@ body.edit #tlook{ pointer-events:none; }
 </head>
 
 <body>
-    <div id="loader"><img src="icon-192.png" alt=""><b>CS:WO</b><i></i><small id="ldTxt">Lade Spiel…</small></div>
+    <div id="loader"><img src="icon-192.png" alt=""><b>CLUTCH</b><i></i><small id="ldTxt">Lade Spiel…</small></div>
     <script>
         // Falls beim Laden etwas schiefgeht: Hinweis statt endlosem Ladebildschirm
         addEventListener('error', () => { const t = document.getElementById('ldTxt'); if (t && document.getElementById('loader')) t.textContent = 'Fehler beim Laden – bitte Seite neu laden.'; });
@@ -4753,7 +4753,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function tutSteps() {
             const k = a => '<b class="tk">' + keyName(BIND[a]) + '</b>', nav = n => { showMenu(); const el = document.querySelector('#cstabs a[data-nav="' + n + '"]'); if (el) el.click(); };
             return [
-                { go: () => showMenu(), t: '👋 Willkommen bei CS:WO', d: 'Counter-Strike direkt im Browser – offline gegen Bots oder online mit Freunden. Ich zeige Dir jetzt Seite für Seite, was Du alles machen kannst.<br><br>Mit <b>Weiter</b> oder den Pfeiltasten geht\'s durch, <b>Esc</b> beendet.' },
+                { go: () => showMenu(), t: '👋 Willkommen bei CLUTCH', d: 'Taktik-Shooter direkt im Browser – offline gegen Bots oder online mit Freunden. Ich zeige Dir jetzt Seite für Seite, was Du alles machen kannst.<br><br>Mit <b>Weiter</b> oder den Pfeiltasten geht\'s durch, <b>Esc</b> beendet.' },
                 { go: () => nav('play'), sel: '#csplayview', t: '▶ Spielen', d: 'Hier startest Du ein Spiel – <b>Offline</b> gegen Bots oder <b>Online</b> über eine Lobby:<br>• <b>Wettkampf</b>: T legen die Bombe, CT verteidigen oder entschärfen<br>• <b>Deathmatch</b>: jeder gegen jeden, Waffen gratis<br>• <b>Gauntlet</b>: Duo-Turnier mit Draft, Perks & Fähigkeiten<br>• <b>1v1</b>: Duelle mit Kaufphase, Erster mit 5 Siegen<br>• <b>Entenjagd</b>: Enten jagen mit Bestenliste<br>Online wählst Du Dein Team in der Lobby.' },
                 IS_TOUCH
                     ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
@@ -5159,8 +5159,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}"><span class="lvchip" title="${rankOf(lvlOf(PRG.xp))}">Lv ${lvlOf(PRG.xp)}</span>${ACC ? `<b>Eingeloggt als <span style="color:#e8c98a">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
  </div>
  <div id="cslogo" style="position:absolute;left:28px;top:90px;pointer-events:none">
- <div style="font:700 12px Rajdhani;letter-spacing:.45em;color:var(--mut)">BROWSER TACTICAL SHOOTER</div>
- <div style="font:700 50px Rajdhani;line-height:1;color:var(--text);text-transform:uppercase">CS Web<br><span style="color:var(--acc)">Offensive</span></div>
+ <div style="font:700 12px Rajdhani;letter-spacing:.45em;color:var(--mut)">TACTICAL SHOOTER</div>
+ <div style="font:700 50px Rajdhani;line-height:1;color:var(--text);text-transform:uppercase">Clu<span style="color:var(--acc)">tch</span></div>
  <div style="width:64px;height:3px;background:var(--acc);margin-top:10px"></div>
  </div> <div id="csplayview">
 <div class="subnav" id="catnav">${Object.keys(MODES).map(k => `<b data-cat="${k}">${MODES[k][0]} ${MODES[k][1].toUpperCase()}</b>`).join('')}</div><div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b></div><p id="catdesc" style="margin:2px 0 6px;font-size:12px;color:#8fa3b8"></p>  <div id="mapgrid">${mapCards}</div>
@@ -5564,7 +5564,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 2.1 „Desktop" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 2.1 „Desktop" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -6874,7 +6874,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // PWA: Service Worker + „Installieren"-Button (📲 oben links im Menü, nur wenn der Browser es anbietet)
         if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => { });
         addEventListener('beforeinstallprompt', e => { e.preventDefault(); instEvt = e; const b = $('navInst'); if (b) b.style.display = ''; });
-        addEventListener('appinstalled', () => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; toast('📲 Installiert!', 'CS:WO ist jetzt als App auf Deinem Gerät.'); });
+        addEventListener('appinstalled', () => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; toast('📲 Installiert!', 'CLUTCH ist jetzt als App auf Deinem Gerät.'); });
         const mj = sessionStorage.getItem('mpjoin');
         if (mj) { sessionStorage.removeItem('mpjoin'); try { const j = JSON.parse(mj); $('pname').value = j.name; $('srv').value = j.srv; $('room').value = j.room; startMP(j.team); } catch (e) { } }
         loop();

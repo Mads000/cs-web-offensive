@@ -1,8 +1,8 @@
 {
   "name": "cswo-desktop",
-  "productName": "CS-WO",
-  "version": "1.1.0",
-  "description": "Counter-Strike: Web Offensive – Desktop-App",
+  "productName": "CLUTCH",
+  "version": "1.2.0",
+  "description": "CLUTCH – Taktik-Shooter (Desktop-App)",
   "main": "main.js",
   "author": "Mads",
   "license": "ISC",
@@ -16,7 +16,7 @@
   },
   "build": {
     "appId": "de.mads.cswo",
-    "productName": "CS-WO",
+    "productName": "CLUTCH",
     "icon": "../public/icon-512.png",
     "directories": {
       "output": "../../CS-WO-Build"
@@ -35,7 +35,7 @@
       "perMachine": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "CS-WO",
+      "shortcutName": "CLUTCH",
       "runAfterFinish": true
     },
     "extraResources": [

@@ -1,10 +1,11 @@
-// CS:WO als Desktop-App
+// CLUTCH als Desktop-App
 // Online: lädt die Website (Spiel-Updates kommen automatisch) und speichert die neueste Version für den Offline-Modus.
 // Offline: startet die gespeicherte bzw. mitgelieferte Version (Bots ohne Internet).
 // Dazu: App-Updates über GitHub Releases, FPS-Limit abschaltbar, Entwickler-Konsole gesperrt.
 const { app, BrowserWindow, shell, Menu, protocol, net, session, ipcMain } = require('electron');
 const path = require('path'), fs = require('fs');
 if (process.env.CSWO_TEST) app.setPath('userData', path.join(app.getPath('temp'), 'cswo-test')); // automatische Tests: eigener Datenordner
+else app.setPath('userData', path.join(app.getPath('appData'), 'CS-WO')); // alter Datenordner bleibt nach der Umbenennung (Offline-Cache, Einstellungen)
 
 const GAME_URL = process.env.CSWO_URL || 'https://cs-web-offensive.onrender.com'; // CSWO_URL nur zum Testen
 const THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
@@ -34,7 +35,7 @@ if (!app.requestSingleInstanceLock()) app.quit();
 let win = null, offline = false;
 
 const waitPage = msg => 'data:text/html;charset=utf-8,' + encodeURIComponent(`<!doctype html><html><body style="margin:0;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#0a0e13;color:#e8c98a;font:bold 20px Arial">
-<div>CS:WO</div><div style="margin-top:12px;font:14px Arial;color:#8fa3b8">${msg}</div></body></html>`);
+<div>CLUTCH</div><div style="margin-top:12px;font:14px Arial;color:#8fa3b8">${msg}</div></body></html>`);
 
 // Neueste index.html vom Server für den Offline-Modus sichern
 async function cacheLatest() {
@@ -52,7 +53,7 @@ function createWindow() {
   Menu.setApplicationMenu(null);
   win = new BrowserWindow({
     width: 1600, height: 900, minWidth: 960, minHeight: 540,
-    backgroundColor: '#0a0e13', title: 'CS:WO', show: false, autoHideMenuBar: true,
+    backgroundColor: '#0a0e13', title: 'CLUTCH', show: false, autoHideMenuBar: true,
     webPreferences: { backgroundThrottling: false, contextIsolation: true, sandbox: true, devTools: false, preload: path.join(__dirname, 'preload.js') }
   });
   win.once('ready-to-show', () => { win.maximize(); win.show(); });
