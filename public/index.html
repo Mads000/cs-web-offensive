@@ -5492,7 +5492,30 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 2.2 „CLUTCH"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 2.3 „COMIC"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎨 NEUER COMIC-LOOK</p>
+ Alle Karten sind jetzt <b>stilisiert und sauber</b>: Licht und Schatten in klaren, harten Stufen (Cel-Shading) statt weicher Verläufe.<br>
+ Feine <b>dunkle Konturen</b> an allen Wänden, Kisten und Kanten · <b>gemalte Wandflächen</b> mit Verlauf und großen Fugen · weicher, ruhiger Boden.<br>
+ Auch Agenten und Waffen haben den neuen Look – Skins und Sticker bleiben natürlich erhalten.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧭 NEUER MODUS: ERKUNDEN</p>
+ Im Spielen-Tab: Karten und Arenen <b>allein und in Ruhe</b> ansehen – ohne Bots, ohne Zeitlimit, ohne Kaufmenü.<br>
+ Über das Pausenmenü (<b>Esc</b> bzw. <b>☰</b>) direkt in den <b>Map-Editor</b>: etwas ändern, <b>„Speichern & erkunden"</b> und sofort weiterlaufen. Eingebaute Karten werden dabei als eigene Kopie gespeichert.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🪙 SHOP</p>
+ Die Skin-Preise werden jetzt zentral verwaltet und können sich ändern – schau öfter mal vorbei.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🗺️ MAP-EDITOR</p>
+ <b>Veröffentlichen</b> von Karten und Arenen funktioniert wieder in der PC-App (eigenes Code-Fenster).<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💻 PC-APP 1.2.2</p>
+ <b>Discord-Status:</b> Freunde sehen in Discord, dass Du CLUTCH spielst – mit Modus, Karte und Spielstand.<br>
+ Kommt automatisch per Update.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 2.2 „CLUTCH"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 AUS CS:WO WIRD CLUTCH</p>
@@ -5896,7 +5919,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 2.2 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 2.3 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
