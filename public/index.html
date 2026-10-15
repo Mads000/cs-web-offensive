@@ -2112,6 +2112,7 @@ body.dh #score, body.dh #roundlbl, body.dh #money, body.dh #aliveL, body.dh #ali
 .dhlb{ display:flex; gap:24px; justify-content:center; flex-wrap:wrap; background:rgba(10,14,19,.82); border:1px solid rgba(255,216,74,.4); border-radius:8px; padding:10px 18px; font:13px Arial; color:#cfd8e3; text-align:left; min-width:260px; margin-bottom:10px; }
 .dhlb h4{ margin:0 0 6px; color:#ffd84a; font:bold 12px Arial; letter-spacing:2px; } .dhlb > div{ min-width:150px; } .dhlb > div > div{ padding:2px 0; }
 .mob .dhbig{ font-size:44px; }
+body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy { display: none !important } /* Erkunden */
 #fpsBox{ position:fixed; right:8px; top:6px; z-index:99995; font:bold 12px monospace; background:rgba(0,0,0,.55); padding:2px 8px; border-radius:4px; pointer-events:none; }
 /* Gauntlet-Auswahl: leicht transparent wie die anderen Menüs, Arena dahinter sichtbar */
 .gldraft{ background:rgba(16,23,32,.72) !important; -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); }
@@ -4074,6 +4075,21 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const G = { state: 'menu', t: 0, round: 1, score: { CT: 0, T: 0 }, loss: { CT: 0, T: 0 }, timer: ROUND_TIME, bomb: { state: 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }, beepT: 0, site: 'A', msgT: 0, spotted: new Map() };
         // ================= DEATHMATCH (Jeder gegen jeden) =================
         const DM = { on: false, limit: 30, time: 600 };
+        const EX = { on: false, ar: null }; // Erkunden: allein, ohne Bots & Zeitlimit (läuft technisch über den Deathmatch-Ablauf)
+        function exStart(ak) {
+            EX.on = true; EX.ar = ak && ARENAS[ak] ? ak : null; DM.on = true; DM.time = 1e9; DM.limit = 1e9; document.body.classList.add('ex'); startGame('CT');
+            if (EX.ar) { setArena(EX.ar); buildArenaRadar(); const A = GA.cur, sp = A.spawnK[0] || A.spawnT[0]; Object.assign(player, { x: sp.x, z: sp.z, y: 0, vx: 0, vz: 0, vy: 0 }); }
+            msg('🧭 Erkunden', IS_TOUCH ? 'Map-Editor: ☰ antippen' : 'Map-Editor: Esc drücken', 5);
+        }
+        function exEdit() { // aus dem Erkunden direkt in den Editor (eingebaute Karten werden als Kopie gespeichert)
+            const ar = !!EX.ar, k = EX.ar || MAPNAME, own = ar ? CARS[k] : CMAPS[k]; sessionStorage.setItem('exret', '1'); paused = true; showMapEditor(k, own ? k : null, ar ? 1 : 0);
+        }
+        function exPickArena() {
+            const nmA = k => CMAP_INFO[k] ? CMAP_INFO[k].n : (MAP_NAMES[k] || k.replace(/^ar_/, ''));
+            showOverlay(`<h1>🏟 ARENA ERKUNDEN<small>WÄHLE EINE ARENA</small></h1><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:700px">${Object.keys(ARENAS).map(k => `<button data-xa="${k}">${nmA(k)}</button>`).join('')}</div><div><button id="xaBack">Zurück</button></div>`);
+            document.querySelectorAll('[data-xa]').forEach(b => b.onclick = () => exStart(b.dataset.xa));
+            $('xaBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
+        }
         function foe(a, b) { return DM.on ? a !== b : a.team !== b.team; }
         function dmSpot(self) {
             const ok = openCells.filter(o => '.ABTK'.includes(cell(o.r, o.c))), others = ents.filter(e => e !== self && e.alive); let best = null, bd = -1;
@@ -4129,7 +4145,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (DM.on) for (const e of ents) if (!e.remote) dmRespawn(e);
             const car = DM.on ? null : rnd(ents.filter(e => e.team === 'T')); G.bomb.carrier = car; if (car && car.isPlayer) p.weapons[5] = mkWeapon(W.c4);
             if (DM.on) msg('💀 Deathmatch', `Jeder gegen jeden · ${DM.limit} Kills oder 10 Min · Waffen gratis`, 4); else msg(`Runde ${G.round}`, p.team === 'T' ? `Taktik: Angriff auf Bombsite ${G.site}${car.isPlayer ? ' – Du trägst die Bombe!' : ''}` : 'Verteidigt die Bombsites A und B', 4); sfx('start');
-            openBuy(true); updateVM();
+            if (!EX.on) openBuy(true); updateVM();
             if (NET.on && NET.host) { netSend({ type: 'round', rd: G.round, site: G.site }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); }
         }
         function endRound(winner, reason) {
@@ -4390,7 +4406,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             // Dynamischer Joystick: Tippen irgendwo links setzt den Stick unter den Finger
             $('tzone').addEventListener('touchstart', e => { if (EDITB.on || sid !== null) return; e.preventDefault(); const t = e.changedTouches[0], st = $('tstick'); if (!stHome) stHome = { l: st.style.left, t: st.style.top, b: st.style.bottom }; st.style.left = (t.clientX - st.offsetWidth / 2) + 'px'; st.style.top = (t.clientY - st.offsetHeight / 2) + 'px'; st.style.bottom = 'auto'; sid = t.identifier; scx = t.clientX; scy = t.clientY; }, { passive: false });
             $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
-            function mobPause() { if (!started || gameEnded || paused || buyOpen || EDITB.on || (GL.on && GL.phase !== 'duel')) return; paused = true; mouseDown = false; lid = null; TOUCH.f = TOUCH.s = 0; showOverlay(`<h1>PAUSE</h1><p>Tippe auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button><button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); $('resume').onclick = () => { paused = false; $('overlay').style.display = 'none'; }; $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; }
+            function mobPause() { if (!started || gameEnded || paused || buyOpen || EDITB.on || (GL.on && GL.phase !== 'duel')) return; paused = true; mouseDown = false; lid = null; TOUCH.f = TOUCH.s = 0; showOverlay(`<h1>PAUSE</h1><p>Tippe auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => { paused = false; $('overlay').style.display = 'none'; }; $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; }
             addEventListener('touchmove', e => {
                 for (const t of e.changedTouches) {
                     if (t.identifier === sid) {
@@ -4655,7 +4671,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                     setT('abil', `<div class="abw ${ready ? 'rdy' : ''}" style="--f:${deg}deg"><div class="abr"><span>${GL_ABIL[A.key].ico}</span></div><b>${ready ? '[' + keyName(BIND.abil) + ']' + (A.g ? ' ⚡' : '') : Math.ceil(A.cd) + 's'}</b></div>`);
                 } else setT('abil', ''); const tm = GL.myTeam, L = Math.max(0, tm.lives); setT('score', GL.duel && !GL.duel.over ? (GL.v1 ? `${GL.duel.teams[0].name} ${GL.duel.teams[0].wins} : ${GL.duel.teams[1].wins} ${GL.duel.teams[1].name}` : `${GL.duel.teams[0].name} vs. ${GL.duel.teams[1].name}`) : (GL.v1 ? '🎯 1V1' : '⚔️ GAUNTLET')); setT('roundlbl', GL.v1 ? `1V1 · Erster mit ${V1_WIN} Siegen${GL.v1w ? ' · ' + W[GL.v1w].name : ''}` : `Stage ${GL.stage} · Dein Team: ${'❤'.repeat(L)}${'🖤'.repeat(GL_LIVES - L)}`);
             }
-            else { setT('abil', ''); if (DM.on) { setT('score', `💀 ${player.kills} / ${DM.limit} Kills`); setT('roundlbl', `Deathmatch · Platz ${dmRank().indexOf(player) + 1} / ${ents.length}${G.state === 'freeze' ? ' – Start in ' + Math.ceil(G.t) : ''}`); } else { setT('score', `<span class="ct">CT ${G.score.CT}</span> | <span class="t">${G.score.T} T</span>`); setT('roundlbl', `Runde ${G.round} / ${MAX_ROUNDS}${G.state === 'freeze' ? ' – Freeze ' + Math.ceil(G.t) : ''}`); } } const be = $('bomb'); be.style.display = G.bomb.state === 'planted' ? 'block' : 'none'; if (G.bomb.state === 'planted') be.style.opacity = Math.sin(now * 8) > 0 ? 1 : 0.35;
+            else { setT('abil', ''); if (EX.on) { setT('score', '🧭 Erkunden'); setT('roundlbl', (EX.ar ? (CMAP_INFO[EX.ar] ? CMAP_INFO[EX.ar].n : MAP_NAMES[EX.ar] || EX.ar) : MAPLABEL) + ' · Editor: ' + (IS_TOUCH ? '☰' : 'Esc')); } else if (DM.on) { setT('score', `💀 ${player.kills} / ${DM.limit} Kills`); setT('roundlbl', `Deathmatch · Platz ${dmRank().indexOf(player) + 1} / ${ents.length}${G.state === 'freeze' ? ' – Start in ' + Math.ceil(G.t) : ''}`); } else { setT('score', `<span class="ct">CT ${G.score.CT}</span> | <span class="t">${G.score.T} T</span>`); setT('roundlbl', `Runde ${G.round} / ${MAX_ROUNDS}${G.state === 'freeze' ? ' – Freeze ' + Math.ceil(G.t) : ''}`); } } const be = $('bomb'); be.style.display = G.bomb.state === 'planted' ? 'block' : 'none'; if (G.bomb.state === 'planted') be.style.opacity = Math.sin(now * 8) > 0 ? 1 : 0.35;
             $('cross').style.display = (p.alive && !p.scoped) ? 'block' : 'none';
             const g = Math.max(0, OPT.chGap + (OPT.chDyn ? p.recoil * 3 + (p.speed > 3 ? 8 : p.speed > 0 ? 3 : 0) + (!p.onGround ? 12 : 0) - (p.crouch ? 2 : 0) : 0)), L = OPT.chLen, T = OPT.chThick, hT = T / 2, bg = `;background:${OPT.chCol}`;
             crossEls[0].style.cssText = `left:${-hT}px;top:${-(g + L)}px;width:${T}px;height:${L}px${bg}`; crossEls[1].style.cssText = `left:${-hT}px;top:${g}px;width:${T}px;height:${L}px${bg}`; crossEls[2].style.cssText = `left:${-(g + L)}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[3].style.cssText = `left:${g}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[4].style.cssText = `display:${OPT.chDot ? "block" : "none"};left:${-hT}px;top:${-hT}px;width:${T}px;height:${T}px${bg}`;
@@ -4735,7 +4751,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         });
         addEventListener('keyup', e => { keys[e.code] = false; if (e.code === BIND.board) $('board').style.display = 'none'; }); addEventListener('mousedown', e => { if (GL.on && GL.phase !== 'duel') return; if (started && !paused && !gameEnded && !player.alive) { if (FC.on) { if (!locked) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) cycleSpec(); return; } if (!locked) { if (started && !paused && !buyOpen && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) { mouseDown = true; clickQueued = true; } if (e.button === 2) toggleScope(); }); addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; }); addEventListener('contextmenu', e => e.preventDefault());
         addEventListener('wheel', e => { if (!locked) return; const order = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); let i = order.indexOf(player.slot); i = (i + (e.deltaY > 0 ? 1 : -1) + order.length) % order.length; selectSlot(order[i]); });
-        addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button><button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
+        addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
         document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button,.mapc,[data-cat],.subnav b,#cstabs a,.inv,.gltb')) { initAudio(); sfx('ui'); } }, true);
         function showOverlay(html, trans) { const o = $('overlay'); o.classList.remove('oldui'); o.innerHTML = html; o.style.display = 'flex'; o.style.background = trans ? 'none' : 'rgba(8,11,15,.82)'; } function leaveGame() {
             if (NET.ws) { NET.on = false; NET.ws.close(); }
@@ -5131,7 +5147,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; 
         
 
-        const MODES = { comp: ['🏆', 'Wettkampf', 'CT gegen T · Bombe legen & entschärfen'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'] };
+        const MODES = { comp: ['🏆', 'Wettkampf', 'CT gegen T · Bombe legen & entschärfen'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'], ex: ['🧭', 'Erkunden', 'Allein · Karten & Arenen in Ruhe ansehen · Map-Editor jederzeit über das Pausenmenü'] };
         const modeName = k => MODES[k] ? MODES[k][0] + ' ' + MODES[k][1] : '';
          function fetchRooms() {
  const el = $('roomlist'); if (!el) return;
@@ -5257,7 +5273,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="merow" style="flex-wrap:wrap;gap:4px;align-items:center"><button id="meUndo" style="padding:3px 8px;font-size:12px;margin:0" title="Rückgängig (Strg+Z)">↶</button><button id="meRedo" style="padding:3px 8px;font-size:12px;margin:0" title="Wiederholen (Strg+Y)">↷</button><select id="meSym" style="font-size:12px;padding:3px"><option value="0">Symmetrie: aus</option><option value="1">↔ Links/Rechts</option><option value="2">↕ Oben/Unten</option><option value="3">⟲ Punkt</option></select><button id="meSelB" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit der Maus aufziehen">▭ Bereich</button><button id="meCopy" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich kopieren">📋</button><button id="mePaste" style="padding:3px 8px;font-size:12px;margin:0" title="Einfügen: danach auf die Zielstelle klicken">📥</button><button id="meFlipH" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich waagrecht spiegeln">↔</button><button id="meFlipV" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich senkrecht spiegeln">↕</button><button id="meFill" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit dem gewählten Werkzeug füllen">🪣</button><button id="meRand" style="padding:3px 8px;font-size:12px;margin:0" title="Zufällige Karte als Startvorlage">🎲 Zufall</button></div>
  <p id="meMsg"></p>
  <p class="mehint">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT${ar ? '' : ', Bombsite A & B'}</p>
- <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay" ${ar ? 'style="display:none"' : ''}>▶ Speichern & spielen</button><button id="meShare">📤 Teilen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
+ <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay" ${ar ? 'style="display:none"' : ''}>▶ Speichern & spielen</button>${sessionStorage.getItem('exret') ? '<button id="meExSave">💾 Speichern & erkunden</button><button id="meExBack">🧭 Zurück zum Erkunden</button>' : ''}<button id="meShare">📤 Teilen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
  </div></div>`);
             const cv = $('meCv'), g = cv.getContext('2d');
             const draw = () => { g.fillStyle = cols.floor; g.fillRect(0, 0, CW, 560); for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= W; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); } for (let i = 0; i <= H; i++) { g.moveTo(0, i * cs); g.lineTo(CW, i * cs); } g.stroke(); };
@@ -5317,7 +5333,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const mapData = () => ({ n: $('meName').value.trim().slice(0, 20), th, col: Object.assign({}, cols), tod, em: $('meEm').value.trim(), emc: $('meEmc').value, g: grid.map(r => r.join('')) });
             $('meShare').onclick = () => shareMap(mapData());
             let saved = false; // nach dem Speichern beim Zurückgehen neu laden, damit die Karte im Menü erscheint
-            $('meBack').onclick = () => { if (ar) return showArenaList(); sessionStorage.setItem('opentab', edFrom); if (saved) location.reload(); else if (edFrom === 'maps') showMapList(); else showMenu(); };
+            $('meBack').onclick = () => { if (sessionStorage.getItem('exret')) return exGo(editKey || src); if (ar) return showArenaList(); sessionStorage.setItem('opentab', edFrom); if (saved) location.reload(); else if (edFrom === 'maps') showMapList(); else showMenu(); };
             $('meClear').onclick = () => { if (!confirm((ar ? 'Arena' : 'Karte') + ' komplett leeren? (Nur die Außenwand bleibt)')) return; pushU(); sel = null; for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.'; draw(); };
             const save = () => {
                 const n = $('meName').value.trim().slice(0, 20), flat = grid.map(r => r.join('')).join(''), msgEl = $('meMsg'); msgEl.style.color = '#c66';
@@ -5331,6 +5347,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             };
             $('meSave').onclick = save;
             $('mePlay').onclick = () => { const k = save(); if (!k) return; localStorage.setItem('map', k); sessionStorage.setItem('opentab', 'play'); location.reload(); };
+            function exGo(k) { sessionStorage.removeItem('exret'); sessionStorage.setItem('explore', ar ? 'ar:' + k : 'map'); if (!ar) localStorage.setItem('map', k); location.reload(); } // neu laden und direkt weiter erkunden
+            if ($('meExSave')) { $('meExSave').onclick = () => { const k = save(); if (k) exGo(k); }; $('meExBack').onclick = () => exGo(editKey || src); }
         }
         // News im Kachel-Stil: Banner (Version + Name), Kategorie, Titel, Kurzinhalt – Klick öffnet den Patch im Vollbild
         const NEWS_COL = ['#e8c98a,#b8862e', '#7ec8e3,#2b5d8a', '#ff7a8a,#8a2b4a', '#9fe08a,#2e6b3a', '#c49bff,#4a2b8a', '#ffb076,#8a4a1e', '#8fa3b8,#2a3a4a'];
@@ -5400,6 +5418,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <button id="btnCT">Start: Counter-Terrorists</button>
  <button id="btnT">Start: Terroristen</button>
  <button id="btnDM">💀 Deathmatch starten</button>
+ <button id="btnEx">🧭 Karte erkunden</button>
+ <button id="btnExAr">🏟 Arena erkunden</button>
  <button id="btnDuck" style="border-color:#ffd84a;color:#ffd84a">🦆 Entenjagd starten</button>
  <button id="btnDuckLb">🏆 Bestenliste</button>
  </span>
@@ -5889,6 +5909,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             // Kategorie (Modus) + Offline/Online
             const PM = { cat: MODES[sessionStorage.getItem('playcat')] ? sessionStorage.getItem('playcat') : 'comp', on: sessionStorage.getItem('playmode') === '1' };
             const setMode = () => {
+                if (PM.cat === 'ex') PM.on = false; $('modeOn').style.display = PM.cat === 'ex' ? 'none' : ''; // Erkunden nur offline
                 sessionStorage.setItem('playcat', PM.cat); sessionStorage.setItem('playmode', PM.on ? '1' : '0');
                 document.querySelectorAll('[data-cat]').forEach(b => b.classList.toggle('on', b.dataset.cat === PM.cat));
                 $('modeOff').classList.toggle('on', !PM.on); $('modeOn').classList.toggle('on', PM.on);
@@ -5898,7 +5919,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 $('glcSolo').style.display = PM.cat === 'gl' ? '' : 'none'; $('glcV1').style.display = PM.cat === 'v1' ? '' : 'none';
                 $('roomlist').style.display = PM.on ? 'flex' : 'none';
                 $('barOff').style.display = !PM.on && !arena ? 'inline-flex' : 'none';
-                $('btnCT').style.display = $('btnT').style.display = PM.cat === 'comp' ? '' : 'none'; $('btnDM').style.display = PM.cat === 'dm' ? '' : 'none'; $('btnDuck').style.display = $('btnDuckLb').style.display = PM.cat === 'duck' ? '' : 'none';
+                $('btnCT').style.display = $('btnT').style.display = PM.cat === 'comp' ? '' : 'none'; $('btnDM').style.display = PM.cat === 'dm' ? '' : 'none'; $('btnEx').style.display = $('btnExAr').style.display = PM.cat === 'ex' ? '' : 'none'; $('btnDuck').style.display = $('btnDuckLb').style.display = PM.cat === 'duck' ? '' : 'none';
                 $('barOn').style.display = PM.on ? 'inline-flex' : 'none';
                 $('mpT').style.display = 'none'; $('mpCT').textContent = 'Lobby beitreten'; /* Team wird jetzt in der Lobby gewählt */
                 $('catdesc').textContent = MODES[PM.cat][2] + (PM.on ? ' · Online: Tritt einer Lobby bei – der Host startet dort.' : arena ? ' · Arena wird automatisch gewählt.' : ' · Wähle eine Karte.');
@@ -5911,7 +5932,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const backPlay = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
             $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => { GL.v1 = true; glStart(2); }, backPlay);
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
-            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
+            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnEx').onclick = () => exStart(null); $('btnExAr').onclick = exPickArena; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = () => showGameSettings(); $('ruleChips').onclick = () => showGameSettings();
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navProf').onclick = showProfile;
@@ -6118,7 +6139,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const humans = { CT: 0, T: 0 };
             humans[player.team]++;
             for (const rp of NET.players.values()) humans[rp.team]++;
-            if (CFG.bots !== 0 || !NET.on) { // Regel „Bots: Aus“ gilt nur online – offline braucht man Gegner
+            if (!EX.on && (CFG.bots !== 0 || !NET.on)) { // Regel „Bots: Aus“ gilt nur online – offline braucht man Gegner
             for (let i = humans.CT; i < CFG.teamSize; i++) createBot(ctN[i - humans.CT], 'CT');
             for (let i = humans.T; i < CFG.teamSize; i++) createBot(tN[i - humans.T], 'T'); }
             ents = [player, ...bots, ...NET.players.values()]; if (NET.on && NET.host) netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) });
@@ -7121,7 +7142,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (st !== SHD.k || !SHD.on) { SHD.k = st; SHD.on = 1; renderer.shadowMap.needsUpdate = true; } else if (st === 'g' && (SHD.f = (SHD.f + 1) & 1) === 0) renderer.shadowMap.needsUpdate = true; } else SHD.on = 0;
             renderer.render(scene, camera);
         }
-        showMenu(); if (window.cswoApp && window.cswoApp.offline) toast('📴 Offline-Modus', 'Kein Internet – Spiele gegen Bots gehen, Online & Account nicht. F5 = erneut verbinden');
+        showMenu(); { const xq = sessionStorage.getItem('explore'); sessionStorage.removeItem('exret'); if (xq) { sessionStorage.removeItem('explore'); setTimeout(() => exStart(xq.startsWith('ar:') ? xq.slice(3) : null), 300); } } if (window.cswoApp && window.cswoApp.offline) toast('📴 Offline-Modus', 'Kein Internet – Spiele gegen Bots gehen, Online & Account nicht. F5 = erneut verbinden');
         // Ladebildschirm ausblenden, sobald das Menü steht
         { const ld = $('loader'); if (ld) { ld.classList.add('done'); setTimeout(() => ld.remove(), 600); } }
         // App-Gefühl: kein Browser-Rechtsklickmenü (außer in Eingabefeldern), kein Pinch-Zoom (iOS)
