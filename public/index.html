@@ -5403,7 +5403,41 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 2.1 „DESKTOP"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 2.2 „CLUTCH"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 AUS CS:WO WIRD CLUTCH</p>
+ Das Spiel hat einen <b>neuen Namen</b> und ein <b>neues Icon</b> – im Browser, auf dem Homescreen und in der PC-App.<br>
+ <i>Tipp:</i> Auf dem iPhone das alte Homescreen-Icon einmal löschen und neu hinzufügen.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎨 KOMPLETT NEUES DESIGN</p>
+ Neue Schrift, ruhige Farben (Navy, Creme, Graublau) und eckige, klare Formen – im Menü, in allen Fenstern und im Spiel.<br>
+ Neues <b>Hauptmenü</b> mit großem Logo und <b>SPIELEN</b> in der Mitte · neue <b>Kartenauswahl</b> mit Vorschaubild und Namen.<br>
+ Neues <b>HUD</b>: Leben & Weste unten mittig, Rundenzeit oben mit Teamleisten, Munition unten rechts.<br>
+ Neues <b>Kaufmenü</b> mit Spalten und großen Kacheln.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🗺️ KARTEN-REWORK</p>
+ Neue Namen: <b>Sienna</b> (Dusty), <b>Kasbah</b> (Bazaar), <b>Tundra</b> (Frost), <b>Mire</b> (Moisty), <b>Ironworks</b> (Foundry).<br>
+ <b>Innenräume:</b> Gebäude und überdachte Gänge mit Türen und Fenstern auf allen Karten.<br>
+ Glatte Böden, ruhigere Wände, neue <b>Kisten in Orange & Blau</b>, Betonblöcke statt Sandsäcke · Sienna & Kasbah mit neuen Farben.<br>
+ <b>Bombsites</b> mit leuchtendem Rand und kleinem A/B-Schild · <b>weniger Kisten-Haufen</b> für klarere Wege · Bäume entfernt.<br>
+ <b>Minimap</b> zeigt jetzt nur die begehbaren Wege.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏟️ ARENEN</p>
+ Gleiches Rework für Gauntlet & 1v1 – neue Namen: <b>Sienna Yard</b>, <b>Tundra Box</b>, <b>Mire Pit</b>, <b>Skyline</b>.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🛠️ MAP-EDITOR</p>
+ Neues Bauteil <b>Innenraum (Dach)</b> – zusammen mit Wänden, Türen und Fenstern baust Du jetzt eigene Gebäude.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📱 HANDY</p>
+ Kompakteres Kaufmenü · Leben & Weste unten mittig · Tutorial-Erklärungen lassen sich mit dem Finger verschieben · „Wie funktioniert alles?" nur noch auf der Startseite.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💻 PC-APP 1.2.1</p>
+ Heißt jetzt <b>CLUTCH</b> mit neuem Icon – kommt automatisch per Update.<br>
+ Das alte Design gibt es weiterhin: Seite mit <b>?design=cs</b> öffnen.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 2.1 „DESKTOP"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💻 PC-APP 1.1</p>
@@ -5769,7 +5803,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 2.1 „Desktop" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 2.2 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
