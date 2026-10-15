@@ -5198,7 +5198,30 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 2.0 „FAIRPLAY"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 2.1 „DESKTOP"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">💻 PC-APP 1.1</p>
+ Die Desktop-App für Windows ist erwachsen geworden – Download unten rechts im Hauptmenü: <b>💻 PC-App herunterladen</b>.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">📴 OFFLINE-MODUS</p>
+ Kein Internet? Die App startet trotzdem – <b>Matches gegen Bots</b> funktionieren komplett offline.<br>
+ Bei jedem Online-Start speichert die App automatisch die <b>neueste Spielversion</b> – offline spielst Du also immer den aktuellen Stand.<br>
+ Online-Spiel und Account brauchen weiterhin Internet. <b>F5</b> verbindet erneut.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🔄 AUTOMATISCHE APP-UPDATES</p>
+ Die App prüft beim Start selbst, ob es eine neue Version gibt, lädt sie im Hintergrund und installiert sie beim Beenden – <b>nie wieder neu herunterladen</b>.<br>
+ Spiel-Updates kommen wie gewohnt sofort.<br>
+ <i>Einmalig:</i> Wer noch die erste App-Version hat, installiert die neue Version einmal manuell.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">⚡ FPS-LIMIT AUFHEBEN</p>
+ Neu in <b>⚙️ Einstellungen</b> (nur in der App): <b>💻 FPS-Limit aufheben</b> – für Monitore mit 144 Hz und mehr. Die App startet dafür kurz neu.<br><br>
+
+ <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🛡️ NOCH MEHR FAIRPLAY</p>
+ In der App ist die <b>Entwickler-Konsole gesperrt</b> (F12 & Co. ohne Funktion) – zusätzlicher Schutz gegen Cheats.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 2.0 „FAIRPLAY"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:#e8c98a;font:bold 13px Arial">🛡️ ANTI-CHEAT</p>
@@ -5541,7 +5564,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CS:WO 2.0 „Fairplay" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CS:WO 2.1 „Desktop" | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
