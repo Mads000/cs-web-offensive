@@ -221,8 +221,25 @@
             box-shadow: 0 0 2px #000
         }
 
+        .agsw { width: min(1100px, 96vw); height: min(640px, 90vh); display: grid; grid-template-columns: 230px 1fr 290px; grid-template-rows: auto 1fr; gap: 12px; text-align: left; font-family: 'Barlow Condensed', Arial, sans-serif; color: #ece8e1 }
+        .agshead { grid-column: 1 / -1; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid rgba(var(--hl-rgb), .35); padding-bottom: 6px }
+        .agshead small { letter-spacing: .3em; font-size: 12px; opacity: .65 } .agshead h2 { margin: 0; font-size: 34px; letter-spacing: .12em; line-height: 1.05 }
+        .agstimer { font-size: 46px; font-weight: 700; color: var(--hl); min-width: 70px; text-align: right; line-height: 1 } .agstimer.low { color: #ff6b6b }
+        .agscol { background: rgba(12, 16, 22, .72); border: 1px solid rgba(236, 232, 225, .12); padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; min-height: 0 }
+        .agscol h5 { margin: 4px 0 2px; font-size: 11px; letter-spacing: .25em; opacity: .6; font-weight: 600 }
+        .agst { display: flex; align-items: center; gap: 10px; padding: 7px 9px; border: 1px solid rgba(236, 232, 225, .1); border-left: 3px solid transparent; cursor: pointer; background: rgba(255, 255, 255, .02) }
+        .agst:hover { background: rgba(var(--hl-rgb), .08) } .agst.on { border-left-color: var(--hl); background: rgba(var(--hl-rgb), .14) } .agst.tk { opacity: .38; cursor: not-allowed } .agst.mine { border-left-color: #9fe08a }
+        .agst i { font-style: normal; font-size: 22px; width: 30px; text-align: center } .agst b { display: block; font-size: 16px; letter-spacing: .06em } .agst span { font-size: 11px; opacity: .65; letter-spacing: .1em; text-transform: uppercase }
+        .agsstage { display: flex; flex-direction: column; min-height: 0; background: radial-gradient(ellipse at 50% 72%, rgba(var(--hl-rgb), .2), transparent 65%) } .agsstage #agp3d { flex: 1; min-height: 0; position: relative }
+        .agsname { text-align: center } .agsname b { font-size: 40px; letter-spacing: .14em; display: block; line-height: 1 } .agsname span { font-size: 12px; letter-spacing: .3em; color: var(--hl) }
+        .agsbtns { display: flex; gap: 8px; justify-content: center; margin-top: 8px } .agsbtns button { margin: 0 } .agsbtns button[disabled] { opacity: .45; cursor: default }
+        .agsab { display: flex; gap: 9px; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid rgba(236, 232, 225, .08) } .agsab i { font-style: normal; font-size: 20px; width: 28px; text-align: center } .agsab b { font-size: 15px; display: block } .agsab span { font-size: 12px; opacity: .7 }
+        .agsab kbd { margin-left: auto; font: 600 11px 'Barlow Condensed', sans-serif; border: 1px solid rgba(236, 232, 225, .35); padding: 1px 6px } .agsdesc { font-size: 13px; opacity: .8; margin: 0 0 2px }
+        .agsp { display: flex; gap: 8px; align-items: center; padding: 4px 0; font-size: 14px } .agsp i { font-style: normal; width: 24px; text-align: center; font-size: 17px } .agsp span { display: block; font-size: 11px; opacity: .65 } .agsp.lk span { color: #9fe08a; opacity: 1 } .agsp.me b { color: var(--hl) }
+        .mob .agsw { grid-template-columns: 165px 1fr 215px; height: 94vh; gap: 6px } .mob .agshead h2 { font-size: 22px } .mob .agstimer { font-size: 30px } .mob .agst { padding: 4px 7px; gap: 6px } .mob .agst b { font-size: 13px } .mob .agst i { font-size: 18px; width: 22px }
+        .mob .agsname b { font-size: 24px } .mob .agsab { padding: 4px 0 } .mob .agsab b { font-size: 13px } .mob .agsab span { font-size: 10px } .mob .agscol { padding: 6px }
         #prog.cp::after { content: ''; position: absolute; left: 50%; top: -5px; bottom: -5px; width: 2px; background: #fff; opacity: .85 }
-        #abar { position: fixed; left: calc(50% + 72px); bottom: 122px; display: flex; gap: 6px; z-index: 5; pointer-events: auto } .mob #abar { bottom: 112px }
+        #abar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 120px; display: flex; gap: 6px; z-index: 5; pointer-events: auto } .mob #abar { bottom: 50px }
         #abar div { position: relative; width: 38px; height: 38px; border: 1.5px solid rgba(236, 232, 225, .55); background: rgba(10, 14, 20, .45); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer }
         #abar div.on { border-color: var(--hl, #e8c98a); box-shadow: 0 0 8px rgba(var(--hl-rgb, 232, 201, 138), .5) } #abar div.e { opacity: .35 }
         #abar b { position: absolute; right: 3px; bottom: 0; font: 700 12px 'Barlow Condensed', sans-serif; color: #ece8e1 } #abar i { position: absolute; left: 3px; top: 0; font: 600 10px 'Barlow Condensed', sans-serif; font-style: normal; color: #ece8e1; opacity: .7 } #abar u { position: absolute; right: 3px; top: -1px; font-size: 10px; text-decoration: none; color: var(--hl, #e8c98a) }
@@ -2125,7 +2142,7 @@ body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy 
 @keyframes kban { 0% { opacity: 0; transform: translateX(-50%) scale(1.5) } 12% { opacity: 1; transform: translateX(-50%) scale(1) } 75% { opacity: 1; transform: translateX(-50%) } 100% { opacity: 0; transform: translateX(-50%) translateY(-12px) } }
 #kban .kb-em { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px } #kban .kb-em i { width: 13px; height: 13px; transform: rotate(45deg); border: 3px solid var(--hl, #e8c98a); background: rgba(0,0,0,.35) }
 #kban b { font: 700 15px 'Barlow Condensed', sans-serif; letter-spacing: .32em; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.9) }
-#ult { position: fixed; left: 50%; bottom: 122px; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; cursor: pointer; pointer-events: auto; padding: 4px } .mob #ult { bottom: 112px }
+#ult { position: fixed; left: 50%; bottom: 168px; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; cursor: pointer; pointer-events: auto; padding: 4px } .mob #ult { bottom: 96px; max-width: 170px }
 #buy .bult { display: flex; gap: 8px; align-items: stretch; padding: 10px 14px 4px } #buy .bult > span { writing-mode: vertical-rl; transform: rotate(180deg); font: 600 11px 'Barlow Condensed', sans-serif; letter-spacing: .25em; opacity: .6; align-self: center } #buy .bult .card { flex: 1; min-height: 0; padding: 8px 10px } #buy .bult .card b { font-size: 13px }
 body.imm::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 4; box-shadow: inset 0 0 140px rgba(79,216,255,.32) } /* Bollwerk aktiv */
 #ult { flex-wrap: wrap; justify-content: center; max-width: 120px } #ult b { flex-basis: 100%; text-align: center; font: 600 10px 'Barlow Condensed', sans-serif; letter-spacing: .25em; text-transform: uppercase; opacity: .6; margin-top: 2px } #ult.rdy b { opacity: 1; color: #ffd24f }
@@ -2383,6 +2400,15 @@ body.mob .mapc.custom::after{ font-size:8px; top:5px; left:5px; }
         .mob .bfoot {
             display: none;
         }
+
+        /* Handy: Kaufmenü über das ganze Display für bessere Übersicht */
+        body.mob #buy { position: fixed; left: 0; top: 0; right: 0; bottom: 0; width: auto; max-width: none; max-height: none; transform: none; border-radius: 0; z-index: 50; box-sizing: border-box; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) }
+        body.mob #buy .bhead { position: sticky; top: 0; z-index: 1; padding: 10px 16px; background: rgba(12, 16, 22, .97) }
+        body.mob #buy .bgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; padding: 8px 12px }
+        body.mob #buy .bcol { min-width: 0; gap: 6px }
+        body.mob #buy .card { padding: 9px 10px; min-height: 0 }
+        body.mob #buy .card b { font-size: 13px }
+        body.mob #buy .cprice { font-size: 12px }
 
         /* ───── ALIVE-LEISTE OBEN ───── */
         #aliveL,
@@ -4690,19 +4716,52 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             k_sani: { n: 'Sani', body: 0xe8e8e2, legs: 0x3a3f46, head: 0x22272e, hat: 'cap', hatC: 0xd23a3a, pack: 0xd23a3a }
         };
         let rndLook = 'k_sturm'; const freeLook = () => DM.on || GL.on; // DM, Gauntlet & 1v1: keine Kits → zufälliger Look (Enten bleiben)
-        const myLook = () => AGENTS.some(a => a.duck && a.id === store.agent) ? store.agent : freeLook() ? rndLook : store.agent === 'std' ? 'k_' + KIT().id : store.agent;
+        const myLook = () => AGENTS.some(a => a.duck && a.id === store.agent) ? store.agent : freeLook() ? rndLook : store.agent === 'std' || !agSkinOk(store.agent) ? 'k_' + KIT().id : store.agent;
         function rollLook() { const f = freeLook(), pool = [...Object.keys(KIT_LOOK), ...NONDUCK.filter(a => a.id !== 'std').map(a => a.id)]; rndLook = rnd(pool);
             for (const b of bots) if (b.agKit) b.ag = f ? rnd(pool) : 'k_' + b.agKit.id; dropMenuChar(); if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); }
         function disposeGroup(g) { g.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) [].concat(o.material).forEach(m => m.dispose()); }); } // GPU-Speicher von Vorschau-Modellen freigeben
-        function agentSelect(go, back) { // Agentenauswahl vor dem Match: Karte wählen, dann „Sperren“
-            const K = KIT();
-            showOverlay(`<h1 style="font-size:34px">🎯 AGENT WÄHLEN<small>FÄHIGKEITEN & ULTIMATE FÜR DIESES MATCH</small></h1>
- <div class="invbox" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:14px">${KITS.map(k => { const on = k.id === K.id; return `<div class="inv ${on ? 'eq' : ''}" data-aks="${k.id}" style="border-color:${on ? 'var(--hl)' : '#556'};min-width:170px;max-width:210px;cursor:pointer"><div class="agprev" style="font-size:34px;line-height:52px">${k.ic}</div><b style="color:${on ? 'var(--hl)' : '#ddd'};font-size:15px">${k.n} · ${k.role}</b><span>${k.ab.map(w => AB_IC[w] + ' ' + W[w].name + (w === k.sig ? ' ★' : '')).join('<br>')}</span><span>⚡ ${ULTS[k.ult][0]} – ${ULTS[k.ult][1]}</span><span>${on ? '✓ Ausgewählt' : k.d}</span></div>`; }).join('')}</div>
- <p style="font-size:12px;color:#8fa3b8">★ Signatur: jede Runde gratis · ${IS_TOUCH ? 'Fähigkeit: Feld über der Lebensanzeige antippen · Ultimate: Rauten antippen' : 'Fähigkeiten: C / V · Ultimate: X'}</p>
- <div><button id="agLock">🔒 ${K.n.toUpperCase()} SPERREN</button><button id="agBack">Zurück</button></div>`);
-            document.querySelectorAll('[data-aks]').forEach(el => el.onclick = () => { if (kitId === el.dataset.aks) return; kitId = el.dataset.aks; localStorage.setItem('kit', kitId); if (!agSkinOk(store.agent)) { store.agent = 'std'; localStorage.setItem('agent', 'std'); } dropMenuChar(); sfx('buy'); agentSelect(go, back); });
-            $('agLock').onclick = () => { sfx('buy'); go(); }; $('agBack').onclick = back;
+        function agentSelect(go, back) { AGS.online = false; AGS.go = go; AGS.back = back; AGS.picks = {}; AGS.hov = {}; AGS.sel = KIT().id; agsRender(); } // offline: gleicher Bildschirm, ohne Timer
+        const AGS = { on: false, online: false, end: 0, picks: {}, hov: {}, sel: 'sturm', iv: 0, go: null, back: null }; // Online-Agentenwahl (Wettkampf): 15 s, pro Team jeder Agent nur einmal
+        const agsTeamOf = id => id === NET.pid ? player.team : (NET.players.get(id) || {}).team, agsNameOf = id => id === NET.pid ? player.name : (NET.players.get(id) || {}).name || '?';
+        const agsAllPicked = () => [NET.pid, ...NET.players.keys()].every(id => AGS.picks[id]);
+        function agsBegin() { AGS.on = true; AGS.picks = {}; AGS.end = performance.now() + 15000; NET.inLobby = false; netSend({ type: 'agsel', t: 15 }); agsShow(); } // Host startet die Wahl
+        function agsShow() { clearInterval(AGS.iv); AGS.online = true; AGS.hov = {}; AGS.sel = KIT().id; agsRender(); netSend({ type: 'aghov', pid: NET.pid, k: AGS.sel });
+            AGS.iv = setInterval(() => { if (!AGS.on) return clearInterval(AGS.iv); const left = Math.max(0, Math.ceil((AGS.end - performance.now()) / 1000)), el = $('agsT'); if (el) { el.textContent = left; el.classList.toggle('low', left <= 5); } if (NET.host && (left <= 0 || agsAllPicked())) agsFinish(); }, 250); }
+        const agsLook = id => { const a = store.agent; return AG_SKIN[a] && AG_SKIN[a][0] === id && agOwn.includes(a) ? a : 'k_' + id; }; // eigener Skin, falls für diesen Agenten gekauft
+        function agsRender() { // Agentenwahl: links Agenten, Mitte 3D-Modell + Sperren, rechts Kit & Team (offline wie online)
+            const on = AGS.online, mine = player.team, me = AGS.picks[NET.pid], taken = {}; if (me) AGS.sel = me;
+            if (on) for (const id in AGS.picks) if (agsTeamOf(id) === mine) taken[AGS.picks[id]] = id;
+            const K = KITS.find(k => k.id === AGS.sel) || KITS[0], blocked = !!taken[K.id] && taken[K.id] !== NET.pid;
+            const list = KITS.map(k => { const by = taken[k.id], tk = !!by && by !== NET.pid; return `<div class="agst${k.id === K.id ? ' on' : ''}${tk ? ' tk' : ''}${by === NET.pid ? ' mine' : ''}" data-ags="${k.id}"><i>${k.ic}</i><div><b>${k.n}</b><span>${tk ? '🔒 ' + agsNameOf(by) : by ? '✓ gesperrt' : k.role}</span></div></div>`; }).join('');
+            const ab = K.ab.map((w, i) => `<div class="agsab"><i>${AB_IC[w]}</i><div><b>${W[w].name}${w === K.sig ? ' ★' : ''}</b><span>${w === K.sig ? 'Signatur · jede Runde gratis' : 'Kaufbar · $ ' + W[w].price}</span></div>${IS_TOUCH ? '' : `<kbd>${i ? 'V' : 'C'}</kbd>`}</div>`).join('') + `<div class="agsab"><i>⚡</i><div><b>${ULTS[K.ult][0]}</b><span>${ULTS[K.ult][1]}</span></div>${IS_TOUCH ? '' : '<kbd>X</kbd>'}</div>`;
+            const ids = on ? [NET.pid, ...NET.players.keys()].filter(id => agsTeamOf(id) === mine) : [NET.pid];
+            const team = ids.map(id => { const pk = AGS.picks[id], hv = id === NET.pid ? AGS.sel : AGS.hov[id], k = KITS.find(x => x.id === (pk || hv)); return `<div class="agsp${pk ? ' lk' : ''}${id === NET.pid ? ' me' : ''}"><i>${k ? k.ic : '·'}</i><div><b>${id === NET.pid ? player.name + ' (Du)' : agsNameOf(id)}</b><span>${pk ? '🔒 ' + k.n : k ? (id === NET.pid ? k.n + ' ausgewählt' : 'schaut ' + k.n + ' an …') : 'wählt …'}</span></div></div>`; }).join('') + (on ? '' : '<div class="agsp"><i>🤖</i><div><b>Bots</b><span>nehmen die freien Agenten</span></div></div>');
+            const left = Math.max(0, Math.ceil((AGS.end - performance.now()) / 1000));
+            showOverlay(`<div class="agsw"><div class="agshead"><div><small>${on ? (mine === 'CT' ? 'DEFENDER' : 'ATTACKER') + ' · JEDER AGENT NUR EINMAL PRO TEAM' : 'WETTKAMPF · OFFLINE'}</small><h2>AGENTENWAHL</h2></div>${on ? `<div id="agsT" class="agstimer${left <= 5 ? ' low' : ''}">${left}</div>` : ''}</div>
+ <div class="agscol"><h5>AGENTEN</h5>${list}</div>
+ <div class="agsstage"><div id="agp3d"></div><div class="agsname"><b>${K.n.toUpperCase()}</b><span>${K.role.toUpperCase()}</span></div>
+ <div class="agsbtns"><button id="agsLock" ${me || blocked ? 'disabled' : ''}>${me ? '✓ GESPERRT – WARTE …' : blocked ? '🔒 VERGEBEN' : '🔒 ' + K.n.toUpperCase() + ' SPERREN'}</button>${on ? '' : '<button id="agsBack">Zurück</button>'}</div></div>
+ <div class="agscol"><h5>KIT</h5><p class="agsdesc">${K.d}</p>${ab}<h5 style="margin-top:10px">${on ? 'DEIN TEAM' : 'TEAM'}</h5>${team}</div></div>`);
+            AGP.look = agsLook(K.id); AGP.team = mine || 'CT'; agPreview();
+            document.querySelectorAll('[data-ags]').forEach(el => el.onclick = () => { const k = el.dataset.ags; if (AGS.picks[NET.pid] || k === AGS.sel || (taken[k] && taken[k] !== NET.pid)) return; AGS.sel = k; sfx('ui'); if (on) netSend({ type: 'aghov', pid: NET.pid, k }); agsRender(); });
+            $('agsLock').onclick = () => { if (me || blocked) return; sfx('buy');
+                if (!on) { AGP.look = null; kitId = K.id; localStorage.setItem('kit', kitId); if (!agSkinOk(store.agent)) { store.agent = 'std'; localStorage.setItem('agent', 'std'); } dropMenuChar(); AGS.go(); return; }
+                if (NET.host) agsTry(NET.pid, K.id); else netSend({ type: 'agpick', pid: NET.pid, k: K.id }); };
+            if ($('agsBack')) $('agsBack').onclick = () => { AGP.look = null; AGS.back(); };
         }
+        function agsTry(id, k) { // Host prüft jede Wahl (Team-Duplikate verhindern) und verteilt den Stand
+            if (!AGS.on || AGS.picks[id] || !KITS.some(x => x.id === k)) return; const tm = agsTeamOf(id); if (Object.keys(AGS.picks).some(o => AGS.picks[o] === k && agsTeamOf(o) === tm)) return;
+            AGS.picks[id] = k; netSend({ type: 'agstate', picks: AGS.picks }); agsRender(); }
+        function agsFinish() { // Host: Rest zufällig auf freie Agenten verteilen, dann Match starten
+            if (!AGS.on) return; for (const id of [NET.pid, ...NET.players.keys()]) if (!AGS.picks[id]) { const tm = agsTeamOf(id), used = Object.keys(AGS.picks).filter(o => agsTeamOf(o) === tm).map(o => AGS.picks[o]), free = KITS.filter(k => !used.includes(k.id)); AGS.picks[id] = rnd(free.length ? free : KITS).id; }
+            netSend({ type: 'agfinal', picks: AGS.picks }); agsApply(AGS.picks);
+            NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); }
+        function agsApply(picks) { AGS.on = false; AGP.look = null; clearInterval(AGS.iv); if (picks[NET.pid]) { kitId = picks[NET.pid]; localStorage.setItem('kit', kitId); }
+            for (const id in picks) { const rp = NET.players.get(id); if (rp) rp.kit = picks[id]; } dropMenuChar(); netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); }
+        function assignBotKits() { // pro Team jeder Agent nur einmal: Bots nehmen die Agenten, die Menschen frei lassen
+            for (const tm of ['CT', 'T']) { const used = new Set(); if (player.team === tm) used.add(KIT().id); for (const rp of NET.players.values()) if (rp.team === tm && rp.kit) used.add(rp.kit);
+                const free = KITS.filter(k => !used.has(k.id)); let i = 0; for (const b of bots) if (b.team === tm) { const k = free.length ? free[i++ % free.length] : KITS[i++ % KITS.length]; b.agKit = k; b.ag = 'k_' + k.id; } }
+            remeshAll(); }
         function dropMenuChar() { if (!menuChar) return; scene.remove(menuChar.group); disposeGroup(menuChar.group); menuChar = null; }
         // Modelle aller Bots/Mitspieler neu bauen (z.B. wenn das Thema erst beim Start bekannt ist)
         // Team-Marker: leuchtendes Dreieck über Mitspielern (auch durch Wände sichtbar, wie in CS) – Gegner bekommen keinen
@@ -6057,7 +6116,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const W2 = box.clientWidth || 240, H2 = box.clientHeight || 300, r = AGP.r || (AGP.r = new THREE.WebGLRenderer({ antialias: true, alpha: true })); r.setPixelRatio(Math.min(2, devicePixelRatio)); r.setSize(W2, H2); box.appendChild(r.domElement);
             const sc = AGP.sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, W2 / H2, 0.1, 50); cam.position.set(0, 1.3, 5.2); cam.lookAt(0, 1.0, 0);
             sc.add(new THREE.HemisphereLight(0xdbeaff, 0x9a7b4f, DSV ? 0.55 : 0.7)); const sun = new THREE.DirectionalLight(0xfff2d8, DSV ? 0.72 : 1); sun.position.set(2, 4, 3); sc.add(sun);
-            const m = makeBotMesh(AGP.team, myLook(), true, duckHat()); scene.remove(m.group); m.group.position.set(0, 0, 0); m.group.rotation.set(0, 0, 0); if (m.flash) m.flash.visible = false; sc.add(m.group);
+            const m = makeBotMesh(AGP.team, AGP.look || myLook(), true, duckHat()); scene.remove(m.group); m.group.position.set(0, 0, 0); m.group.rotation.set(0, 0, 0); if (m.flash) m.flash.visible = false; sc.add(m.group);
             const disc = new THREE.Mesh(new THREE.CircleGeometry(0.8, 40), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28 })); disc.rotation.x = -Math.PI / 2; disc.position.y = 0.01; sc.add(disc);
             let drag = null; box.onpointerdown = e => { drag = e.clientX; box.setPointerCapture(e.pointerId); }; box.onpointermove = e => { if (drag === null) return; AGP.rot += (e.clientX - drag) * 0.012; drag = e.clientX; }; box.onpointerup = box.onpointercancel = () => { drag = null; };
             const loop = () => { if (!document.body.contains(box)) return; if (drag === null) AGP.rot += 0.008; m.group.rotation.y = AGP.rot; r.render(sc, cam); AGP.raf = requestAnimationFrame(loop); }; loop(); }
@@ -6686,11 +6745,22 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  · <b>Frost</b> (Sentinel) – Kälteschaum ★, HE · Ultimate <b>Bollwerk</b><br>
  · <b>Sani</b> (Sentinel) – Rauch ★, Kälteschaum · Ultimate <b>Sanitäts-Station</b><br>
  Die <b>Signatur ★</b> gibt es jede Runde gratis, weitere Ladungen kaufst Du in der Spalte <b>Fähigkeiten</b>. Normale Granaten bleiben für alle kaufbar.<br>
- Die <b>Ultimate gehört fest zum Agenten</b> – gewählt wird im Inventar unter 👤 Agenten.<br><br>
+ Die <b>Ultimate gehört fest zum Agenten</b>.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔒 AGENTENWAHL</p>
+ <b>Offline</b>: Vor jedem Wettkampf-Match wählst Du Deinen Agenten und sperrst ihn.<br>
+ <b>Online</b>: Lobby und Teamwahl wie bisher – startet der Host, wählt jeder seinen Agenten: anklicken, als 3D-Modell ansehen und mit <b>Sperren</b> bestätigen. Dein Team sieht live, wen Du Dir gerade anschaust.<br>
+ · <b>Jeder Agent nur einmal pro Team</b> – vergebene Agenten sind mit dem Namen des Mitspielers gesperrt, das Gegnerteam darf ihn trotzdem nehmen<br>
+ · <b>15 Sekunden</b> Zeit – oder Start, sobald alle gewählt haben<br>
+ · Wer nicht wählt, bekommt einen <b>zufälligen freien Agenten</b><br>
+ Im Inventar unter 👤 Agenten kannst Du Deinen Standard-Agenten weiterhin festlegen.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🖥️ FÄHIGKEITEN-LEISTE</p>
- Neben der Ultimate zeigt das HUD Deine zwei Fähigkeiten mit Ladungen.<br>
+ Direkt <b>unter den Ult-Orbs</b> zeigt das HUD Deine zwei Fähigkeiten mit Ladungen.<br>
  PC: <b>C</b> / <b>V</b> wählt die Fähigkeit, Linksklick wirft · Handy: Feld antippen, Feuerknopf wirft.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📱 KAUFMENÜ AM HANDY</p>
+ Das Kaufmenü nutzt jetzt das <b>ganze Display</b> – größere Karten, fester Kopfbereich, scrollbar. Fähigkeiten-Leiste und Ult-Orbs verschwinden, solange es offen ist.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💣 SPIKE-CHECKPOINT</p>
  Wer die Bombe zu <b>50 %</b> entschärft hat, macht beim nächsten Versuch dort weiter – Marke im Balken und Signalton.<br><br>
@@ -6699,7 +6769,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  Elite, Wüstenfuchs, Arktis, Neon, Schatten und Dschungel gehören jetzt je zu einem Agenten und werden im <b>🪙 Shop</b> gekauft. Enten bleiben frei wählbar.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🤖 BOTS</p>
- Bots spielen jetzt ebenfalls Agenten: Signatur gratis, zweite Fähigkeit gekauft – und sie <b>laden ihre Ultimate auf und setzen sie ein</b>.<br><br>
+ Bots spielen jetzt ebenfalls Agenten: Signatur gratis, zweite Fähigkeit gekauft – und sie <b>laden ihre Ultimate auf und setzen sie ein</b>. Sie nehmen die Agenten, die in ihrem Team noch frei sind.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚔️ GAUNTLET</p>
  Gegnerische <b>Klone</b> haben jetzt auch die rote Umrandung.<br>
@@ -7290,8 +7360,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => { GL.v1 = true; glStart(2); }, backPlay);
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
             $('btnCT').onclick = () => agentSelect(() => startGame('CT'), backPlay); $('btnT').onclick = () => agentSelect(() => startGame('T'), backPlay); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnEx').onclick = () => exStart(null); $('btnExAr').onclick = exPickArena; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
-            const withAg = f => { const c = sessionStorage.getItem('playcat'); if (c && c !== 'comp' && MODES[c]) f(); else agentSelect(f, backPlay); }; // online: Agentenwahl nur im Wettkampf
-            $('mpCT').onclick = () => withAg(() => startMP('CT')); $('mpT').onclick = () => withAg(() => startMP('T'));
+            $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = () => showGameSettings(); $('ruleChips').onclick = () => showGameSettings();
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile;
             $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
@@ -7500,7 +7569,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (!EX.on && (CFG.bots !== 0 || !NET.on)) { // Regel „Bots: Aus“ gilt nur online – offline braucht man Gegner
             for (let i = humans.CT; i < CFG.teamSize; i++) createBot(ctN[i - humans.CT], 'CT');
             for (let i = humans.T; i < CFG.teamSize; i++) createBot(tN[i - humans.T], 'T'); }
-            ents = [player, ...bots, ...NET.players.values()]; if (NET.on && NET.host) netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) });
+            if (!DM.on && !GL.on) assignBotKits();
+            ents = [player, ...bots, ...NET.players.values()]; if (NET.on && NET.host) netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, k: b.agKit && b.agKit.id, a: b.ag })) });
             started = true; $('overlay').style.display = 'none';
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
             renderer.domElement.requestPointerLock(); startRound();
@@ -7899,7 +7969,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
             glNextStage();
         }
-        function glSer() { return { type: 'glstart', ag: CFG.agTheme | 0, v1: GL.v1 ? 1 : 0, map: MAPNAME, cmap: mapNet(), bots: bots.map(b => ({ n: b.name, t: b.team })), teams: GL.teams.map(t => ({ id: t.id, name: t.name, members: t.members.map(m => m.remote ? { p: m.pid } : (m.isPlayer ? { p: NET.pid } : { b: bots.indexOf(m) })) })) }; }
+        function glSer() { return { type: 'glstart', ag: CFG.agTheme | 0, v1: GL.v1 ? 1 : 0, map: MAPNAME, cmap: mapNet(), bots: bots.map(b => ({ n: b.name, t: b.team, k: b.agKit && b.agKit.id, a: b.ag })), teams: GL.teams.map(t => ({ id: t.id, name: t.name, members: t.members.map(m => m.remote ? { p: m.pid } : (m.isPlayer ? { p: NET.pid } : { b: bots.indexOf(m) })) })) }; }
         function glAsg() { return NET.glAsg || (NET.glAsg = {}); }
         function glTeamCol(id, l) { return `hsl(${Math.round(((0.62 + id * 0.125) % 1) * 360)},100%,${l || 60}%)`; }
         function glAsgHTML() {
@@ -8263,7 +8333,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
                 case 'hello': addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w: DH.w }); }
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: myLook(), hat: duckHat() || 0 });
-                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp) { rp.ag = m.ag; rp.hat = m.hat; } if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag, false, m.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.inLobby) renderLobby(); } break;
+                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, k: b.agKit && b.agKit.id, a: b.ag })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp) { rp.ag = m.ag; rp.hat = m.hat; } if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag, false, m.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.inLobby) renderLobby(); } break;
+                case 'agsel': if (!NET.host) { NET.inLobby = false; AGS.on = true; AGS.picks = {}; AGS.end = performance.now() + (m.t || 15) * 1000; agsShow(); } break;
+                case 'agpick': if (NET.host) agsTry(m.pid, m.k); break;
+                case 'aghov': if (AGS.on) { AGS.hov[m.pid] = m.k; if (agsTeamOf(m.pid) === player.team && !AGS.picks[m.pid]) agsRender(); } break;
+                case 'agstate': if (!NET.host && AGS.on) { AGS.picks = m.picks || {}; agsRender(); } break;
+                case 'agfinal': if (!NET.host) agsApply(m.picks || {}); break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
                 case 'plant': if (NET.host) plantBomb({ x: m.x, z: m.z, isPlayer: false, money: 0, plantT: 0 }); break;
                 case 'defuse': if (NET.host && G.bomb.state === 'planted') defuseBomb({ isPlayer: false, money: 0, defuseT: 0 }); break;
@@ -8272,7 +8347,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'start': if (m.dm) DM.on = true;
                     if (m.cfg && !NET.host) { Object.assign(CFG, m.cfg); applyCfg(); if (!started) player.money = CFG.money; remeshAll(); }
                     if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
-                    if (!NET.host && !started) { NET.inLobby = false; $('overlay').style.display = 'none'; startGameClient(); } break; case 'roster': if (!NET.host && bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); ents = [player, ...bots, ...NET.players.values()]; } break;
+                    if (!NET.host && !started) { NET.inLobby = false; $('overlay').style.display = 'none'; startGameClient(); } break; case 'roster': if (!NET.host && bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); m.bots.forEach((x, i) => { const b = bots[i]; if (b && x.k) { b.agKit = KITS.find(k => k.id === x.k) || b.agKit; b.ag = x.a || 'k_' + b.agKit.id; } }); remeshAll(); ents = [player, ...bots, ...NET.players.values()]; } break;
                 case 'round': if (!NET.host && (!m.to || m.to === NET.pid)) { G.round = m.rd; G.site = m.site; clientRound(); } break; case 'end': if (!NET.host) {
                     G.state = 'end'; const loser = m.w === 'CT' ? 'T' : 'CT'; if (m.w === player.team) xpEvent('round');
                     G.loss[m.w] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
@@ -8404,7 +8479,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             document.querySelectorAll('[data-lteam]').forEach(el => el.onclick = () => { const tm = el.dataset.lteam; if (tm === player.team) return; player.team = tm; netSend({ type: 'team', pid: NET.pid, team: tm }); renderLobby(); });
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
-                on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
+                on('btnStart', 'onclick', () => agsBegin()); // Wettkampf: erst Agentenwahl, dann Start (agsFinish)
                 on('btnGlMp', 'onclick', () => { const t = +$('glTeamsMp').value; pickArenas(() => glStartMP(t), renderLobby); }); on('btnV1Mp', 'onclick', () => pickArenas(() => { GL.v1 = true; glStartMP(2); }, renderLobby));
                 on('btnDuckMp', 'onclick', () => dhPick(w => { NET.inLobby = false; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w }); dhStart(w); }, renderLobby));
                 on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 1 }); startGame(player.team); });
