@@ -41,6 +41,7 @@ const hashPw = (pw, salt) => crypto.scryptSync(pw, salt, 32).toString('hex');
 const cleanData = d => { const o = {}; if (d && typeof d === 'object') for (const k of SYNC_KEYS) if (typeof d[k] === 'string') o[k] = d[k]; return o; };
 const byTok = tok => typeof tok === 'string' && tok.length === 48 ? Object.values(USERS).find(u => u.toks.includes(tok)) : null;
 const newTok = u => { const t = crypto.randomBytes(24).toString('hex'); u.toks = [t, ...u.toks].slice(0, 10); return t; };
+const SEEN = new Map(), INVS = new Map(); // Freunde: zuletzt online (Name → Zeit) & offene Einladungen (Name → Liste) – nur im Speicher
 const tries = new Map(); // einfache Bremse gegen Passwort-Raten: max. 10 Versuche pro Minute und IP
 function limited(ip) { const now = Date.now(), t = (tries.get(ip) || []).filter(x => now - x < 60000); t.push(now); tries.set(ip, t); return t.length > 10; }
 function api(p, b, ip) {
@@ -123,6 +124,26 @@ function api(p, b, ip) {
  const k = CSK[b.id]; if (!k || k.off) return { err: 'Skin gibt es nicht mehr im Shop.' }; k.sold++;
  const owner = USERS[k.by.toLowerCase()]; if (owner && owner !== u) owner.earn = (owner.earn || 0) + Math.floor(((PRICES.s || {})[k.id] ?? (PRICES.r || {})[k.r] ?? ({ 1: 150, 2: 400, 3: 900, 4: 2500 })[k.r]) / 2); persist(); return { ok: 1 };
  }
+ // ── Freunde: Anfragen (u.frq), Freundesliste (u.fr), Online-Status & Einladungen nur im Speicher ──
+ if (p === '/api/friends' || p === '/api/fradd' || p === '/api/frdel' || p === '/api/frinv') {
+ const me = u.name.toLowerCase(); u.fr = u.fr || []; u.frq = u.frq || []; SEEN.set(me, Date.now());
+ const other = USERS[String(b.n || '').trim().toLowerCase()], has = (l, n) => l.some(x => x.toLowerCase() === n.toLowerCase()), drop = (l, n) => l.filter(x => x.toLowerCase() !== n.toLowerCase());
+ if (p === '/api/fradd') {
+ if (!other) return { err: 'Spieler nicht gefunden.' }; if (other === u) return { err: 'Das bist Du selbst.' }; other.fr = other.fr || []; other.frq = other.frq || [];
+ if (has(u.fr, other.name)) return { ok: 1, msg: 'Ihr seid schon befreundet.' };
+ if (has(u.frq, other.name)) { u.frq = drop(u.frq, other.name); u.fr.push(other.name); if (!has(other.fr, u.name)) other.fr.push(u.name); other.frq = drop(other.frq, u.name); persist(); return { ok: 1, msg: 'Anfrage angenommen.' }; }
+ if (other.frq.length >= 50 || u.fr.length >= 100) return { err: 'Liste ist voll.' }; if (!has(other.frq, u.name)) other.frq.push(u.name); persist(); return { ok: 1, msg: 'Anfrage gesendet.' };
+ }
+ if (p === '/api/frdel') { const n = String(b.n || ''); u.fr = drop(u.fr, n); u.frq = drop(u.frq, n); if (other) { other.fr = drop(other.fr || [], u.name); other.frq = drop(other.frq || [], u.name); } persist(); return { ok: 1 }; }
+ if (p === '/api/frinv') {
+ if (!other || !has(u.fr, other.name)) return { err: 'Nur Freunde einladen.' }; const room = String(b.room || '').slice(0, 30), srv = String(b.srv || '').slice(0, 120);
+ if (!room || !/^wss?:\/\/[^\s<>"']+$/.test(srv)) return { err: 'Kein Raum.' }; const k = other.name.toLowerCase(), l = (INVS.get(k) || []).filter(i => i.from !== u.name);
+ l.push({ from: u.name, room, srv, mode: String(b.mode || '').slice(0, 8), t: Date.now() }); INVS.set(k, l.slice(-5)); return { ok: 1 };
+ }
+ const inRoom = {}; for (const c of wss.clients) if (c.acc && c.room && c.readyState === 1) { const r = rooms.get(c.room); inRoom[c.acc] = { room: c.room, mode: r && r.mode || null, st: r && r.started ? 1 : 0 }; }
+ const inv = (INVS.get(me) || []).filter(i => Date.now() - i.t < 300000); INVS.delete(me);
+ return { ok: 1, fr: u.fr.map(n => { const k = n.toLowerCase(), r = inRoom[k]; return { n, on: !!r || Date.now() - (SEEN.get(k) || 0) < 60000, room: r ? r.room : null, mode: r ? r.mode : null, st: r ? r.st : 0 }; }), rq: u.frq, inv };
+ }
  if (p === '/api/claim') { const c = u.earn || 0; if (c) { u.earn = 0; persist(); } return { ok: 1, coins: c }; }
  if (p === '/api/save') { u.data = cleanData(b.data); u.ver++; persist(); return { ok: 1, ver: u.ver }; }
  if (p === '/api/logout') { u.toks = u.toks.filter(t => t !== b.tok); persist(); return { ok: 1 }; }
@@ -163,7 +184,7 @@ wss.on('connection', ws => {
  return;
  }
  if (m.type === 'join') {
- ws.room = m.room; ws.pid = m.pid;
+ ws.room = m.room; ws.pid = m.pid; const au = byTok(m.acc); if (au) ws.acc = au.name.toLowerCase(); // Account → Freunde sehen, in welchem Raum man ist
  if (!rooms.has(m.room)) rooms.set(m.room, { clients: [], hostPid: null });
  const r = rooms.get(m.room);
  const isHost = r.clients.length === 0;
@@ -172,6 +193,7 @@ wss.on('connection', ws => {
  r.clients.push(ws);
   } else if (ws.room) {
  const r = rooms.get(ws.room);
+ if (m.type === 'chat') { if (typeof m.t !== 'string' || !m.t.trim() || m.t.length > 160) return; const n = Date.now(); ws.chatT = (ws.chatT || []).filter(x => n - x < 5000); if (ws.chatT.length >= 5) return; ws.chatT.push(n); } // Chat: max. 160 Zeichen, 5 Nachrichten / 5 s
  if (r && (m.type === 'start' || m.type === 'glstart')) r.started = true;
  if (r && m.type === 'lmode') r.mode = m.mode;
  for (const c of (r ? r.clients : []))

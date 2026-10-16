@@ -930,6 +930,19 @@
             gap: 8px
         }
 
+        #chatbox { position: fixed; left: 16px; bottom: 60px; width: min(360px, 80vw); z-index: 9000; pointer-events: none; font: 13px Arial; color: #e8eef5 }
+        #chatbox.ingame { bottom: 170px }
+        #chatlog div { background: rgba(8, 11, 15, .6); padding: 3px 8px; margin-top: 2px; border-radius: 3px; word-wrap: break-word; text-shadow: 0 1px 2px #000 }
+        #chatin { display: none; width: 100%; box-sizing: border-box; margin-top: 4px; padding: 7px 9px; font: 13px Arial; background: rgba(14, 20, 28, .92); color: #fff; border: 1px solid rgba(var(--hl-rgb), .6); border-radius: 3px; pointer-events: auto }
+        #chatbox.open #chatin { display: block }
+        #chatbox.open #chatlog { pointer-events: auto; max-height: 200px; overflow-y: auto }
+        #frpanel { position: fixed; right: 72px; top: 62px; width: min(330px, 86vw); max-height: 75vh; overflow-y: auto; z-index: 9500; background: rgba(10, 14, 20, .96); border: 1px solid rgba(var(--hl-rgb), .45); border-radius: 6px; padding: 12px; color: #e8eef5; font: 13px Arial; box-shadow: 0 8px 30px rgba(0, 0, 0, .6) }
+        #frpanel .frh { display: flex; justify-content: space-between; margin-bottom: 8px; letter-spacing: 2px } #frpanel .frh span { cursor: pointer }
+        #frpanel .frr { display: flex; align-items: center; gap: 6px; padding: 6px; border-bottom: 1px solid rgba(255, 255, 255, .07); flex-wrap: wrap }
+        #frpanel .frr span { flex: 1; font-size: 11px; color: #8fa3b8; min-width: 90px } #frpanel .frr.inv { background: rgba(var(--hl-rgb), .12); border-radius: 4px }
+        #frpanel button { padding: 3px 8px; font-size: 12px; margin: 0 }
+        #frpanel .fradd { display: flex; gap: 6px; margin: 8px 0 2px } #frpanel .fradd input { flex: 1; padding: 6px; background: #141e28; color: #fff; border: 1px solid #39506a; border-radius: 3px }
+        #frpanel .frmsg { font-size: 12px; color: #9fe08a; min-height: 14px; margin: 2px 0 6px }
         #csfriends .fr {
             width: 44px;
             height: 44px;
@@ -3717,7 +3730,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // Spielereignis → Statistik, XP, Level-Up und Erfolge
         function xpEvent(ev, x = {}) {
             const st = PRG.st, add = (k, v = 1) => st[k] = (st[k] || 0) + v; let xp = 0;
-            if (ev === 'kill') { add('kills'); add('coins', 10); xp += 10; if (x.hs) { add('hs'); xp += 5; } if (x.w === 'knife') { add('knife'); xp += 15; } if (x.w === 'awp') add('awp'); if (++roundKills === 5) { add('ace'); xp += 50; } }
+            if (ev === 'kill') { add('kills'); add('coins', 10); xp += 10; if (x.w) add('wk_' + x.w); if (x.hs) { add('hs'); xp += 5; } if (x.w === 'knife') { add('knife'); xp += 15; } if (x.w === 'awp') add('awp'); if (++roundKills === 5) { add('ace'); xp += 50; } }
             else if (ev === 'round') xp += 20; else if (ev === 'plant' || ev === 'defuse') { add(ev); xp += 15; } else if (ev === 'case') add('cases'); else if (ev === 'made') add('made');
             else if (ev === 'duck') { add('ducks'); xp += 2; if (x.gold) { add('gducks'); xp += 8; } if (st.ducks >= 10 && !store.inv.includes('knife_duck')) { store.inv.push('knife_duck'); saveStore(); toast('🎁 Belohnung freigeschaltet!', 'Butterfly | Quietscheente – jetzt im Inventar'); }
                 if (st.ducks >= 20 && !st.duckHat) { st.duckHat = 1; toast('🎁 Entenhut freigeschaltet!', 'Inventar → Agenten: aufsetzen'); }
@@ -3742,8 +3755,21 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
  <div class="profstats"><span>Kills <b>${v('kills')}</b></span><span>Headshots <b>${v('hs')}</b></span><span>Matches <b>${v('matches')}</b></span><span>Siege <b>${v('wins') + v('glwins')}</b></span><span>Bomben <b>${v('plant')}</b></span><span>Entschärft <b>${v('defuse')}</b></span></div></div></div>
  <div style="font:bold 12px Arial;letter-spacing:2px;color:#8fa3b8;margin:10px 0 6px">ERFOLGE ${got} / ${ACHS.length}</div>
  <div class="achgrid">${ACHS.map(x => `<div class="ach${PRG.ach[x[0]] ? ' on' : ''}"><i>${x[1]}</i><b>${x[2]}</b><span>${x[3]}</span></div>`).join('')}</div>
- <div><button id="profBack">Zurück</button></div>`);
-            $('profBack').onclick = showMenu;
+ <div><button id="profStats">📊 Statistik</button><button id="profBack">Zurück</button></div>`);
+            $('profBack').onclick = showMenu; $('profStats').onclick = showStats;
+        }
+        function showStats() { // 📊 Statistik: K/D, Trefferquote, Headshot-Rate, Lieblingswaffe (Werte aus PRG.st)
+            const st = PRG.st, v = k => st[k] || 0, pct = (a, b) => b ? Math.round(a / b * 100) + ' %' : '–';
+            const wk = Object.keys(st).filter(k => k.startsWith('wk_') && W[k.slice(3)]).map(k => [k.slice(3), st[k]]).sort((a, b) => b[1] - a[1]), top = wk[0], mx = top ? top[1] : 1;
+            const card = (t, val, sub) => `<div class="ach on" style="min-width:140px"><i style="font-style:normal;font:700 26px Rajdhani;color:var(--hl)">${val}</i><b>${t}</b><span>${sub}</span></div>`;
+            showOverlay(`<h1 style="font-size:34px">📊 STATISTIK<small>${ACC ? ACC.u : (player.name || 'Spieler')} · LEVEL ${lvlOf(PRG.xp)}</small></h1>
+ <div class="achgrid">${card('K/D', v('deaths') ? (v('kills') / v('deaths')).toFixed(2) : v('kills') ? v('kills') + '.00' : '–', v('kills') + ' Kills · ' + v('deaths') + ' Tode')}${card('Trefferquote', pct(v('hits'), v('shots')), v('hits') + ' / ' + v('shots') + ' Schüsse')}${card('Headshot-Rate', pct(v('hs'), v('kills')), v('hs') + ' Headshots')}${card('Lieblingswaffe', top ? W[top[0]].name : '–', top ? top[1] + ' Kills' : 'Noch keine Daten')}${card('Siegquote', pct(v('wins') + v('glwins'), v('matches')), (v('wins') + v('glwins')) + ' Siege · ' + v('matches') + ' Matches')}${card('Bomben', v('plant') + ' / ' + v('defuse'), 'gelegt / entschärft')}</div>
+ <div style="font:bold 12px Arial;letter-spacing:2px;color:#8fa3b8;margin:10px 0 6px">KILLS PRO WAFFE</div>
+ <div style="width:min(520px,90vw);margin:0 auto;text-align:left">${wk.length ? wk.slice(0, 8).map(([k, n]) => `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:13px"><span style="width:110px">${W[k].name}</span><div class="profbar" style="flex:1;margin:0"><i style="width:${Math.round(n / mx * 100)}%"></i></div><b style="width:40px;text-align:right">${n}</b></div>`).join('') : '<p style="font-size:12px;color:#8fa3b8">Kills pro Waffe werden ab jetzt gezählt.</p>'}</div>
+ <div style="font:bold 12px Arial;letter-spacing:2px;color:#8fa3b8;margin:12px 0 6px">TRAINING & SPASS</div>
+ <div class="profstats" style="justify-content:center">${Object.entries(AL_MODES).map(([k, m]) => `<span>${m[0]} ${m[1]} <b>${v('alB_' + k)}</b></span>`).join('')}<span>🎯 Aim-Lab-Genauigkeit <b>${pct(v('alHits'), v('alShots'))}</b></span><span>🦆 Enten <b>${v('ducks')}</b></span><span>🦆 Rekord <b>${v('dhBest')}</b></span></div>
+ <div><button id="stProf">🏅 Profil</button><button id="stBack">Zurück</button></div>`);
+            $('stBack').onclick = showMenu; $('stProf').onclick = showProfile;
         }
         function showAccount() {
             if (ACC) {
@@ -5125,7 +5151,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function hasLOS(ax, ay, az, bx, by, bz) {
             for (const s of smokeBlock) { if (s.vox) { const L = Math.hypot(bx - ax, bz - az), st = Math.ceil(L / (SV * 0.5)); for (let i = 1; i < st; i++) { const t = i / st; if (s.vox.get(Math.floor((ax + (bx - ax) * t) / SV) + ',' + Math.floor((az + (bz - az) * t) / SV)) === 0) return false; } continue; } const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1; let t = ((s.x - ax) * dx + (s.z - az) * dz) / L2; t = clamp(t, 0, 1); if (Math.hypot(ax + dx * t - s.x, az + dz * t - s.z) < s.r) return false; }
             _o.set(ax, ay, az); _d.set(bx - ax, by - ay, bz - az); const L = _d.length(); _d.normalize(); _ray.set(_o, _d); _ray.far = L; return _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false).length === 0;
-        } function castShot(spread) { camera.getWorldDirection(_fwd); _right.crossVectors(_fwd, camera.up).normalize(); _up.crossVectors(_right, _fwd).normalize(); const a = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * spread; _d.copy(_fwd).addScaledVector(_right, Math.cos(a) * rr).addScaledVector(_up, Math.sin(a) * rr).normalize(); _ray.set(camera.position, _d); _ray.far = 250; const objs = (GA.cur ? GA.cur.meshes : mapMeshes).slice(); if (DH.on) { for (const d of DH.ducks) if (d.alive) objs.push(...d.hit); return _ray.intersectObjects(objs, false)[0] || null; } for (const b of bots) if (b.alive) objs.push(...b.hit); for (const rp of NET.players.values()) if (rp.alive) objs.push(...rp.hit); for (const dc of decoys) objs.push(...dc.hit); return _ray.intersectObjects(objs, false)[0] || null; }
+        } function castShot(spread) { camera.getWorldDirection(_fwd); _right.crossVectors(_fwd, camera.up).normalize(); _up.crossVectors(_right, _fwd).normalize(); const a = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * spread; _d.copy(_fwd).addScaledVector(_right, Math.cos(a) * rr).addScaledVector(_up, Math.sin(a) * rr).normalize(); _ray.set(camera.position, _d); _ray.far = 250; const objs = (GA.cur ? GA.cur.meshes : mapMeshes).slice(); if (AL.on) for (const t of AL.targets) objs.push(t.mesh); if (DH.on) { for (const d of DH.ducks) if (d.alive) objs.push(...d.hit); return _ray.intersectObjects(objs, false)[0] || null; } for (const b of bots) if (b.alive) objs.push(...b.hit); for (const rp of NET.players.values()) if (rp.alive) objs.push(...rp.hit); for (const dc of decoys) objs.push(...dc.hit); return _ray.intersectObjects(objs, false)[0] || null; }
         const decals = [], decalGeo = new THREE.PlaneGeometry(0.18, 0.18), decalMat = new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
         function addDecal(p, n) { const m = new THREE.Mesh(decalGeo, decalMat); m.position.copy(p).addScaledVector(n, 0.012); m.lookAt(p.clone().add(n)); scene.add(m); decals.push(m); if (decals.length > 90) scene.remove(decals.shift()); }
         const parts = [], partGeo = new THREE.BoxGeometry(0.06, 0.06, 0.06);
@@ -5157,7 +5183,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (att && att.isPlayer && att !== e) { hitT = 0.12; hitHS = !!hs; sfx(hs ? 'hs' : 'hit'); } if (e.health <= 0) { e.health = 0; kill(e, att, w, hs); }
         }
         function kill(e, att, w, hs) {
-            if (e.isPlayer) roundKills = 0; e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
+            if (e.isPlayer) { roundKills = 0; if (!EX.on) { PRG.st.deaths = (PRG.st.deaths || 0) + 1; localStorage.setItem('prog', JSON.stringify(PRG)); } } e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
             if (DM.on || (GL.on && GL.v1)) { /* Deathmatch & 1v1: keine Waffen-Drops */ } else if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
             else if (!e.remote && e.weapon && e.weapon.slot === 1) { const dd = dropWeapon(e.weapon, e.x, e.z, e.weapon.mag, 0, null); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } }
             if (att && att !== e) { if (att.team !== e.team || GL.on || DM.on) { att.kills++; botUltAdd(att); att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); killBanner(); ultAdd(1); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
@@ -5205,6 +5231,72 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             showOverlay(`<h1>🏟 ARENA ERKUNDEN<small>WÄHLE EINE ARENA</small></h1><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:700px">${Object.keys(ARENAS).map(k => `<button data-xa="${k}">${nmA(k)}</button>`).join('')}</div><div><button id="xaBack">Zurück</button></div>`);
             document.querySelectorAll('[data-xa]').forEach(b => b.onclick = () => exStart(b.dataset.xa));
             $('xaBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
+        }
+        // ================= 🎯 AIM-LAB (Training, offline, läuft über den Erkunden-Ablauf ohne Bots) =================
+        const AL_TIME = 60, AL_MODES = { // [Icon, Name, Beschreibung, Ziele gleichzeitig, Radius, bewegt]
+            grid: ['🟦', 'Gridshot', '3 Ziele gleichzeitig · schnell umschalten', 3, 0.34, 0], flick: ['⚡', 'Flick', 'Ein Ziel taucht irgendwo auf · Reaktion zählt', 1, 0.3, 0],
+            micro: ['🔬', 'Präzision', 'Winzige Ziele · Genauigkeit zählt', 1, 0.14, 0], strafe: ['↔️', 'Tracking', 'Ziele laufen seitlich · mitziehen & Counter-Strafe', 2, 0.3, 1] };
+        const AL_WEAPONS = { ak47: '🔫 AK-47', deagle: '🦅 Deagle', usp: '🔹 USP', awp: '🔭 AWP' };
+        const AL = { on: false, mode: 'grid', w: 'ak47', t: 0, shots: 0, hits: 0, score: 0, rts: [], targets: [], base: null, ended: false };
+        const _alRay = new THREE.Raycaster(), _alV = new THREE.Vector3(), _alD = new THREE.Vector3();
+        function alFree(x, y, z, yaw) { _alV.set(x, y, z); _alD.set(-Math.sin(yaw), 0, -Math.cos(yaw)); _alRay.set(_alV, _alD); _alRay.far = 40; const h = _alRay.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; return h ? h.distance : 40; }
+        function alPick() {
+            showOverlay(`<h1 style="font-size:34px">🎯 AIM-LAB<small>TRAINING · ${AL_TIME} SEKUNDEN</small></h1>
+ <div class="invtabs">${Object.entries(AL_WEAPONS).map(([k, n]) => `<b class="${k === AL.w ? 'on' : ''}" data-alw="${k}">${n}</b>`).join('')}</div>
+ <div class="dhpick">${Object.entries(AL_MODES).map(([k, m]) => `<div class="dhw" data-alm="${k}"><i>${m[0]}</i><b>${m[1]}</b><span>${m[2]}</span><em>Rekord: ${PRG.st['alB_' + k] || 0}</em></div>`).join('')}</div>
+ <p style="font-size:12px;color:#8fa3b8">Treffer = 100 Punkte + Tempo-Bonus · Fehlschüsse senken die Genauigkeit</p>
+ <div><button id="alBack">Zurück</button></div>`);
+            document.querySelectorAll('[data-alw]').forEach(el => el.onclick = () => { AL.w = el.dataset.alw; alPick(); });
+            document.querySelectorAll('[data-alm]').forEach(el => el.onclick = () => alStart(el.dataset.alm));
+            $('alBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
+        }
+        function alStart(mode) {
+            AL.mode = AL_MODES[mode] ? mode : 'grid'; AL.on = true; exStart(null); alReset();
+            msg('🎯 Aim-Lab · ' + AL_MODES[AL.mode][1], AL_MODES[AL.mode][2] + ' · ' + AL_TIME + ' s', 4);
+        }
+        function alReset() {
+            for (const t of AL.targets) scene.remove(t.mesh); Object.assign(AL, { t: AL_TIME, shots: 0, hits: 0, score: 0, rts: [], targets: [], ended: false });
+            const p = player, def = W[AL.w]; p.weapons[1] = def.slot === 1 ? mkWeapon(def) : null; p.weapons[2] = def.slot === 1 ? mkWeapon(W.usp) : mkWeapon(def); p.weapons[4] = p.weapons[5] = null; p.slot = def.slot === 1 ? 1 : 2; p.health = 100; p.alive = true; setScoped(false); updateVM();
+            if (!AL.base) { let by = p.yaw, bd = 0; for (let i = 0; i < 16; i++) { const y = i / 16 * Math.PI * 2, d = alFree(p.x, 1.7, p.z, y); if (d > bd) { bd = d; by = y; } } AL.base = { x: p.x, z: p.z, yaw: by, far: bd }; } // Blickrichtung mit der meisten Freifläche
+            Object.assign(p, { x: AL.base.x, z: AL.base.z, y: 0, vx: 0, vz: 0, vy: 0, yaw: AL.base.yaw, pitch: 0 });
+            for (let i = 0; i < AL_MODES[AL.mode][3]; i++) alSpawn();
+        }
+        function alSpawn() {
+            const M = AL_MODES[AL.mode], B = AL.base, r = M[4]; let x = 0, y = 1.5, z = 0, a = B.yaw;
+            for (let k = 0; k < 30; k++) {
+                a = B.yaw + (Math.random() - 0.5) * (AL.mode === 'flick' ? 1.6 : 1.0); const maxD = Math.min(14, alFree(B.x, 1.7, B.z, a) - 1), d = maxD < 4 ? maxD : 4 + Math.random() * (maxD - 4);
+                if (d < 2.5) continue; x = B.x - Math.sin(a) * d; z = B.z - Math.cos(a) * d; y = 1.1 + Math.random() * 1.4;
+                if (!AL.targets.some(t => Math.hypot(t.x - x, t.y - y, t.z - z) < r * 5)) break;
+            }
+            const m = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), new THREE.MeshLambertMaterial({ color: 0xff4d4d, emissive: 0x551010 }));
+            const t = { al: 1, alive: true, x, y, z, a, ph: Math.random() * 6, sp: 1.6 + Math.random() * 1.6, born: now, mesh: m };
+            m.userData.ent = t; m.userData.part = 'head'; m.position.set(x, y, z); scene.add(m); AL.targets.push(t);
+        }
+        function alHit(t) {
+            if (!t.alive || AL.ended) return; t.alive = false; scene.remove(t.mesh); AL.targets = AL.targets.filter(o => o !== t);
+            const rt = now - t.born; AL.rts.push(rt); AL.hits++; AL.score += 100 + Math.max(0, Math.round((1.2 - rt) * 60));
+            hitT = 0.12; hitHS = true; sfx('hs'); burst(t.mesh.position.x, t.mesh.position.y, t.mesh.position.z, 0xff4d4d, 8, 3); alSpawn();
+        }
+        function alTick(dt) {
+            if (AL.ended) return; for (const s of [1, 2]) { const w = player.weapons[s]; if (w) w.res = 999; }
+            AL.t -= dt; if (AL.mode === 'strafe') for (const t of AL.targets) { t.ph += dt * t.sp; const o = Math.sin(t.ph) * 1.8; t.mesh.position.set(t.x + Math.cos(t.a) * o, t.y, t.z - Math.sin(t.a) * o); }
+            if (AL.t <= 0) alEnd();
+        }
+        function alEnd() {
+            if (AL.ended) return; AL.ended = true; gameEnded = true; document.exitPointerLock(); for (const t of AL.targets) scene.remove(t.mesh); AL.targets = [];
+            const acc = AL.shots ? Math.round(AL.hits / AL.shots * 100) : 0, rt = AL.rts.length ? Math.round(AL.rts.reduce((a, b) => a + b, 0) / AL.rts.length * 1000) : 0;
+            const bk = 'alB_' + AL.mode, old = PRG.st[bk] || 0, nb = AL.score > old; if (nb) PRG.st[bk] = AL.score; PRG.st.alGames = (PRG.st.alGames || 0) + 1; PRG.st.alHits = (PRG.st.alHits || 0) + AL.hits; PRG.st.alShots = (PRG.st.alShots || 0) + AL.shots; localStorage.setItem('prog', JSON.stringify(PRG));
+            showOverlay(`<h1 style="font-size:34px">🎯 TRAINING VORBEI<small>${AL_MODES[AL.mode][0]} ${AL_MODES[AL.mode][1].toUpperCase()} · ${AL_WEAPONS[AL.w]} · ${nb ? '🎉 NEUER REKORD!' : 'REKORD: ' + old}</small></h1>
+ <div class="dhbig">${AL.score}<span>Punkte</span></div>
+ <div class="profstats" style="justify-content:center;margin:6px 0 10px"><span>Treffer <b>${AL.hits}</b></span><span>Schüsse <b>${AL.shots}</b></span><span>Genauigkeit <b>${acc} %</b></span><span>Ø Reaktion <b>${rt} ms</b></span></div>
+ <div><button id="alAgain">🔁 Nochmal</button><button id="alOther">Anderer Modus</button><button id="alMenu">Zum Menü</button></div>`);
+            $('alAgain').onclick = () => { gameEnded = false; alReset(); $('overlay').style.display = 'none'; renderer.domElement.requestPointerLock(); };
+            $('alOther').onclick = () => { gameEnded = false; paused = true; alPickIn(); }; $('alMenu').onclick = leaveGame;
+        }
+        function alPickIn() { // Modus wechseln, ohne die Karte neu zu laden
+            alPick(); $('alBack').textContent = 'Zum Menü'; $('alBack').onclick = leaveGame;
+            document.querySelectorAll('[data-alw]').forEach(el => el.onclick = () => { AL.w = el.dataset.alw; alPickIn(); });
+            document.querySelectorAll('[data-alm]').forEach(el => el.onclick = () => { AL.mode = el.dataset.alm; alReset(); $('overlay').style.display = 'none'; renderer.domElement.requestPointerLock(); msg('🎯 Aim-Lab · ' + AL_MODES[AL.mode][1], AL_MODES[AL.mode][2], 3); });
         }
         function foe(a, b) { return DM.on ? a !== b : a.team !== b.team; }
         function dmSpot(self) {
@@ -5531,7 +5623,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             // Dynamischer Joystick: Tippen irgendwo links setzt den Stick unter den Finger
             $('tzone').addEventListener('touchstart', e => { if (EDITB.on || sid !== null) return; e.preventDefault(); const t = e.changedTouches[0], st = $('tstick'); if (!stHome) stHome = { l: st.style.left, t: st.style.top, b: st.style.bottom }; st.style.left = (t.clientX - st.offsetWidth / 2) + 'px'; st.style.top = (t.clientY - st.offsetHeight / 2) + 'px'; st.style.bottom = 'auto'; sid = t.identifier; scx = t.clientX; scy = t.clientY; }, { passive: false });
             $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
-            function mobPause() { if (!started || gameEnded || paused || buyOpen || EDITB.on || (GL.on && GL.phase !== 'duel')) return; paused = true; mouseDown = false; lid = null; TOUCH.f = TOUCH.s = 0; showOverlay(`<h1>PAUSE</h1><p>Tippe auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => { paused = false; $('overlay').style.display = 'none'; }; $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; }
+            function mobPause() { if (!started || gameEnded || paused || buyOpen || EDITB.on || (GL.on && GL.phase !== 'duel')) return; paused = true; mouseDown = false; lid = null; TOUCH.f = TOUCH.s = 0; showOverlay(`<h1>PAUSE</h1><p>Tippe auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on && !AL.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => { paused = false; $('overlay').style.display = 'none'; }; $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; }
             addEventListener('touchmove', e => {
                 for (const t of e.changedTouches) {
                     if (t.identifier === sid) {
@@ -5586,14 +5678,15 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const s = canMove ? ((down('right') ? 1 : 0) - (down('left') ? 1 : 0) + TOUCH.s) : 0;
             const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
             let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); if (p.rushT > 0) p.rushT -= dt; let max = 0.92 * (p.tagT > now ? 0.55 : 1) * (p.rushT > 0 ? 1.2 : 1) * (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * (p.immune ? 1 : slowAt(p.x, p.z)) * CFG.speed / 100; p.walk = canMove && !p.crouch && down('walk'); if (p.crouch) max *= 0.45; else if (p.walk) max *= 0.52; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - (wl > 0 ? FRICTION : STOP_FRICTION) * dt); p.vx *= fr; p.vz *= fr; }
-            if (p.onGround && wl > 0) { const dt0 = p.vx * wx + p.vz * wz; if (dt0 < 0) { const l2 = wx * wx + wz * wz; p.vx -= dt0 * wx / l2; p.vz -= dt0 * wz / l2; } } // Counter-Strafing: Gegentaste nimmt die Bewegung in diese Richtung sofort raus
+            let braked = false; // Counter-Strafing: Gegentaste bremst sehr schnell bis exakt 0 (1 Tick Stillstand = präziser Schuss), danach normale Beschleunigung
+            if (p.onGround && wl > 0.01) { const sp = Math.hypot(p.vx, p.vz); if (sp > 0.05 && (p.vx * wx + p.vz * wz) / sp < -0.3) { const ns = Math.max(0, sp - max * 14 * dt); p.vx *= ns / sp; p.vz *= ns / sp; braked = ns === 0; } }
             const acc = p.onGround ? ACCEL : AIR_ACCEL;
-            p.vx += wx * acc * dt; p.vz += wz * acc * dt;
+            if (!braked) { p.vx += wx * acc * dt; p.vz += wz * acc * dt; }
             const vl = Math.hypot(p.vx, p.vz); if (vl > max) { p.vx *= max / vl; p.vz *= max / vl; }
             if (vl > 0.02) collideMove(p, p.vx * dt, p.vz * dt); else { p.vx = 0; p.vz = 0; }
             if (p.dashT > 0) { const step = Math.min(dt, p.dashT); const n = Math.ceil(step * 60); for (let s = 0; s < n; s++) collideMove(p, p.dashVX * step / n, p.dashVZ * step / n); p.dashT -= dt; if (p.dashT <= 0) { p.vx = p.dashVX * 0.12; p.vz = p.dashVZ * 0.12; } }
             p.speed = Math.hypot(p.vx, p.vz);
-            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { p.landK = clamp(-p.vy / 11, 0.25, 1); sfx('land'); shake = Math.max(shake, 0.05 * p.landK); fovKick = Math.max(fovKick, 3); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
+            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { p.landK = clamp(-p.vy / 11, 0.25, 1); sfx('land'); shake = Math.max(shake, 0.02 * p.landK); fovKick = Math.max(fovKick, 1.5); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
             const te = p.alive ? (p.crouch ? 1.15 : 1.7) : 0.35; p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
             if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.42; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
@@ -5606,8 +5699,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 if (specTarget) { const st = specTarget; camera.position.set(st.x, (st.y || 0) + 1.62, st.z); camera.rotation.set(0, st.yaw + (st.remote ? 0 : Math.PI), 0); }
             } else {
                 if (p.camY === undefined) p.camY = p.y;
-                p.camY += (p.y - p.camY) * Math.min(1, dt * 14);
-                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - vmLand * (0.05 + 0.16 * (p.landK || 0)) + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); camera.rotation.set(p.pitch - vmLand * 0.035 * (p.landK || 0), p.yaw, 0); // Landing-Impact: Kamera sackt ein
+                p.camY += (p.y - p.camY) * Math.min(1, dt * (p.onGround ? 10 : 18));
+                p.camLand = (p.camLand || 0) + (vmLand * (p.landK || 0) - (p.camLand || 0)) * Math.min(1, dt * 14); // weich einsacken statt Ruck
+                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - p.camLand * 0.09 + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); camera.rotation.set(p.pitch - p.camLand * 0.015, p.yaw, 0); // Landing-Impact: Kamera sackt ein
             }
             if (buyOpen && !canBuy()) closeBuy();
         }
@@ -5629,16 +5723,17 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const p = player; if (!p.alive || G.state === 'freeze' || buyOpen) { clickQueued = false; return; } const w = p.weapons[p.slot]; if (!w) return; const d = w.def; if (d.plant) { clickQueued = false; return; } if (d.nade) { const c = clickQueued; clickQueued = false; if (c) throwNade(d); return; } if (w.reloading) { clickQueued = false; return; }
             const want = d.auto ? mouseDown : clickQueued; clickQueued = false; if (!want) return; if (now - w.last < d.rate / (p.rushT > 0 ? 1.2 : 1)) return; w.last = now;
             if (d.melee) { sfx('knife'); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: 'knife', x: p.x, z: p.z }); p.kick = 1; const h = castShot(0); if (h && h.distance < 2.3) { const ud = h.object.userData; if (ud.ent && ud.ent.dh) dhShot(ud.ent, ud.part === 'head'); else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) { const dmg = d.dmg * (ud.part === 'head' ? 2 : 1); if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else applyDamage(ud.ent, dmg, p, d, false); } else if (!ud.ent) { addDecal(h.point, h.face.normal); } } return; } if (w.ammo <= 0) { sfx('empty'); startReload(); return; }
-            if (!CFG.infAmmo) w.ammo--; p.lastShotT = now;
+            if (!CFG.infAmmo) w.ammo--; p.lastShotT = now; let hitAny = false; if (AL.on) AL.shots++;
             let spread = d.spread; if (d.scope) spread = p.scoped ? d.scopedSpread : d.spread; else { spread *= (1 + p.recoil * 0.3); if (p.speed > 3) spread *= 2.5; else if (p.speed > 1.2) spread *= 1.5; /* Restschwung nach Counter-Strafe zählt als Stehen */ if (p.crouch) spread *= 0.7; if (!p.onGround) spread *= 4; }
             for (let pi = 0; pi < (d.pellets || 1); pi++) {
                 const h = castShot(spread); if (smokes.length) smokeShot(h ? h.distance : 80);
                 if (!h) continue;
                 const ud = h.object.userData;
                 if (ud.ent && ud.ent.dh) { dhShot(ud.ent, ud.part === 'head'); continue; }
+                if (ud.ent && ud.ent.al) { alHit(ud.ent); continue; }
                 if (ud.ent && ud.ent.decoy) { ud.ent.hp -= d.dmg; burst(h.point.x, h.point.y, h.point.z, 0x7dffb0, 4, 2); hitT = 0.12; hitHS = false; sfx('hit'); }
                 else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) {
-                    const hs = ud.part === 'head';
+                    const hs = ud.part === 'head'; hitAny = true;
                     const dmg = d.key === 'awp' ? 9999 : Math.round(d.dmg * (hs ? (d.pellets ? 1.8 : 4) : ud.part === 'legs' ? 0.75 : 1) * Math.max(d.pellets ? 0.2 : 0.6, 1 - h.distance * (d.pellets ? 0.025 : 0.004)));
                     if (CFG.hsOnly && !hs) continue;
                     if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx(hs ? 'hs' : 'hit'); bleed(ud.ent, hs); }
@@ -5647,7 +5742,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 }
                 else if (!ud.ent) { addDecal(h.point, h.face.normal); burst(h.point.x, h.point.y, h.point.z, d.pellets ? 1 : 4, 2.5); }
 
-            } const sn = now - (p.sprT || -9) < Math.max(0.3, d.rate * 2.5) ? (p.sprN || 0) + 1 : 0, [kx, ky] = sprayKick(sn); p.sprN = sn; p.sprT = now; p.pitch = Math.min(1.5, p.pitch + d.recoil * ky); p.yaw += d.recoil * kx; p.recoil = Math.min(6, p.recoil + 1);
+            } if (!AL.on && !DH.on && !EX.on) { PRG.st.shots = (PRG.st.shots || 0) + 1; if (hitAny) PRG.st.hits = (PRG.st.hits || 0) + 1; } // Statistik: Trefferquote (pro Schuss, nicht pro Schrotkugel)
+            const sn = now - (p.sprT || -9) < Math.max(0.3, d.rate * 2.5) ? (p.sprN || 0) + 1 : 0, [kx, ky] = sprayKick(sn); p.sprN = sn; p.sprT = now; p.pitch = Math.min(1.5, p.pitch + d.recoil * ky); p.yaw += d.recoil * kx; p.recoil = Math.min(6, p.recoil + 1);
             sfx(d.snd); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: d.snd, x: p.x, z: p.z }); p.kick = 1; shake = Math.max(shake, d.key === 'awp' ? 0.22 : d.key === 'scout' ? 0.14 : d.slot === 1 ? 0.07 : 0.05); if (!p.scoped) ejectShell(d.key === 'pump'); const m = vmModels[d.key]; if (m.userData.barrel) { muzzleSprite.position.copy(m.userData.barrel); muzzleSprite.visible = true; } muzzleLight.intensity = 2.5; flashT = 0.05;
             if (d.scope && p.scoped) setScoped(false);
         }
@@ -5807,7 +5903,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                     setT('abil', `<div class="abw ${ready ? 'rdy' : ''}" style="--f:${deg}deg"><div class="abr"><span>${GL_ABIL[A.key].ico}</span></div><b>${ready ? '[' + keyName(BIND.abil) + ']' + (A.g ? ' ⚡' : '') : Math.ceil(A.cd) + 's'}</b></div>`);
                 } else setT('abil', ''); const tm = GL.myTeam, L = Math.max(0, tm.lives); setT('score', GL.duel && !GL.duel.over ? (GL.v1 ? `${GL.duel.teams[0].name} ${GL.duel.teams[0].wins} : ${GL.duel.teams[1].wins} ${GL.duel.teams[1].name}` : `${GL.duel.teams[0].name} vs. ${GL.duel.teams[1].name}`) : (GL.v1 ? '🎯 1V1' : '⚔️ GAUNTLET')); setT('roundlbl', GL.v1 ? `1V1 · Erster mit ${V1_WIN} Siegen${GL.v1w ? ' · ' + W[GL.v1w].name : ''}` : `Stage ${GL.stage} · Dein Team: ${'❤'.repeat(L)}${'🖤'.repeat(GL_LIVES - L)}`);
             }
-            else { setT('abil', ''); if (EX.on) { setT('score', '🧭 Erkunden'); setT('roundlbl', (EX.ar ? (CMAP_INFO[EX.ar] ? CMAP_INFO[EX.ar].n : MAP_NAMES[EX.ar] || EX.ar) : MAPLABEL) + ' · Editor: ' + (IS_TOUCH ? '☰' : 'Esc')); } else if (DM.on) { setT('score', `💀 ${player.kills} / ${DM.limit} Kills`); setT('roundlbl', `Deathmatch · Platz ${dmRank().indexOf(player) + 1} / ${ents.length}${G.state === 'freeze' ? ' – Start in ' + Math.ceil(G.t) : ''}`); } else { setT('score', `<span class="ct">DEF ${G.score.CT}</span> | <span class="t">${G.score.T} ATK</span>`); setT('roundlbl', `Runde ${G.round} / ${MAX_ROUNDS}${G.state === 'freeze' ? ' – Kaufphase ' + Math.ceil(G.t) : ''}`); } } const be = $('bomb'); be.style.display = G.bomb.state === 'planted' ? 'block' : 'none'; bombRing.visible = G.bomb.state === 'planted' && !GA.cur; if (G.bomb.state === 'planted') { const bt = '💣 BOMBE · ' + Math.max(0, Math.ceil(G.bomb.t)); if (be.textContent !== bt) be.textContent = bt; } if (G.bomb.state === 'planted') be.style.opacity = Math.sin(now * 8) > 0 ? 1 : 0.35;
+            else { setT('abil', ''); if (AL.on) { setT('score', `🎯 ${AL.score} Pkt · ${Math.max(0, Math.ceil(AL.t))} s`); setT('roundlbl', `Aim-Lab · ${AL_MODES[AL.mode][1]} · Treffer ${AL.hits} · ${AL.shots ? Math.round(AL.hits / AL.shots * 100) : 0} %`); } else if (EX.on) { setT('score', '🧭 Erkunden'); setT('roundlbl', (EX.ar ? (CMAP_INFO[EX.ar] ? CMAP_INFO[EX.ar].n : MAP_NAMES[EX.ar] || EX.ar) : MAPLABEL) + ' · Editor: ' + (IS_TOUCH ? '☰' : 'Esc')); } else if (DM.on) { setT('score', `💀 ${player.kills} / ${DM.limit} Kills`); setT('roundlbl', `Deathmatch · Platz ${dmRank().indexOf(player) + 1} / ${ents.length}${G.state === 'freeze' ? ' – Start in ' + Math.ceil(G.t) : ''}`); } else { setT('score', `<span class="ct">DEF ${G.score.CT}</span> | <span class="t">${G.score.T} ATK</span>`); setT('roundlbl', `Runde ${G.round} / ${MAX_ROUNDS}${G.state === 'freeze' ? ' – Kaufphase ' + Math.ceil(G.t) : ''}`); } } const be = $('bomb'); be.style.display = G.bomb.state === 'planted' ? 'block' : 'none'; bombRing.visible = G.bomb.state === 'planted' && !GA.cur; if (G.bomb.state === 'planted') { const bt = '💣 BOMBE · ' + Math.max(0, Math.ceil(G.bomb.t)); if (be.textContent !== bt) be.textContent = bt; } if (G.bomb.state === 'planted') be.style.opacity = Math.sin(now * 8) > 0 ? 1 : 0.35;
             $('cross').style.display = (p.alive && !p.scoped) ? 'block' : 'none';
             const g = Math.max(0, OPT.chGap + (OPT.chDyn ? p.recoil * 3 + (p.speed > 3 ? 8 : p.speed > 0 ? 3 : 0) + (!p.onGround ? 12 : 0) - (p.crouch ? 2 : 0) : 0)), L = OPT.chLen, T = OPT.chThick, hT = T / 2, bg = `;background:${OPT.chCol}`;
             crossEls[0].style.cssText = `left:${-hT}px;top:${-(g + L)}px;width:${T}px;height:${L}px${bg}`; crossEls[1].style.cssText = `left:${-hT}px;top:${g}px;width:${T}px;height:${L}px${bg}`; crossEls[2].style.cssText = `left:${-(g + L)}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[3].style.cssText = `left:${g}px;top:${-hT}px;width:${L}px;height:${T}px${bg}`; crossEls[4].style.cssText = `display:${OPT.chDot ? "block" : "none"};left:${-hT}px;top:${-hT}px;width:${T}px;height:${T}px${bg}`;
@@ -5927,7 +6023,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         });
         addEventListener('keyup', e => { keys[e.code] = false; if (e.code === BIND.board) $('board').style.display = 'none'; }); addEventListener('mousedown', e => { if (GL.on && GL.phase !== 'duel') return; if (started && !paused && !gameEnded && !player.alive) { if (FC.on) { if (!locked) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) cycleSpec(); return; } if (!locked) { if (started && !paused && !buyOpen && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) { mouseDown = true; clickQueued = true; } if (e.button === 2) toggleScope(); }); addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; }); addEventListener('contextmenu', e => e.preventDefault());
         addEventListener('wheel', e => { if (!locked) return; const order = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); let i = order.indexOf(player.slot); i = (i + (e.deltaY > 0 ? 1 : -1) + order.length) % order.length; selectSlot(order[i]); });
-        addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
+        addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on && !AL.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
         document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button,.mapc,[data-cat],.subnav b,#cstabs a,.inv,.gltb')) { initAudio(); sfx('ui'); } }, true);
         function showOverlay(html, trans) { const o = $('overlay'); o.classList.remove('oldui'); o.innerHTML = html; o.style.display = 'flex'; o.style.background = trans ? 'none' : 'rgba(8,11,15,.82)'; } function leaveGame() {
             if (NET.ws) { NET.on = false; NET.ws.close(); }
@@ -6671,7 +6767,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             showOverlay(`
  <div id="csmenu">
  <div id="cstop">
- <div class="ctic"><span id="navHome">🏠</span><span id="navProf" title="Profil & Erfolge">🏅</span><span id="navSet">⚙️</span><span id="navLang" title="Sprache / Language" style="font:700 13px Rajdhani;letter-spacing:.05em">${getLang() === 'en' ? 'DE' : 'EN'}</span><span id="navInst" title="Als App installieren" style="${instEvt ? '' : 'display:none'}">📲</span><span id="navOff">⏻</span></div>
+ <div class="ctic"><span id="navHome">🏠</span><span id="navProf" title="Profil & Erfolge">🏅</span><span id="navStats" title="Statistik">📊</span><span id="navFr" title="Freunde" style="position:relative">👥<i id="frBadge" style="display:none;position:absolute;top:-6px;right:-8px;background:#e04848;color:#fff;font:700 10px Arial;border-radius:8px;padding:1px 5px;font-style:normal"></i></span><span id="navSet">⚙️</span><span id="navLang" title="Sprache / Language" style="font:700 13px Rajdhani;letter-spacing:.05em">${getLang() === 'en' ? 'DE' : 'EN'}</span><span id="navInst" title="Als App installieren" style="${instEvt ? '' : 'display:none'}">📲</span><span id="navOff">⏻</span></div>
  <nav id="cstabs">
  <a data-nav="inv">INVENTAR</a>
  <a data-nav="play">SPIELEN</a>
@@ -6710,6 +6806,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <button id="btnDM">💀 Deathmatch starten</button>
  <button id="btnEx">🧭 Karte erkunden</button>
  <button id="btnExAr">🏟 Arena erkunden</button>
+ <button id="btnAim">🎯 Aim-Lab</button>
  <button id="btnDuck" style="border-color:#ffd84a;color:#ffd84a">🦆 Entenjagd starten</button>
  <button id="btnDuckLb">🏆 Bestenliste</button>
  </span>
@@ -7376,10 +7473,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const backPlay = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
             $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => { GL.v1 = true; glStart(2); }, backPlay);
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
-            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnEx').onclick = () => exStart(null); $('btnExAr').onclick = exPickArena; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
+            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnEx').onclick = () => exStart(null); $('btnAim').onclick = alPick; $('btnExAr').onclick = exPickArena; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = () => showGameSettings(); $('ruleChips').onclick = () => showGameSettings();
-            $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile;
+            $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile; $('navStats').onclick = showStats; $('navFr').onclick = frToggle; frBadge();
             $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
             else if (sessionStorage.getItem('opentab') === 'maps') { sessionStorage.removeItem('opentab'); showMapList(); }
@@ -8315,6 +8412,61 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
         // ================= MULTIPLAYER =================
         const NET = { on: false, host: false, ws: null, pid: Math.random().toString(36).slice(2, 8), players: new Map(), sendT: 0, snapT: 0 };
+        // ================= 💬 CHAT (online, ganzer Raum) =================
+        const CHAT = { log: [], open: false }, escH = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+        function chatEl() {
+            let el = $('chatbox'); if (el) return el;
+            el = document.createElement('div'); el.id = 'chatbox'; el.innerHTML = '<div id="chatlog"></div><input id="chatin" maxlength="160" autocomplete="off" placeholder="Nachricht … (Enter = senden)">'; document.body.appendChild(el);
+            const inp = $('chatin');
+            inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { chatSend(inp.value); inp.value = ''; if (!NET.inLobby) chatClose(); } else if (e.key === 'Escape') chatClose(); }); // Tasten nicht ans Spiel weitergeben
+            return el;
+        }
+        function chatShow() {
+            const el = chatEl(), on = NET.on && !document.body.classList.contains('edit'); el.style.display = on ? 'block' : 'none'; if (!on) return;
+            el.classList.toggle('open', CHAT.open || NET.inLobby); el.classList.toggle('ingame', started && !NET.inLobby);
+        }
+        function chatRender() {
+            const el = $('chatlog'); if (!el) return; const t = performance.now(), all = CHAT.open || NET.inLobby;
+            el.innerHTML = CHAT.log.filter(m => all || t - m.at < 10000).slice(-8).map(m => `<div><b style="color:${m.me ? 'var(--hl)' : '#8ab4ff'}">${escH(m.n)}:</b> ${escH(m.t)}</div>`).join('');
+        }
+        function chatAdd(n, t, me) { CHAT.log.push({ n: String(n || '?').slice(0, 16), t: String(t).slice(0, 160), me, at: performance.now() }); if (CHAT.log.length > 50) CHAT.log.shift(); chatShow(); chatRender(); setTimeout(chatRender, 10100); if (!me) sfx('step'); }
+        function chatSend(t) { t = String(t || '').trim().slice(0, 160); if (!t || !NET.on) return; netSend({ type: 'chat', n: player.name, t }); chatAdd(player.name, t, true); }
+        function chatOpen() { CHAT.open = true; for (const k in keys) keys[k] = false; mouseDown = false; chatShow(); chatRender(); $('chatin').focus(); }
+        function chatClose() { CHAT.open = false; for (const k in keys) keys[k] = false; $('chatin').blur(); chatShow(); chatRender(); }
+        addEventListener('keydown', e => { if (e.code === 'Enter' && NET.on && started && !NET.inLobby && !paused && !CHAT.open && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) { e.preventDefault(); chatOpen(); } });
+        setInterval(chatShow, 500);
+        // ================= 👥 FREUNDE (Account nötig) =================
+        const FR = { list: [], rq: [], inv: [], open: false, msg: '' };
+        function frPoll() {
+            if (!ACC) return; accApi('friends', { tok: ACC.tok }).then(r => { if (!r.ok) return; FR.list = r.fr || []; FR.rq = r.rq || [];
+                for (const i of r.inv || []) { FR.inv = FR.inv.filter(o => o.from !== i.from).concat(i); toast('📨 Einladung von ' + i.from, 'Raum „' + i.room + '" · 👥 Freunde öffnen zum Beitreten'); }
+                frBadge(); if (FR.open) frRender(); }).catch(() => { });
+        }
+        setTimeout(frPoll, 1500); setInterval(frPoll, 20000);
+        function frBadge() { const b = $('frBadge'), n = FR.rq.length + FR.inv.length; if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; } }
+        function frJoin(room, srv, mode) { // über den vorhandenen Rejoin-Ablauf (Seite neu laden → startMP)
+            if (MODES[mode]) sessionStorage.setItem('playcat', mode); sessionStorage.setItem('playmode', '1');
+            sessionStorage.setItem('mpjoin', JSON.stringify({ srv: srv || DEF_WS, room, team: 'CT', name: (localStorage.getItem('pname') || (ACC && ACC.u) || 'Spieler').slice(0, 14) })); if (NET.ws) { NET.on = false; NET.ws.close(); } location.reload();
+        }
+        function frAct(p, n) { accApi(p, { tok: ACC.tok, n, room: NET.room, srv: NET.srv, mode: NET.mode }).then(r => { FR.msg = r.ok ? (r.msg || (p === 'frinv' ? '✓ Einladung an ' + n + ' gesendet' : '✓ Erledigt')) : '⚠ ' + (r.err || 'Fehler'); frPoll(); frRender(); }).catch(() => { FR.msg = '⚠ Server nicht erreichbar'; frRender(); }); }
+        function frToggle() { FR.open = !FR.open; if (FR.open) frPoll(); frRender(); }
+        function frRender() {
+            let el = $('frpanel'); if (!FR.open) { if (el) el.remove(); return; }
+            if (!el) { el = document.createElement('div'); el.id = 'frpanel'; document.body.appendChild(el); }
+            const head = '<div class="frh"><b>👥 FREUNDE</b><span id="frX">✕</span></div>';
+            if (!ACC) { el.innerHTML = head + '<p>Freunde & Einladungen brauchen einen Account.</p><button id="frLogin">👤 Login / Registrieren</button>'; $('frX').onclick = frToggle; $('frLogin').onclick = () => { frToggle(); showAccount(); }; return; }
+            const inv = FR.inv.map((i, k) => `<div class="frr inv">📨 <b>${escH(i.from)}</b><span>lädt Dich ein · ${escH(i.room)}${MODES[i.mode] ? ' · ' + modeName(i.mode) : ''}</span><button data-ij="${k}">Beitreten</button><button data-ix="${k}">✕</button></div>`).join('');
+            const rq = FR.rq.map(n => `<div class="frr">🙋 <b>${escH(n)}</b><span>möchte Dein Freund sein</span><button data-fa="${escH(n)}">✓</button><button data-fd="${escH(n)}">✕</button></div>`).join('');
+            const list = FR.list.slice().sort((a, b) => (b.on ? 1 : 0) - (a.on ? 1 : 0)).map(f => `<div class="frr">${f.on ? '🟢' : '⚫'} <b>${escH(f.n)}</b><span>${f.room ? (f.st ? '🎮 Im Spiel' : '🛋 Lobby') + ' · ' + escH(f.room) : f.on ? 'Online' : 'Offline'}</span>${NET.on ? `<button data-fi="${escH(f.n)}">Einladen</button>` : f.room && f.room !== NET.room ? `<button data-fj="${escH(f.n)}">Beitreten</button>` : ''}<button data-fd="${escH(f.n)}" title="Entfernen">🗑</button></div>`).join('');
+            el.innerHTML = head + inv + rq + `<div class="fradd"><input id="frName" maxlength="16" placeholder="Accountname"><button id="frAdd">+ Hinzufügen</button></div><p class="frmsg">${escH(FR.msg)}</p>` + (list || '<p style="font-size:12px;color:#8fa3b8">Noch keine Freunde – füge jemanden über den Accountnamen hinzu.</p>') + (NET.on ? '' : '<p style="font-size:11px;color:#8fa3b8">Einladen geht, sobald Du in einer Online-Lobby bist.</p>');
+            $('frX').onclick = frToggle; const inp = $('frName'); inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') $('frAdd').click(); });
+            $('frAdd').onclick = () => { const n = inp.value.trim(); if (n) frAct('fradd', n); };
+            el.querySelectorAll('[data-fa]').forEach(b => b.onclick = () => frAct('fradd', b.dataset.fa)); el.querySelectorAll('[data-fd]').forEach(b => b.onclick = () => frAct('frdel', b.dataset.fd));
+            el.querySelectorAll('[data-fi]').forEach(b => b.onclick = () => frAct('frinv', b.dataset.fi));
+            el.querySelectorAll('[data-fj]').forEach(b => b.onclick = () => { const f = FR.list.find(x => x.n === b.dataset.fj); if (f && f.room) frJoin(f.room, DEF_WS, f.mode); });
+            el.querySelectorAll('[data-ij]').forEach(b => b.onclick = () => { const i = FR.inv[+b.dataset.ij]; if (i) frJoin(i.room, i.srv, i.mode); });
+            el.querySelectorAll('[data-ix]').forEach(b => b.onclick = () => { FR.inv.splice(+b.dataset.ix, 1); frBadge(); frRender(); });
+        }
         function netSend(o) { if (NET.ws && NET.ws.readyState === 1) NET.ws.send(JSON.stringify(o)); }
         function addRemote(pid, name, team, ag, hat) {
             if (pid === NET.pid || NET.players.has(pid)) return;
@@ -8329,7 +8481,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             NET.room = ($('room').value.trim() || 'sienna'); NET.mode = MODES[sessionStorage.getItem('playcat')] ? sessionStorage.getItem('playcat') : 'comp';
             NET.srv = ($('srv').value.trim() || 'ws://localhost:8081');
             NET.ws = new WebSocket(NET.srv);
-            NET.ws.onopen = () => NET.ws.send(JSON.stringify({ type: 'join', room: NET.room, pid: NET.pid }));
+            NET.ws.onopen = () => NET.ws.send(JSON.stringify({ type: 'join', room: NET.room, pid: NET.pid, acc: ACC ? ACC.tok : undefined }));
             NET.ws.onerror = () => alert('Server nicht erreichbar!');
             NET.ws.onclose = () => { if (NET.on) msg('Verbindung getrennt', '', 5); };
             NET.ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data) } catch { return } netMsg(m); };
@@ -8341,6 +8493,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'dhstart': if (!NET.host) { if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; } if (m.cfg) Object.assign(CFG, m.cfg); NET.inLobby = false; if (!DH.on || DH.ended) dhStart(m.w); } break;
                 case 'dhev': if (!NET.host) { const el = $('dhBan'); if (el) { el.textContent = m.txt; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); } sfx('start'); } break;
                 case 'dhbh': if (!NET.host) dhBossHit(m.by, m.n); break;
+                case 'chat': if (typeof m.t === 'string') chatAdd(m.n, m.t); break;
                 case 'dhs': if (!NET.host && DH.on && !DH.ended) dhSnap(m); break;
                 case 'dhhit': if (NET.host && DH.on && !DH.ended) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhKill(d, m.pid, !!m.hs); } break;
                 case 'dhdie': if (!NET.host && DH.on) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhRemove(d, true); else burst(m.x, m.y + 0.5, m.z, 0xffffff, 10, 3); if (m.t === 'b') burst(m.x, m.y + 0.5, m.z, 0xff8a30, 26, 6); dhCredit(m.by, m.t, m.pts, m.m, m.n); } break;
@@ -8480,7 +8633,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  ${IS_TOUCH && isGl ? glAsgHTML() : ''}
  ${NET.host
                     ? '<div class="csbtns" style="margin-top:14px">' + hostBtns + '</div><p style="font-size:11px;color:#8fa3b8;margin:8px 0 0">Du bist Host – warte, bis alle da sind, und starte dann.</p>' : '<p style="font-size:13px;color:#8fa3b8;margin-top:14px">⏳ Warte, bis der Host das Spiel startet…</p>'}
- <div class="csbtns" style="margin-top:10px"><button id="lobInv">🎒 Inventar</button><button id="lobCases">📦 Cases (${store.cases})</button><button id="lobLeave" style="border-color:#c66;color:#c66">Verlassen</button></div>
+ <div class="csbtns" style="margin-top:10px"><button id="lobFr">👥 Freunde einladen</button><button id="lobInv">🎒 Inventar</button><button id="lobCases">📦 Cases (${store.cases})</button><button id="lobLeave" style="border-color:#c66;color:#c66">Verlassen</button></div>
  </div>
  ${IS_TOUCH || !isGl ? '' : `<div class="cspanel" id="gltpanel"><h3>⚔️ GAUNTLET-TEAMS</h3>${glAsgHTML()}</div>`}
  <div id="cschar"><b>${player.name}</b></div>
@@ -8496,7 +8649,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 1 }); startGame(player.team); });
                 on('glTeamsMp', 'onchange', e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); });
             }
-            document.querySelectorAll('[data-glk]').forEach(el => el.onclick = () => { const k = +el.dataset.glk; if (glAsg()[NET.pid] === k || el.classList.contains('full')) return; glAsg()[NET.pid] = k; glAsgSend({ a: { [NET.pid]: k } }); }); $('lobInv').onclick = showInventory;
+            document.querySelectorAll('[data-glk]').forEach(el => el.onclick = () => { const k = +el.dataset.glk; if (glAsg()[NET.pid] === k || el.classList.contains('full')) return; glAsg()[NET.pid] = k; glAsgSend({ a: { [NET.pid]: k } }); }); $('lobInv').onclick = showInventory; $('lobFr').onclick = frToggle;
             $('lobCases').onclick = showCases;
             $('lobLeave').onclick = leaveGame; $('lobLeaveTop').onclick = leaveGame;
         }
@@ -8580,7 +8733,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (IS_TOUCH) { const want = started && !gameEnded ? 'block' : 'none'; if ($('touch').style.display !== want) $('touch').style.display = want; $('touch').classList.toggle('dead', started && !gameEnded && !player.alive && !document.body.classList.contains('edit')); }
             if (started && (!paused || NET.on) && !gameEnded) { // online läuft das Spiel im Pausemenü weiter (nur eigene Eingaben ruhen)
                 if (paused) { for (const k in keys) keys[k] = false; mouseDown = false; clickQueued = false; }
-                if (DH.on) dhTick(dt); else if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
+                if (AL.on) alTick(dt); if (DH.on) dhTick(dt); else if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
                 updatePlayer(dt); if (IS_TOUCH && OPT.aim !== false) aimAssist(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
                 separate(); updateFX(dt); updateMates(); animChars(dt); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
