@@ -7,7 +7,8 @@ const path = require('path'), fs = require('fs');
 if (process.env.CSWO_TEST) app.setPath('userData', path.join(app.getPath('temp'), 'cswo-test')); // automatische Tests: eigener Datenordner
 else app.setPath('userData', path.join(app.getPath('appData'), 'CS-WO')); // alter Datenordner bleibt nach der Umbenennung (Offline-Cache, Einstellungen)
 
-const GAME_URL = process.env.CSWO_URL || 'https://cs-web-offensive.onrender.com'; // CSWO_URL nur zum Testen
+const GAME_URL = process.env.CSWO_URL || 'https://cs-web-offensive.onrender.com'; // CSWO_URL nur zum Testen · App bleibt auf dieser Adresse (Spielstand ohne Account hängt an ihr)
+const PUBLIC_URL = 'https://clutchtactic.de'; // öffentliche Adresse für Links (Discord-Button)
 const THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
 const OFFLINE_CODES = new Set([-105, -106, -109, -118, -130, -137, -21]); // kein DNS / kein Internet / Netz geändert / Verbindung unmöglich
 
@@ -96,7 +97,7 @@ function rpConnect(i = 0) {
 ipcMain.on('cswo:presence', (e, a) => {
   const t = v => typeof v === 'string' && v.length >= 2 ? v.slice(0, 120) : undefined; a = a || {};
   if (a.d !== RP.d) { RP.d = a.d; RP.start = Math.floor(Date.now() / 1000); } // Zeit zählt ab Modus-/Kartenwechsel
-  RP.act = { details: t(a.d), state: t(a.s), timestamps: { start: RP.start }, assets: { large_image: 'clutch', large_text: 'CLUTCH' }, buttons: [{ label: 'Im Browser spielen', url: GAME_URL }] };
+  RP.act = { details: t(a.d), state: t(a.s), timestamps: { start: RP.start }, assets: { large_image: 'clutch', large_text: 'CLUTCH' }, buttons: [{ label: 'Im Browser spielen', url: PUBLIC_URL }] };
   rpPush();
 });
 

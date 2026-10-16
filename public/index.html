@@ -221,6 +221,11 @@
             box-shadow: 0 0 2px #000
         }
 
+        #prog.cp::after { content: ''; position: absolute; left: 50%; top: -5px; bottom: -5px; width: 2px; background: #fff; opacity: .85 }
+        #abar { position: fixed; left: calc(50% + 72px); bottom: 122px; display: flex; gap: 6px; z-index: 5; pointer-events: auto } .mob #abar { bottom: 112px }
+        #abar div { position: relative; width: 38px; height: 38px; border: 1.5px solid rgba(236, 232, 225, .55); background: rgba(10, 14, 20, .45); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer }
+        #abar div.on { border-color: var(--hl, #e8c98a); box-shadow: 0 0 8px rgba(var(--hl-rgb, 232, 201, 138), .5) } #abar div.e { opacity: .35 }
+        #abar b { position: absolute; right: 3px; bottom: 0; font: 700 12px 'Barlow Condensed', sans-serif; color: #ece8e1 } #abar i { position: absolute; left: 3px; top: 0; font: 600 10px 'Barlow Condensed', sans-serif; font-style: normal; color: #ece8e1; opacity: .7 } #abar u { position: absolute; right: 3px; top: -1px; font-size: 10px; text-decoration: none; color: var(--hl, #e8c98a) }
         #prog {
             position: absolute;
             left: 50%;
@@ -2850,6 +2855,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Zielen · Linksklick = Abwurf · X = Abbrechen":"Aim · left click = drop · X = cancel",
 "Team-Scan":"Team Scan",
 "Heilwelle":"Healing Wave",
+"Sanitäts-Station":"Medic Station",
+"Kälteschaum":"Cryo Foam",
 "Luftschlag":"Airstrike",
 "Adrenalin":"Adrenaline",
 "Bollwerk":"Bulwark",
@@ -3382,7 +3389,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Weiter ›":"Next ›",
 "Überspringen":"Skip",
 "‹ Zurück":"‹ Back",
-"NEU · PATCH 2.5 „ULTIMATE\"":"NEW · PATCH 2.5 „ULTIMATE\"",
+"NEU · PATCH 2.6 „AGENTEN\"":"NEW · PATCH 2.6 „AGENTS\"",
+"PATCH 2.5 „ULTIMATE\"":"PATCH 2.5 „ULTIMATE\"",
 "NEU":"NEW",
 "⚡ ULTIMATES":"⚡ ULTIMATES",
 "Kills, Bombe legen und entschärfen laden":"Kills, planting and defusing charge",
@@ -3652,7 +3660,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // =====================================================================
         //  ACCOUNT / CLOUD-SAVE (Server speichert in data/users.json, keine Datenbank)
         // =====================================================================
-        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'lang'];
+        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'lang', 'kit', 'agskins'];
         let ACC = null; try { ACC = JSON.parse(localStorage.getItem('cs_acc') || 'null'); } catch (e) { }
         let accT = null, accMute = false, accReady = !ACC; // accReady: erst nach dem Abgleich beim Start hochladen (sonst überschreibt ein altes Gerät neueren Stand)
         const accApi = (p, b) => fetch('/api/' + p, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json());
@@ -4381,7 +4389,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             molly: { key: 'molly', name: 'Molotov', slot: 4, nade: true, price: 400, speed: 6.8 },
             recon: { key: 'recon', name: 'Recon-Pfeil', slot: 4, nade: true, price: 300, speed: 6.8 }, // markiert Gegner (2 Scan-Pulse)
             cluster: { key: 'cluster', name: 'Cluster-Granate', slot: 4, nade: true, price: 400, speed: 6.8 }, // Explosion + 4 Bomblets
-            slow: { key: 'slow', name: 'Slow-Orb', slot: 4, nade: true, price: 250, speed: 6.8 }, // Eisfeld: halbes Tempo
+            slow: { key: 'slow', name: 'Kälteschaum', slot: 4, nade: true, price: 250, speed: 6.8 }, // Eisfeld: halbes Tempo
             c4: { key: 'c4', name: 'C4', slot: 5, plant: true, speed: 6.5 }
         };
         const mkWeapon = def => ({ def, ammo: def.mag || 0, res: def.res || 0, reloading: false, reloadT: 0, last: -9 });
@@ -4661,6 +4669,18 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // Agenten-Thema (Host, Spielregeln): 0 = frei, 1 = alle Enten, 2+ = alle als dieser Agent
         const NONDUCK = AGENTS.filter(a => !a.duck);
         function agentFor(team, want) { const t = CFG.agTheme | 0; if (!t) return want; if (t === 1) return AGENTS.some(a => a.duck && a.id === want) ? want : team === 'T' ? 'duck_mallard' : 'duck_rubber'; return (NONDUCK[t - 2] || {}).id || want; }
+        // Agenten-Kits (Valorant-Anteil, realistisch: nur Ausrüstung/Technik). ab = kaufbare Fähigkeiten, sig = 1 Ladung gratis pro Runde, ult = feste Ultimate
+        const KITS = [
+            { id: 'sturm', n: 'Sturm', role: 'Duelist', ic: '⚔️', d: 'Geht als Erster rein', ab: ['flash', 'cluster'], sig: 'flash', ult: 'rush' },
+            { id: 'nebel', n: 'Nebel', role: 'Controller', ic: '🌫️', d: 'Nimmt Sichtlinien weg', ab: ['smoke', 'molly'], sig: 'smoke', ult: 'strike' },
+            { id: 'falke', n: 'Falke', role: 'Initiator', ic: '🛰️', d: 'Klärt auf, bevor das Team pusht', ab: ['recon', 'flash'], sig: 'recon', ult: 'scan' },
+            { id: 'frost', n: 'Frost', role: 'Sentinel', ic: '❄️', d: 'Hält Bereiche mit Kälteschaum', ab: ['slow', 'he'], sig: 'slow', ult: 'ward' },
+            { id: 'sani', n: 'Sani', role: 'Sentinel', ic: '⛑️', d: 'Hält das Team am Leben', ab: ['smoke', 'slow'], sig: 'smoke', ult: 'heal' }];
+        // Agenten-Skins: gehören zu einem Agenten, werden im Shop für Coins gekauft (Enten bleiben frei wählbar)
+        const AG_SKIN = { neon: ['sturm', 1200], ninja: ['nebel', 1200], desert: ['falke', 800], jungle: ['falke', 800], arctic: ['frost', 1000], elite: ['sani', 1500] };
+        let agOwn = []; try { agOwn = JSON.parse(localStorage.getItem('agskins') || '[]'); } catch (e) { }
+        let kitId = localStorage.getItem('kit'); const KIT = () => KITS.find(k => k.id === kitId) || KITS[0];
+        const agSkinOk = id => !AG_SKIN[id] || (agOwn.includes(id) && AG_SKIN[id][0] === KIT().id);
         // Modelle aller Bots/Mitspieler neu bauen (z.B. wenn das Thema erst beim Start bekannt ist)
         // Team-Marker: leuchtendes Dreieck über Mitspielern (auch durch Wände sichtbar, wie in CS) – Gegner bekommen keinen
         const MATE_MAT = {}; function mateMat(col) { if (MATE_MAT[col]) return MATE_MAT[col]; const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
@@ -4679,7 +4699,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 e._ph = (e._ph || 0) + Math.min(v, 8) * dt * 2.6; const sw = Math.min(1, v / 3) * 0.55 * Math.sin(e._ph); L.hipL.rotation.x = sw; L.hipR.rotation.x = -sw; }
         }
         function remeshAll() { for (const e of [...bots, ...NET.players.values()]) { if (!e.mesh) continue; const m = makeBotMesh(e.team, e.ag, false, e.hat); m.group.position.copy(e.mesh.position); m.group.rotation.copy(e.mesh.rotation); m.group.visible = e.mesh.visible; scene.remove(e.mesh); e.mesh = m.group; e.hit = m.hit; e.flash = m.flash; e.robo = false; m.hit.forEach(h => h.userData.ent = e); } }
-        store.agent = AGENTS.some(a => a.id === localStorage.getItem('agent')) ? localStorage.getItem('agent') : 'std';
+        store.agent = AGENTS.some(a => a.id === localStorage.getItem('agent')) ? localStorage.getItem('agent') : 'std'; if (!agSkinOk(store.agent)) store.agent = 'std';
         // 🦆 Entenhut (Belohnung ab 20 Enten): kleine Ente auf dem Kopf, bleibt auch im Robo-Look farbig
         // Agenten-Zubehör: genau eins aufsetzbar, gespeichert unter 'duckhat' ('1' = alter Entenhut). k/max = Fortschrittsanzeige
         const ACCS = [
@@ -5100,7 +5120,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (e.isPlayer) roundKills = 0; e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
             if (DM.on || (GL.on && GL.v1)) { /* Deathmatch & 1v1: keine Waffen-Drops */ } else if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
             else if (!e.remote && e.weapon && e.weapon.slot === 1) { const dd = dropWeapon(e.weapon, e.x, e.z, e.weapon.mag, 0, null); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } }
-            if (att && att !== e) { if (att.team !== e.team || GL.on || DM.on) { att.kills++; att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); killBanner(); ultAdd(1); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
+            if (att && att !== e) { if (att.team !== e.team || GL.on || DM.on) { att.kills++; botUltAdd(att); att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); killBanner(); ultAdd(1); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
             if (NET.on && (e.isPlayer || (NET.host && !e.remote))) netSend({ type: 'kf', ap: att ? (att.isPlayer ? NET.pid : att.pid || null) : null, an: att ? att.name : null, at: att ? att.team : '', vn: e.name, vt: e.team, w: w ? w.name : null, hs: !!hs, rw: w && (w.key === 'knife' || w.name === 'Butterfly' || w.name === 'Karambit') ? 1500 : w && (w.key === 'awp' || w.name === 'AWP') ? 100 : 300 }); if (G.bomb.carrier === e && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); if (e.isPlayer) e.weapons[5] = null; }
             if (e.isPlayer) playerDie(att); else { e.mesh.rotation.x = -Math.PI / 2; e.mesh.scale.y = 1; e.crouch = false; e.mesh.position.set(e.x, 0.3, e.z); e.target = null; e.flash.visible = false; } checkRoundEnd();
         }
@@ -5189,8 +5209,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (b.money >= 200 && Math.random() < 0.6) { b.money -= 200; b.nades.push('flash'); }
             if (b.team === 'T' && b.money >= 300 && Math.random() < 0.4) { b.money -= 300; b.nades.push('smoke'); }
             if (b.money >= 400 && Math.random() < 0.35) { b.money -= 400; b.nades.push('molly'); }
-            const role = b.role || (b.role = ['duelist', 'initiator', 'controller', 'sentinel'][Math.max(0, bots.indexOf(b)) % 4]), add = (k, pr, ch) => { if (b.money >= pr && Math.random() < ch) { b.money -= pr; b.nades.push(k); } }; // Bot-Rollen
-            if (role === 'duelist') add('cluster', 400, 0.6); if (role === 'initiator') add('recon', 300, 0.75); if (role === 'controller') { add('smoke', 300, 0.7); add('slow', 250, 0.5); } if (role === 'sentinel') add('slow', 250, 0.7);
+            const K = b.agKit || (b.agKit = KITS[Math.max(0, bots.indexOf(b)) % KITS.length]), add = (k, pr, ch) => { if (b.money >= pr && Math.random() < ch) { b.money -= pr; b.nades.push(k); } }; // Bot-Agent: Signatur gratis, 2. Fähigkeit kaufen
+            b.immune = false; if (b.rushT > 0) { b.rushT = 0; b.spdMul = 1; } if (!GL.on && !b.nades.includes(K.sig)) b.nades.push(K.sig); for (const k of K.ab) if (k !== K.sig) add(k, W[k].price, 0.6);
             b.ammo = b.weapon.mag;
         }
         function startRound() {
@@ -5199,6 +5219,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } funLoadout(p); p.weapons[5] = null; p.alive = true; p.health = 100;
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.rk = 0; p.rushT = 0; p.immune = false; STK.on = false; p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); funLoadout(b); }
             placeTeam('T'); placeTeam('CT');
+            if (!DM.on && !GL.on && !DH.on && !EX.on) { const sg = KIT().sig; if ((p.nades[sg] || 0) < NADE_MAX[sg]) { p.nades[sg] = (p.nades[sg] || 0) + 1; syncNadeSlot(p.weapons[4] ? p.weapons[4].def.key : sg); } } // Signatur-Fähigkeit gratis
             bots.forEach(b => { b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; b.lastX = b.x; b.lastZ = b.z; });
             if (DM.on) for (const e of ents) if (!e.remote) dmRespawn(e);
             const car = DM.on ? null : rnd(ents.filter(e => e.team === 'T')); G.bomb.carrier = car; if (car && car.isPlayer) p.weapons[5] = mkWeapon(W.c4);
@@ -5217,10 +5238,10 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function checkRoundEnd() { if (GL.on || DM.on || DH.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; if (aCT === 0) endRound('T', 'Alle Defender eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Attacker eliminiert'); }
         function plantBomb(e) {
             if (G.state !== 'live') return; G.bomb.state = 'planted'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.t = BOMB_TIME; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); bombMesh.rotation.set(0, 0, 0); e.plantT = 0; e.money = Math.min(16000, e.money + 300);
-            if (e.isPlayer) { ultAdd(1); e.weapons[5] = null; e.slot = e.weapons[1] ? 1 : 2; e.switchT = 1; updateVM(); }
+            if (e.isPlayer) { ultAdd(1); e.weapons[5] = null; e.slot = e.weapons[1] ? 1 : 2; e.switchT = 1; updateVM(); } else botUltAdd(e);
             msg('Die Bombe wurde platziert!', '', 3); sfx('plant'); bots.forEach(b => { b.goal = null; b.path = []; });
         }
-        function defuseBomb(e) { if (G.state !== 'live') return; G.bomb.state = 'defused'; bombMesh.visible = false; e.defuseT = 0; e.money = Math.min(16000, e.money + 300); if (e.isPlayer) ultAdd(1); endRound('CT', 'Die Bombe wurde entschärft'); }
+        function defuseBomb(e) { if (G.state !== 'live') return; G.bomb.state = 'defused'; bombMesh.visible = false; e.defuseT = 0; e.money = Math.min(16000, e.money + 300); if (e.isPlayer) ultAdd(1); else botUltAdd(e); endRound('CT', 'Die Bombe wurde entschärft'); }
         function pickupBomb(e) { G.bomb.state = 'carried'; G.bomb.carrier = e; bombMesh.visible = false; if (e.remote && NET.on && NET.host) netSend({ type: 'c4', pid: e.pid }); if (e.isPlayer) { e.weapons[5] = mkWeapon(W.c4); msg('Du hast die Bombe aufgenommen', '', 2); } } function explode() {
             G.bomb.state = 'exploded'; bombMesh.visible = false; sfx('explosion'); whiteFlash = 1; shake = 1; boomMesh.position.set(G.bomb.x, 1, G.bomb.z); boomMesh.visible = true; boomT = 0.7;
             endRound('T', 'Die Bombe ist explodiert');
@@ -5280,7 +5301,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             } else {
                 if (bomb.state === 'planted') {
                     const d = Math.hypot(bomb.x - b.x, bomb.z - b.z);
-                    if (d < 1.8) { b.yaw = lerpAngle(b.yaw, Math.atan2(bomb.x - b.x, bomb.z - b.z), Math.min(1, dt * 8)); if (live) { b.defuseT += dt; if (b.defuseT >= (b.kit ? 5 : 10)) defuseBomb(b); } }
+                    if (d < 1.8) { b.yaw = lerpAngle(b.yaw, Math.atan2(bomb.x - b.x, bomb.z - b.z), Math.min(1, dt * 8)); if (live) { const nd = b.kit ? 5 : 10; if (G.bomb.half && b.defuseT < nd / 2) b.defuseT = nd / 2; b.defuseT += dt; if (b.defuseT >= nd / 2) G.bomb.half = true; if (b.defuseT >= nd) defuseBomb(b); } /* Checkpoint 50 % */ }
                     else { b.defuseT = 0; const gr = cr(bomb.z), gc = cr(bomb.x); if (!b.goal || b.goal.r !== gr || b.goal.c !== gc) setGoal(b, gr, gc); if (!followPath(b, dt)) botMoveToward(b, bomb.x, bomb.z, dt, BOT_SPEED); }
                 }
                 else { const mv = followPath(b, dt); if (!mv) b.waitT -= dt; if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 2 + Math.random() * 4; const c = (G.timer < 70 || Math.random() < 0.55) ? rnd(siteCells[Math.random() < 0.5 ? 'A' : 'B']) : rnd(openCells); setGoal(b, c.r, c.c); } }
@@ -5296,6 +5317,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             return true;
         }
         function botNades(b, dt) {
+            if (b.rushT > 0 && (b.rushT -= dt) <= 0) b.spdMul = 1; if (b.agKit && (b.ult || 0) >= ULT_MAX && G.state === 'live' && !GL.on && !DM.on) botUlt(b); // Bot-Ultimate
             b.nadeT -= dt;
             if (b.nadeT > 0 || !b.nades.length || G.state !== 'live') return;
             b.nadeT = 1.5 + Math.random() * 2.5;
@@ -5552,11 +5574,12 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const p = player; let prog = null;
             if (p.alive && G.state === 'live') {
                 const nearBomb = G.bomb.state === 'planted' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2.0;
-                if (p.team === 'CT' && nearBomb && down('use') && p.speed === 0) { p.defuseT += dt; const need = p.kit ? 5 : 10; prog = { v: p.defuseT / need, txt: 'Entschärfe Bombe…' }; if (p.defuseT >= need) { prog = null; xpEvent('defuse'); if (NET.on && !NET.host) { p.defuseT = 0; netSend({ type: 'defuse' }); p.money = Math.min(16000, p.money + 300); } else defuseBomb(p); } } else p.defuseT = 0;
+                if (p.team === 'CT' && nearBomb && down('use') && p.speed === 0) { const need = p.kit ? 5 : 10; if (G.bomb.half && p.defuseT < need / 2) p.defuseT = need / 2; p.defuseT += dt; if (p.defuseT >= need / 2 && !G.bomb.half) { G.bomb.half = true; tone(1100, 0.12, 0.12, 0, 'sine'); } prog = { v: p.defuseT / need, txt: G.bomb.half ? 'Entschärfe Bombe… · Checkpoint 50 % ✓' : 'Entschärfe Bombe…', cp: 1 }; if (p.defuseT >= need) { prog = null; xpEvent('defuse'); if (NET.on && !NET.host) { p.defuseT = 0; netSend({ type: 'defuse' }); p.money = Math.min(16000, p.money + 300); } else defuseBomb(p); } } else p.defuseT = 0;
                 if (p.team === 'CT' && nearBomb && G.msgT <= 0) $('sub').textContent = `Halte [${keyName(BIND.use)}] zum Entschärfen` + (p.kit ? ' (Kit)' : ''); const inSite = ['A', 'B'].includes(cell(cr(p.z), cr(p.x)));
                 if (p.team === 'T' && p.slot === 5 && p.weapons[5] && mouseDown && inSite && p.speed === 0) { p.plantT += dt; prog = { v: p.plantT / 3, txt: 'Platziere Bombe…' }; if (Math.floor(p.plantT * 3) !== Math.floor((p.plantT - dt) * 3)) sfx('plant'); if (p.plantT >= 3) { prog = null; xpEvent('plant'); if (NET.on && !NET.host) { p.plantT = 0; netSend({ type: 'plant', x: p.x, z: p.z }); p.money = Math.min(16000, p.money + 300); p.weapons[5] = null; p.slot = p.weapons[1] ? 1 : 2; p.switchT = 1; updateVM(); } else plantBomb(p); } } else p.plantT = 0;
                 if (p.team === 'T' && p.weapons[5] && inSite && G.msgT <= 0) $('sub').textContent = p.slot === 5 ? 'Halte Feuertaste zum Platzieren' : 'Taste [5]: Bombe auswählen';
             } else p.defuseT = p.plantT = 0;
+            $('prog').classList.toggle('cp', !!(prog && prog.cp)); // 50-%-Marke beim Entschärfen
             if (prog) { $('prog').style.display = 'block'; $('prog').firstElementChild.style.width = (prog.v * 100) + '%'; $('progtxt').style.display = 'block'; $('progtxt').textContent = prog.txt; } else hideProgress();
         }
         function hideProgress() { $('prog').style.display = 'none'; $('progtxt').style.display = 'none'; }
@@ -5636,7 +5659,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         const SHOP = [
             { name: 'PISTOLEN', items: [{ w: 'glock' }, { w: 'usp' }, { w: 'deagle' }] },
             { name: 'MITTELKLASSE', items: [{ w: 'mp5' }, { w: 'pump' }] }, { name: 'GEWEHRE', items: [{ w: 'ak47' }, { w: 'm4a1' }, { w: 'scout' }, { w: 'awp' }] },
-            { name: 'GRANATEN', items: [{ w: 'he' }, { w: 'flash' }, { w: 'smoke' }, { w: 'molly' }] }, { name: 'TAKTIK', items: [{ w: 'recon' }, { w: 'cluster' }, { w: 'slow' }] }, { name: 'ULTIMATE', ult: true, items: [['scan', 'Team-Scan'], ['heal', 'Heilwelle'], ['strike', 'Luftschlag'], ['rush', 'Adrenalin'], ['ward', 'Bollwerk']].map(([u, label]) => ({ u, label, price: 0 })) }, {
+            { name: 'GRANATEN', items: [{ w: 'he' }, { w: 'flash' }, { w: 'smoke' }, { w: 'molly' }] }, { name: 'TAKTIK', kit: 1, items: [{ w: 'recon' }, { w: 'cluster' }, { w: 'slow' }] }, { name: 'ULTIMATE', ult: true, items: [['scan', 'Team-Scan'], ['heal', 'Heilwelle'], ['strike', 'Luftschlag'], ['rush', 'Adrenalin'], ['ward', 'Bollwerk']].map(([u, label]) => ({ u, label, price: 0 })) }, {
                 name: 'AUSRÜSTUNG', items: [
                     { g: 'kevlar', label: 'Kevlar-Weste', price: 650 },
                     { g: 'helm', label: 'Kevlar + Helm', price: 1000 },
@@ -5657,6 +5680,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         const bar = (v, m) => `<div class="bbar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div>`;
         function renderBuy() {
             const p = player;
+            const tk = SHOP.find(c => c.kit); if (tk) { const K = KIT(); tk.name = 'FÄHIGKEITEN · ' + K.n; tk.items = K.ab.map(w => ({ w, label: W[w].name + (w === K.sig ? ' ★' : '') })); } // ★ = Signatur, jede Runde gratis
             let h = `<div class="bhead"><h3>KAUFMENÜ</h3><div style="display:flex;gap:10px;align-items:center"><div class="bmoney">$ ${p.money}</div><div class="bclose" onclick="closeBuy()">✕</div></div></div><div class="bgrid">`; SHOP.forEach((col, ci) => { if (col.ult) return; // Ultimate: eigene Leiste unten
                 h += `<div class="bcol"><h4>${col.name}</h4>`;
                 col.items.forEach((it, ii) => {
@@ -5674,7 +5698,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 });
                 h += `</div>`;
             });
-            const uc = SHOP.findIndex(c => c.ult); h += `</div>` + (uc < 0 || GL.on || DH.on || EX.on ? '' : `<div class="bult"><span>ULTIMATE</span>${SHOP[uc].items.map((it, ii) => `<div class="card${ultK() === it.u ? ' own' : ''}" data-b="${uc}-${ii}"><b>${it.label}</b><div class="cprice">${ultK() === it.u ? '✓ Gewählt' : ULTS[it.u][1]}</div></div>`).join('')}</div>`) + `<div class="bfoot"><span>🖱️ Klicken zum Kaufen${IS_TOUCH ? '' : ' · Rechtsklick verkaufen'}</span><span>[B] schließen</span></div>`;
+            const uc = SHOP.findIndex(c => c.ult); h += `</div>` + (uc < 0 || GL.on || DH.on || EX.on ? '' : `<div class="bult"><span>ULTIMATE · ${KIT().n}</span><div class="card own"><b>${ULTS[ultK()][0]}</b><div class="cprice">${ULTS[ultK()][1]}</div></div></div>`) + `<div class="bfoot"><span>🖱️ Klicken zum Kaufen${IS_TOUCH ? '' : ' · Rechtsklick verkaufen'}</span><span>[B] schließen</span></div>`;
             if (h !== buyCache) { buyCache = h; $('buy').innerHTML = h; }
         }
         function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); } function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
@@ -5721,8 +5745,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             $('arbar').style.width = Math.min(100, p.armor) + '%';
             $('hpwrap').classList.toggle('low', p.alive && hpv < 30); setT('money', `$ ${p.money}`); setT('wname', !w ? '' : (GL.on && w.def.nade) ? `${w.def.name} Lv.${player.glN[w.def.key] || 1}${player.glG && player.glG[w.def.key] ? ' ⚡' + GL_GLITCH[w.def.key][player.glG[w.def.key]] : ''}` : (skinOf(w.def.key) ? skinOf(w.def.key).n : w.def.name)); { let ue = $('ult'); if (!ue) { ue = document.createElement('div'); ue.id = 'ult'; ue.title = 'Ultimate: Team-Scan (X)'; ue.onclick = useUlt; ue.addEventListener('touchstart', e => { e.stopPropagation(); useUlt(); }, { passive: true }); $('hud').appendChild(ue); } // Ultimate-Anzeige
                 ue.style.visibility = buyOpen ? 'hidden' : '';
-                for (const e of ents) { if (e === p || !e.mesh) continue; if (!e.mesh.userData.outl) enemyOutline(e.mesh); const on = OPT.outOn !== false && e.alive && (GL.on ? !(GL.myTeam && GL.myTeam.members.includes(e)) : foe(e, p)); if (e.mesh.userData.outOn !== on) { e.mesh.userData.outOn = on; for (const o of e.mesh.userData.outl) o.visible = on; } } // Gegner-Umrandung document.body.classList.toggle('imm', !!p.immune && p.alive);
-                if (STK.on) { if (!p.alive || G.state !== 'live') STK.on = false; else { camera.getWorldDirection(_fwd); _ray.set(camera.position, _fwd); _ray.far = 90; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; STK.x = h ? h.point.x : p.x + _fwd.x * 40; STK.z = h ? h.point.z : p.z + _fwd.z * 40; stkRing.position.set(STK.x, 0.08, STK.z); } } stkRing.visible = STK.on; const us = (GL.on || DH.on || EX.on) ? 'x' : (p.ult || 0) + ultK(); if (ue.dataset.sig !== us) { ue.dataset.sig = us; ue.style.display = us === 'x' ? 'none' : ''; const u = p.ult || 0; ue.className = u >= ULT_MAX ? 'rdy' : ''; ue.innerHTML = Array.from({ length: ULT_MAX }, (_, i) => `<i class="${i < u ? 'f' : ''}"></i>`).join('') + `<b>${ULTS[ultK()][0]}</b>`; ue.title = 'Ultimate: ' + ULTS[ultK()][0] + ' (X)'; } }
+                for (const e of ents) { if (e === p || !e.mesh) continue; if (!e.mesh.userData.outl) enemyOutline(e.mesh); const on = OPT.outOn !== false && e.alive && (GL.on ? !(GL.myTeam && GL.myTeam.members.includes(e)) : foe(e, p)); if (e.mesh.userData.outOn !== on) { e.mesh.userData.outOn = on; for (const o of e.mesh.userData.outl) o.visible = on; } } for (const d of decoys) { if (d.name !== 'Decoy' || !d.mesh) continue; if (!d.mesh.userData.outl) enemyOutline(d.mesh); const on = OPT.outOn !== false && d.alive && !(GL.myTeam && d.team === GL.myTeam); if (d.mesh.userData.outOn !== on) { d.mesh.userData.outOn = on; for (const o of d.mesh.userData.outl) o.visible = on; } } // Gegner-Umrandung (auch Gauntlet-Klone) document.body.classList.toggle('imm', !!p.immune && p.alive);
+                if (STK.on) { if (!p.alive || G.state !== 'live') STK.on = false; else { camera.getWorldDirection(_fwd); _ray.set(camera.position, _fwd); _ray.far = 90; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; STK.x = h ? h.point.x : p.x + _fwd.x * 40; STK.z = h ? h.point.z : p.z + _fwd.z * 40; stkRing.position.set(STK.x, 0.08, STK.z); } } stkRing.visible = STK.on; const us = (GL.on || DH.on || EX.on) ? 'x' : (p.ult || 0) + ultK(); if (ue.dataset.sig !== us) { ue.dataset.sig = us; ue.style.display = us === 'x' ? 'none' : ''; const u = p.ult || 0; ue.className = u >= ULT_MAX ? 'rdy' : ''; ue.innerHTML = Array.from({ length: ULT_MAX }, (_, i) => `<i class="${i < u ? 'f' : ''}"></i>`).join('') + `<b>${ULTS[ultK()][0]}</b>`; ue.title = 'Ultimate: ' + ULTS[ultK()][0] + ' (X)'; } } updAbar();
             { const nk = ['he', 'flash', 'smoke', 'molly', 'recon', 'cluster', 'slow'], cur = w ? w.def.key : '', sig = [1, 2, 3, 5].map(i => p.weapons[i] ? p.weapons[i].def.key : '').join() + '|' + nk.map(k => p.nades[k]).join() + '|' + cur, el = $('wlist'); // Waffenliste
                 if (el && el.dataset.sig !== sig) { el.dataset.sig = sig; const row = (i, wp, on) => `<div class="wl${on ? ' on' : ''}">${skinOf(wp.def.key) ? skinOf(wp.def.key).n.split('|')[0].trim() : wp.def.name}<i>${i}</i></div>`, NN = { he: 'HE', flash: 'Flash', smoke: 'Smoke', molly: 'Molly', recon: 'Recon', cluster: 'Cluster', slow: 'Slow' };
                     el.innerHTML = [1, 2, 3].filter(i => p.weapons[i]).map(i => row(i, p.weapons[i], cur === p.weapons[i].def.key)).join('') + (nk.some(k => p.nades[k] > 0) ? '<div class="nd">' + nk.filter(k => p.nades[k] > 0).map(k => `<div class="wl${cur === k ? ' on' : ''}">${NN[k]}${p.nades[k] > 1 ? ' ×' + p.nades[k] : ''}</div>`).join('') + '<i style="font-style:normal;font-size:10px;opacity:.4;align-self:center">4</i></div>' : '') + (p.weapons[5] ? `<div class="wl${cur === 'c4' ? ' on' : ''}">C4<i>5</i></div>` : ''); } }
@@ -5752,12 +5776,34 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         }
         const ULT_MAX = 6; // Ultimate: Kills, Bombe legen & entschärfen laden auf → Taste X (Handy: Symbol antippen) = Team-Scan
         function ultAdd(k) { if (GL.on || DH.on || EX.on) return; const was = player.ult || 0; player.ult = Math.min(ULT_MAX, was + k); if (player.ult === ULT_MAX && was < ULT_MAX) msg('⚡ ULTIMATE BEREIT', IS_TOUCH ? 'Symbol über der Lebensanzeige antippen' : 'Taste X', 2); }
-        const ULTS = { scan: ['Team-Scan', 'Alle Gegner 5 s markiert'], heal: ['Heilwelle', 'Du & Team in der Nähe voll geheilt'], strike: ['Luftschlag', 'Explosion am Fadenkreuz'], rush: ['Adrenalin', '10 s: alles 20 % schneller'], ward: ['Bollwerk', 'Immun gegen Granaten & Fähigkeiten (Runde)'] };
+        const ULTS = { scan: ['Team-Scan', 'Alle Gegner 5 s markiert'], heal: ['Sanitäts-Station', 'Du & Team in der Nähe voll geheilt'], strike: ['Luftschlag', 'Explosion am Fadenkreuz'], rush: ['Adrenalin', '10 s: alles 20 % schneller'], ward: ['Bollwerk', 'Immun gegen Granaten & Fähigkeiten (Runde)'] };
         const STK = { on: false, x: 0, z: 0 }, stkRing = new THREE.Mesh(new THREE.RingGeometry(11.4, 12, 64), new THREE.MeshBasicMaterial({ color: 0xff4f5e, transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide })); stkRing.rotation.x = -Math.PI / 2; stkRing.visible = false; scene.add(stkRing); // Luftschlag: Zielkreis
         function strikeConfirm() { const p = player; if (!STK.on) return; STK.on = false; if ((p.ult || 0) < ULT_MAX || !p.alive) return; p.ult = 0; tone(300, 0.5, 0.16, 0, 'sawtooth', 1200); msg('⚡ LUFTSCHLAG', 'Abwurf!', 1.5);
             launchNade('strike', STK.x, 22, STK.z, 0, -1, 0, p); if (NET.on) netSend({ type: 'nade', k: 'strike', x: STK.x, y: 22, z: STK.z, dx: 0, dy: -1, dz: 0, on: p.name, ot: p.team, ap: NET.pid, lv: 1, g: null }); }
         let ultPref = 'scan'; try { const u = localStorage.getItem('ultk'); if (ULTS[u]) ultPref = u; } catch (e) { }
-        const ultK = () => player.ultK || ultPref;
+        const ultK = () => KIT().ult; // Ultimate fest pro Agent
+        const AB_IC = { he: '💣', flash: '✴️', smoke: '☁️', molly: '🔥', recon: '📡', cluster: '🧨', slow: '❄️' };
+        function selectAbil(i) { const p = player, k = KIT().ab[i]; if (!k || !p.alive || buyOpen || GL.on || DH.on || EX.on) return; if (!(p.nades[k] > 0)) { sfx('empty'); return; } syncNadeSlot(k); if (p.slot !== 4) selectSlot(4); else p.switchT = 0.5; } // C/V bzw. Antippen
+        function updAbar() { // Fähigkeiten-Leiste rechts neben der Ultimate: Ladungen, ★ = Signatur
+            let el = $('abar'); const p = player, off = GL.on || DH.on || EX.on || !p.alive;
+            if (!el) { el = document.createElement('div'); el.id = 'abar'; $('hud').appendChild(el); const go = e => { const d = e.target.closest('[data-ab]'); if (!d) return; e.stopPropagation(); if (e.cancelable) e.preventDefault(); selectAbil(+d.dataset.ab); }; el.addEventListener('touchstart', go, { passive: false }); el.addEventListener('mousedown', go); }
+            const K = KIT(), cur = p.slot === 4 && p.weapons[4] ? p.weapons[4].def.key : '', sig = off ? 'x' : K.id + K.ab.map(k => p.nades[k] || 0).join() + cur;
+            if (el.dataset.sig === sig) return; el.dataset.sig = sig; el.style.display = off ? 'none' : ''; if (off) return;
+            el.innerHTML = K.ab.map((k, i) => `<div data-ab="${i}" class="${p.nades[k] > 0 ? '' : 'e'}${cur === k ? ' on' : ''}" title="${W[k].name}${k === K.sig ? ' – Signatur, jede Runde gratis' : ''}">${AB_IC[k]}${IS_TOUCH ? '' : `<i>${i ? 'V' : 'C'}</i>`}${k === K.sig ? '<u>★</u>' : ''}<b>${p.nades[k] || 0}</b></div>`).join('');
+        }
+        function botUltAdd(e) { if (e && !e.isPlayer && !e.remote && e.agKit && !GL.on && !DH.on && !EX.on && !DM.on) e.ult = Math.min(ULT_MAX, (e.ult || 0) + 1); }
+        function botUlt(b) { // Bot löst seine Agenten-Ultimate aus (gleiche Effekte wie beim Spieler)
+            const k = b.agKit.ult, t = b.target, mate = !foe(b, player);
+            if (k === 'heal' ? b.health > 60 : k !== 'ward' && !t) return;
+            b.ult = 0; tone(300, 0.5, 0.16, 0, 'sawtooth', 1200);
+            if (k === 'heal') { for (const e of ents) if (e.alive && (e === b || (!foe(e, b) && Math.hypot(e.x - b.x, e.z - b.z) < 12))) e.health = Math.max(e.health, e.maxHP || 100); burst(b.x, 1, b.z, 0x7dffb0, 26, 5); }
+            else if (k === 'rush') { b.rushT = 10; b.spdMul = 1.2; }
+            else if (k === 'ward') b.immune = true;
+            else if (k === 'strike') { launchNade('strike', t.x, 22, t.z, 0, -1, 0, b); if (NET.on && NET.host) netSend({ type: 'nade', k: 'strike', x: t.x, y: 22, z: t.z, dx: 0, dy: -1, dz: 0, on: b.name, ot: b.team, ap: null, lv: 1, g: null }); }
+            else if (mate) { for (const e of ents) if (e.alive && foe(e, b)) { G.spotted.set(e, now + 3); let v = reveals.find(o => o.e === e); if (!v) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: revealTex, depthTest: false, transparent: true })); sp.scale.set(0.7, 0.7, 1); sp.renderOrder = 999; scene.add(sp); v = { e, sp, t: 0 }; reveals.push(v); } v.t = 5; } }
+            else { for (const m of bots) { if (!m.alive || foe(m, b) || m.target) continue; let f = null, fd = 1e9; for (const e of ents) if (e.alive && foe(e, m)) { const d = Math.hypot(e.x - m.x, e.z - m.z); if (d < fd) { fd = d; f = e; } } if (f) setGoal(m, cr(f.z), cr(f.x)); } msg('⚠ GEGNER-SCAN', 'Deine Position wurde aufgedeckt', 2); return; }
+            if (mate) msg('⚡ ' + b.name + ': ' + ULTS[k][0].toUpperCase(), ULTS[k][1], 1.5);
+        }
         function useUlt() { const p = player; if ((p.ult || 0) < ULT_MAX || !p.alive || G.state !== 'live' || GL.on || DH.on || EX.on) return; const k = ultK(); if (k === 'strike') { STK.on = !STK.on; if (STK.on) msg('🎯 LUFTSCHLAG', IS_TOUCH ? 'Zielen · Feuerknopf = Abwurf · Rauten = Abbrechen' : 'Zielen · Linksklick = Abwurf · X = Abbrechen', 3); return; } p.ult = 0; tone(300, 0.5, 0.16, 0, 'sawtooth', 1200); msg('⚡ ' + ULTS[k][0].toUpperCase(), ULTS[k][1], 2);
             if (k === 'heal') { for (const e of ents) if (e.alive && (e === p || (!foe(e, p) && Math.hypot(e.x - p.x, e.z - p.z) < 12))) e.health = Math.max(e.health, e.maxHP || 100); burst(p.x, 1, p.z, 0x7dffb0, 26, 5); return; }
             if (k === 'rush') { p.rushT = 10; return; } if (k === 'ward') { p.immune = true; return; }
@@ -5832,6 +5878,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (e.code === BIND.board) { e.preventDefault(); renderBoard(); $('board').style.display = 'block'; }
             if (e.code === BIND.buy) { buyOpen ? closeBuy() : openBuy(); }
             if (e.code === 'KeyX') useUlt(); // Ultimate
+            if ((e.code === 'KeyC' || e.code === 'KeyV') && !Object.values(BIND).includes(e.code)) selectAbil(e.code === 'KeyC' ? 0 : 1); // Fähigkeiten des Agenten
             if (e.code === BIND.reload) startReload();
             if (e.code === BIND.lastw) selectSlot(player.lastSlot);
             if (e.code === BIND.drop) dropCurrent(); if (e.code === BIND.abil) glUseAbility(); if (e.code === BIND.inspect && !(GL.on && e.code === BIND.abil)) inspectWeapon(); if (/^Digit[0-9]$/.test(e.code)) { const n = +e.code[5]; if (!buyOpen && [1, 2, 3, 4, 5].includes(n)) { if (n === 4 && player.slot === 4) cycleNade(); else selectSlot(n); } }
@@ -5901,6 +5948,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <div class="invbox" id="shopBox" style="max-height:56vh;overflow-y:auto">
  <h5 style="margin:4px 0 8px">🎨 COMMUNITY-SKINS · Ersteller bekommt 50 % als Coins <button id="btnMkSkin" style="margin-left:10px;padding:3px 12px;font-size:13px">＋ Skin erstellen</button></h5>
  <div class="invrow" style="flex-wrap:wrap;justify-content:center;margin-bottom:14px">${ccards || '<span style="color:#8fa3b8">Noch keine Community-Skins – erstelle den ersten!</span>'}</div>
+ <h5 style="margin:4px 0 8px">👤 AGENTEN-SKINS · danach im Inventar ausrüsten</h5>
+ <div class="invrow" style="flex-wrap:wrap;justify-content:center;margin-bottom:14px">${Object.entries(AG_SKIN).map(([id, [kid, pr]]) => { const a = AGENTS.find(x => x.id === id), k = KITS.find(x => x.id === kid), has = agOwn.includes(id); return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-agshop="${id}" style="border-color:var(--hl);min-width:150px"><div class="agprev" style="font-size:26px;line-height:44px">${k.ic}</div><b>${a.n}</b><span>für ${k.n} · ${k.role}</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; }).join('')}</div>
  <h5 style="margin:4px 0 8px">📦 OFFIZIELLE SKINS</h5>
  <div class="invrow" style="flex-wrap:wrap;justify-content:center">${cards}</div></div>
  <div><button id="btnInvGo">🎒 Inventar</button><button id="btnCasesGo">📦 Cases</button><button id="btnPrices">💲 Preise anpassen</button><button id="btnBack">Zurück</button></div>`);
@@ -5911,6 +5960,10 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
                 PRG.st.coins -= pr; localStorage.setItem('prog', JSON.stringify(PRG)); store.inv.push(sk.id); saveStore(); sfx('win'); toast('🎁 Gekauft: ' + sk.n, 'Jetzt im Inventar – dort ausrüsten'); showShop(true);
             });
+            document.querySelectorAll('[data-agshop]').forEach(el => el.onclick = () => { const id = el.dataset.agshop, [kid, pr] = AG_SKIN[id], a = AGENTS.find(x => x.id === id);
+                if (agOwn.includes(id)) return toast('Schon im Inventar', a.n);
+                if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
+                PRG.st.coins -= pr; localStorage.setItem('prog', JSON.stringify(PRG)); agOwn.push(id); localStorage.setItem('agskins', JSON.stringify(agOwn)); sfx('win'); toast('🎁 Gekauft: ' + a.n, 'Skin für ' + KITS.find(k => k.id === kid).n + ' – im Inventar ausrüsten'); showShop(true); });
             $('btnMkSkin').onclick = () => showSkinMaker();
             document.querySelectorAll('[data-rmsk]').forEach(el => el.onclick = e => { e.stopPropagation(); if (!confirm('Skin wirklich aus dem Shop löschen?')) return; accApi('rmskin', { tok: ACC.tok, id: el.dataset.rmsk }).then(r => { if (!r.ok) return toast('Fehler', r.err || ''); loadSkins(() => showShop(true)); }); });
             document.querySelectorAll('[data-cshop]').forEach(el => el.onclick = () => {
@@ -6005,7 +6058,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             } else if (INV.tab === 'ag') {
                 body = `<div class="invpanel" style="width:100%;display:flex;gap:16px;align-items:center;justify-content:center;margin-bottom:6px"><div id="agp3d" style="width:240px;height:300px;position:relative;background:radial-gradient(ellipse at 50% 70%,rgba(var(--hl-rgb),.18),transparent 70%)"></div><div style="display:flex;flex-direction:column;gap:6px"><h5 style="margin:0">SO SIEHT DEIN AGENT AUS</h5>${['T', 'CT'].map(t => `<button data-agt="${t}" style="${AGP.team === t ? 'background:var(--hl);color:#111' : ''}">${t === 'T' ? 'Als Attacker' : 'Als Defender'}</button>`).join('')}<span style="font-size:11px;color:#8fa3b8">Ziehen zum Drehen</span></div></div>`;
                 const agCol = (a, k, def) => '#' + new THREE.Color(a[k] !== undefined ? a[k] : def).getHexString();
-                body += `<div class="invpanel" style="width:100%"><h5>🎩 ZUBEHÖR · eins aufsetzbar</h5><div class="invrow" style="margin-bottom:10px">${ACCS.map(a => { const ok = accOk(a), on = duckHat() === a.id; return `<div class="inv ${on ? 'eq' : ''} ${ok ? '' : 'locked'}" data-acc="${a.id}" style="border-color:#ffd84a;min-width:110px"><div class="agprev" style="font-size:26px;line-height:44px">${a.ic}</div><b style="color:#ffd84a">${a.n}</b><span>${ok ? (on ? '✓ Aufgesetzt' : 'Klicken zum Aufsetzen') : '🔒 ' + a.need + (a.k ? ' (' + Math.min(a.max, PRG.st[a.k] || 0) + '/' + a.max + ')' : ' (Lvl ' + lvlOf(PRG.xp) + ')')}</span></div>`; }).join('')}</div><h5>SPIELERMODELL · ${CFG.agTheme ? '⚠ Der Host kann ein Agenten-Thema erzwingen' : 'gilt in allen Modi'}</h5><div class="invrow">${AGENTS.map(a => { const on = store.agent === a.id; return `<div class="inv ${on ? 'eq' : ''}" data-agent="${a.id}" style="border-color:${on ? 'var(--hl)' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? 'var(--hl)' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>`;
+                body += `<div class="invpanel" style="width:100%"><h5>🎯 AGENT · bestimmt Fähigkeiten & Ultimate</h5><div class="invrow" style="margin-bottom:10px;flex-wrap:wrap">${KITS.map(k => { const on = KIT().id === k.id; return `<div class="inv ${on ? 'eq' : ''}" data-kit="${k.id}" style="border-color:${on ? 'var(--hl)' : '#556'};min-width:150px"><div class="agprev" style="font-size:26px;line-height:44px">${k.ic}</div><b style="color:${on ? 'var(--hl)' : '#ddd'}">${k.n} · ${k.role}</b><span>${k.ab.map(w => W[w].name + (w === k.sig ? ' ★' : '')).join(' · ')}</span><span>⚡ ${ULTS[k.ult][0]}</span><span>${on ? '✓ Ausgewählt' : k.d}</span></div>`; }).join('')}</div></div>`;
+                body += `<div class="invpanel" style="width:100%"><h5>🎩 ZUBEHÖR · eins aufsetzbar</h5><div class="invrow" style="margin-bottom:10px">${ACCS.map(a => { const ok = accOk(a), on = duckHat() === a.id; return `<div class="inv ${on ? 'eq' : ''} ${ok ? '' : 'locked'}" data-acc="${a.id}" style="border-color:#ffd84a;min-width:110px"><div class="agprev" style="font-size:26px;line-height:44px">${a.ic}</div><b style="color:#ffd84a">${a.n}</b><span>${ok ? (on ? '✓ Aufgesetzt' : 'Klicken zum Aufsetzen') : '🔒 ' + a.need + (a.k ? ' (' + Math.min(a.max, PRG.st[a.k] || 0) + '/' + a.max + ')' : ' (Lvl ' + lvlOf(PRG.xp) + ')')}</span></div>`; }).join('')}</div><h5>SPIELERMODELL · ${CFG.agTheme ? '⚠ Der Host kann ein Agenten-Thema erzwingen' : 'gilt in allen Modi'}</h5><div class="invrow">${AGENTS.filter(a => !AG_SKIN[a.id] || AG_SKIN[a.id][0] === KIT().id).map(a => { const on = store.agent === a.id, lk = !agSkinOk(a.id); return `<div class="inv ${on ? 'eq' : ''}${lk ? ' locked' : ''}" data-agent="${a.id}" style="border-color:${on ? 'var(--hl)' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? 'var(--hl)' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${lk ? '🔒 Shop · 🪙 ' + AG_SKIN[a.id][1] : on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>`;
             } else {
                 // Wraps: jede Waffe ein Feld – Bild oder „+ PNG"
                 const WK = ['ak47', 'm4a1', 'awp', 'scout', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
@@ -6026,7 +6080,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             document.querySelectorAll('[data-eqnone]').forEach(el => el.onclick = () => { store.equip[el.dataset.eqnone] = undefined; saveStore(); applySkins(); showInventory(); });
             { const gd = document.querySelector('[data-agent="duck_gold"]'); if (gd && !((PRG.st.ducks || 0) >= 100)) { gd.classList.add('locked'); const sp = gd.querySelector('span:last-child'); if (sp) sp.textContent = '🔒 100 Enten erlegen (' + (PRG.st.ducks || 0) + '/100)'; } }
             document.querySelectorAll('[data-acc]').forEach(el => el.onclick = () => { const a = ACCS.find(x => x.id === el.dataset.acc); if (!accOk(a)) return toast('🔒 ' + a.n, a.need); localStorage.setItem('duckhat', duckHat() === a.id ? '0' : a.id); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent, hat: duckHat() || 0 }); showInventory(); });
-            document.querySelectorAll('[data-agent]').forEach(el => el.onclick = () => { if (el.dataset.agent === 'duck_gold' && !((PRG.st.ducks || 0) >= 100)) return toast('🔒 Goldente', 'Erlege 100 Enten in der Entenjagd'); store.agent = el.dataset.agent; localStorage.setItem('agent', store.agent); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent, hat: duckHat() || 0 }); showInventory(); });
+            document.querySelectorAll('[data-kit]').forEach(el => el.onclick = () => { kitId = el.dataset.kit; localStorage.setItem('kit', kitId); if (!agSkinOk(store.agent)) { store.agent = 'std'; localStorage.setItem('agent', 'std'); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent, hat: duckHat() || 0 }); } sfx('buy'); showInventory(); });
+            document.querySelectorAll('[data-agent]').forEach(el => el.onclick = () => { if (!agSkinOk(el.dataset.agent)) return toast('🔒 ' + AGENTS.find(a => a.id === el.dataset.agent).n, 'Im Shop für 🪙 ' + AG_SKIN[el.dataset.agent][1] + ' Coins kaufen'); if (el.dataset.agent === 'duck_gold' && !((PRG.st.ducks || 0) >= 100)) return toast('🔒 Goldente', 'Erlege 100 Enten in der Entenjagd'); store.agent = el.dataset.agent; localStorage.setItem('agent', store.agent); if (menuChar) { scene.remove(menuChar.group); menuChar = null; } if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: store.agent, hat: duckHat() || 0 }); showInventory(); });
             let pendKey = null; const stf = $('stf');
             if (stf) stf.onchange = e => {
                 const f = e.target.files[0]; if (!f || !pendKey) return;
@@ -6109,15 +6164,16 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 { go: () => showMenu(), t: '👋 Willkommen bei CLUTCH', d: 'Taktik-Shooter direkt im Browser – offline gegen Bots oder online mit Freunden. Ich zeige Dir jetzt Seite für Seite, was Du alles machen kannst.<br><br>Mit <b>Weiter</b> oder den Pfeiltasten geht\'s durch, <b>Esc</b> beendet.' },
                 { go: () => nav('play'), sel: '#csplayview', t: '▶ Spielen', d: 'Hier startest Du ein Spiel – <b>Offline</b> gegen Bots oder <b>Online</b> über eine Lobby:<br>• <b>Wettkampf</b>: T legen die Bombe, CT verteidigen oder entschärfen<br>• <b>Deathmatch</b>: jeder gegen jeden, Waffen gratis<br>• <b>Gauntlet</b>: Duo-Turnier mit Draft, Perks & Fähigkeiten<br>• <b>1v1</b>: Duelle mit Kaufphase, Erster mit 5 Siegen<br>• <b>Entenjagd</b>: Enten jagen mit Bestenliste<br>Online wählst Du Dein Team in der Lobby.' },
                 IS_TOUCH
-                    ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
+                    ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br><b>Fähigkeiten</b>: die zwei Felder rechts über der Lebensanzeige antippen, dann Feuerknopf = werfen · <b>Ultimate</b>: Rauten antippen.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
                     : { t: '⌨️ Steuerung', d: 'Laufen ' + ['fwd', 'left', 'back', 'right'].map(k).join(' ') + ' · Umsehen mit der Maus · Schießen <b class="tk">Linksklick</b> · Zielfernrohr <b class="tk">Rechtsklick</b><br>Springen ' + k('jump') + ' · Ducken ' + k('crouch') + ' · Leise gehen ' + k('walk') + '<br>Nachladen ' + k('reload') + ' · Benutzen/Entschärfen ' + k('use') + ' · Waffe fallen lassen ' + k('drop') + '<br>Letzte Waffe ' + k('lastw') + ' · Waffe inspizieren ' + k('inspect') + ' · Waffen <b class="tk">1–5</b> · Scoreboard ' + k('board') + '<br>Alle Tasten kannst Du in den ⚙️ Einstellungen ändern.' },
                 { t: '💰 Kaufen', d: 'Zu Rundenbeginn öffnet sich im Spiel das <b>Kaufmenü</b> (' + (IS_TOUCH ? 'Button 🛒' : k('buy')) + '). Mit Deinem Geld kaufst Du Waffen, Rüstung, Granaten und das Entschärfer-Kit.<br>' + (IS_TOUCH ? '' : '<b>Rechtsklick</b> verkauft, was Du in dieser Runde gekauft hast.<br>') + 'Geld gibt es für Kills und Rundenausgänge – wer gewinnt, bekommt mehr.' },
+                { go: () => { INV.tab = 'ag'; showInventory(); }, sel: '[data-kit]', t: '🎯 Agenten & Fähigkeiten', d: 'Wie in Valorant spielst Du einen <b>Agenten</b> mit eigenem Kit – Sturm, Nebel, Falke, Frost oder Sani. Gewählt wird er im Inventar unter <b>👤 Agenten</b>.<br>Jeder hat <b>zwei Fähigkeiten</b>: die <b>Signatur ★</b> gibt es jede Runde gratis, weitere Ladungen kaufst Du im Kaufmenü. Normale Granaten kann jeder kaufen.<br>' + (IS_TOUCH ? 'Fähigkeit wählen: Feld über der Lebensanzeige antippen · Ultimate: Rauten antippen.' : 'Fähigkeit wählen: <b class="tk">C</b> / <b class="tk">V</b> · werfen: <b class="tk">Linksklick</b> · Ultimate: <b class="tk">X</b>') + '<br>Die <b>Ultimate</b> gehört fest zum Agenten und lädt sich über Kills, Bombe legen und entschärfen auf.<br><b>Spike-Checkpoint</b>: Wer 50 % entschärft hat, macht beim nächsten Versuch ab 50 % weiter.' },
                 { go: () => { INV.tab = 'sk'; INV.wk = null; showInventory(); }, sel: '.invgrid', t: '🎒 Inventar – Skins', d: 'Links siehst Du alle Waffen mit dem aktuell ausgerüsteten Skin, rechts alle Skins der gewählten Waffe.<br>Klick auf einen Skin = <b>ausrüsten</b>. Mit 🔒 markierte Skins fehlen Dir noch.' },
                 { go: () => { INV.tab = 'sk'; INV.wk = 'knife'; showInventory(); }, sel: '.invpanel h5', t: '🔪 Dein Messer', d: 'Beim Messer wählst Du hier das <b>Modell</b>: <b>Butterfly</b> oder <b>Karambit</b>. Alle Messer-Skins passen auf beide.' },
-                { go: () => { INV.tab = 'ag'; showInventory(); }, sel: '.invbox', t: '👤 Agenten & Zubehör', d: 'Oben das <b>Zubehör</b> – Entenhut, Partyhut, Sonnenbrille, Krone … Freigeschaltet wird es über Kills, Matches, Siege und Level.<br>Darunter wählst Du Dein <b>Spielermodell</b>. Mitspieler sehen beides.' },
+                { go: () => { INV.tab = 'ag'; showInventory(); }, sel: '.invbox', t: '👤 Agenten & Zubehör', d: 'Oben wählst Du Deinen <b>Agenten</b>, darunter das <b>Zubehör</b> – Entenhut, Partyhut, Sonnenbrille, Krone … Freigeschaltet wird es über Kills, Matches, Siege und Level.<br>Ganz unten das <b>Spielermodell</b>: die Skins Deines Agenten (im 🪙 Shop kaufen) und die Enten. Mitspieler sehen alles.' },
                 { go: () => { INV.tab = 'wr'; showInventory(); }, sel: '.invbox', t: '🖼 Wraps', d: 'Lege eigene <b>PNG-Bilder</b> auf Deine Waffen – ein Wrap ersetzt den Skin.' },
                 { go: () => { INV.tab = 'sk'; showCases(); }, sel: '#reelbox', t: '📦 Cases', d: 'Für jedes beendete Match bekommst Du ein <b>Case</b>. Hier öffnest Du es – der Skin landet sofort im Inventar.<br>Bei <b>🎰 Gamble</b> kannst Du Skins eintauschen und auf bessere hoffen.' },
-                { go: () => showShop(true), sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Oben die <b>Community-Skins</b> anderer Spieler, darunter alle offiziellen Skins.' },
+                { go: () => showShop(true), sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Oben die <b>Community-Skins</b> anderer Spieler, dann die <b>Agenten-Skins</b> (jeder gehört zu einem Agenten) und darunter alle offiziellen Skins.' },
                 { go: () => { if (ACC) { showSkinMaker(); const m = $('skMode'); if (m) { m.value = 'paint'; m.onchange(); } } else showShop(true); }, sel: () => ACC ? '.invbox' : '#btnMkSkin', t: '🎨 Skin-Editor', d: 'Erstelle eigene Skins: Muster und Farben wählen – oder <b>selbst malen</b> mit Pinsel, Radierer, Pipette und Spiegeln.<br>Veröffentlichte Skins erscheinen für alle im Shop. Kauft jemand Deinen Skin, bekommst Du <b>50 % als Coins</b>.' + (ACC ? '' : '<br><i>Zum Erstellen brauchst Du einen Account.</i>') },
                 { go: () => showMenu(), sel: '#ctAcc', t: '⭐ Fortschritt & Account', d: 'Für alles im Spiel gibt es <b>XP</b> – steige im Level auf, verdiene Ränge bis zur Global Elite und schalte <b>Erfolge</b> frei.<br>Mit einem <b>Account</b> ist alles auf jedem Gerät da: Skins, Coins, Fortschritt, Einstellungen.' },
                 { go: () => showMenu(), sel: '[data-nav="maps"]', t: '🛠 Map- & Arena-Editor', d: 'Baue eigene <b>Karten</b> für Wettkampf & Deathmatch oder <b>Arenen</b> für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites – und spiele sie direkt, auch online.' },
@@ -6596,7 +6652,38 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 2.5 „ULTIMATE"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 2.6 „AGENTEN"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 AGENTEN MIT KIT</p>
+ CLUTCH wird zur Mischung aus CS und Valorant: Du spielst jetzt einen von <b>fünf Agenten</b> – realistisch, nur mit Ausrüstung und Technik:<br>
+ · <b>Sturm</b> (Duelist) – Blendgranate ★, Cluster · Ultimate <b>Adrenalin</b><br>
+ · <b>Nebel</b> (Controller) – Rauch ★, Molotov · Ultimate <b>Luftschlag</b><br>
+ · <b>Falke</b> (Initiator) – Recon-Pfeil ★, Blendgranate · Ultimate <b>Team-Scan</b><br>
+ · <b>Frost</b> (Sentinel) – Kälteschaum ★, HE · Ultimate <b>Bollwerk</b><br>
+ · <b>Sani</b> (Sentinel) – Rauch ★, Kälteschaum · Ultimate <b>Sanitäts-Station</b><br>
+ Die <b>Signatur ★</b> gibt es jede Runde gratis, weitere Ladungen kaufst Du in der Spalte <b>Fähigkeiten</b>. Normale Granaten bleiben für alle kaufbar.<br>
+ Die <b>Ultimate gehört fest zum Agenten</b> – gewählt wird im Inventar unter 👤 Agenten.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🖥️ FÄHIGKEITEN-LEISTE</p>
+ Neben der Ultimate zeigt das HUD Deine zwei Fähigkeiten mit Ladungen.<br>
+ PC: <b>C</b> / <b>V</b> wählt die Fähigkeit, Linksklick wirft · Handy: Feld antippen, Feuerknopf wirft.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💣 SPIKE-CHECKPOINT</p>
+ Wer die Bombe zu <b>50 %</b> entschärft hat, macht beim nächsten Versuch dort weiter – Marke im Balken und Signalton.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👤 AGENTEN-SKINS IM SHOP</p>
+ Elite, Wüstenfuchs, Arktis, Neon, Schatten und Dschungel gehören jetzt je zu einem Agenten und werden im <b>🪙 Shop</b> gekauft. Enten bleiben frei wählbar.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🤖 BOTS</p>
+ Bots spielen jetzt ebenfalls Agenten: Signatur gratis, zweite Fähigkeit gekauft – und sie <b>laden ihre Ultimate auf und setzen sie ein</b>.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚔️ GAUNTLET</p>
+ Gegnerische <b>Klone</b> haben jetzt auch die rote Umrandung.<br>
+ Umbenannt: Slow-Orb → <b>Kälteschaum</b>, Heilwelle → <b>Sanitäts-Station</b>.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 2.5 „ULTIMATE"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚡ ULTIMATES</p>
@@ -7084,7 +7171,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 2.5 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 2.6 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
