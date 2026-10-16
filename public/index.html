@@ -3843,7 +3843,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 mk(0.06, 0.07, 0.02, black, -0.12, 1.73, 0.245, 0, 1); mk(0.06, 0.07, 0.02, black, 0.12, 1.73, 0.245, 0, 1);
                 if (AG.ring) mk(0.42, 0.05, 0.42, M(AG.ring), 0, 1.47, 0.04);
                 mk(0.32, 0.2, 0.22, bodyM, 0, 1.22, -0.42); mk(0.1, 0.46, 0.46, wingM, -0.41, 1.05, -0.05); mk(0.16, 0.42, 0.16, wingM, 0.42, 1.1, 0.25);
-                mk(0.12, 0.1, 0.22, M(T ? 0xd04040 : 0x4a7dff), -0.47, 1.18, -0.05, 0, 1); // Team-Armbinde
+                const tm = M(T ? 0xe02a2a : 0x3f7bff); mk(0.13, 0.16, 0.5, tm, -0.47, 1.15, -0.05, 0, 1); mk(0.2, 0.16, 0.2, tm, 0.5, 1.15, 0.25, 0, 1); // Team-Binden an beiden Flügeln
+                if (T) { mk(0.44, 0.09, 0.44, tm, 0, 1.78, 0.04, 0, 1); mk(0.14, 0.2, 0.06, tm, 0, 1.68, -0.18, 0, 1); mk(0.46, 0.1, 0.46, tm, 0, 1.47, 0.04, 0, 1); } // Attacker: rotes Kopftuch + Halstuch
+                else mk(0.42, 0.08, 0.42, tm, 0, 1.88, 0.04, 0, 1); // Defender: blaue Kappe
                 const legL = mk(0.12, 0.65, 0.12, orange, -0.16, 0.33, 0, 'legs', 1), legR = mk(0.12, 0.65, 0.12, orange, 0.16, 0.33, 0, 'legs', 1);
                 mk(0.24, 0.05, 0.32, orange, -0.16, 0.025, 0.08, 0, 1); mk(0.24, 0.05, 0.32, orange, 0.16, 0.025, 0.08, 0, 1); mk(0.08, 0.12, 0.75, M(0x222222), 0.3, 1.12, 0.5);
                 const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.3, 1.12, 0.95); fl.visible = false; g.add(fl);
@@ -3963,7 +3965,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             for (const sm of smokes) { for (const p of sm.im.userData.P) { const px = p.x - o.x, py = p.y - o.y, pz = p.z - o.z, t = px * d.x + py * d.y + pz * d.z; if (t < 0 || t > len) continue; const dist = Math.hypot(px - d.x * t, py - d.y * t, pz - d.z * t); if (dist < 1.7) p.hole = Math.max(p.hole, 1 - dist / 2.1); }
                 const steps = Math.ceil(len / (SV * 0.5)); for (let i = 1; i <= steps; i++) { const t = i * len / steps, k = Math.floor((o.x + d.x * t) / SV) + ',' + Math.floor((o.z + d.z * t) / SV); if (sm.blk.vox.has(k)) sm.blk.vox.set(k, 1.4); } } }
         const NADE_GRAV = 26, NADE_POW = 16; const smokePuffGeo = new THREE.SphereGeometry(1, 12, 10);
-        function clearNades() { for (const r of recons) { scene.remove(r.ring); scene.remove(r.dart); } recons.length = 0; for (const s of slows) scene.remove(s.grp); slows.length = 0; for (const v of reveals) scene.remove(v.sp); reveals.length = 0; for (const n of nades) scene.remove(n.mesh); nades.length = 0; for (const s of smokes) scene.remove(s.grp); smokes.length = 0; smokeBlock.length = 0; for (const f of fires) scene.remove(f.grp); fires.length = 0; blindT = 0; bots.forEach(b => b.blindT = 0); } const NADE_COL = { strike: 0xff4f5e, he: 0x3f4a35, smoke: 0x6a6f72, flash: 0xb8bcc0, molly: 0x7a4a18, recon: 0x4fd8ff, cluster: 0xe2457a, slow: 0x9fd8ff };
+        function clearNades() { for (const r of recons) { scene.remove(r.ring); scene.remove(r.dart); } recons.length = 0; for (const s of slows) scene.remove(s.grp); slows.length = 0; for (const v of reveals) scene.remove(v.sp); reveals.length = 0; for (const n of nades) scene.remove(n.mesh); nades.length = 0; for (const s of smokes) scene.remove(s.grp); smokes.length = 0; smokeBlock.length = 0; for (const f of fires) scene.remove(f.grp); fires.length = 0; for (const b of booms) scene.remove(b.ball, b.core, b.ring, b.scorch); booms.length = 0; blindT = 0; bots.forEach(b => b.blindT = 0); } const NADE_COL = { strike: 0xff4f5e, he: 0x3f4a35, smoke: 0x6a6f72, flash: 0xb8bcc0, molly: 0x7a4a18, recon: 0x4fd8ff, cluster: 0xe2457a, slow: 0x9fd8ff };
         const nadeLv = (owner, key) => (GL.on && owner && owner.glN && owner.glN[key]) ? owner.glN[key] : 1;
         function launchNade(key, x, y, z, dx, dy, dz, owner, lvOv, gOv) {
             const lv = lvOv || nadeLv(owner, key);
@@ -4005,15 +4007,26 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         function throwNade(def) {
             const p = player; p.nades[def.key] = Math.max(0, p.nades[def.key] - 1);
-            camera.getWorldDirection(_fwd);
+            camera.getWorldDirection(_fwd); if (p.vx) { _fwd.x += p.vx * 0.55 / NADE_POW; _fwd.z += p.vz * 0.55 / NADE_POW; } // Laufschwung wird mitgegeben
             launchNade(def.key, p.x + _fwd.x * 0.6, p.y + p.eyeH - 0.15, p.z + _fwd.z * 0.6, _fwd.x, _fwd.y, _fwd.z, p);
             if (NET.on) netSend({ type: 'nade', k: def.key, x: p.x + _fwd.x * 0.6, y: p.y + p.eyeH - 0.15, z: p.z + _fwd.z * 0.6, dx: _fwd.x, dy: _fwd.y, dz: _fwd.z, on: p.name, ot: p.team, ap: NET.pid, lv: GL.on ? (p.glN[def.key] || 1) : 1, g: GL.on ? (p.glG[def.key] || null) : null }); p.switchT = 1; syncNadeSlot(def.key);
         }
+        const booms = []; // HE-Effekte: Feuerball, Druckwelle, Brandfleck
+        function heFx(x, y, z, R, mini) { const A = (c, o) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: o, depthWrite: false, blending: THREE.AdditiveBlending });
+            const ball = new THREE.Mesh(smokePuffGeo, A(0xffa040, 1)), core = new THREE.Mesh(smokePuffGeo, A(0xfff0c0, 1)), ring = new THREE.Mesh(new THREE.RingGeometry(0.8, 1, 48), new THREE.MeshBasicMaterial({ color: 0xffd8a0, transparent: true, opacity: 0.7, depthWrite: false, side: THREE.DoubleSide })), scorch = new THREE.Mesh(new THREE.CircleGeometry(R * 0.22, 24), new THREE.MeshBasicMaterial({ color: 0x120c08, transparent: true, opacity: 0.6, depthWrite: false }));
+            const gy = Math.max(0, y - 0.09); ball.position.set(x, y + 0.4, z); core.position.copy(ball.position); ring.rotation.x = scorch.rotation.x = -Math.PI / 2; ring.position.set(x, gy + 0.06, z); scorch.position.set(x, gy + 0.02, z); scene.add(ball, core, ring, scorch); booms.push({ ball, core, ring, scorch, R, t: 0, mini });
+            const p = player, d = Math.hypot(p.x - x, p.z - z); if (d < 28) shake = Math.max(shake, (mini ? 0.35 : 0.9) * (1 - d / 28) + 0.1);
+            if (!mini) tone(70, 0.5, 0.22, 0, 'sine', 32); // tiefer Wumms
+            if (p.alive && !p.immune && d < R && d > 0.1 && hasLOS(x, y + 0.3, z, p.x, (p.y || 0) + 1, p.z)) { const k = (mini ? 4 : 9) * (1 - d / R); if (p.vx === undefined) p.vx = p.vz = 0; p.vx += (p.x - x) / d * k; p.vz += (p.z - z) / d * k; } } // Rückstoß
+        function updBooms(dt) { for (let i = booms.length - 1; i >= 0; i--) { const b = booms[i]; b.t += dt; const t = b.t, s = b.mini ? 0.55 : 1, e = 1 - Math.pow(1 - Math.min(1, t / 0.3), 3);
+            b.ball.scale.setScalar(Math.max(0.01, s * (0.5 + e * b.R * 0.18))); b.ball.material.opacity = Math.max(0, 1 - t / 0.55); b.core.scale.setScalar(Math.max(0.01, s * (0.3 + e * b.R * 0.09))); b.core.material.opacity = Math.max(0, 1 - t / 0.25);
+            b.ring.scale.setScalar(0.5 + Math.min(1, t / 0.35) * b.R); b.ring.material.opacity = 0.7 * Math.max(0, 1 - t / 0.4); b.scorch.material.opacity = 0.6 * Math.min(1, Math.max(0, (9 - t) / 2));
+            if (t > 0.6 && b.ball.parent) scene.remove(b.ball, b.core, b.ring); if (t > 9) { scene.remove(b.scorch); booms.splice(i, 1); } } }
         function nadeBoom(n) {
             const lv = n.lv || nadeLv(n.owner, n.key);
             if (n.key === 'he') {
                 const mega = lv >= 3 && n.g === 'mega';
-                const R = n.mini ? 5 : mega ? 16 : (lv >= 2 ? 12 : 8), base = n.mini ? 45 : mega ? 110 : 82; sfx('explosion', n.x, n.z); burst(n.x, n.y + 0.2, n.z, lv >= 3 ? 0xffe08a : 0xffb040, n.mini ? 12 : 24, 7); burst(n.x, n.y + 0.2, n.z, 0x555555, 14, 4); if (Math.hypot(player.x - n.x, player.z - n.z) < 20) shake = Math.max(shake, 0.4);
+                const R = n.mini ? 5 : mega ? 16 : (lv >= 2 ? 12 : 8), base = n.mini ? 45 : mega ? 110 : 82; sfx('explosion', n.x, n.z); burst(n.x, n.y + 0.2, n.z, lv >= 3 ? 0xffe08a : 0xffb040, n.mini ? 14 : 34, 9); burst(n.x, n.y + 0.2, n.z, 0x555555, n.mini ? 8 : 20, 5); burst(n.x, n.y + 0.1, n.z, 0x2a2420, n.mini ? 6 : 14, 11); heFx(n.x, n.y, n.z, R, n.mini);
                 for (const e of ents) { if (!e.alive || e.remote) continue; if (!e.isPlayer && NET.on && !NET.host) continue; const d = Math.hypot(e.x - n.x, e.z - n.z); if (d < R && hasLOS(n.x, n.y + 0.3, n.z, e.x, (e.y || 0) + 1, e.z)) applyDamage(e, base * (1 - d / R), n.owner || player, { name: n.mini ? 'Cluster-HE' : 'HE-Granate', key: 'he' }, false); }
                 if (lv >= 3 && !n.mini && n.g !== 'mega') {
                     for (let i = 0; i < 3; i++) {
@@ -4050,11 +4063,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             } else if (n.key === 'molly') {
                 sfx('smokepop', n.x, n.z);
                 const big = lv >= 3 && n.g === 'big';
-                const R = big ? 6 : lv >= 2 ? 4.5 : 3.2, DUR = (lv >= 3 && !big) ? 12 : 7; const grp = new THREE.Group();
-                const nPuff = lv >= 2 ? 18 : 12;
-                for (let i = 0; i < nPuff; i++) { const m = new THREE.Mesh(smokePuffGeo, new THREE.MeshBasicMaterial({ color: Math.random() < 0.5 ? 0xff7020 : 0xffb040, transparent: true, opacity: 0.75, depthWrite: false })); const a = Math.random() * Math.PI * 2, r = Math.random() * (R - 0.8); m.position.set(n.x + Math.cos(a) * r, 0.15, n.z + Math.sin(a) * r); m.scale.set(0.5, 0.25, 0.5); m.userData.ph = Math.random() * 9; grp.add(m); }
-                scene.add(grp);
-                fires.push({ grp, x: n.x, z: n.z, r: R, age: 0, dur: DUR, tick: 0, owner: n.owner });
+                const R = big ? 8 : lv >= 2 ? 6 : 4.6, DUR = (lv >= 3 && !big) ? 12 : 7; const grp = new THREE.Group(), vox = smokeFill(n.x, n.z, R), fy = Math.max(0, n.y - 0.09);
+                const fm = [0xff5a14, 0xff8a24, 0xffc040].map(c => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.8, depthWrite: false })), gm = new THREE.MeshBasicMaterial({ color: 0xff6a1a, transparent: true, opacity: 0.35, depthWrite: false }), em = new THREE.MeshBasicMaterial({ color: 0x1a0d06, transparent: true, opacity: 0.55, depthWrite: false }), gg = new THREE.PlaneGeometry(SV, SV);
+                for (const v of vox) { for (const [mm, yy] of [[em, 0.025], [gm, 0.035]]) { const q = new THREE.Mesh(gg, mm); q.rotation.x = -Math.PI / 2; q.position.set(v.x, fy + yy, v.z); q.userData.st = 1; grp.add(q); } // Glut + Brandfleck
+                    for (let k = 0; k < 3; k++) { const m = new THREE.Mesh(smokePuffGeo, fm[(Math.random() * 3) | 0]); m.position.set(v.x + (Math.random() - 0.5) * SV * 0.9, fy + 0.15, v.z + (Math.random() - 0.5) * SV * 0.9); m.userData.ph = Math.random() * 9; m.userData.d = v.d; grp.add(m); } }
+                scene.add(grp); burst(n.x, fy + 0.4, n.z, 0xff8a24, 18, 5);
+                fires.push({ grp, fm, gm, x: n.x, z: n.z, y: fy, r: R, age: 0, dur: DUR, tick: 0, owner: n.owner, vox: new Set(vox.map(v => v.k)) });
             } else {
                 sfx('smokepop', n.x, n.z);
                 const wide = lv >= 3 && n.g === 'wide';
@@ -4068,16 +4082,20 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             }
         }
         function updateNades(dt) {
+            updBooms(dt);
             for (let i = nades.length - 1; i >= 0; i--) {
-                const n = nades[i]; n.vy -= NADE_GRAV * dt; let nx = n.x + n.vx * dt;
-                for (const b of aabbs) { if (n.y < b.top && nx + 0.09 > b.minX && nx - 0.09 < b.maxX && n.z + 0.09 > b.minZ && n.z - 0.09 < b.maxZ) { n.vx *= -0.45; nx = n.x; break; } }
-                n.x = nx;
-                let nz = n.z + n.vz * dt;
-                for (const b of aabbs) { if (n.y < b.top && n.x + 0.09 > b.minX && n.x - 0.09 < b.maxX && nz + 0.09 > b.minZ && nz - 0.09 < b.maxZ) { n.vz *= -0.45; nz = n.z; break; } }
-                n.z = nz;
-                n.y += n.vy * dt;
-                if (n.y < 0.09) { n.y = 0.09; if (Math.abs(n.vy) > 1.5) { n.vy *= -0.4; sfx('empty', n.x, n.z); } else n.vy = 0; n.vx *= 0.9; n.vz *= 0.9; }
-                n.mesh.position.set(n.x, n.y, n.z);
+                const n = nades[i], AB = activeAabbs(), R9 = 0.09, inB = (b, x, z) => x + R9 > b.minX && x - R9 < b.maxX && z + R9 > b.minZ && z - R9 < b.maxZ, hit = sp => { if (sp > 2.2) sfx('empty', n.x, n.z); };
+                const st = Math.max(1, Math.ceil(Math.hypot(n.vx, n.vy, n.vz) * dt / 0.12)), h = dt / st; let ground = false; // Unterschritte: keine Tunnel durch dünne Wände
+                for (let k = 0; k < st; k++) { n.vy -= NADE_GRAV * h; let nx = n.x + n.vx * h;
+                    for (const b of AB) { if (n.y - R9 < b.top - 0.02 && inB(b, nx, n.z)) { hit(Math.abs(n.vx)); n.vx *= -0.5; n.vz *= 0.8; n.vy *= 0.85; nx = n.x; break; } }
+                    n.x = nx; let nz = n.z + n.vz * h;
+                    for (const b of AB) { if (n.y - R9 < b.top - 0.02 && inB(b, n.x, nz)) { hit(Math.abs(n.vz)); n.vz *= -0.5; n.vx *= 0.8; n.vy *= 0.85; nz = n.z; break; } }
+                    n.z = nz; const ny = n.y + n.vy * h; let floor = R9;
+                    for (const b of AB) if (n.y - R9 >= b.top - 0.02 && inB(b, n.x, n.z)) floor = Math.max(floor, b.top + R9); // auf Kisten/Mauern landen
+                    if (ny < floor) { n.y = floor; ground = true; if (n.key === 'molly' && n.vy < -2) n.t = 0; // Molotov zerplatzt beim Aufprall
+                        if (n.vy < -2.2) { hit(-n.vy); n.vy *= -0.38; n.vx *= 0.75; n.vz *= 0.75; } else n.vy = 0; } else n.y = ny; }
+                if (ground && n.vy === 0) { const f = Math.pow(0.08, dt); n.vx *= f; n.vz *= f; } // Rollreibung (bildratenunabhängig)
+                n.mesh.position.set(n.x, n.y, n.z); n.mesh.rotation.x += n.vz * dt * 4; n.mesh.rotation.z -= n.vx * dt * 4;
                 n.t -= dt; if (n.t <= 0) { scene.remove(n.mesh); nades.splice(i, 1); nadeBoom(n); }
             }
             for (let i = smokes.length - 1; i >= 0; i--) {
@@ -4100,10 +4118,11 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             for (let i = slows.length - 1; i >= 0; i--) { const sl = slows[i]; sl.t -= dt; if (sl.t < 1) { sl.mat.opacity = 0.32 * Math.max(0, sl.t); sl.cm.opacity = 0.85 * Math.max(0, sl.t); } if (sl.t <= 0) { scene.remove(sl.grp); slows.splice(i, 1); } }
             for (let i = fires.length - 1; i >= 0; i--) {
                 const f = fires[i]; f.age += dt; f.tick -= dt;
-                f.grp.children.forEach(m => { const k = 0.7 + Math.sin(now * 9 + m.userData.ph) * 0.3; m.scale.set(0.5 * k, 0.3 * k + 0.1, 0.5 * k); });
+                const grow = clamp(f.age * 8, 0, 1), fade = clamp((f.dur - f.age) / 1.2, 0, 1); f.grp.children.forEach(m => { if (m.userData.st) return; const k = (0.7 + Math.sin(now * 9 + m.userData.ph) * 0.3) * (m.userData.d / f.r < grow * 1.6 ? 1 : 0.001) * (0.25 + fade * 0.75); m.scale.set(0.34 * k, (0.55 + Math.sin(now * 13 + m.userData.ph * 2) * 0.2) * k + 0.05, 0.34 * k); m.position.y = f.y + 0.12 + m.scale.y * 0.6; });
+                for (const mm of f.fm) mm.opacity = 0.8 * fade; f.gm.opacity = (0.28 + Math.sin(now * 6) * 0.07) * fade; // Flammen flackern, wachsen auf, verglühen
                 if (f.tick <= 0) {
                     f.tick = 0.5; sfx('fire', f.x, f.z);
-                    for (const e of ents) { if (!e.alive || e.remote) continue; if (!e.isPlayer && NET.on && !NET.host) continue; if (Math.hypot(e.x - f.x, e.z - f.z) < f.r && (e.y || 0) < 1) applyDamage(e, 10, f.owner || player, { name: 'Molotov', key: 'molly' }, false); }
+                    for (const e of ents) { if (!e.alive || e.remote) continue; if (!e.isPlayer && NET.on && !NET.host) continue; if (f.vox.has(Math.floor(e.x / SV) + ',' + Math.floor(e.z / SV)) && Math.abs((e.y || 0) - f.y) < 1) applyDamage(e, 10, f.owner || player, { name: 'Molotov', key: 'molly' }, false); }
                 }
                 if (f.age > f.dur) { scene.remove(f.grp); fires.splice(i, 1); }
             }
@@ -4523,7 +4542,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         const OPT = Object.assign({ outCol: '#ff3b4a', outOn: true, tsens: 1.8, sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
         const OUT_MAT = new THREE.MeshBasicMaterial({ color: OPT.outCol, side: THREE.BackSide }); // Gegner-Umrandung: leicht größere Rückseiten-Hülle je Körperteil (nur sichtbar, wo der Gegner sichtbar ist)
         function enemyOutline(g) { const L = g.userData.outl = [], list = []; g.traverse(o => { if (o.isMesh && o.geometry && o.geometry.type === 'BoxGeometry' && !o.userData.isOut) list.push(o); });
-            for (const o of list) { const P = o.geometry.parameters; if ([P.width, P.height, P.depth].filter(v => v >= 0.12).length < 2) continue; const m = new THREE.Mesh(new THREE.BoxGeometry(P.width + 0.04, P.height + 0.04, P.depth + 0.04), OUT_MAT); m.userData.isOut = 1; m.visible = false; o.add(m); L.push(m); } }
+            for (const o of list) { const P = o.geometry.parameters; if ([P.width, P.height, P.depth].filter(v => v >= 0.12).length < 2) continue; const m = new THREE.Mesh(new THREE.BoxGeometry(P.width + 0.055, P.height + 0.055, P.depth + 0.055), OUT_MAT); m.userData.isOut = 1; m.visible = false; o.add(m); L.push(m); } }
         // Ansicht-Optionen anwenden (HUD-Farbe, Radar, Killfeed, Handy-Buttons) – nur bei Änderung, nicht pro Frame
         function applyLook() { $('hud').style.color = OPT.hudCol === '#e8c98a' && document.documentElement.classList.contains('dsV') ? '#ece8e1' : OPT.hudCol; const r = $('radar'); r.style.display = OPT.radar ? '' : 'none'; if (OPT.radar) r.style.width = r.style.height = Math.round((IS_TOUCH ? 100 : 170) * OPT.radar) + 'px'; $('killfeed').style.display = OPT.kf ? '' : 'none'; let fe = $('fpsBox'); if (OPT.fps && !fe) { fe = document.createElement('div'); fe.id = 'fpsBox'; document.body.appendChild(fe); } if (fe) fe.style.display = OPT.fps ? '' : 'none'; const ds = document.documentElement.style; ds.setProperty('--tbs', OPT.tbs); ds.setProperty('--tba', OPT.tba); }
         // Handy: alle 2 s FPS prüfen – unter 40 FPS Auflösung senken, über 56 FPS wieder bis zur Grafikstufe anheben
