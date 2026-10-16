@@ -930,14 +930,20 @@
             gap: 8px
         }
 
-        #chatbox { position: fixed; left: 16px; bottom: 60px; width: min(360px, 80vw); z-index: 9000; pointer-events: none; font: 13px Arial; color: #e8eef5 }
-        #chatbox.ingame { bottom: 170px }
+        #chatbox { position: fixed; right: 80px; bottom: 60px; width: min(360px, 80vw); z-index: 9000; pointer-events: none; font: 13px Arial; color: #e8eef5 } /* Lobby: unten rechts (Lobby-Panel ist links) */
+        #chatbox.ingame { right: auto; left: 16px; bottom: 170px }
+        #chatbox.touch.ingame { left: 12px; bottom: 66px; width: min(280px, 60vw) } /* Handy: unten links über dem Chat-Knopf */
         #chatlog div { background: rgba(8, 11, 15, .6); padding: 3px 8px; margin-top: 2px; border-radius: 3px; word-wrap: break-word; text-shadow: 0 1px 2px #000 }
         #chatin { display: none; width: 100%; box-sizing: border-box; margin-top: 4px; padding: 7px 9px; font: 13px Arial; background: rgba(14, 20, 28, .92); color: #fff; border: 1px solid rgba(var(--hl-rgb), .6); border-radius: 3px; pointer-events: auto }
         #chatbox.open #chatin { display: block }
         #chatbox.open #chatlog { pointer-events: auto; max-height: 200px; overflow-y: auto }
         #chatbox.touch.ingame.open { bottom: auto; top: 60px } /* Handy: über der Bildschirmtastatur */
-        #chatBtn { display: none; position: fixed; left: 12px; top: 42%; width: 44px; height: 44px; z-index: 9100; align-items: center; justify-content: center; font-size: 22px; background: rgba(8, 11, 15, .55); border: 1px solid rgba(var(--hl-rgb), .5); border-radius: 50%; touch-action: none }
+        #mfr { position: absolute; right: 0; top: 56px; bottom: 0; width: 58px; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 12px; background: rgba(8, 10, 14, .55); border-left: 1px solid rgba(255, 255, 255, .08); overflow-y: auto } /* Freunde-Leiste rechts wie in CS/Valorant */
+        #mfr .fr { position: relative; flex: 0 0 auto; width: 42px; height: 42px; border-radius: 6px; background: #1d2733; border: 1px solid rgba(255, 255, 255, .12); display: flex; align-items: center; justify-content: center; font: bold 15px Arial; color: #8fa3b8; cursor: pointer }
+        #mfr .fr.on { color: #fff; border-color: rgba(120, 220, 120, .6) } #mfr .fr .dot { position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; border-radius: 50%; background: #556; border: 2px solid #0b0f14 } #mfr .fr.on .dot { background: #4cd964 }
+        #mfr .frbtn { font-size: 20px; background: rgba(var(--hl-rgb), .15); border-color: rgba(var(--hl-rgb), .5) } #mfr #frBadge { position: absolute; top: -6px; right: -6px; background: #e04848; color: #fff; font: 700 10px Arial; border-radius: 8px; padding: 1px 5px; font-style: normal }
+        #csmenu:has(#mfr) #csplayview { left: calc(50% - 30px) !important; width: min(1340px, calc((96vw - 64px) / var(--ui, 1))) !important }
+        #chatBtn { display: none; position: fixed; left: 10px; bottom: 10px; width: 44px; height: 44px; z-index: 9100; align-items: center; justify-content: center; font-size: 22px; background: rgba(8, 11, 15, .55); border: 1px solid rgba(var(--hl-rgb), .5); border-radius: 50%; touch-action: none }
         #frpanel { position: fixed; right: 72px; top: 62px; width: min(330px, 86vw); max-height: 75vh; overflow-y: auto; z-index: 9500; background: rgba(10, 14, 20, .96); border: 1px solid rgba(var(--hl-rgb), .45); border-radius: 6px; padding: 12px; color: #e8eef5; font: 13px Arial; box-shadow: 0 8px 30px rgba(0, 0, 0, .6) }
         #frpanel .frh { display: flex; justify-content: space-between; margin-bottom: 8px; letter-spacing: 2px } #frpanel .frh span { cursor: pointer }
         #frpanel .frr { display: flex; align-items: center; gap: 6px; padding: 6px; border-bottom: 1px solid rgba(255, 255, 255, .07); flex-wrap: wrap }
@@ -5356,7 +5362,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             hitT = 0.12; hitHS = true; sfx('hs'); burst(t.mesh.position.x, t.mesh.position.y, t.mesh.position.z, 0xff4d4d, 8, 3); alSpawn();
         }
         function alTick(dt) {
-            if (AL.ended) return; for (const s of [1, 2]) { const w = player.weapons[s]; if (w) w.res = 999; }
+            if (AL.ended) return; for (const s of [1, 2]) { const w = player.weapons[s]; if (w) { w.res = 999; w.ammo = w.def.mag; w.reloading = false; } } // unendlich Munition, kein Nachladen
             AL.t -= dt; if (AL.mode === 'strafe') for (const t of AL.targets) { t.ph += dt * t.sp; const o = Math.sin(t.ph) * 1.8; t.mesh.position.set(t.x + Math.cos(t.a) * o, t.y, t.z - Math.sin(t.a) * o); }
             if (AL.t <= 0) alEnd();
         }
@@ -6845,7 +6851,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             showOverlay(`
  <div id="csmenu">
  <div id="cstop">
- <div class="ctic"><span id="navHome">🏠</span><span id="navProf" title="Profil & Erfolge">🏅</span><span id="navStats" title="Statistik">📊</span><span id="navFr" title="Freunde" style="position:relative">👥<i id="frBadge" style="display:none;position:absolute;top:-6px;right:-8px;background:#e04848;color:#fff;font:700 10px Arial;border-radius:8px;padding:1px 5px;font-style:normal"></i></span><span id="navSet">⚙️</span><span id="navLang" title="Sprache / Language" style="font:700 13px Rajdhani;letter-spacing:.05em">${getLang() === 'en' ? 'DE' : 'EN'}</span><span id="navInst" title="Als App installieren" style="${instEvt ? '' : 'display:none'}">📲</span><span id="navOff">⏻</span></div>
+ <div class="ctic"><span id="navHome">🏠</span><span id="navProf" title="Profil & Erfolge">🏅</span><span id="navSet">⚙️</span><span id="navLang" title="Sprache / Language" style="font:700 13px Rajdhani;letter-spacing:.05em">${getLang() === 'en' ? 'DE' : 'EN'}</span><span id="navInst" title="Als App installieren" style="${instEvt ? '' : 'display:none'}">📲</span><span id="navOff">⏻</span></div>
  <nav id="cstabs">
  <a data-nav="inv">INVENTAR</a>
  <a data-nav="play">SPIELEN</a>
@@ -6857,6 +6863,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </nav>
  <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}"><span class="lvchip" title="${rankOf(lvlOf(PRG.xp))}">Lv ${lvlOf(PRG.xp)}</span>${ACC ? `<b>Eingeloggt als <span style="color:var(--hl)">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
  </div>
+ <div id="mfr"></div>
  <div id="cslogo" style="position:absolute;left:28px;top:90px;pointer-events:none">
  <div style="font:700 12px Rajdhani;letter-spacing:.45em;color:var(--mut)">TACTICAL SHOOTER</div>
  <div style="font:700 50px Rajdhani;line-height:1;color:var(--text);text-transform:uppercase">Clu<span style="color:var(--acc)">tch</span></div>
@@ -6905,17 +6912,17 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 AIM-LAB</p>
  Neuer Übungsplatz im Spielen-Menü (offline): <b>Gridshot</b>, <b>Flick</b>, <b>Präzision</b> und <b>Tracking</b> mit AK, Deagle, USP oder AWP.<br>
- 60 Sekunden pro Runde – mit Punkten, Genauigkeit, <b>Reaktionszeit</b> und eigenem Rekord pro Modus.<br><br>
+ 60 Sekunden pro Runde, <b>unendlich Munition</b> ohne Nachladen – mit Punkten, Genauigkeit, <b>Reaktionszeit</b> und eigenem Rekord pro Modus.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📊 STATISTIK</p>
- Neue Seite über 📊 oben im Menü oder im Profil: <b>K/D</b>, <b>Trefferquote</b>, <b>Headshot-Rate</b>, <b>Lieblingswaffe</b>, Kills pro Waffe und Siegquote.<br><br>
+ Neue Seite im Profil (🏅 → 📊 Statistik): <b>K/D</b>, <b>Trefferquote</b>, <b>Headshot-Rate</b>, <b>Lieblingswaffe</b>, Kills pro Waffe und Siegquote.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👥 FREUNDE</p>
- Mit Account: Freunde über den Namen hinzufügen, sehen wer <b>online</b> ist und in welchem Raum.<br>
+ Neue <b>Freunde-Leiste rechts</b> im Menü (mit Account): Freunde über den Namen hinzufügen, sehen wer <b>online</b> ist und in welchem Raum.<br>
  Aus der Lobby <b>einladen</b> oder direkt <b>beitreten</b> – Einladungen erscheinen als Hinweis und mit rotem Zähler.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💬 CHAT</p>
- Online-Chat in der Lobby und im Spiel: <b>Enter</b> öffnet ihn, auf dem Handy der <b>💬-Knopf</b>.<br><br>
+ Online-Chat in der Lobby (unten rechts) und im Spiel (unten links): <b>Enter</b> öffnet ihn, auf dem Handy der <b>💬-Knopf</b> unten links.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏃 BEWEGUNG</p>
  <b>Counter-Strafing</b> wie im Original: Gegentaste nur kurz antippen – im Moment des Stillstands sitzt der Schuss. Zu lang gehalten, läufst Du schon in die Gegenrichtung.<br>
@@ -7576,7 +7583,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnEx').onclick = () => exStart(null); $('btnAim').onclick = alPick; $('btnExAr').onclick = exPickArena; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = () => showGameSettings(); $('ruleChips').onclick = () => showGameSettings();
-            $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile; $('navStats').onclick = showStats; $('navFr').onclick = frToggle; frBadge();
+            $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile; frSide();
             $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
             else if (sessionStorage.getItem('opentab') === 'maps') { sessionStorage.removeItem('opentab'); showMapList(); }
@@ -8545,10 +8552,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function frPoll() {
             if (!ACC) return; accApi('friends', { tok: ACC.tok }).then(r => { if (!r.ok) return; FR.list = r.fr || []; FR.rq = r.rq || [];
                 for (const i of r.inv || []) { FR.inv = FR.inv.filter(o => o.from !== i.from).concat(i); toast('📨 Einladung von ' + i.from, 'Raum „' + i.room + '" · 👥 Freunde öffnen zum Beitreten'); }
-                frBadge(); if (FR.open) frRender(); }).catch(() => { });
+                frSide(); if (FR.open) frRender(); }).catch(() => { });
         }
         setTimeout(frPoll, 1500); setInterval(frPoll, 20000);
         function frBadge() { const b = $('frBadge'), n = FR.rq.length + FR.inv.length; if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; } }
+        function frSide() { // Freunde-Leiste rechts im Hauptmenü: oben der Freunde-Knopf, darunter Freunde (online zuerst)
+            const el = $('mfr'); if (!el) return;
+            el.innerHTML = '<div class="fr frbtn" title="Freunde">👥<i id="frBadge" style="display:none"></i></div>' + FR.list.slice().sort((a, b) => (b.on ? 1 : 0) - (a.on ? 1 : 0)).map(f => `<div class="fr${f.on ? ' on' : ''}" title="${escH(f.n)} – ${f.room ? (f.st ? 'Im Spiel' : 'Lobby') + ': ' + escH(f.room) : f.on ? 'Online' : 'Offline'}">${escH((f.n[0] || '?').toUpperCase())}<i class="dot"></i></div>`).join('');
+            el.querySelectorAll('.fr').forEach(d => d.onclick = frToggle); frBadge();
+        }
         function frJoin(room, srv, mode) { // über den vorhandenen Rejoin-Ablauf (Seite neu laden → startMP)
             if (MODES[mode]) sessionStorage.setItem('playcat', mode); sessionStorage.setItem('playmode', '1');
             sessionStorage.setItem('mpjoin', JSON.stringify({ srv: srv || DEF_WS, room, team: 'CT', name: (localStorage.getItem('pname') || (ACC && ACC.u) || 'Spieler').slice(0, 14) })); if (NET.ws) { NET.on = false; NET.ws.close(); } location.reload();
