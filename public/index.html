@@ -936,6 +936,8 @@
         #chatin { display: none; width: 100%; box-sizing: border-box; margin-top: 4px; padding: 7px 9px; font: 13px Arial; background: rgba(14, 20, 28, .92); color: #fff; border: 1px solid rgba(var(--hl-rgb), .6); border-radius: 3px; pointer-events: auto }
         #chatbox.open #chatin { display: block }
         #chatbox.open #chatlog { pointer-events: auto; max-height: 200px; overflow-y: auto }
+        #chatbox.touch.ingame.open { bottom: auto; top: 60px } /* Handy: über der Bildschirmtastatur */
+        #chatBtn { display: none; position: fixed; left: 12px; top: 42%; width: 44px; height: 44px; z-index: 9100; align-items: center; justify-content: center; font-size: 22px; background: rgba(8, 11, 15, .55); border: 1px solid rgba(var(--hl-rgb), .5); border-radius: 50%; touch-action: none }
         #frpanel { position: fixed; right: 72px; top: 62px; width: min(330px, 86vw); max-height: 75vh; overflow-y: auto; z-index: 9500; background: rgba(10, 14, 20, .96); border: 1px solid rgba(var(--hl-rgb), .45); border-radius: 6px; padding: 12px; color: #e8eef5; font: 13px Arial; box-shadow: 0 8px 30px rgba(0, 0, 0, .6) }
         #frpanel .frh { display: flex; justify-content: space-between; margin-bottom: 8px; letter-spacing: 2px } #frpanel .frh span { cursor: pointer }
         #frpanel .frr { display: flex; align-items: center; gap: 6px; padding: 6px; border-bottom: 1px solid rgba(255, 255, 255, .07); flex-wrap: wrap }
@@ -3581,7 +3583,78 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "FPS anzeigen":"Show FPS",
 "💻 FPS-Limit aufheben (PC-App, Neustart)":"💻 Remove FPS limit (PC app, restart)",
 "Klick":"Click",
-"Button-Sichtbarkeit:":"Button visibility:"}; // Deutsch → Englisch · # = beliebige Zahl
+"Button-Sichtbarkeit:":"Button visibility:",
+"TRAINING · # SEKUNDEN":"TRAINING · # SECONDS",
+"Präzision":"Precision",
+"3 Ziele gleichzeitig · schnell umschalten":"3 targets at once · switch fast",
+"Ein Ziel taucht irgendwo auf · Reaktion zählt":"One target pops up anywhere · reaction counts",
+"Winzige Ziele · Genauigkeit zählt":"Tiny targets · accuracy counts",
+"Ziele laufen seitlich · mitziehen & Counter-Strafe":"Targets move sideways · track & counter-strafe",
+"3 Ziele gleichzeitig · schnell umschalten · # s":"3 targets at once · switch fast · # s",
+"Ein Ziel taucht irgendwo auf · Reaktion zählt · # s":"One target pops up anywhere · reaction counts · # s",
+"Winzige Ziele · Genauigkeit zählt · # s":"Tiny targets · accuracy counts · # s",
+"Ziele laufen seitlich · mitziehen & Counter-Strafe · # s":"Targets move sideways · track & counter-strafe · # s",
+"Treffer = # Punkte + Tempo-Bonus · Fehlschüsse senken die Genauigkeit":"Hit = # points + speed bonus · misses lower your accuracy",
+"🎯 # Pkt · # s":"🎯 # pts · # s",
+"Aim-Lab · * · Treffer # · # %":"Aim-Lab · * · Hits # · # %",
+"🎯 TRAINING VORBEI":"🎯 TRAINING OVER",
+"* · 🎉 NEUER REKORD!":"* · 🎉 NEW RECORD!",
+"* · REKORD: #":"* · RECORD: #",
+"Treffer":"Hits",
+"Schüsse":"Shots",
+"Genauigkeit":"Accuracy",
+"Ø Reaktion":"Ø reaction",
+"Nochmal":"Again",
+"Anderer Modus":"Other mode",
+"STATISTIK":"STATS",
+"Statistik":"Stats",
+"Profil":"Profile",
+"Trefferquote":"Accuracy",
+"Headshot-Rate":"Headshot rate",
+"Lieblingswaffe":"Favorite weapon",
+"Siegquote":"Win rate",
+"Bomben":"Bombs",
+"# Kills · # Tode":"# kills · # deaths",
+"# / # Schüsse":"# / # shots",
+"Noch keine Daten":"No data yet",
+"# Siege · # Matches":"# wins · # matches",
+"gelegt / entschärft":"planted / defused",
+"KILLS PRO WAFFE":"KILLS PER WEAPON",
+"Kills pro Waffe werden ab jetzt gezählt.":"Kills per weapon are counted from now on.",
+"TRAINING & SPASS":"TRAINING & FUN",
+"Aim-Lab-Genauigkeit":"Aim-Lab accuracy",
+"Enten":"Ducks",
+"Rekord":"Record",
+"Nachricht … (Enter = senden)":"Message … (Enter = send)",
+"Freunde":"Friends",
+"FREUNDE":"FRIENDS",
+"Freunde einladen":"Invite friends",
+"Freunde & Einladungen brauchen einen Account.":"Friends & invites require an account.",
+"Login / Registrieren":"Login / Register",
+"lädt Dich ein · *":"invites you · *",
+"möchte Dein Freund sein":"wants to be your friend",
+"Im Spiel · *":"In game · *",
+"Beitreten":"Join",
+"Einladen":"Invite",
+"Entfernen":"Remove",
+"Accountname":"Account name",
+"+ Hinzufügen":"+ Add",
+"Noch keine Freunde – füge jemanden über den Accountnamen hinzu.":"No friends yet – add someone by account name.",
+"Einladen geht, sobald Du in einer Online-Lobby bist.":"You can invite once you're in an online lobby.",
+"Einladung an * gesendet":"Invite sent to *",
+"Erledigt":"Done",
+"Anfrage gesendet.":"Request sent.",
+"Anfrage angenommen.":"Request accepted.",
+"Ihr seid schon befreundet.":"You are already friends.",
+"Spieler nicht gefunden.":"Player not found.",
+"Das bist Du selbst.":"That's you.",
+"Liste ist voll.":"List is full.",
+"Nur Freunde einladen.":"You can only invite friends.",
+"Kein Raum.":"No room.",
+"Server nicht erreichbar":"Server unreachable",
+"📨 Einladung von *":"📨 Invite from *",
+"Raum „*\" · 👥 Freunde öffnen zum Beitreten":"Room “*” · 👥 open Friends to join",
+"Chat öffnen":"Open chat"}; // Deutsch → Englisch · # = beliebige Zahl
             const NUM = /\d+(?:[.,]\d+)?/g, TPL = new Map(), WILD = [], OT = new WeakMap(), OA = new WeakMap(); // * = beliebiger Text (wird selbst übersetzt)
             for (const k in D) if (k.includes('*')) WILD.push([new RegExp('^' + k.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '(.+?)').replace(/#/g, '(\\d+(?:[.,]\\d+)?)') + '$'), D[k], k.match(/[*#]/g)]); else if (k.includes('#')) TPL.set(k, D[k]);
             const core = t => { if (D[t] !== undefined) return D[t]; if (/\d/.test(t)) { const v = TPL.get(t.replace(NUM, '#')); if (v !== undefined) { const n = t.match(NUM); let i = 0; return v.replace(/#/g, () => n[i++] || ''); } }
@@ -8419,10 +8492,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             el = document.createElement('div'); el.id = 'chatbox'; el.innerHTML = '<div id="chatlog"></div><input id="chatin" maxlength="160" autocomplete="off" placeholder="Nachricht … (Enter = senden)">'; document.body.appendChild(el);
             const inp = $('chatin');
             inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { chatSend(inp.value); inp.value = ''; if (!NET.inLobby) chatClose(); } else if (e.key === 'Escape') chatClose(); }); // Tasten nicht ans Spiel weitergeben
+            if (IS_TOUCH) { // Handy: eigener Chat-Knopf im Spiel (keine Enter-Taste)
+                el.classList.add('touch'); const b = document.createElement('div'); b.id = 'chatBtn'; b.title = 'Chat öffnen'; b.textContent = '💬'; document.body.appendChild(b);
+                b.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); CHAT.open ? chatClose() : chatOpen(); }, { passive: false });
+            }
             return el;
         }
         function chatShow() {
-            const el = chatEl(), on = NET.on && !document.body.classList.contains('edit'); el.style.display = on ? 'block' : 'none'; if (!on) return;
+            const el = chatEl(), on = NET.on && !document.body.classList.contains('edit'), b = $('chatBtn'); el.style.display = on ? 'block' : 'none';
+            if (b) b.style.display = on && started && !NET.inLobby && !gameEnded ? 'flex' : 'none'; if (!on) return;
             el.classList.toggle('open', CHAT.open || NET.inLobby); el.classList.toggle('ingame', started && !NET.inLobby);
         }
         function chatRender() {
