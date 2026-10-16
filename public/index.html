@@ -221,23 +221,9 @@
             box-shadow: 0 0 2px #000
         }
 
-        .agsw { width: min(1100px, 96vw); height: min(640px, 90vh); display: grid; grid-template-columns: 230px 1fr 290px; grid-template-rows: auto 1fr; gap: 12px; text-align: left; font-family: 'Barlow Condensed', Arial, sans-serif; color: #ece8e1 }
-        .agshead { grid-column: 1 / -1; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid rgba(var(--hl-rgb), .35); padding-bottom: 6px }
-        .agshead small { letter-spacing: .3em; font-size: 12px; opacity: .65 } .agshead h2 { margin: 0; font-size: 34px; letter-spacing: .12em; line-height: 1.05 }
-        .agstimer { font-size: 46px; font-weight: 700; color: var(--hl); min-width: 70px; text-align: right; line-height: 1 } .agstimer.low { color: #ff6b6b }
-        .agscol { background: rgba(12, 16, 22, .72); border: 1px solid rgba(236, 232, 225, .12); padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; min-height: 0 }
-        .agscol h5 { margin: 4px 0 2px; font-size: 11px; letter-spacing: .25em; opacity: .6; font-weight: 600 }
-        .agst { display: flex; align-items: center; gap: 10px; padding: 7px 9px; border: 1px solid rgba(236, 232, 225, .1); border-left: 3px solid transparent; cursor: pointer; background: rgba(255, 255, 255, .02) }
-        .agst:hover { background: rgba(var(--hl-rgb), .08) } .agst.on { border-left-color: var(--hl); background: rgba(var(--hl-rgb), .14) } .agst.tk { opacity: .38; cursor: not-allowed } .agst.mine { border-left-color: #9fe08a }
-        .agst i { font-style: normal; font-size: 22px; width: 30px; text-align: center } .agst b { display: block; font-size: 16px; letter-spacing: .06em } .agst span { font-size: 11px; opacity: .65; letter-spacing: .1em; text-transform: uppercase }
-        .agsstage { display: flex; flex-direction: column; min-height: 0; background: radial-gradient(ellipse at 50% 72%, rgba(var(--hl-rgb), .2), transparent 65%) } .agsstage #agp3d { flex: 1; min-height: 0; position: relative }
-        .agsname { text-align: center } .agsname b { font-size: 40px; letter-spacing: .14em; display: block; line-height: 1 } .agsname span { font-size: 12px; letter-spacing: .3em; color: var(--hl) }
-        .agsbtns { display: flex; gap: 8px; justify-content: center; margin-top: 8px } .agsbtns button { margin: 0 } .agsbtns button[disabled] { opacity: .45; cursor: default }
-        .agsab { display: flex; gap: 9px; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid rgba(236, 232, 225, .08) } .agsab i { font-style: normal; font-size: 20px; width: 28px; text-align: center } .agsab b { font-size: 15px; display: block } .agsab span { font-size: 12px; opacity: .7 }
-        .agsab kbd { margin-left: auto; font: 600 11px 'Barlow Condensed', sans-serif; border: 1px solid rgba(236, 232, 225, .35); padding: 1px 6px } .agsdesc { font-size: 13px; opacity: .8; margin: 0 0 2px }
-        .agsp { display: flex; gap: 8px; align-items: center; padding: 4px 0; font-size: 14px } .agsp i { font-style: normal; width: 24px; text-align: center; font-size: 17px } .agsp span { display: block; font-size: 11px; opacity: .65 } .agsp.lk span { color: #9fe08a; opacity: 1 } .agsp.me b { color: var(--hl) }
-        .mob .agsw { grid-template-columns: 165px 1fr 215px; height: 94vh; gap: 6px } .mob .agshead h2 { font-size: 22px } .mob .agstimer { font-size: 30px } .mob .agst { padding: 4px 7px; gap: 6px } .mob .agst b { font-size: 13px } .mob .agst i { font-size: 18px; width: 22px }
-        .mob .agsname b { font-size: 24px } .mob .agsab { padding: 4px 0 } .mob .agsab b { font-size: 13px } .mob .agsab span { font-size: 10px } .mob .agscol { padding: 6px }
+        .fitrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 5px 0 } .fitrow > b { width: 96px; font-size: 12px; letter-spacing: .08em; color: #8fa3b8; text-transform: uppercase } .fitrow.fsub { margin: -1px 0 10px }
+        .fsw { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .25); cursor: pointer; display: inline-block; box-sizing: border-box } .fsw.on { border-color: var(--hl); box-shadow: 0 0 0 2px rgba(var(--hl-rgb), .5) }
+        .fbtn { margin: 0 !important; padding: 4px 10px !important; font-size: 12px !important; min-width: 0 !important } .fbtn.on { background: var(--hl) !important; color: #111 !important } .fbtn.lk { opacity: .55 }
         #prog.cp::after { content: ''; position: absolute; left: 50%; top: -5px; bottom: -5px; width: 2px; background: #fff; opacity: .85 }
         #abar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 120px; display: flex; gap: 6px; z-index: 5; pointer-events: auto } .mob #abar { bottom: 50px }
         #abar div { position: relative; width: 38px; height: 38px; border: 1.5px solid rgba(236, 232, 225, .55); background: rgba(10, 14, 20, .45); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer }
@@ -3415,7 +3401,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Weiter ›":"Next ›",
 "Überspringen":"Skip",
 "‹ Zurück":"‹ Back",
-"NEU · PATCH 2.6 „AGENTEN\"":"NEW · PATCH 2.6 „AGENTS\"",
+"NEU · PATCH 2.7 „KLEIDUNG\"":"NEW · PATCH 2.7 „CLOTHING\"",
+"PATCH 2.6 „TAKTIK\"":"PATCH 2.6 „TACTICS\"",
 "PATCH 2.5 „ULTIMATE\"":"PATCH 2.5 „ULTIMATE\"",
 "NEU":"NEW",
 "⚡ ULTIMATES":"⚡ ULTIMATES",
@@ -3686,7 +3673,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // =====================================================================
         //  ACCOUNT / CLOUD-SAVE (Server speichert in data/users.json, keine Datenbank)
         // =====================================================================
-        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'lang', 'kit', 'agskins'];
+        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'lang', 'fit', 'fitown'];
         let ACC = null; try { ACC = JSON.parse(localStorage.getItem('cs_acc') || 'null'); } catch (e) { }
         let accT = null, accMute = false, accReady = !ACC; // accReady: erst nach dem Abgleich beim Start hochladen (sonst überschreibt ein altes Gerät neueren Stand)
         const accApi = (p, b) => fetch('/api/' + p, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json());
@@ -4681,12 +4668,6 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const bots = []; let ents = [player];
         const AGENTS = [
             { id: 'std', n: 'Standard', d: 'Klassische Team-Ausrüstung' },
-            { id: 'elite', n: 'Elite-Kommando', d: 'Schwarz-Gold, Helm & Visier', body: 0x1b1d22, legs: 0x111216, head: 0x0d0e10, hat: 'helmet', hatC: 0x23262c, visor: 0xd4af37 },
-            { id: 'desert', n: 'Wüstenfuchs', d: 'Sandfarben mit Cap & Rucksack', body: 0xb59a68, legs: 0x7d6a48, head: 0xc9a97a, hat: 'cap', hatC: 0x6b5532, pack: 0x5d4a2a },
-            { id: 'arctic', n: 'Arktis-Späher', d: 'Weiß mit Eis-Visier', body: 0xe6ebf0, legs: 0xb9c3cc, head: 0xdfe6ec, hat: 'helmet', hatC: 0xf4f7fa, visor: 0x6fd0ff },
-            { id: 'neon', n: 'Neon-Runner', d: 'Dunkel mit leuchtendem Visier', body: 0x17171f, legs: 0x0d0d14, head: 0x101018, visor: 0xff3df0 },
-            { id: 'ninja', n: 'Schatten', d: 'Ganz in Schwarz, rotes Stirnband', body: 0x101012, legs: 0x0b0b0c, head: 0x101012, band: 0xb52222 },
-            { id: 'jungle', n: 'Dschungel', d: 'Tarngrün mit Buschhut & Rucksack', body: 0x4f6b3a, legs: 0x33452a, head: 0x3f5530, hat: 'boonie', hatC: 0x5a6e3c, pack: 0x3a4a2a },
             { id: 'duck_rubber', n: 'Badeente', d: 'Quietschgelb mit orangem Schnabel', duck: 1, body: 0xffd84a, legs: 0xf2a227, head: 0xffd84a, wing: 0xf5c93a },
             { id: 'duck_mallard', n: 'Stockente', d: 'Grüner Kopf, weißer Halsring', duck: 1, body: 0x8a6a4a, legs: 0xf2a227, head: 0x1f6b3a, wing: 0x6b7f9a, ring: 0xffffff },
             { id: 'duck_white', n: 'Hausente', d: 'Schneeweiß und gut gelaunt', duck: 1, body: 0xf3f3ef, legs: 0xf2a227, head: 0xf3f3ef, wing: 0xe2e2dc },
@@ -4695,73 +4676,55 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // Agenten-Thema (Host, Spielregeln): 0 = frei, 1 = alle Enten, 2+ = alle als dieser Agent
         const NONDUCK = AGENTS.filter(a => !a.duck);
         function agentFor(team, want) { const t = CFG.agTheme | 0; if (!t) return want; if (t === 1) return AGENTS.some(a => a.duck && a.id === want) ? want : team === 'T' ? 'duck_mallard' : 'duck_rubber'; return (NONDUCK[t - 2] || {}).id || want; }
-        // Agenten-Kits (Valorant-Anteil, realistisch: nur Ausrüstung/Technik). ab = kaufbare Fähigkeiten, sig = 1 Ladung gratis pro Runde, ult = feste Ultimate
-        const KITS = [
-            { id: 'sturm', n: 'Sturm', role: 'Duelist', ic: '⚔️', d: 'Geht als Erster rein', ab: ['flash', 'cluster'], sig: 'flash', ult: 'rush' },
-            { id: 'nebel', n: 'Nebel', role: 'Controller', ic: '🌫️', d: 'Nimmt Sichtlinien weg', ab: ['smoke', 'molly'], sig: 'smoke', ult: 'strike' },
-            { id: 'falke', n: 'Falke', role: 'Initiator', ic: '🛰️', d: 'Klärt auf, bevor das Team pusht', ab: ['recon', 'flash'], sig: 'recon', ult: 'scan' },
-            { id: 'frost', n: 'Frost', role: 'Sentinel', ic: '❄️', d: 'Hält Bereiche mit Kälteschaum', ab: ['slow', 'he'], sig: 'slow', ult: 'ward' },
-            { id: 'sani', n: 'Sani', role: 'Sentinel', ic: '⛑️', d: 'Hält das Team am Leben', ab: ['smoke', 'slow'], sig: 'smoke', ult: 'heal' }];
-        // Agenten-Skins: gehören zu einem Agenten, werden im Shop für Coins gekauft (Enten bleiben frei wählbar)
-        const AG_SKIN = { neon: ['sturm', 1200], ninja: ['nebel', 1200], desert: ['falke', 800], jungle: ['falke', 800], arctic: ['frost', 1000], elite: ['sani', 1500] };
-        let agOwn = []; try { agOwn = JSON.parse(localStorage.getItem('agskins') || '[]'); } catch (e) { }
-        let kitId = localStorage.getItem('kit'); const KIT = () => KITS.find(k => k.id === kitId) || KITS[0];
-        const agSkinOk = id => !AG_SKIN[id] || (agOwn.includes(id) && AG_SKIN[id][0] === KIT().id);
-        // Standard-Look je Agent (wie in Valorant: jeder Agent sieht anders aus, unabhängig vom Team)
-        const KIT_LOOK = {
-            k_sturm: { n: 'Sturm', body: 0x7a2418, legs: 0x231a17, head: 0x2b1e19, band: 0xff7a1a, visor: 0xffb347 },
-            k_nebel: { n: 'Nebel', body: 0x3a3450, legs: 0x1f1c2b, head: 0x262236, hat: 'helmet', hatC: 0x2c2840, visor: 0x9b6bff },
-            k_falke: { n: 'Falke', body: 0x2f4a66, legs: 0x1c2836, head: 0x1a2430, hat: 'cap', hatC: 0x15202c, pack: 0x5a4630, visor: 0x4fd8ff },
-            k_frost: { n: 'Frost', body: 0x2b6a73, legs: 0x1a383e, head: 0x1d4248, hat: 'helmet', hatC: 0x22545b, visor: 0x9ff3ff },
-            k_sani: { n: 'Sani', body: 0xe8e8e2, legs: 0x3a3f46, head: 0x22272e, hat: 'cap', hatC: 0xd23a3a, pack: 0xd23a3a }
-        };
-        let rndLook = 'k_sturm'; const freeLook = () => DM.on || GL.on; // DM, Gauntlet & 1v1: keine Kits → zufälliger Look (Enten bleiben)
-        const myLook = () => AGENTS.some(a => a.duck && a.id === store.agent) ? store.agent : freeLook() ? rndLook : store.agent === 'std' || !agSkinOk(store.agent) ? 'k_' + KIT().id : store.agent;
-        function rollLook() { const f = freeLook(), pool = [...Object.keys(KIT_LOOK), ...NONDUCK.filter(a => a.id !== 'std').map(a => a.id)]; rndLook = rnd(pool);
-            for (const b of bots) if (b.agKit) b.ag = f ? rnd(pool) : 'k_' + b.agKit.id; dropMenuChar(); if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); }
-        function disposeGroup(g) { g.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) [].concat(o.material).forEach(m => m.dispose()); }); } // GPU-Speicher von Vorschau-Modellen freigeben
-        function agentSelect(go, back) { AGS.online = false; AGS.go = go; AGS.back = back; AGS.picks = {}; AGS.hov = {}; AGS.sel = KIT().id; agsRender(); } // offline: gleicher Bildschirm, ohne Timer
-        const AGS = { on: false, online: false, end: 0, picks: {}, hov: {}, sel: 'sturm', iv: 0, go: null, back: null }; // Online-Agentenwahl (Wettkampf): 15 s, pro Team jeder Agent nur einmal
-        const agsTeamOf = id => id === NET.pid ? player.team : (NET.players.get(id) || {}).team, agsNameOf = id => id === NET.pid ? player.name : (NET.players.get(id) || {}).name || '?';
-        const agsAllPicked = () => [NET.pid, ...NET.players.keys()].every(id => AGS.picks[id]);
-        function agsBegin() { AGS.on = true; AGS.picks = {}; AGS.end = performance.now() + 15000; NET.inLobby = false; netSend({ type: 'agsel', t: 15 }); agsShow(); } // Host startet die Wahl
-        function agsShow() { clearInterval(AGS.iv); AGS.online = true; AGS.hov = {}; AGS.sel = KIT().id; agsRender(); netSend({ type: 'aghov', pid: NET.pid, k: AGS.sel });
-            AGS.iv = setInterval(() => { if (!AGS.on) return clearInterval(AGS.iv); const left = Math.max(0, Math.ceil((AGS.end - performance.now()) / 1000)), el = $('agsT'); if (el) { el.textContent = left; el.classList.toggle('low', left <= 5); } if (NET.host && (left <= 0 || agsAllPicked())) agsFinish(); }, 250); }
-        const agsLook = id => { const a = store.agent; return AG_SKIN[a] && AG_SKIN[a][0] === id && agOwn.includes(a) ? a : 'k_' + id; }; // eigener Skin, falls für diesen Agenten gekauft
-        function agsRender() { // Agentenwahl: links Agenten, Mitte 3D-Modell + Sperren, rechts Kit & Team (offline wie online)
-            const on = AGS.online, mine = player.team, me = AGS.picks[NET.pid], taken = {}; if (me) AGS.sel = me;
-            if (on) for (const id in AGS.picks) if (agsTeamOf(id) === mine) taken[AGS.picks[id]] = id;
-            const K = KITS.find(k => k.id === AGS.sel) || KITS[0], blocked = !!taken[K.id] && taken[K.id] !== NET.pid;
-            const list = KITS.map(k => { const by = taken[k.id], tk = !!by && by !== NET.pid; return `<div class="agst${k.id === K.id ? ' on' : ''}${tk ? ' tk' : ''}${by === NET.pid ? ' mine' : ''}" data-ags="${k.id}"><i>${k.ic}</i><div><b>${k.n}</b><span>${tk ? '🔒 ' + agsNameOf(by) : by ? '✓ gesperrt' : k.role}</span></div></div>`; }).join('');
-            const ab = K.ab.map((w, i) => `<div class="agsab"><i>${AB_IC[w]}</i><div><b>${W[w].name}${w === K.sig ? ' ★' : ''}</b><span>${w === K.sig ? 'Signatur · jede Runde gratis' : 'Kaufbar · $ ' + W[w].price}</span></div>${IS_TOUCH ? '' : `<kbd>${i ? 'V' : 'C'}</kbd>`}</div>`).join('') + `<div class="agsab"><i>⚡</i><div><b>${ULTS[K.ult][0]}</b><span>${ULTS[K.ult][1]}</span></div>${IS_TOUCH ? '' : '<kbd>X</kbd>'}</div>`;
-            const ids = on ? [NET.pid, ...NET.players.keys()].filter(id => agsTeamOf(id) === mine) : [NET.pid];
-            const team = ids.map(id => { const pk = AGS.picks[id], hv = id === NET.pid ? AGS.sel : AGS.hov[id], k = KITS.find(x => x.id === (pk || hv)); return `<div class="agsp${pk ? ' lk' : ''}${id === NET.pid ? ' me' : ''}"><i>${k ? k.ic : '·'}</i><div><b>${id === NET.pid ? player.name + ' (Du)' : agsNameOf(id)}</b><span>${pk ? '🔒 ' + k.n : k ? (id === NET.pid ? k.n + ' ausgewählt' : 'schaut ' + k.n + ' an …') : 'wählt …'}</span></div></div>`; }).join('') + (on ? '' : '<div class="agsp"><i>🤖</i><div><b>Bots</b><span>nehmen die freien Agenten</span></div></div>');
-            const left = Math.max(0, Math.ceil((AGS.end - performance.now()) / 1000));
-            showOverlay(`<div class="agsw"><div class="agshead"><div><small>${on ? (mine === 'CT' ? 'DEFENDER' : 'ATTACKER') + ' · JEDER AGENT NUR EINMAL PRO TEAM' : 'WETTKAMPF · OFFLINE'}</small><h2>AGENTENWAHL</h2></div>${on ? `<div id="agsT" class="agstimer${left <= 5 ? ' low' : ''}">${left}</div>` : ''}</div>
- <div class="agscol"><h5>AGENTEN</h5>${list}</div>
- <div class="agsstage"><div id="agp3d"></div><div class="agsname"><b>${K.n.toUpperCase()}</b><span>${K.role.toUpperCase()}</span></div>
- <div class="agsbtns"><button id="agsLock" ${me || blocked ? 'disabled' : ''}>${me ? '✓ GESPERRT – WARTE …' : blocked ? '🔒 VERGEBEN' : '🔒 ' + K.n.toUpperCase() + ' SPERREN'}</button>${on ? '' : '<button id="agsBack">Zurück</button>'}</div></div>
- <div class="agscol"><h5>KIT</h5><p class="agsdesc">${K.d}</p>${ab}<h5 style="margin-top:10px">${on ? 'DEIN TEAM' : 'TEAM'}</h5>${team}</div></div>`);
-            AGP.look = agsLook(K.id); AGP.team = mine || 'CT'; agPreview();
-            document.querySelectorAll('[data-ags]').forEach(el => el.onclick = () => { const k = el.dataset.ags; if (AGS.picks[NET.pid] || k === AGS.sel || (taken[k] && taken[k] !== NET.pid)) return; AGS.sel = k; sfx('ui'); if (on) netSend({ type: 'aghov', pid: NET.pid, k }); agsRender(); });
-            $('agsLock').onclick = () => { if (me || blocked) return; sfx('buy');
-                if (!on) { AGP.look = null; kitId = K.id; localStorage.setItem('kit', kitId); if (!agSkinOk(store.agent)) { store.agent = 'std'; localStorage.setItem('agent', 'std'); } dropMenuChar(); AGS.go(); return; }
-                if (NET.host) agsTry(NET.pid, K.id); else netSend({ type: 'agpick', pid: NET.pid, k: K.id }); };
-            if ($('agsBack')) $('agsBack').onclick = () => { AGP.look = null; AGS.back(); };
+        // 👕 Kleidung: 4 Slots, gekaufte Teile frei färbbar · Hautton, Frisur & Haarfarbe gratis · als Text 'fit:…' übertragen (wie eine Agenten-ID)
+        const FIT_SLOTS = [['head', 'Kopf', '🧢'], ['top', 'Oberteil', '👕'], ['legs', 'Hose', '👖'], ['shoes', 'Schuhe', '👟']];
+        const FIT_ITEMS = {
+            head: [{ id: 'none', n: 'Nichts', pr: 0 }, { id: 'band', n: 'Stirnband', pr: 200 }, { id: 'cap', n: 'Cap', pr: 300 }, { id: 'beanie', n: 'Mütze', pr: 300 }, { id: 'boonie', n: 'Buschhut', pr: 400 }, { id: 'helmet', n: 'Taktik-Helm', pr: 700 }],
+            top: [{ id: 'shirt', n: 'Langarmshirt', pr: 0 }, { id: 'tee', n: 'T-Shirt', pr: 250 }, { id: 'hoodie', n: 'Hoodie', pr: 500 }, { id: 'jacket', n: 'Jacke', pr: 600 }, { id: 'vest', n: 'Taktik-Weste', pr: 800 }],
+            legs: [{ id: 'pants', n: 'Stoffhose', pr: 0 }, { id: 'jeans', n: 'Jeans', pr: 300 }, { id: 'shorts', n: 'Shorts', pr: 300 }, { id: 'cargo', n: 'Cargohose', pr: 400 }],
+            shoes: [{ id: 'boots', n: 'Stiefel', pr: 0 }, { id: 'sneaker', n: 'Sneaker', pr: 300 }, { id: 'hightop', n: 'High-Tops', pr: 400 }] };
+        const FIT_COL = ['1c1e22', '3a3f46', '8a8f96', 'e8e8e2', '2c3b58', '3f7bff', '4fd8ff', '2f6b4a', '5a6e3c', 'b59a68', '7a4e2a', 'b52222', 'e0683a', 'ffd84a', '7a3fa0', 'ff4fa3'];
+        const SKIN_TONES = ['f1c8a0', 'd9a77c', 'b98a68', '8d5f42', '5e3d2a'], HAIRS = [['short', 'Kurz'], ['buzz', 'Raspel'], ['long', 'Lang'], ['mohawk', 'Irokese'], ['bald', 'Glatze']], HAIR_COL = ['1c1e22', '3a2a1e', '7a4e2a', 'b59a68', 'e8d27a', 'e8e8e2', 'b52222'];
+        const FIT_DEF = { skin: 2, hair: 'short', hairC: '3a2a1e', head: ['none', '1c1e22'], top: ['shirt', '2c3b58'], legs: ['pants', '3a3f46'], shoes: ['boots', '1c1e22'] };
+        let fitOwn = [], FIT = {}; try { fitOwn = JSON.parse(localStorage.getItem('fitown') || '[]'); FIT = JSON.parse(localStorage.getItem('fit') || '{}') || {}; } catch (e) { }
+        FIT = Object.assign({}, FIT_DEF, FIT); for (const [sl] of FIT_SLOTS) if (!Array.isArray(FIT[sl])) FIT[sl] = FIT_DEF[sl].slice();
+        const fitC = h => /^[0-9a-f]{6}$/i.test(h || '') ? parseInt(h, 16) : 0x3a3f46;
+        const fitHas = (sl, id) => { const it = FIT_ITEMS[sl].find(i => i.id === id); return !!it && (it.pr === 0 || fitOwn.includes(sl + ':' + id)); };
+        const fitStr = f => 'fit:' + [f.skin, f.hair, f.hairC, ...FIT_SLOTS.flatMap(([sl]) => f[sl])].join(',');
+        function parseFit(str) { const a = str.slice(4).split(','), o = { skin: SKIN_TONES[+a[0]] ? +a[0] : 2, hair: a[1], hairC: a[2] }; FIT_SLOTS.forEach(([sl], i) => { o[sl] = [a[3 + i * 2], a[4 + i * 2]]; }); return o; }
+        const effFit = () => { const f = Object.assign({}, FIT); for (const [sl] of FIT_SLOTS) if (!fitHas(sl, FIT[sl][0])) f[sl] = [FIT_DEF[sl][0], FIT[sl][1]]; return f; }; // nicht (mehr) besessene Teile → Grundteil
+        const rndFit = () => { const r = a => a[Math.floor(Math.random() * a.length)], f = { skin: Math.floor(Math.random() * SKIN_TONES.length), hair: r(HAIRS)[0], hairC: r(HAIR_COL) }; for (const [sl] of FIT_SLOTS) f[sl] = [r(FIT_ITEMS[sl]).id, r(FIT_COL)]; return fitStr(f); };
+        { let old = []; try { old = JSON.parse(localStorage.getItem('agskins') || '[]'); } catch (e) { } // alte Agenten-Skins → Coins zurück
+            const REF = { neon: 1200, ninja: 1200, desert: 800, jungle: 800, arctic: 1000, elite: 1500 }, sum = old.reduce((a, id) => a + (REF[id] || 0), 0);
+            if (old.length) { localStorage.removeItem('agskins'); if (sum) { PRG.st.coins = (PRG.st.coins || 0) + sum; localStorage.setItem('prog', JSON.stringify(PRG)); setTimeout(() => toast('🪙 +' + sum + ' Coins', 'Agenten-Skins wurden durch Kleidung ersetzt – Coins erstattet'), 2500); } } }
+        const ULT_KEYS = ['scan', 'heal', 'strike', 'rush', 'ward'], freeLook = () => DM.on || GL.on; // DM, Gauntlet & 1v1: Bots mit zufälliger Kleidung
+        const myLook = () => AGENTS.some(a => a.duck && a.id === store.agent) ? store.agent : store.agent === 'fit' ? fitStr(effFit()) : 'std';
+        function rollLook() { const f = freeLook(); for (const b of bots) b.ag = f ? rndFit() : undefined; dropMenuChar(); if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); }
+        function fitDeco(F, T, mk, M, sh, col, hipL, hipR) { // Kleidung, Frisur & Gesicht auf das Block-Modell (Trefferzonen bleiben unverändert)
+            const tc = fitC(F.top[1]), hm = M(fitC(F.hairC)), hc = M(fitC(F.head[1])), H = F.head[0], sc = M(fitC(F.shoes[1])), wh = M(0xeeeeea), S = F.shoes[0];
+            mk(0.17, 0.11, 0.19, M(T ? 0xd04040 : 0x4a7dff), -0.43, 1.32, 0.06); // Team-Armbinde: Team bleibt immer erkennbar
+            mk(0.1, 0.025, 0.01, M(sh(col.h, 0.55)), 0, 1.6, 0.175); if (F.hair !== 'bald') for (const x of [-0.07, 0.07]) mk(0.07, 0.02, 0.01, hm, x, 1.725, 0.175); // Mund, Augenbrauen
+            if (F.hair === 'short') { mk(0.36, 0.08, 0.36, hm, 0, 1.84, -0.01); mk(0.36, 0.16, 0.06, hm, 0, 1.74, -0.16); }
+            if (F.hair === 'buzz') mk(0.35, 0.04, 0.35, hm, 0, 1.82, 0);
+            if (F.hair === 'long') { mk(0.37, 0.09, 0.37, hm, 0, 1.84, -0.01); mk(0.37, 0.42, 0.08, hm, 0, 1.6, -0.17); for (const x of [-0.18, 0.18]) mk(0.05, 0.28, 0.28, hm, x, 1.68, -0.04); }
+            if (F.hair === 'mohawk' && (H === 'none' || H === 'band')) mk(0.08, 0.12, 0.34, hm, 0, 1.88, 0);
+            if (F.top[0] === 'hoodie') { mk(0.42, 0.2, 0.14, M(sh(tc, 0.85)), 0, 1.5, -0.22); mk(0.36, 0.14, 0.02, M(sh(tc, 0.8)), 0, 0.95, 0.205); } // Kapuze, Bauchtasche
+            if (F.top[0] === 'jacket') { mk(0.04, 0.8, 0.02, M(sh(tc, 0.55)), 0, 1.05, 0.225); mk(0.5, 0.08, 0.46, M(sh(tc, 0.8)), 0, 1.47, 0); } // Reißverschluss, Kragen
+            if (F.top[0] === 'vest') for (const x of [-0.17, 0.17]) mk(0.14, 0.12, 0.03, M(sh(tc, 0.75)), x, 1.15, 0.235); // Magazintaschen
+            if (H === 'band') mk(0.35, 0.06, 0.35, hc, 0, 1.73, 0);
+            if (H === 'cap') { mk(0.36, 0.1, 0.36, hc, 0, 1.86, 0); mk(0.3, 0.03, 0.2, hc, 0, 1.82, 0.25); }
+            if (H === 'beanie') { mk(0.37, 0.14, 0.37, hc, 0, 1.86, 0); mk(0.38, 0.05, 0.38, M(sh(fitC(F.head[1]), 0.8)), 0, 1.79, 0); }
+            if (H === 'boonie') { mk(0.58, 0.04, 0.58, hc, 0, 1.85, 0); mk(0.35, 0.1, 0.35, hc, 0, 1.9, 0); }
+            if (H === 'helmet') { mk(0.39, 0.16, 0.39, hc, 0, 1.86, 0); mk(0.39, 0.1, 0.06, hc, 0, 1.78, -0.17); }
+            for (const hp of [hipL, hipR]) { const side = hp === hipL ? -1 : 1;
+                if (S === 'hightop') { mk(0.3, 0.22, 0.38, sc, 0, -0.55, 0.04, 0, hp); mk(0.31, 0.04, 0.39, wh, 0, -0.645, 0.04, 0, hp); }
+                else if (S === 'sneaker') { mk(0.3, 0.11, 0.38, sc, 0, -0.6, 0.04, 0, hp); mk(0.31, 0.04, 0.39, wh, 0, -0.645, 0.04, 0, hp); }
+                else mk(0.3, 0.13, 0.38, sc, 0, -0.595, 0.04, 0, hp);
+                if (F.legs[0] === 'shorts') mk(0.285, 0.25, 0.305, M(col.h), 0, -0.42, 0, 0, hp); // Beine unter den Shorts
+                if (F.legs[0] === 'cargo') mk(0.04, 0.16, 0.16, M(sh(col.l, 0.75)), side * 0.16, -0.25, 0, 0, hp);
+                if (F.legs[0] === 'jeans') mk(0.29, 0.05, 0.31, M(sh(col.l, 0.7)), 0, -0.5, 0, 0, hp); }
         }
-        function agsTry(id, k) { // Host prüft jede Wahl (Team-Duplikate verhindern) und verteilt den Stand
-            if (!AGS.on || AGS.picks[id] || !KITS.some(x => x.id === k)) return; const tm = agsTeamOf(id); if (Object.keys(AGS.picks).some(o => AGS.picks[o] === k && agsTeamOf(o) === tm)) return;
-            AGS.picks[id] = k; netSend({ type: 'agstate', picks: AGS.picks }); agsRender(); }
-        function agsFinish() { // Host: Rest zufällig auf freie Agenten verteilen, dann Match starten
-            if (!AGS.on) return; for (const id of [NET.pid, ...NET.players.keys()]) if (!AGS.picks[id]) { const tm = agsTeamOf(id), used = Object.keys(AGS.picks).filter(o => agsTeamOf(o) === tm).map(o => AGS.picks[o]), free = KITS.filter(k => !used.includes(k.id)); AGS.picks[id] = rnd(free.length ? free : KITS).id; }
-            netSend({ type: 'agfinal', picks: AGS.picks }); agsApply(AGS.picks);
-            NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); }
-        function agsApply(picks) { AGS.on = false; AGP.look = null; clearInterval(AGS.iv); if (picks[NET.pid]) { kitId = picks[NET.pid]; localStorage.setItem('kit', kitId); }
-            for (const id in picks) { const rp = NET.players.get(id); if (rp) rp.kit = picks[id]; } dropMenuChar(); netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); }
-        function assignBotKits() { // pro Team jeder Agent nur einmal: Bots nehmen die Agenten, die Menschen frei lassen
-            for (const tm of ['CT', 'T']) { const used = new Set(); if (player.team === tm) used.add(KIT().id); for (const rp of NET.players.values()) if (rp.team === tm && rp.kit) used.add(rp.kit);
-                const free = KITS.filter(k => !used.has(k.id)); let i = 0; for (const b of bots) if (b.team === tm) { const k = free.length ? free[i++ % free.length] : KITS[i++ % KITS.length]; b.agKit = k; b.ag = 'k_' + k.id; } }
-            remeshAll(); }
+        function disposeGroup(g) { g.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) [].concat(o.material).forEach(m => m.dispose()); }); } // GPU-Speicher von Vorschau-Modellen freigeben
         function dropMenuChar() { if (!menuChar) return; scene.remove(menuChar.group); disposeGroup(menuChar.group); menuChar = null; }
         // Modelle aller Bots/Mitspieler neu bauen (z.B. wenn das Thema erst beim Start bekannt ist)
         // Team-Marker: leuchtendes Dreieck über Mitspielern (auch durch Wände sichtbar, wie in CS) – Gegner bekommen keinen
@@ -4781,38 +4744,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 e._ph = (e._ph || 0) + Math.min(v, 8) * dt * 2.6; const sw = Math.min(1, v / 3) * 0.55 * Math.sin(e._ph); L.hipL.rotation.x = sw; L.hipR.rotation.x = -sw; }
         }
         function remeshAll() { for (const e of [...bots, ...NET.players.values()]) { if (!e.mesh) continue; const m = makeBotMesh(e.team, e.ag, false, e.hat); m.group.position.copy(e.mesh.position); m.group.rotation.copy(e.mesh.rotation); m.group.visible = e.mesh.visible; scene.remove(e.mesh); e.mesh = m.group; e.hit = m.hit; e.flash = m.flash; e.robo = false; m.hit.forEach(h => h.userData.ent = e); } }
-        store.agent = AGENTS.some(a => a.id === localStorage.getItem('agent')) ? localStorage.getItem('agent') : 'std'; if (!agSkinOk(store.agent)) store.agent = 'std';
-        // 🦆 Entenhut (Belohnung ab 20 Enten): kleine Ente auf dem Kopf, bleibt auch im Robo-Look farbig
-        // Agenten-Zubehör: genau eins aufsetzbar, gespeichert unter 'duckhat' ('1' = alter Entenhut). k/max = Fortschrittsanzeige
-        const ACCS = [
-            { id: 'duck', ic: '🦆', n: 'Entenhut', need: '20 Enten erlegen', ok: s => s.ducks >= 20, k: 'ducks', max: 20 },
-            { id: 'party', ic: '🎉', n: 'Partyhut', need: '', ok: () => true },
-            { id: 'shades', ic: '😎', n: 'Sonnenbrille', need: 'Ersten Kill erzielen', ok: s => s.kills >= 1, k: 'kills', max: 1 },
-            { id: 'headset', ic: '🎧', n: 'Headset', need: '10 Matches spielen', ok: s => s.matches >= 10, k: 'matches', max: 10 },
-            { id: 'cowboy', ic: '🤠', n: 'Cowboyhut', need: '10 Kills mit der AWP', ok: s => s.awp >= 10, k: 'awp', max: 10 },
-            { id: 'horns', ic: '😈', n: 'Teufelshörner', need: '100 Kills', ok: s => s.kills >= 100, k: 'kills', max: 100 },
-            { id: 'halo', ic: '😇', n: 'Heiligenschein', need: 'Level 10 erreichen', ok: (s, l) => l >= 10 },
-            { id: 'crown', ic: '👑', n: 'Krone', need: '25 Matches gewinnen', ok: s => s.wins >= 25, k: 'wins', max: 25 }];
-        const accOk = a => !!a.ok(PRG.st, lvlOf(PRG.xp));
-        const duckHat = () => { const v0 = localStorage.getItem('duckhat'), v = v0 === '1' ? 'duck' : v0, a = ACCS.find(x => x.id === v); return a && accOk(a) ? v : 0; };
-        function addAcc(g, id, duckM) { // Zubehör auf den Kopf setzen (Mensch: Kopf 1,66 m · Ente: etwas tiefer/breiter)
-            if (id === 1 || id === '1' || id === 'duck') return addDuckHat(g, duckM ? 1.87 : 1.95);
-            const y = duckM ? 1.87 : 1.95, hy = 1.66, fz = duckM ? 0.245 : 0.17, hw = duckM ? 0.42 : 0.34, ey = duckM ? 1.73 : 1.69;
-            const L = c => new THREE.MeshLambertMaterial({ color: c }), Bm = c => new THREE.MeshBasicMaterial({ color: c });
-            const put = (geo, m, x, yy, z, rx = 0, rz = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, yy, z); o.rotation.x = rx; o.rotation.z = rz; o.userData.keep = 1; g.add(o); return o; }, bx = (w, h, d) => new THREE.BoxGeometry(w, h, d);
-            if (id === 'party') { put(new THREE.CylinderGeometry(0.005, 0.12, 0.3, 10), L(0xff4fa3), 0, y + 0.15, 0); put(bx(0.06, 0.06, 0.06), L(0xffe14a), 0, y + 0.31, 0); put(new THREE.CylinderGeometry(0.093, 0.1, 0.035, 10), L(0x4ad6ff), 0, y + 0.06, 0); }
-            else if (id === 'shades') { put(bx(hw + 0.03, 0.075, 0.03), Bm(0x0c0c0e), 0, ey, fz + 0.02); put(bx(0.03, 0.02, 0.032), L(0xb0b4ba), 0, ey + 0.02, fz + 0.022); for (const sx of [-1, 1]) put(bx(0.02, 0.025, 0.22), Bm(0x0c0c0e), sx * (hw / 2 + 0.015), ey + 0.01, fz - 0.1); }
-            else if (id === 'headset') { const d = L(0x232428), r = L(0xe03030); put(bx(hw + 0.08, 0.045, 0.07), d, 0, y + 0.01, 0); for (const sx of [-1, 1]) { put(bx(0.05, 0.25, 0.06), d, sx * (hw / 2 + 0.035), (y + hy) / 2 + 0.06, 0); put(bx(0.07, 0.13, 0.13), d, sx * (hw / 2 + 0.04), hy, 0); put(bx(0.075, 0.03, 0.135), r, sx * (hw / 2 + 0.04), hy + 0.05, 0); } put(bx(0.02, 0.02, 0.17), d, -(hw / 2 + 0.05), hy - 0.06, 0.09, 0, 0); put(bx(0.035, 0.035, 0.035), r, -(hw / 2 + 0.03), hy - 0.07, fz + 0.01); }
-            else if (id === 'cowboy') { const br = L(0x7a4e2a); put(bx(0.56, 0.03, 0.56), br, 0, y + 0.015, 0); put(bx(0.3, 0.17, 0.28), br, 0, y + 0.11, 0); put(bx(0.31, 0.04, 0.29), L(0x2a1a0e), 0, y + 0.05, 0); for (const sx of [-1, 1]) put(bx(0.1, 0.03, 0.56), br, sx * 0.29, y + 0.05, 0, 0, sx * 0.5); }
-            else if (id === 'horns') { const rd = L(0xb01818); for (const sx of [-1, 1]) { put(new THREE.CylinderGeometry(0.004, 0.045, 0.17, 6), rd, sx * 0.11, y + 0.06, 0.04, 0, -sx * 0.4); } }
-            else if (id === 'halo') { put(new THREE.TorusGeometry(0.17, 0.022, 6, 22), Bm(0xffe27a), 0, y + 0.22, 0, Math.PI / 2); }
-            else if (id === 'crown') { const au = L(0xffc83d); put(bx(0.3, 0.09, 0.3), au, 0, y + 0.045, 0); for (const sx of [-1, 1]) for (const sz of [-1, 1]) put(bx(0.06, 0.09, 0.06), au, sx * 0.12, y + 0.13, sz * 0.12); put(bx(0.05, 0.05, 0.02), Bm(0xe02040), 0, y + 0.05, 0.155); put(bx(0.02, 0.05, 0.05), Bm(0x3060ff), 0.155, y + 0.05, 0); put(bx(0.02, 0.05, 0.05), Bm(0x3060ff), -0.155, y + 0.05, 0); }
-        }
-        function addDuckHat(g, y) { const M = c => new THREE.MeshLambertMaterial({ color: c }), Y = M(0xffd84a), O = M(0xf2a227), E = new THREE.MeshBasicMaterial({ color: 0x111111 }), mk = (w, h, d, m, x, yy, z) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, yy, z); b.userData.keep = 1; g.add(b); };
-            mk(0.24, 0.13, 0.3, Y, 0, y + 0.065, -0.02); mk(0.14, 0.13, 0.14, Y, 0, y + 0.19, 0.08); mk(0.08, 0.04, 0.08, O, 0, y + 0.17, 0.18); mk(0.03, 0.03, 0.01, E, -0.04, y + 0.21, 0.152); mk(0.03, 0.03, 0.01, E, 0.04, y + 0.21, 0.152); }
+        { const v = localStorage.getItem('agent'); store.agent = AGENTS.some(a => a.id === v) || v === 'fit' ? v : 'std'; }
+        const duckHat = () => 0; // Zubehör entfernt (ersetzt durch Kleidung)
         function makeBotMesh(team, agentId, raw, hat) {
             if (!raw) agentId = agentFor(team, agentId); // raw: Menü-Vorschau zeigt immer den eigenen Agenten
-            const g = new THREE.Group(), T = team === 'T'; const M = c => new THREE.MeshLambertMaterial({ color: c }), AG = AGENTS.find(a => a.id === agentId && a.id !== 'std') || KIT_LOOK[agentId];
+            const F = typeof agentId === 'string' && agentId.startsWith('fit:') ? parseFit(agentId) : null; // 👕 eigene Kleidung
+            const g = new THREE.Group(), T = team === 'T'; const M = c => new THREE.MeshLambertMaterial({ color: c }), AG = AGENTS.find(a => a.id === agentId && a.id !== 'std');
             if (AG && AG.duck) { // 🦆 Enten-Modell – gleiche Trefferzonen (Kopf/Körper/Beine) wie die normalen Modelle
                 const mk = (w, h, d, m, x, y, z, part, keep) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = true; g.add(b); if (part) b.userData.part = part; if (keep) b.userData.keep = 1; return b; };
                 const bodyM = M(AG.body), wingM = M(AG.wing), orange = M(0xf2a227), black = new THREE.MeshBasicMaterial({ color: 0x111111 });
@@ -4827,32 +4764,32 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 const legL = mk(0.12, 0.65, 0.12, orange, -0.16, 0.33, 0, 'legs', 1), legR = mk(0.12, 0.65, 0.12, orange, 0.16, 0.33, 0, 'legs', 1);
                 mk(0.24, 0.05, 0.32, orange, -0.16, 0.025, 0.08, 0, 1); mk(0.24, 0.05, 0.32, orange, 0.16, 0.025, 0.08, 0, 1); mk(0.08, 0.12, 0.75, M(0x222222), 0.3, 1.12, 0.5);
                 const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.3, 1.12, 0.95); fl.visible = false; g.add(fl);
-                if (hat) addAcc(g, hat, AG && AG.duck); scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
+                scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
             }
             // Menschliches Modell im Block-Stil – Trefferzonen wie bisher: Kopf (1,66 m), Körper (1,05–1,4 m), Beine
-            const col = AG ? { b: AG.body, l: AG.legs, h: AG.head } : T ? (DSV ? { b: 0x8a5440, l: 0x3a3f48, h: 0xc99c76 } : { b: 0x9b7c4e, l: 0x5e513a, h: 0xc99c76 }) : (DSV ? { b: 0x3d5068, l: 0x262f3b, h: 0x1b222c } : { b: 0x2c3b58, l: 0x1d2634, h: 0x151c2a }); // neues Design: T terrakotta/anthrazit, CT stahlblau
+            const fv = !!F && F.top[0] === 'vest', col = F ? { b: fv ? 0x3a3f46 : fitC(F.top[1]), l: fitC(F.legs[1]), h: fitC(SKIN_TONES[F.skin]) } : AG ? { b: AG.body, l: AG.legs, h: AG.head } : T ? (DSV ? { b: 0x8a5440, l: 0x3a3f48, h: 0xc99c76 } : { b: 0x9b7c4e, l: 0x5e513a, h: 0xc99c76 }) : (DSV ? { b: 0x3d5068, l: 0x262f3b, h: 0x1b222c } : { b: 0x2c3b58, l: 0x1d2634, h: 0x151c2a }); // neues Design: T terrakotta/anthrazit, CT stahlblau
             const sh = (c, f) => new THREE.Color(c).multiplyScalar(f).getHex();
-            const bodyMat = M(col.b), legMat = M(col.l), headMat = M(col.h), vestMat = M(sh(col.b, 0.7)), dark = M(0x17191d), glove = M(0x26282c), skin = M(0xb98a68), gunA = M(0x222428), gunB = M(0x3b3e44);
+            const bodyMat = M(col.b), legMat = M(col.l), headMat = M(col.h), vestMat = M(F ? (fv ? fitC(F.top[1]) : col.b) : sh(col.b, 0.7)), dark = M(0x17191d), glove = M(F ? col.h : 0x26282c), skin = M(F ? col.h : 0xb98a68), gunA = M(0x222428), gunB = M(0x3b3e44), foreMat = F && F.top[0] === 'tee' ? skin : bodyMat;
             const mk = (w, h, d, m, x, y, z, part, par, shadow) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = !!(part || shadow); (par || g).add(b); if (part) b.userData.part = part; return b; };
             // Rumpf, Weste, Gürtel, Hals, Kopf mit Augen
             const body = mk(0.7, 0.85, 0.4, bodyMat, 0, 1.05, 0, 'body'); mk(0.74, 0.46, 0.44, vestMat, 0, 1.22, 0, 0, 0, 1); mk(0.72, 0.1, 0.42, dark, 0, 0.8, 0); /* Trefferzonen exakt wie vorher */
             mk(0.15, 0.1, 0.15, skin, 0, 1.5, 0); const head = mk(0.34, 0.34, 0.34, headMat, 0, 1.66, 0, 'head');
             if (col.h !== 0x101012 && col.h !== 0x101018) { mk(0.06, 0.04, 0.01, dark, -0.07, 1.69, 0.175); mk(0.06, 0.04, 0.01, dark, 0.07, 1.69, 0.175); }
-            if (!AG) { // Standard-Ausrüstung: Defender Helm + blaue Brille, Attacker rotes Stirnband
+            if (!AG && !F) { // Standard-Ausrüstung: Defender Helm + blaue Brille, Attacker rotes Stirnband
                 if (T) mk(0.36, 0.07, 0.36, M(0xb52222), 0, 1.75, 0); // Attacker: Stirnband (ohne Halstuch)
                 if (DSV) mk(0.76, 0.07, 0.46, M(T ? 0xe0683a : 0x3fb5c7), 0, 1.41, 0); // Teamfarbe: Attacker orange, Defender türkis
                 else { mk(0.38, 0.13, 0.38, M(0x2a3446), 0, 1.86, 0); mk(0.38, 0.04, 0.08, M(0x2a3446), 0, 1.8, 0.19); mk(0.3, 0.07, 0.04, M(0x6fa0ff), 0, 1.7, 0.185); }
             }
             // Arme halten die Waffe (links am Vorderschaft, rechts am Abzug), Handschuhe
-            mk(0.15, 0.34, 0.17, bodyMat, -0.43, 1.27, 0.06, 0, 0, 1); mk(0.13, 0.13, 0.4, bodyMat, -0.27, 1.12, 0.3); mk(0.12, 0.12, 0.12, glove, -0.12, 1.13, 0.52);
-            mk(0.15, 0.34, 0.17, bodyMat, 0.43, 1.27, 0.04, 0, 0, 1); mk(0.13, 0.13, 0.32, bodyMat, 0.35, 1.1, 0.24); mk(0.12, 0.12, 0.12, glove, 0.3, 1.1, 0.4);
+            mk(0.15, 0.34, 0.17, bodyMat, -0.43, 1.27, 0.06, 0, 0, 1); mk(0.13, 0.13, 0.4, foreMat, -0.27, 1.12, 0.3); mk(0.12, 0.12, 0.12, glove, -0.12, 1.13, 0.52);
+            mk(0.15, 0.34, 0.17, bodyMat, 0.43, 1.27, 0.04, 0, 0, 1); mk(0.13, 0.13, 0.32, foreMat, 0.35, 1.1, 0.24); mk(0.12, 0.12, 0.12, glove, 0.3, 1.1, 0.4);
             // Waffe: Gehäuse, Lauf, Magazin
             mk(0.08, 0.13, 0.62, gunA, 0.28, 1.16, 0.42); mk(0.045, 0.045, 0.3, gunB, 0.28, 1.18, 0.88); mk(0.06, 0.17, 0.09, gunB, 0.28, 1.03, 0.48);
             // Beine an Hüftgelenken (für die Laufanimation), Stiefel
             const hipL = new THREE.Group(), hipR = new THREE.Group(); hipL.position.set(-0.18, 0.66, 0); hipR.position.set(0.18, 0.66, 0); g.add(hipL, hipR);
             const legL = mk(0.28, 0.65, 0.3, legMat, 0, -0.33, 0, 'legs', hipL), legR = mk(0.28, 0.65, 0.3, legMat, 0, -0.33, 0, 'legs', hipR);
-            mk(0.3, 0.13, 0.38, dark, 0, -0.595, 0.04, 0, hipL); mk(0.3, 0.13, 0.38, dark, 0, -0.595, 0.04, 0, hipR);
-            g.userData.limbs = { hipL, hipR };
+            if (!F) { mk(0.3, 0.13, 0.38, dark, 0, -0.595, 0.04, 0, hipL); mk(0.3, 0.13, 0.38, dark, 0, -0.595, 0.04, 0, hipR); }
+            g.userData.limbs = { hipL, hipR }; if (F) fitDeco(F, T, mk, M, sh, col, hipL, hipR);
             if (AG) {
                 mk(0.17, 0.11, 0.19, M(T ? 0xd04040 : 0x4a7dff), -0.43, 1.32, 0.06); // Team-Armbinde: Team bleibt immer erkennbar
                 if (AG.hat === 'helmet') mk(0.38, 0.15, 0.38, M(AG.hatC), 0, 1.85, 0);
@@ -4863,9 +4800,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 if (AG.visor) { const v = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.08, 0.05), new THREE.MeshBasicMaterial({ color: AG.visor })); v.position.set(0, 1.69, 0.175); g.add(v); }
             }
             const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.28, 1.18, 1.05); fl.visible = false; g.add(fl);
-            if (hat) addAcc(g, hat, AG && AG.duck); scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
+            scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
         }
-        function createBot(name, team) { const kt = KITS[bots.length % KITS.length], lk = freeLook() ? rnd([...Object.keys(KIT_LOOK), ...NONDUCK.filter(a => a.id !== 'std').map(a => a.id)]) : 'k_' + kt.id, m = makeBotMesh(team, lk); const b = { agKit: kt, ag: lk, isPlayer: false, id: bots.length, name, team, x: 0, y: 0, z: 0, r: 0.4, yaw: 0, health: 100, armor: 0, helmet: false, alive: true, kills: 0, deaths: 0, money: CFG.money, weapon: team === 'T' ? W.glock : W.usp, ammo: 0, reloadT: 0, fireT: 0, burst: 0, target: null, losT: Math.random(), reaction: 0, path: [], goal: null, waitT: 0, stuckT: 0, lastX: 0, lastZ: 0, wantMove: false, moving: false, strafeT: 0, strafeDir: 1, crouch: false, crouchT: 0, nades: [], nadeT: 0, plantT: 0, defuseT: 0, kit: false, stepT: 0, flashT: 0, lastShotT: -9, speed: 0, mesh: m.group, hit: m.hit, flash: m.flash }; m.hit.forEach(h => h.userData.ent = b); bots.push(b); return b; }
+        function createBot(name, team) { const lk = freeLook() ? rndFit() : undefined, m = makeBotMesh(team, lk); const b = { ultK: rnd(ULT_KEYS), ag: lk, isPlayer: false, id: bots.length, name, team, x: 0, y: 0, z: 0, r: 0.4, yaw: 0, health: 100, armor: 0, helmet: false, alive: true, kills: 0, deaths: 0, money: CFG.money, weapon: team === 'T' ? W.glock : W.usp, ammo: 0, reloadT: 0, fireT: 0, burst: 0, target: null, losT: Math.random(), reaction: 0, path: [], goal: null, waitT: 0, stuckT: 0, lastX: 0, lastZ: 0, wantMove: false, moving: false, strafeT: 0, strafeDir: 1, crouch: false, crouchT: 0, nades: [], nadeT: 0, plantT: 0, defuseT: 0, kit: false, stepT: 0, flashT: 0, lastShotT: -9, speed: 0, mesh: m.group, hit: m.hit, flash: m.flash }; m.hit.forEach(h => h.userData.ent = b); bots.push(b); return b; }
 
         // Bombe
         const bombMesh = new THREE.Group(); { const b = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.22, 0.3), new THREE.MeshLambertMaterial({ color: 0x3f4a35 })); b.position.y = 0.11; b.castShadow = true; bombMesh.add(b); }
@@ -5291,8 +5228,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (b.money >= 200 && Math.random() < 0.6) { b.money -= 200; b.nades.push('flash'); }
             if (b.team === 'T' && b.money >= 300 && Math.random() < 0.4) { b.money -= 300; b.nades.push('smoke'); }
             if (b.money >= 400 && Math.random() < 0.35) { b.money -= 400; b.nades.push('molly'); }
-            const K = b.agKit || (b.agKit = KITS[Math.max(0, bots.indexOf(b)) % KITS.length]), add = (k, pr, ch) => { if (b.money >= pr && Math.random() < ch) { b.money -= pr; b.nades.push(k); } }; // Bot-Agent: Signatur gratis, 2. Fähigkeit kaufen
-            b.immune = false; if (b.rushT > 0) { b.rushT = 0; b.spdMul = 1; } if (!GL.on && !b.nades.includes(K.sig)) b.nades.push(K.sig); for (const k of K.ab) if (k !== K.sig) add(k, W[k].price, 0.6);
+            const role = b.role || (b.role = ['duelist', 'initiator', 'controller', 'sentinel'][Math.max(0, bots.indexOf(b)) % 4]), add = (k, pr, ch) => { if (b.money >= pr && Math.random() < ch) { b.money -= pr; b.nades.push(k); } }; // Bot-Rollen
+            if (role === 'duelist') add('cluster', 400, 0.6); if (role === 'initiator') add('recon', 300, 0.75); if (role === 'controller') { add('smoke', 300, 0.7); add('slow', 250, 0.5); } if (role === 'sentinel') add('slow', 250, 0.7);
+            b.immune = false; if (b.rushT > 0) { b.rushT = 0; b.spdMul = 1; } // Ultimate-Effekte enden mit der Runde
             b.ammo = b.weapon.mag;
         }
         function startRound() {
@@ -5301,7 +5239,6 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } funLoadout(p); p.weapons[5] = null; p.alive = true; p.health = 100;
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.rk = 0; p.rushT = 0; p.immune = false; STK.on = false; p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); funLoadout(b); }
             placeTeam('T'); placeTeam('CT');
-            if (!DM.on && !GL.on && !DH.on && !EX.on) { const sg = KIT().sig; if ((p.nades[sg] || 0) < NADE_MAX[sg]) { p.nades[sg] = (p.nades[sg] || 0) + 1; syncNadeSlot(p.weapons[4] ? p.weapons[4].def.key : sg); } } // Signatur-Fähigkeit gratis
             bots.forEach(b => { b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; b.lastX = b.x; b.lastZ = b.z; });
             if (DM.on) for (const e of ents) if (!e.remote) dmRespawn(e);
             const car = DM.on ? null : rnd(ents.filter(e => e.team === 'T')); G.bomb.carrier = car; if (car && car.isPlayer) p.weapons[5] = mkWeapon(W.c4);
@@ -5399,7 +5336,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             return true;
         }
         function botNades(b, dt) {
-            if (b.rushT > 0 && (b.rushT -= dt) <= 0) b.spdMul = 1; if (b.agKit && (b.ult || 0) >= ULT_MAX && G.state === 'live' && !GL.on && !DM.on) botUlt(b); // Bot-Ultimate
+            if (b.rushT > 0 && (b.rushT -= dt) <= 0) b.spdMul = 1; if (b.ultK && (b.ult || 0) >= ULT_MAX && G.state === 'live' && !GL.on && !DM.on) botUlt(b); // Bot-Ultimate
             b.nadeT -= dt;
             if (b.nadeT > 0 || !b.nades.length || G.state !== 'live') return;
             b.nadeT = 1.5 + Math.random() * 2.5;
@@ -5741,7 +5678,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         const SHOP = [
             { name: 'PISTOLEN', items: [{ w: 'glock' }, { w: 'usp' }, { w: 'deagle' }] },
             { name: 'MITTELKLASSE', items: [{ w: 'mp5' }, { w: 'pump' }] }, { name: 'GEWEHRE', items: [{ w: 'ak47' }, { w: 'm4a1' }, { w: 'scout' }, { w: 'awp' }] },
-            { name: 'GRANATEN', items: [{ w: 'he' }, { w: 'flash' }, { w: 'smoke' }, { w: 'molly' }] }, { name: 'TAKTIK', kit: 1, items: [{ w: 'recon' }, { w: 'cluster' }, { w: 'slow' }] }, { name: 'ULTIMATE', ult: true, items: [['scan', 'Team-Scan'], ['heal', 'Heilwelle'], ['strike', 'Luftschlag'], ['rush', 'Adrenalin'], ['ward', 'Bollwerk']].map(([u, label]) => ({ u, label, price: 0 })) }, {
+            { name: 'GRANATEN', items: [{ w: 'he' }, { w: 'flash' }, { w: 'smoke' }, { w: 'molly' }] }, { name: 'TAKTIK', items: [{ w: 'recon' }, { w: 'cluster' }, { w: 'slow' }] }, { name: 'ULTIMATE', ult: true, items: [['scan', 'Team-Scan'], ['heal', 'Sanitäts-Station'], ['strike', 'Luftschlag'], ['rush', 'Adrenalin'], ['ward', 'Bollwerk']].map(([u, label]) => ({ u, label, price: 0 })) }, {
                 name: 'AUSRÜSTUNG', items: [
                     { g: 'kevlar', label: 'Kevlar-Weste', price: 650 },
                     { g: 'helm', label: 'Kevlar + Helm', price: 1000 },
@@ -5762,12 +5699,11 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         const bar = (v, m) => `<div class="bbar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div>`;
         function renderBuy() {
             const p = player;
-            const tk = SHOP.find(c => c.kit); if (tk) { const K = KIT(); tk.name = 'FÄHIGKEITEN · ' + K.n; tk.items = K.ab.map(w => ({ w, label: W[w].name + (w === K.sig ? ' ★' : '') })); } // ★ = Signatur, jede Runde gratis
             let h = `<div class="bhead"><h3>KAUFMENÜ</h3><div style="display:flex;gap:10px;align-items:center"><div class="bmoney">$ ${p.money}</div><div class="bclose" onclick="closeBuy()">✕</div></div></div><div class="bgrid">`; SHOP.forEach((col, ci) => { if (col.ult) return; // Ultimate: eigene Leiste unten
                 h += `<div class="bcol"><h4>${col.name}</h4>`;
                 col.items.forEach((it, ii) => {
                     if (it.ct && p.team !== 'CT') return;
-                    const price = itemPrice(it), owned = itemOwned(it), ok = p.money >= price && !owned;
+                    const price = itemPrice(it), owned = itemOwned(it), ok = p.money >= price && !owned && !tacBlock(it);
                     const cls = owned ? 'own' : ok ? '' : 'no';
                     if (it.w && !W[it.w].nade) {
                         const d = W[it.w], rpm = Math.round(60 / d.rate);
@@ -5780,14 +5716,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 });
                 h += `</div>`;
             });
-            const uc = SHOP.findIndex(c => c.ult); h += `</div>` + (uc < 0 || GL.on || DH.on || EX.on ? '' : `<div class="bult"><span>ULTIMATE · ${KIT().n}</span><div class="card own"><b>${ULTS[ultK()][0]}</b><div class="cprice">${ULTS[ultK()][1]}</div></div></div>`) + `<div class="bfoot"><span>🖱️ Klicken zum Kaufen${IS_TOUCH ? '' : ' · Rechtsklick verkaufen'}</span><span>[B] schließen</span></div>`;
+            const uc = SHOP.findIndex(c => c.ult); h += `</div>` + (uc < 0 || GL.on || DH.on || EX.on ? '' : `<div class="bult"><span>ULTIMATE</span>${SHOP[uc].items.map((it, ii) => `<div class="card${ultK() === it.u ? ' own' : ''}" data-b="${uc}-${ii}"><b>${it.label}</b><div class="cprice">${ultK() === it.u ? '✓ Gewählt' : ULTS[it.u][1]}</div></div>`).join('')}</div>`) + `<div class="bfoot"><span>🖱️ Klicken zum Kaufen${IS_TOUCH ? '' : ' · Rechtsklick verkaufen'}</span><span>[B] schließen</span></div>`;
             if (h !== buyCache) { buyCache = h; $('buy').innerHTML = h; }
         }
         function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); } function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
         function buy(it) {
             const p = player; if (!canBuy() || itemOwned(it)) return;
             if (it.u) { p.ultK = ultPref = it.u; try { localStorage.setItem('ultk', it.u); } catch (e) { } sfx('buy'); renderBuy(); return; } // Ultimate wählen (eine pro Spieler)
-            if (CFG.wpn && it.w && W[it.w].slot === 1) { sfx('empty'); return; } // Spaß-Modus: keine Primärwaffen kaufbar
+            if (CFG.wpn && it.w && W[it.w].slot === 1) { sfx('empty'); return; } if (tacBlock(it)) { sfx('empty'); return; } // nur eine Taktik pro Runde // Spaß-Modus: keine Primärwaffen kaufbar
             const price = itemPrice(it);
             if (p.money < price) { sfx('empty'); return; }
             if (it.w && W[it.w].nade) { const d = W[it.w]; p.money -= price; p.nades[d.key] = (p.nades[d.key] || 0) + 1; syncNadeSlot(p.weapons[4] ? p.weapons[4].def.key : d.key); }
@@ -5863,19 +5799,21 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function strikeConfirm() { const p = player; if (!STK.on) return; STK.on = false; if ((p.ult || 0) < ULT_MAX || !p.alive) return; p.ult = 0; tone(300, 0.5, 0.16, 0, 'sawtooth', 1200); msg('⚡ LUFTSCHLAG', 'Abwurf!', 1.5);
             launchNade('strike', STK.x, 22, STK.z, 0, -1, 0, p); if (NET.on) netSend({ type: 'nade', k: 'strike', x: STK.x, y: 22, z: STK.z, dx: 0, dy: -1, dz: 0, on: p.name, ot: p.team, ap: NET.pid, lv: 1, g: null }); }
         let ultPref = 'scan'; try { const u = localStorage.getItem('ultk'); if (ULTS[u]) ultPref = u; } catch (e) { }
-        const ultK = () => KIT().ult; // Ultimate fest pro Agent
+        const ultK = () => player.ultK || ultPref;
         const AB_IC = { he: '💣', flash: '✴️', smoke: '☁️', molly: '🔥', recon: '📡', cluster: '🧨', slow: '❄️' };
-        function selectAbil(i) { const p = player, k = KIT().ab[i]; if (!k || !p.alive || buyOpen || GL.on || DH.on || EX.on) return; if (!(p.nades[k] > 0)) { sfx('empty'); return; } syncNadeSlot(k); if (p.slot !== 4) selectSlot(4); else p.switchT = 0.5; } // C/V bzw. Antippen
-        function updAbar() { // Fähigkeiten-Leiste rechts neben der Ultimate: Ladungen, ★ = Signatur
-            let el = $('abar'); const p = player, off = GL.on || DH.on || EX.on || !p.alive || buyOpen;
-            if (!el) { el = document.createElement('div'); el.id = 'abar'; $('hud').appendChild(el); const go = e => { const d = e.target.closest('[data-ab]'); if (!d) return; e.stopPropagation(); if (e.cancelable) e.preventDefault(); selectAbil(+d.dataset.ab); }; el.addEventListener('touchstart', go, { passive: false }); el.addEventListener('mousedown', go); }
-            const K = KIT(), cur = p.slot === 4 && p.weapons[4] ? p.weapons[4].def.key : '', sig = off ? 'x' : K.id + K.ab.map(k => p.nades[k] || 0).join() + cur;
+        const TACT = ['recon', 'cluster', 'slow'], tacOf = p => TACT.find(k => p.nades[k] > 0);
+        const tacBlock = it => !!it.w && TACT.includes(it.w) && TACT.some(k => k !== it.w && player.nades[k] > 0); // nur eine Taktik pro Runde (wie die Ult-Wahl)
+        function selectTac() { const p = player, k = tacOf(p); if (!k || !p.alive || buyOpen || GL.on || DH.on || EX.on) return; syncNadeSlot(k); if (p.slot !== 4) selectSlot(4); else p.switchT = 0.5; } // V bzw. Antippen: Taktik in die Hand
+        function updAbar() { // gekaufte Taktik als Icon unter den Ult-Orbs
+            let el = $('abar'); const p = player, k = tacOf(p), off = GL.on || DH.on || EX.on || !p.alive || buyOpen || !k;
+            if (!el) { el = document.createElement('div'); el.id = 'abar'; $('hud').appendChild(el); const go = e => { if (!e.target.closest('[data-ab]')) return; e.stopPropagation(); if (e.cancelable) e.preventDefault(); selectTac(); }; el.addEventListener('touchstart', go, { passive: false }); el.addEventListener('mousedown', go); }
+            const cur = p.slot === 4 && p.weapons[4] ? p.weapons[4].def.key : '', sig = off ? 'x' : k + p.nades[k] + cur;
             if (el.dataset.sig === sig) return; el.dataset.sig = sig; el.style.display = off ? 'none' : ''; if (off) return;
-            el.innerHTML = K.ab.map((k, i) => `<div data-ab="${i}" class="${p.nades[k] > 0 ? '' : 'e'}${cur === k ? ' on' : ''}" title="${W[k].name}${k === K.sig ? ' – Signatur, jede Runde gratis' : ''}">${AB_IC[k]}${IS_TOUCH ? '' : `<i>${i ? 'V' : 'C'}</i>`}${k === K.sig ? '<u>★</u>' : ''}<b>${p.nades[k] || 0}</b></div>`).join('');
+            el.innerHTML = `<div data-ab="0" class="${cur === k ? 'on' : ''}" title="${W[k].name}${IS_TOUCH ? '' : ' (V)'}">${AB_IC[k]}${IS_TOUCH ? '' : '<i>V</i>'}<b>${p.nades[k]}</b></div>`;
         }
-        function botUltAdd(e) { if (e && !e.isPlayer && !e.remote && e.agKit && !GL.on && !DH.on && !EX.on && !DM.on) e.ult = Math.min(ULT_MAX, (e.ult || 0) + 1); }
+        function botUltAdd(e) { if (e && !e.isPlayer && !e.remote && e.ultK && !GL.on && !DH.on && !EX.on && !DM.on) e.ult = Math.min(ULT_MAX, (e.ult || 0) + 1); }
         function botUlt(b) { // Bot löst seine Agenten-Ultimate aus (gleiche Effekte wie beim Spieler)
-            const k = b.agKit.ult, t = b.target, mate = !foe(b, player);
+            const k = b.ultK, t = b.target, mate = !foe(b, player);
             if (k === 'heal' ? b.health > 60 : k !== 'ward' && !t) return;
             b.ult = 0; tone(300, 0.5, 0.16, 0, 'sawtooth', 1200);
             if (k === 'heal') { for (const e of ents) if (e.alive && (e === b || (!foe(e, b) && Math.hypot(e.x - b.x, e.z - b.z) < 12))) e.health = Math.max(e.health, e.maxHP || 100); burst(b.x, 1, b.z, 0x7dffb0, 26, 5); }
@@ -5960,7 +5898,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (e.code === BIND.board) { e.preventDefault(); renderBoard(); $('board').style.display = 'block'; }
             if (e.code === BIND.buy) { buyOpen ? closeBuy() : openBuy(); }
             if (e.code === 'KeyX') useUlt(); // Ultimate
-            if ((e.code === 'KeyC' || e.code === 'KeyV') && !Object.values(BIND).includes(e.code)) selectAbil(e.code === 'KeyC' ? 0 : 1); // Fähigkeiten des Agenten
+            if (e.code === 'KeyV' && !Object.values(BIND).includes('KeyV')) selectTac(); // Taktik in die Hand
             if (e.code === BIND.reload) startReload();
             if (e.code === BIND.lastw) selectSlot(player.lastSlot);
             if (e.code === BIND.drop) dropCurrent(); if (e.code === BIND.abil) glUseAbility(); if (e.code === BIND.inspect && !(GL.on && e.code === BIND.abil)) inspectWeapon(); if (/^Digit[0-9]$/.test(e.code)) { const n = +e.code[5]; if (!buyOpen && [1, 2, 3, 4, 5].includes(n)) { if (n === 4 && player.slot === 4) cycleNade(); else selectSlot(n); } }
@@ -6030,8 +5968,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <div class="invbox" id="shopBox" style="max-height:56vh;overflow-y:auto">
  <h5 style="margin:4px 0 8px">🎨 COMMUNITY-SKINS · Ersteller bekommt 50 % als Coins <button id="btnMkSkin" style="margin-left:10px;padding:3px 12px;font-size:13px">＋ Skin erstellen</button></h5>
  <div class="invrow" style="flex-wrap:wrap;justify-content:center;margin-bottom:14px">${ccards || '<span style="color:#8fa3b8">Noch keine Community-Skins – erstelle den ersten!</span>'}</div>
- <h5 style="margin:4px 0 8px">👤 AGENTEN-SKINS · danach im Inventar ausrüsten</h5>
- <div class="invrow" style="flex-wrap:wrap;justify-content:center;margin-bottom:14px">${Object.entries(AG_SKIN).map(([id, [kid, pr]]) => { const a = AGENTS.find(x => x.id === id), k = KITS.find(x => x.id === kid), has = agOwn.includes(id); return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-agshop="${id}" style="border-color:var(--hl);min-width:150px"><div class="agprev" style="font-size:26px;line-height:44px">${k.ic}</div><b>${a.n}</b><span>für ${k.n} · ${k.role}</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; }).join('')}</div>
+ <h5 style="margin:4px 0 8px">👕 KLEIDUNG · im Inventar unter 👤 Agenten anziehen & frei färben</h5>
+ <div class="invrow" style="flex-wrap:wrap;justify-content:center;margin-bottom:14px">${FIT_SLOTS.flatMap(([sl, n, ic]) => FIT_ITEMS[sl].filter(it => it.pr).map(it => { const has = fitOwn.includes(sl + ':' + it.id); return `<div class="inv ${has ? 'eq' : coins >= it.pr ? '' : 'locked'}" data-fitshop="${sl}:${it.id}" style="border-color:var(--hl);min-width:130px"><div class="agprev" style="font-size:26px;line-height:44px">${ic}</div><b>${it.n}</b><span>${n}</span><span>${has ? '✓ Im Inventar' : '🪙 ' + it.pr}</span></div>`; })).join('')}</div>
  <h5 style="margin:4px 0 8px">📦 OFFIZIELLE SKINS</h5>
  <div class="invrow" style="flex-wrap:wrap;justify-content:center">${cards}</div></div>
  <div><button id="btnInvGo">🎒 Inventar</button><button id="btnCasesGo">📦 Cases</button><button id="btnPrices">💲 Preise anpassen</button><button id="btnBack">Zurück</button></div>`);
@@ -6042,10 +5980,11 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
                 PRG.st.coins -= pr; localStorage.setItem('prog', JSON.stringify(PRG)); store.inv.push(sk.id); saveStore(); sfx('win'); toast('🎁 Gekauft: ' + sk.n, 'Jetzt im Inventar – dort ausrüsten'); showShop(true);
             });
-            document.querySelectorAll('[data-agshop]').forEach(el => el.onclick = () => { const id = el.dataset.agshop, [kid, pr] = AG_SKIN[id], a = AGENTS.find(x => x.id === id);
-                if (agOwn.includes(id)) return toast('Schon im Inventar', a.n);
-                if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
-                PRG.st.coins -= pr; localStorage.setItem('prog', JSON.stringify(PRG)); agOwn.push(id); localStorage.setItem('agskins', JSON.stringify(agOwn)); sfx('win'); toast('🎁 Gekauft: ' + a.n, 'Skin für ' + KITS.find(k => k.id === kid).n + ' – im Inventar ausrüsten'); showShop(true); });
+            document.querySelectorAll('[data-fitshop]').forEach(el => el.onclick = () => { const [sl, id] = el.dataset.fitshop.split(':'), it = FIT_ITEMS[sl].find(i => i.id === id), key = sl + ':' + id;
+                if (fitOwn.includes(key)) return toast('Schon im Inventar', it.n);
+                if ((PRG.st.coins || 0) < it.pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (it.pr - (PRG.st.coins || 0)) + ' Coins'); }
+                PRG.st.coins -= it.pr; localStorage.setItem('prog', JSON.stringify(PRG)); fitOwn.push(key); localStorage.setItem('fitown', JSON.stringify(fitOwn)); FIT[sl][0] = id; localStorage.setItem('fit', JSON.stringify(FIT)); store.agent = 'fit'; localStorage.setItem('agent', 'fit'); dropMenuChar();
+                if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: 0 }); sfx('win'); toast('🎁 Gekauft & angezogen: ' + it.n, 'Farbe im Inventar unter 👤 Agenten wählen'); showShop(true); });
             $('btnMkSkin').onclick = () => showSkinMaker();
             document.querySelectorAll('[data-rmsk]').forEach(el => el.onclick = e => { e.stopPropagation(); if (!confirm('Skin wirklich aus dem Shop löschen?')) return; accApi('rmskin', { tok: ACC.tok, id: el.dataset.rmsk }).then(r => { if (!r.ok) return toast('Fehler', r.err || ''); loadSkins(() => showShop(true)); }); });
             document.querySelectorAll('[data-cshop]').forEach(el => el.onclick = () => {
@@ -6116,7 +6055,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const W2 = box.clientWidth || 240, H2 = box.clientHeight || 300, r = AGP.r || (AGP.r = new THREE.WebGLRenderer({ antialias: true, alpha: true })); r.setPixelRatio(Math.min(2, devicePixelRatio)); r.setSize(W2, H2); box.appendChild(r.domElement);
             const sc = AGP.sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, W2 / H2, 0.1, 50); cam.position.set(0, 1.3, 5.2); cam.lookAt(0, 1.0, 0);
             sc.add(new THREE.HemisphereLight(0xdbeaff, 0x9a7b4f, DSV ? 0.55 : 0.7)); const sun = new THREE.DirectionalLight(0xfff2d8, DSV ? 0.72 : 1); sun.position.set(2, 4, 3); sc.add(sun);
-            const m = makeBotMesh(AGP.team, AGP.look || myLook(), true, duckHat()); scene.remove(m.group); m.group.position.set(0, 0, 0); m.group.rotation.set(0, 0, 0); if (m.flash) m.flash.visible = false; sc.add(m.group);
+            const m = makeBotMesh(AGP.team, myLook(), true, duckHat()); scene.remove(m.group); m.group.position.set(0, 0, 0); m.group.rotation.set(0, 0, 0); if (m.flash) m.flash.visible = false; sc.add(m.group);
             const disc = new THREE.Mesh(new THREE.CircleGeometry(0.8, 40), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28 })); disc.rotation.x = -Math.PI / 2; disc.position.y = 0.01; sc.add(disc);
             let drag = null; box.onpointerdown = e => { drag = e.clientX; box.setPointerCapture(e.pointerId); }; box.onpointermove = e => { if (drag === null) return; AGP.rot += (e.clientX - drag) * 0.012; drag = e.clientX; }; box.onpointerup = box.onpointercancel = () => { drag = null; };
             const loop = () => { if (!document.body.contains(box)) return; if (drag === null) AGP.rot += 0.008; m.group.rotation.y = AGP.rot; r.render(sc, cam); AGP.raf = requestAnimationFrame(loop); }; loop(); }
@@ -6140,8 +6079,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             } else if (INV.tab === 'ag') {
                 body = `<div class="invpanel" style="width:100%;display:flex;gap:16px;align-items:center;justify-content:center;margin-bottom:6px"><div id="agp3d" style="width:240px;height:300px;position:relative;background:radial-gradient(ellipse at 50% 70%,rgba(var(--hl-rgb),.18),transparent 70%)"></div><div style="display:flex;flex-direction:column;gap:6px"><h5 style="margin:0">SO SIEHT DEIN AGENT AUS</h5>${['T', 'CT'].map(t => `<button data-agt="${t}" style="${AGP.team === t ? 'background:var(--hl);color:#111' : ''}">${t === 'T' ? 'Als Attacker' : 'Als Defender'}</button>`).join('')}<span style="font-size:11px;color:#8fa3b8">Ziehen zum Drehen</span></div></div>`;
                 const agCol = (a, k, def) => '#' + new THREE.Color(a[k] !== undefined ? a[k] : def).getHexString();
-                body += `<div class="invpanel" style="width:100%"><h5>🎯 AGENT · bestimmt Fähigkeiten & Ultimate</h5><div class="invrow" style="margin-bottom:10px;flex-wrap:wrap">${KITS.map(k => { const on = KIT().id === k.id; return `<div class="inv ${on ? 'eq' : ''}" data-kit="${k.id}" style="border-color:${on ? 'var(--hl)' : '#556'};min-width:150px"><div class="agprev" style="font-size:26px;line-height:44px">${k.ic}</div><b style="color:${on ? 'var(--hl)' : '#ddd'}">${k.n} · ${k.role}</b><span>${k.ab.map(w => W[w].name + (w === k.sig ? ' ★' : '')).join(' · ')}</span><span>⚡ ${ULTS[k.ult][0]}</span><span>${on ? '✓ Ausgewählt' : k.d}</span></div>`; }).join('')}</div></div>`;
-                body += `<div class="invpanel" style="width:100%"><h5>🎩 ZUBEHÖR · eins aufsetzbar</h5><div class="invrow" style="margin-bottom:10px">${ACCS.map(a => { const ok = accOk(a), on = duckHat() === a.id; return `<div class="inv ${on ? 'eq' : ''} ${ok ? '' : 'locked'}" data-acc="${a.id}" style="border-color:#ffd84a;min-width:110px"><div class="agprev" style="font-size:26px;line-height:44px">${a.ic}</div><b style="color:#ffd84a">${a.n}</b><span>${ok ? (on ? '✓ Aufgesetzt' : 'Klicken zum Aufsetzen') : '🔒 ' + a.need + (a.k ? ' (' + Math.min(a.max, PRG.st[a.k] || 0) + '/' + a.max + ')' : ' (Lvl ' + lvlOf(PRG.xp) + ')')}</span></div>`; }).join('')}</div><h5>SPIELERMODELL · ${CFG.agTheme ? '⚠ Der Host kann ein Agenten-Thema erzwingen' : 'gilt in allen Modi'}</h5><div class="invrow">${AGENTS.filter(a => !AG_SKIN[a.id] || AG_SKIN[a.id][0] === KIT().id).map(a => a.id === 'std' ? Object.assign({}, KIT_LOOK['k_' + KIT().id], { id: 'std', n: 'Standard · ' + KIT().n, d: 'Grund-Look des Agenten' }) : a).map(a => { const on = store.agent === a.id, lk = !agSkinOk(a.id); return `<div class="inv ${on ? 'eq' : ''}${lk ? ' locked' : ''}" data-agent="${a.id}" style="border-color:${on ? 'var(--hl)' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? 'var(--hl)' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${lk ? '🔒 Shop · 🪙 ' + AG_SKIN[a.id][1] : on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div></div>`;
+                body += `<div class="invpanel" style="width:100%"><h5>SPIELERMODELL · ${CFG.agTheme ? '⚠ Der Host kann ein Agenten-Thema erzwingen' : 'gilt in allen Modi'}</h5><div class="invrow">${[AGENTS[0], { id: 'fit', n: 'Eigener Agent', d: 'Deine Kleidung', body: FIT.top[0] === 'vest' ? 0x3a3f46 : fitC(FIT.top[1]), legs: fitC(FIT.legs[1]), head: fitC(SKIN_TONES[FIT.skin]) }, ...AGENTS.slice(1)].map(a => { const on = store.agent === a.id, lk = false; return `<div class="inv ${on ? 'eq' : ''}${lk ? ' locked' : ''}" data-agent="${a.id}" style="border-color:${on ? 'var(--hl)' : '#556'};min-width:110px"><div class="agprev">${a.hat ? `<i style="width:22px;height:5px;background:${agCol(a, 'hatC', 0)}"></i>` : ''}<i style="width:16px;height:14px;background:${agCol(a, 'head', 0x151c2a)}${a.visor ? ';border-bottom:3px solid ' + agCol(a, 'visor', 0) : ''}${a.duck ? ';box-shadow:7px 3px 0 -3px #f2a227' : ''}"></i><i style="width:26px;height:22px;background:${agCol(a, 'body', 0x2c3b58)}"></i><i style="width:${a.duck ? 14 : 20}px;height:16px;background:${a.duck ? 'repeating-linear-gradient(90deg,#f2a227 0 4px,transparent 4px 10px)' : agCol(a, 'legs', 0x1d2634)}"></i></div><b style="color:${on ? 'var(--hl)' : '#ddd'}">${a.duck ? '🦆 ' : ''}${a.n}</b><span>${on ? '✓ Ausgewählt' : a.d}</span></div>`; }).join('')}</div><h5 style="margin-top:12px">👕 DEIN AGENT · Änderungen ziehen ihn automatisch an · Kleidung gibt es im 🪙 Shop</h5><div class="fitrow"><b>Hautton</b>${SKIN_TONES.map((h, i) => `<i class="fsw${FIT.skin === i ? ' on' : ''}" data-fskin="${i}" style="background:#${h}"></i>`).join('')}</div><div class="fitrow"><b>Frisur</b>${HAIRS.map(([id, n]) => `<button class="fbtn${FIT.hair === id ? ' on' : ''}" data-fhair="${id}">${n}</button>`).join('')}</div><div class="fitrow fsub"><b>Haarfarbe</b>${HAIR_COL.map(h => `<i class="fsw${FIT.hairC === h ? ' on' : ''}" data-fhc="${h}" style="background:#${h}"></i>`).join('')}</div>${FIT_SLOTS.map(([sl, n, ic]) => `<div class="fitrow"><b>${ic} ${n}</b>${FIT_ITEMS[sl].map(it => { const own = fitHas(sl, it.id); return `<button class="fbtn${FIT[sl][0] === it.id ? ' on' : ''}${own ? '' : ' lk'}" data-fit="${sl}:${it.id}">${own ? it.n : '🔒 ' + it.n + ' · 🪙 ' + it.pr}</button>`; }).join('')}</div>${sl === 'head' && FIT.head[0] === 'none' ? '' : `<div class="fitrow fsub"><b></b>${FIT_COL.map(h => `<i class="fsw${FIT[sl][1] === h ? ' on' : ''}" data-fcol="${sl}:${h}" style="background:#${h}"></i>`).join('')}</div>`}`).join('')}</div>`;
             } else {
                 // Wraps: jede Waffe ein Feld – Bild oder „+ PNG"
                 const WK = ['ak47', 'm4a1', 'awp', 'scout', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
@@ -6161,9 +6099,13 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             document.querySelectorAll('[data-eq]').forEach(el => el.onclick = () => { const id = el.dataset.eq, s = SKINS.find(x => x.id === id); store.equip[s.w] = store.equip[s.w] === id ? undefined : id; if (s.km && store.equip[s.w] === id && knifeType() !== s.km) setKnife(s.km); saveStore(); applySkins(); showInventory(); });
             document.querySelectorAll('[data-eqnone]').forEach(el => el.onclick = () => { store.equip[el.dataset.eqnone] = undefined; saveStore(); applySkins(); showInventory(); });
             { const gd = document.querySelector('[data-agent="duck_gold"]'); if (gd && !((PRG.st.ducks || 0) >= 100)) { gd.classList.add('locked'); const sp = gd.querySelector('span:last-child'); if (sp) sp.textContent = '🔒 100 Enten erlegen (' + (PRG.st.ducks || 0) + '/100)'; } }
-            document.querySelectorAll('[data-acc]').forEach(el => el.onclick = () => { const a = ACCS.find(x => x.id === el.dataset.acc); if (!accOk(a)) return toast('🔒 ' + a.n, a.need); localStorage.setItem('duckhat', duckHat() === a.id ? '0' : a.id); dropMenuChar(); if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); showInventory(); });
-            document.querySelectorAll('[data-kit]').forEach(el => el.onclick = () => { if (kitId === el.dataset.kit) return; kitId = el.dataset.kit; localStorage.setItem('kit', kitId); if (!agSkinOk(store.agent)) { store.agent = 'std'; localStorage.setItem('agent', 'std'); } dropMenuChar(); if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); sfx('buy'); showInventory(); });
-            document.querySelectorAll('[data-agent]').forEach(el => el.onclick = () => { if (!agSkinOk(el.dataset.agent)) return toast('🔒 ' + AGENTS.find(a => a.id === el.dataset.agent).n, 'Im Shop für 🪙 ' + AG_SKIN[el.dataset.agent][1] + ' Coins kaufen'); if (el.dataset.agent === 'duck_gold' && !((PRG.st.ducks || 0) >= 100)) return toast('🔒 Goldente', 'Erlege 100 Enten in der Entenjagd'); if (store.agent === el.dataset.agent) return; store.agent = el.dataset.agent; localStorage.setItem('agent', store.agent); dropMenuChar(); if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); showInventory(); });
+            const fitSet = fn => { fn(); localStorage.setItem('fit', JSON.stringify(FIT)); store.agent = 'fit'; localStorage.setItem('agent', 'fit'); dropMenuChar(); if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: 0 }); showInventory(); }; // Kleidungs-Editor
+            document.querySelectorAll('[data-fskin]').forEach(el => el.onclick = () => fitSet(() => FIT.skin = +el.dataset.fskin));
+            document.querySelectorAll('[data-fhair]').forEach(el => el.onclick = () => fitSet(() => FIT.hair = el.dataset.fhair));
+            document.querySelectorAll('[data-fhc]').forEach(el => el.onclick = () => fitSet(() => FIT.hairC = el.dataset.fhc));
+            document.querySelectorAll('[data-fcol]').forEach(el => el.onclick = () => { const [sl, h] = el.dataset.fcol.split(':'); fitSet(() => FIT[sl][1] = h); });
+            document.querySelectorAll('[data-fit]').forEach(el => el.onclick = () => { const [sl, id] = el.dataset.fit.split(':'); if (!fitHas(sl, id)) { const it = FIT_ITEMS[sl].find(i => i.id === id); return toast('🔒 ' + it.n, 'Im 🪙 Shop für ' + it.pr + ' Coins kaufen'); } fitSet(() => FIT[sl][0] = id); });
+            document.querySelectorAll('[data-agent]').forEach(el => el.onclick = () => { if (el.dataset.agent === 'duck_gold' && !((PRG.st.ducks || 0) >= 100)) return toast('🔒 Goldente', 'Erlege 100 Enten in der Entenjagd'); if (store.agent === el.dataset.agent) return; store.agent = el.dataset.agent; localStorage.setItem('agent', store.agent); dropMenuChar(); if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); showInventory(); });
             let pendKey = null; const stf = $('stf');
             if (stf) stf.onchange = e => {
                 const f = e.target.files[0]; if (!f || !pendKey) return;
@@ -6246,16 +6188,16 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 { go: () => showMenu(), t: '👋 Willkommen bei CLUTCH', d: 'Taktik-Shooter direkt im Browser – offline gegen Bots oder online mit Freunden. Ich zeige Dir jetzt Seite für Seite, was Du alles machen kannst.<br><br>Mit <b>Weiter</b> oder den Pfeiltasten geht\'s durch, <b>Esc</b> beendet.' },
                 { go: () => nav('play'), sel: '#csplayview', t: '▶ Spielen', d: 'Hier startest Du ein Spiel – <b>Offline</b> gegen Bots oder <b>Online</b> über eine Lobby:<br>• <b>Wettkampf</b>: T legen die Bombe, CT verteidigen oder entschärfen<br>• <b>Deathmatch</b>: jeder gegen jeden, Waffen gratis<br>• <b>Gauntlet</b>: Duo-Turnier mit Draft, Perks & Fähigkeiten<br>• <b>1v1</b>: Duelle mit Kaufphase, Erster mit 5 Siegen<br>• <b>Entenjagd</b>: Enten jagen mit Bestenliste<br>Online wählst Du Dein Team in der Lobby.' },
                 IS_TOUCH
-                    ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br><b>Fähigkeiten</b>: die zwei Felder rechts über der Lebensanzeige antippen, dann Feuerknopf = werfen · <b>Ultimate</b>: Rauten antippen.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
+                    ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br><b>Taktik</b>: Icon unter den Ult-Rauten antippen, dann Feuerknopf = werfen · <b>Ultimate</b>: Rauten antippen.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
                     : { t: '⌨️ Steuerung', d: 'Laufen ' + ['fwd', 'left', 'back', 'right'].map(k).join(' ') + ' · Umsehen mit der Maus · Schießen <b class="tk">Linksklick</b> · Zielfernrohr <b class="tk">Rechtsklick</b><br>Springen ' + k('jump') + ' · Ducken ' + k('crouch') + ' · Leise gehen ' + k('walk') + '<br>Nachladen ' + k('reload') + ' · Benutzen/Entschärfen ' + k('use') + ' · Waffe fallen lassen ' + k('drop') + '<br>Letzte Waffe ' + k('lastw') + ' · Waffe inspizieren ' + k('inspect') + ' · Waffen <b class="tk">1–5</b> · Scoreboard ' + k('board') + '<br>Alle Tasten kannst Du in den ⚙️ Einstellungen ändern.' },
                 { t: '💰 Kaufen', d: 'Zu Rundenbeginn öffnet sich im Spiel das <b>Kaufmenü</b> (' + (IS_TOUCH ? 'Button 🛒' : k('buy')) + '). Mit Deinem Geld kaufst Du Waffen, Rüstung, Granaten und das Entschärfer-Kit.<br>' + (IS_TOUCH ? '' : '<b>Rechtsklick</b> verkauft, was Du in dieser Runde gekauft hast.<br>') + 'Geld gibt es für Kills und Rundenausgänge – wer gewinnt, bekommt mehr.' },
-                { go: () => { INV.tab = 'ag'; showInventory(); }, sel: '[data-kit]', t: '🎯 Agenten & Fähigkeiten', d: 'Wie in Valorant spielst Du einen <b>Agenten</b> mit eigenem Kit – Sturm, Nebel, Falke, Frost oder Sani. Gewählt wird er im Inventar unter <b>👤 Agenten</b>.<br>Jeder hat <b>zwei Fähigkeiten</b>: die <b>Signatur ★</b> gibt es jede Runde gratis, weitere Ladungen kaufst Du im Kaufmenü. Normale Granaten kann jeder kaufen.<br>' + (IS_TOUCH ? 'Fähigkeit wählen: Feld über der Lebensanzeige antippen · Ultimate: Rauten antippen.' : 'Fähigkeit wählen: <b class="tk">C</b> / <b class="tk">V</b> · werfen: <b class="tk">Linksklick</b> · Ultimate: <b class="tk">X</b>') + '<br>Die <b>Ultimate</b> gehört fest zum Agenten und lädt sich über Kills, Bombe legen und entschärfen auf.<br><b>Spike-Checkpoint</b>: Wer 50 % entschärft hat, macht beim nächsten Versuch ab 50 % weiter.' },
+                { t: '⚡ Ultimate & Taktik', d: 'Im Kaufmenü wählst Du Deine <b>Ultimate</b> (eine von fünf) und kaufst eine <b>Taktik</b> – Recon-Pfeil, Cluster oder Kälteschaum, eine pro Runde.<br>Die gekaufte Taktik erscheint als <b>Icon unter den Ult-Rauten</b>: ' + (IS_TOUCH ? 'antippen und mit dem Feuerknopf werfen.' : '<b class="tk">V</b> nimmt sie in die Hand, <b class="tk">Linksklick</b> wirft.') + '<br>Die Ultimate lädt sich über Kills, Bombe legen und entschärfen auf – auslösen mit ' + (IS_TOUCH ? 'Antippen der Rauten.' : '<b class="tk">X</b>.') + '<br><b>Spike-Checkpoint</b>: Wer 50 % entschärft hat, macht beim nächsten Versuch ab 50 % weiter.' },
                 { go: () => { INV.tab = 'sk'; INV.wk = null; showInventory(); }, sel: '.invgrid', t: '🎒 Inventar – Skins', d: 'Links siehst Du alle Waffen mit dem aktuell ausgerüsteten Skin, rechts alle Skins der gewählten Waffe.<br>Klick auf einen Skin = <b>ausrüsten</b>. Mit 🔒 markierte Skins fehlen Dir noch.' },
                 { go: () => { INV.tab = 'sk'; INV.wk = 'knife'; showInventory(); }, sel: '.invpanel h5', t: '🔪 Dein Messer', d: 'Beim Messer wählst Du hier das <b>Modell</b>: <b>Butterfly</b> oder <b>Karambit</b>. Alle Messer-Skins passen auf beide.' },
-                { go: () => { INV.tab = 'ag'; showInventory(); }, sel: '.invbox', t: '👤 Agenten & Zubehör', d: 'Oben wählst Du Deinen <b>Agenten</b>, darunter das <b>Zubehör</b> – Entenhut, Partyhut, Sonnenbrille, Krone … Freigeschaltet wird es über Kills, Matches, Siege und Level.<br>Ganz unten das <b>Spielermodell</b>: die Skins Deines Agenten (im 🪙 Shop kaufen) und die Enten. Mitspieler sehen alles.' },
+                { go: () => { INV.tab = 'ag'; showInventory(); }, sel: '.invbox', t: '👤 Dein Agent', d: 'Wähle Dein <b>Spielermodell</b>: Standard, <b>Eigener Agent</b> oder eine Ente.<br>Für den eigenen Agenten stellst Du <b>Hautton, Frisur und Haarfarbe</b> gratis ein und ziehst ihm <b>Kleidung</b> an – Kopf, Oberteil, Hose, Schuhe. Gekaufte Teile färbst Du frei ein.<br>Die <b>Team-Armbinde</b> zeigt immer, zu welchem Team Du gehörst. Mitspieler sehen Deinen Look.' },
                 { go: () => { INV.tab = 'wr'; showInventory(); }, sel: '.invbox', t: '🖼 Wraps', d: 'Lege eigene <b>PNG-Bilder</b> auf Deine Waffen – ein Wrap ersetzt den Skin.' },
                 { go: () => { INV.tab = 'sk'; showCases(); }, sel: '#reelbox', t: '📦 Cases', d: 'Für jedes beendete Match bekommst Du ein <b>Case</b>. Hier öffnest Du es – der Skin landet sofort im Inventar.<br>Bei <b>🎰 Gamble</b> kannst Du Skins eintauschen und auf bessere hoffen.' },
-                { go: () => showShop(true), sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Oben die <b>Community-Skins</b> anderer Spieler, dann die <b>Agenten-Skins</b> (jeder gehört zu einem Agenten) und darunter alle offiziellen Skins.' },
+                { go: () => showShop(true), sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Oben die <b>Community-Skins</b> anderer Spieler, dann <b>Kleidung</b> für Deinen Agenten und darunter alle offiziellen Skins.' },
                 { go: () => { if (ACC) { showSkinMaker(); const m = $('skMode'); if (m) { m.value = 'paint'; m.onchange(); } } else showShop(true); }, sel: () => ACC ? '.invbox' : '#btnMkSkin', t: '🎨 Skin-Editor', d: 'Erstelle eigene Skins: Muster und Farben wählen – oder <b>selbst malen</b> mit Pinsel, Radierer, Pipette und Spiegeln.<br>Veröffentlichte Skins erscheinen für alle im Shop. Kauft jemand Deinen Skin, bekommst Du <b>50 % als Coins</b>.' + (ACC ? '' : '<br><i>Zum Erstellen brauchst Du einen Account.</i>') },
                 { go: () => showMenu(), sel: '#ctAcc', t: '⭐ Fortschritt & Account', d: 'Für alles im Spiel gibt es <b>XP</b> – steige im Level auf, verdiene Ränge bis zur Global Elite und schalte <b>Erfolge</b> frei.<br>Mit einem <b>Account</b> ist alles auf jedem Gerät da: Skins, Coins, Fortschritt, Einstellungen.' },
                 { go: () => showMenu(), sel: '[data-nav="maps"]', t: '🛠 Map- & Arena-Editor', d: 'Baue eigene <b>Karten</b> für Wettkampf & Deathmatch oder <b>Arenen</b> für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites – und spiele sie direkt, auch online.' },
@@ -6734,46 +6676,49 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 2.6 „AGENTEN"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 2.7 „KLEIDUNG"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 AGENTEN MIT KIT</p>
- CLUTCH wird zur Mischung aus CS und Valorant: Du spielst jetzt einen von <b>fünf Agenten</b> – realistisch, nur mit Ausrüstung und Technik:<br>
- · <b>Sturm</b> (Duelist) – Blendgranate ★, Cluster · Ultimate <b>Adrenalin</b><br>
- · <b>Nebel</b> (Controller) – Rauch ★, Molotov · Ultimate <b>Luftschlag</b><br>
- · <b>Falke</b> (Initiator) – Recon-Pfeil ★, Blendgranate · Ultimate <b>Team-Scan</b><br>
- · <b>Frost</b> (Sentinel) – Kälteschaum ★, HE · Ultimate <b>Bollwerk</b><br>
- · <b>Sani</b> (Sentinel) – Rauch ★, Kälteschaum · Ultimate <b>Sanitäts-Station</b><br>
- Die <b>Signatur ★</b> gibt es jede Runde gratis, weitere Ladungen kaufst Du in der Spalte <b>Fähigkeiten</b>. Normale Granaten bleiben für alle kaufbar.<br>
- Die <b>Ultimate gehört fest zum Agenten</b>.<br><br>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👕 BASTEL DIR DEINEN AGENTEN</p>
+ Statt fertiger Agenten-Skins gibt es jetzt <b>Kleidung</b> im 🪙 Shop – für <b>Kopf, Oberteil, Hose und Schuhe</b>: Cap, Mütze, Taktik-Helm, Hoodie, Jacke, Taktik-Weste, Jeans, Cargohose, Sneaker, High-Tops und mehr.<br>
+ Gekaufte Teile färbst Du im Inventar unter 👤 Agenten <b>frei ein</b>. <b>Hautton, Frisur und Haarfarbe</b> sind gratis.<br>
+ Der Agent hat jetzt ein <b>Gesicht</b> mit Augenbrauen und Mund.<br><br>
 
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔒 AGENTENWAHL</p>
- <b>Offline</b>: Vor jedem Wettkampf-Match wählst Du Deinen Agenten und sperrst ihn.<br>
- <b>Online</b>: Lobby und Teamwahl wie bisher – startet der Host, wählt jeder seinen Agenten: anklicken, als 3D-Modell ansehen und mit <b>Sperren</b> bestätigen. Dein Team sieht live, wen Du Dir gerade anschaust.<br>
- · <b>Jeder Agent nur einmal pro Team</b> – vergebene Agenten sind mit dem Namen des Mitspielers gesperrt, das Gegnerteam darf ihn trotzdem nehmen<br>
- · <b>15 Sekunden</b> Zeit – oder Start, sobald alle gewählt haben<br>
- · Wer nicht wählt, bekommt einen <b>zufälligen freien Agenten</b><br>
- Im Inventar unter 👤 Agenten kannst Du Deinen Standard-Agenten weiterhin festlegen.<br><br>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎽 TEAMFARBEN</p>
+ Eine <b>Team-Armbinde</b> zeigt im Wettkampf immer, zu welchem Team jemand gehört. Im <b>Gauntlet</b> bleibt der Robo-Look in Teamfarbe – Deine Kleidung gibt die Form vor.<br><br>
 
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🖥️ FÄHIGKEITEN-LEISTE</p>
- Direkt <b>unter den Ult-Orbs</b> zeigt das HUD Deine zwei Fähigkeiten mit Ladungen.<br>
- PC: <b>C</b> / <b>V</b> wählt die Fähigkeit, Linksklick wirft · Handy: Feld antippen, Feuerknopf wirft.<br><br>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔁 UMSTELLUNG</p>
+ Gekaufte <b>Agenten-Skins</b> (Elite, Neon …) wurden mit ihrem Kaufpreis als <b>Coins erstattet</b>. Das <b>Zubehör</b> (Hüte, Brillen …) wurde entfernt. Standard und Enten bleiben.<br>
+ Bots tragen in Deathmatch, Gauntlet und 1v1 <b>zufällige Kleidung</b>.
 
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📱 KAUFMENÜ AM HANDY</p>
- Das Kaufmenü nutzt jetzt das <b>ganze Display</b> – größere Karten, fester Kopfbereich, scrollbar. Fähigkeiten-Leiste und Ult-Orbs verschwinden, solange es offen ist.<br><br>
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 2.6 „TAKTIK"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚡ ULTIMATE & TAKTIK</p>
+ Im Kaufmenü wählst Du Deine <b>Ultimate</b> (eine von fünf) und kaufst eine <b>Taktik</b>: Recon-Pfeil, Cluster oder <b>Kälteschaum</b> (früher Slow-Orb) – <b>eine pro Runde</b>.<br>
+ Die Heilwelle heißt jetzt <b>Sanitäts-Station</b>.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🖥️ TAKTIK-ICON</p>
+ Die gekaufte Taktik erscheint als <b>Icon direkt unter den Ult-Orbs</b> – mit Anzahl.<br>
+ PC: <b>V</b> nimmt sie in die Hand, Linksklick wirft · Handy: Icon antippen, Feuerknopf wirft.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💣 SPIKE-CHECKPOINT</p>
  Wer die Bombe zu <b>50 %</b> entschärft hat, macht beim nächsten Versuch dort weiter – Marke im Balken und Signalton.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👤 AGENTEN-SKINS IM SHOP</p>
- Elite, Wüstenfuchs, Arktis, Neon, Schatten und Dschungel gehören jetzt je zu einem Agenten und werden im <b>🪙 Shop</b> gekauft. Enten bleiben frei wählbar.<br><br>
+ Elite, Wüstenfuchs, Arktis, Neon, Schatten und Dschungel gibt es jetzt im <b>🪙 Shop</b> – danach im Inventar unter 👤 Agenten ausrüsten. Standard und Enten bleiben frei wählbar.<br>
+ In <b>Deathmatch, Gauntlet und 1v1</b> bekommt jeder einen <b>zufälligen Look</b> – außer Du spielst eine Ente.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🤖 BOTS</p>
- Bots spielen jetzt ebenfalls Agenten: Signatur gratis, zweite Fähigkeit gekauft – und sie <b>laden ihre Ultimate auf und setzen sie ein</b>. Sie nehmen die Agenten, die in ihrem Team noch frei sind.<br><br>
+ Bots haben jetzt eine eigene Ultimate, <b>laden sie auf und setzen sie ein</b> – Luftschlag, Heilung, Scan, Adrenalin oder Bollwerk.<br><br>
 
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚔️ GAUNTLET</p>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📱 KAUFMENÜ AM HANDY</p>
+ Das Kaufmenü nutzt jetzt das <b>ganze Display</b> – größere Karten, fester Kopfbereich, scrollbar. Taktik-Icon und Ult-Orbs verschwinden, solange es offen ist.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚔️ GAUNTLET & FIXES</p>
  Gegnerische <b>Klone</b> haben jetzt auch die rote Umrandung.<br>
- Umbenannt: Slow-Orb → <b>Kälteschaum</b>, Heilwelle → <b>Sanitäts-Station</b>.
+ Schnelles Wechseln der Skins im Inventar lässt das Spiel <b>nicht mehr hängen</b>.
 
  </div></div>
  <div class="cspanel newscard"><h3>PATCH 2.5 „ULTIMATE"</h3>
@@ -7264,7 +7209,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 2.6 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 2.7 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -7359,7 +7304,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const backPlay = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
             $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => { GL.v1 = true; glStart(2); }, backPlay);
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
-            $('btnCT').onclick = () => agentSelect(() => startGame('CT'), backPlay); $('btnT').onclick = () => agentSelect(() => startGame('T'), backPlay); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnEx').onclick = () => exStart(null); $('btnExAr').onclick = exPickArena; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
+            $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnEx').onclick = () => exStart(null); $('btnExAr').onclick = exPickArena; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = () => showGameSettings(); $('ruleChips').onclick = () => showGameSettings();
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile;
@@ -7569,8 +7514,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (!EX.on && (CFG.bots !== 0 || !NET.on)) { // Regel „Bots: Aus“ gilt nur online – offline braucht man Gegner
             for (let i = humans.CT; i < CFG.teamSize; i++) createBot(ctN[i - humans.CT], 'CT');
             for (let i = humans.T; i < CFG.teamSize; i++) createBot(tN[i - humans.T], 'T'); }
-            if (!DM.on && !GL.on) assignBotKits();
-            ents = [player, ...bots, ...NET.players.values()]; if (NET.on && NET.host) netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, k: b.agKit && b.agKit.id, a: b.ag })) });
+            ents = [player, ...bots, ...NET.players.values()]; if (NET.on && NET.host) netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, a: b.ag })) });
             started = true; $('overlay').style.display = 'none';
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
             renderer.domElement.requestPointerLock(); startRound();
@@ -7969,7 +7913,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
             glNextStage();
         }
-        function glSer() { return { type: 'glstart', ag: CFG.agTheme | 0, v1: GL.v1 ? 1 : 0, map: MAPNAME, cmap: mapNet(), bots: bots.map(b => ({ n: b.name, t: b.team, k: b.agKit && b.agKit.id, a: b.ag })), teams: GL.teams.map(t => ({ id: t.id, name: t.name, members: t.members.map(m => m.remote ? { p: m.pid } : (m.isPlayer ? { p: NET.pid } : { b: bots.indexOf(m) })) })) }; }
+        function glSer() { return { type: 'glstart', ag: CFG.agTheme | 0, v1: GL.v1 ? 1 : 0, map: MAPNAME, cmap: mapNet(), bots: bots.map(b => ({ n: b.name, t: b.team, a: b.ag })), teams: GL.teams.map(t => ({ id: t.id, name: t.name, members: t.members.map(m => m.remote ? { p: m.pid } : (m.isPlayer ? { p: NET.pid } : { b: bots.indexOf(m) })) })) }; }
         function glAsg() { return NET.glAsg || (NET.glAsg = {}); }
         function glTeamCol(id, l) { return `hsl(${Math.round(((0.62 + id * 0.125) % 1) * 360)},100%,${l || 60}%)`; }
         function glAsgHTML() {
@@ -8333,12 +8277,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
                 case 'hello': addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w: DH.w }); }
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: myLook(), hat: duckHat() || 0 });
-                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, k: b.agKit && b.agKit.id, a: b.ag })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp) { rp.ag = m.ag; rp.hat = m.hat; } if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag, false, m.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.inLobby) renderLobby(); } break;
-                case 'agsel': if (!NET.host) { NET.inLobby = false; AGS.on = true; AGS.picks = {}; AGS.end = performance.now() + (m.t || 15) * 1000; agsShow(); } break;
-                case 'agpick': if (NET.host) agsTry(m.pid, m.k); break;
-                case 'aghov': if (AGS.on) { AGS.hov[m.pid] = m.k; if (agsTeamOf(m.pid) === player.team && !AGS.picks[m.pid]) agsRender(); } break;
-                case 'agstate': if (!NET.host && AGS.on) { AGS.picks = m.picks || {}; agsRender(); } break;
-                case 'agfinal': if (!NET.host) agsApply(m.picks || {}); break;
+                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, a: b.ag })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp) { rp.ag = m.ag; rp.hat = m.hat; } if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag, false, m.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.inLobby) renderLobby(); } break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
                 case 'plant': if (NET.host) plantBomb({ x: m.x, z: m.z, isPlayer: false, money: 0, plantT: 0 }); break;
                 case 'defuse': if (NET.host && G.bomb.state === 'planted') defuseBomb({ isPlayer: false, money: 0, defuseT: 0 }); break;
@@ -8347,7 +8286,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'start': if (m.dm) DM.on = true;
                     if (m.cfg && !NET.host) { Object.assign(CFG, m.cfg); applyCfg(); if (!started) player.money = CFG.money; remeshAll(); }
                     if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
-                    if (!NET.host && !started) { NET.inLobby = false; $('overlay').style.display = 'none'; startGameClient(); } break; case 'roster': if (!NET.host && bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); m.bots.forEach((x, i) => { const b = bots[i]; if (b && x.k) { b.agKit = KITS.find(k => k.id === x.k) || b.agKit; b.ag = x.a || 'k_' + b.agKit.id; } }); remeshAll(); ents = [player, ...bots, ...NET.players.values()]; } break;
+                    if (!NET.host && !started) { NET.inLobby = false; $('overlay').style.display = 'none'; startGameClient(); } break; case 'roster': if (!NET.host && bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); m.bots.forEach((x, i) => { if (bots[i] && x.a) bots[i].ag = x.a; }); remeshAll(); ents = [player, ...bots, ...NET.players.values()]; } break;
                 case 'round': if (!NET.host && (!m.to || m.to === NET.pid)) { G.round = m.rd; G.site = m.site; clientRound(); } break; case 'end': if (!NET.host) {
                     G.state = 'end'; const loser = m.w === 'CT' ? 'T' : 'CT'; if (m.w === player.team) xpEvent('round');
                     G.loss[m.w] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
@@ -8479,7 +8418,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             document.querySelectorAll('[data-lteam]').forEach(el => el.onclick = () => { const tm = el.dataset.lteam; if (tm === player.team) return; player.team = tm; netSend({ type: 'team', pid: NET.pid, team: tm }); renderLobby(); });
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
-                on('btnStart', 'onclick', () => agsBegin()); // Wettkampf: erst Agentenwahl, dann Start (agsFinish)
+                on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
                 on('btnGlMp', 'onclick', () => { const t = +$('glTeamsMp').value; pickArenas(() => glStartMP(t), renderLobby); }); on('btnV1Mp', 'onclick', () => pickArenas(() => { GL.v1 = true; glStartMP(2); }, renderLobby));
                 on('btnDuckMp', 'onclick', () => dhPick(w => { NET.inLobby = false; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w }); dhStart(w); }, renderLobby));
                 on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 1 }); startGame(player.team); });
