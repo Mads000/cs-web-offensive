@@ -6018,12 +6018,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 const sk = SKINS.find(x => x.id === el.dataset.shop), pr = skPrice(sk);
                 if (store.inv.includes(sk.id)) return toast('Schon im Inventar', sk.n);
                 if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
+                if (!confirm('„' + sk.n + '“ für 🪙 ' + pr + ' Coins kaufen?')) return; // Kauf bestätigen (Schutz vor Fehlklicks/Scams)
                 PRG.st.coins -= pr; localStorage.setItem('prog', JSON.stringify(PRG)); store.inv.push(sk.id); saveStore(); sfx('win'); toast('🎁 Gekauft: ' + sk.n, 'Jetzt im Inventar – dort ausrüsten'); showShop(true);
             });
             if ($('btnMkSkin')) $('btnMkSkin').onclick = () => showSkinMaker();
             document.querySelectorAll('[data-fitshop]').forEach(el => el.onclick = () => { const [sl, id] = el.dataset.fitshop.split(':'), it = FIT_ITEMS[sl].find(i => i.id === id), key = sl + ':' + id;
                 if (fitOwn.includes(key)) return toast('Schon im Inventar', it.n);
                 if ((PRG.st.coins || 0) < it.pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (it.pr - (PRG.st.coins || 0)) + ' Coins'); }
+                if (!confirm('„' + it.n + '“ für 🪙 ' + it.pr + ' Coins kaufen?')) return;
                 PRG.st.coins -= it.pr; localStorage.setItem('prog', JSON.stringify(PRG)); fitOwn.push(key); localStorage.setItem('fitown', JSON.stringify(fitOwn)); FIT[sl][0] = id; localStorage.setItem('fit', JSON.stringify(FIT)); store.agent = 'fit'; localStorage.setItem('agent', 'fit'); dropMenuChar();
                 if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: 0 }); sfx('win'); toast('🎁 Gekauft & angezogen: ' + it.n, 'Farbe im Inventar unter 👤 Agenten wählen'); showShop(true); });
             document.querySelectorAll('[data-rmsk]').forEach(el => el.onclick = e => { e.stopPropagation(); if (!confirm('Skin aus dem Shop nehmen? Wer ihn schon gekauft hat, behält ihn.')) return; accApi('rmskin', { tok: ACC.tok, id: el.dataset.rmsk }).then(r => { if (!r.ok) return toast('Fehler', r.err || ''); toast('🗑 Aus dem Shop genommen', 'Käufer behalten den Skin'); loadSkins(() => showShop(true)); }); });
@@ -6032,6 +6034,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 if (store.inv.includes(sk.id)) return toast('Schon im Inventar', sk.n);
                 if (!ACC) return toast('🔒 Bitte einloggen', 'Community-Skins brauchen einen Account');
                 if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
+                if (!confirm('„' + sk.n + '“ von ' + sk.by + ' für 🪙 ' + pr + ' Coins kaufen?')) return;
                 el.style.pointerEvents = 'none';
                 accApi('buyskin', { tok: ACC.tok, id: sk.id }).then(r => { if (!r.ok) { el.style.pointerEvents = ''; return toast('Fehler', r.err || ''); }
                     PRG.st.coins -= pr; sk.sold++; localStorage.setItem('prog', JSON.stringify(PRG)); store.inv.push(sk.id); saveStore(); sfx('win'); toast('🎁 Gekauft: ' + sk.n, 'von ' + sk.by + ' – jetzt im Inventar'); showShop(true); }).catch(() => { el.style.pointerEvents = ''; toast('Keine Verbindung', 'Bitte später nochmal'); });
@@ -6054,7 +6057,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <button id="skTpl" style="${bt}">Muster übernehmen</button><button id="skClr" style="${bt}">Leeren</button></div></div>
  <table style="text-align:left;font-size:14px"><tr><td>Waffe</td><td><select id="skW" style="${inp}">${WK.map(k => `<option value="${k}">${k.startsWith('knife:') ? '★ ' + KNIVES[k.slice(6)] : W[k].name}</option>`).join('')}</select></td></tr>
  <tr><td>Name</td><td><input id="skN" maxlength="20" placeholder="z. B. Nachtfalke" style="${inp}"></td></tr>
- <tr><td>Art</td><td><select id="skMode" style="${inp}"><option value="pat">Muster</option><option value="paint">🖌 Selbst malen</option></select></td></tr>
+ <tr><td>Art</td><td><select id="skMode" style="${inp}"><option value="pat">Muster</option><option value="paint">🖌 Selbst malen</option></select> <button id="skImp" style="${bt}" title="Bild (PNG/JPG) als Muster importieren">📂 Importieren</button><input type="file" id="skImpF" accept="image/*" style="display:none"></td></tr>
  <tr><td>Muster</td><td><select id="skP" style="${inp}">${SK_PAT.map(([k, t]) => `<option value="${k}">${t}</option>`).join('')}</select></td></tr>
  <tr><td>Farben</td><td><input type="color" id="skC1" value="#e8c98a" title="Farbe 1 (beim Malen: Untergrund)"> <input type="color" id="skC2" value="#1d2b3a"> <input type="color" id="skC3" value="#ff5a5a"></td></tr>
  <tr><td>Seltenheit</td><td><select id="skR" style="${inp}">${[1, 2, 3, 4].map(r => `<option value="${r}">${RARITY[r][1]} · 🪙 ${rPrice(r)}</option>`).join('')}</select></td></tr></table></div>
@@ -6080,6 +6083,12 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             $('skUndo').onclick = () => { const d = undo.pop(); if (d) { g.putImageData(d, 0, 0); prev(); } };
             $('skTpl').onclick = () => { save(); tpl(); prev(); };
             $('skClr').onclick = () => { save(); g.clearRect(0, 0, 64, 64); prev(); };
+            $('skImp').onclick = () => $('skImpF').click(); // Bild importieren: auf 64×64 einpassen, Farben reduzieren bis es unter 16 KB passt
+            $('skImpF').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; const img = new Image();
+                img.onload = () => { save(); g.clearRect(0, 0, 64, 64); g.imageSmoothingEnabled = true; const k = Math.max(64 / img.width, 64 / img.height), w = img.width * k, h = img.height * k; g.drawImage(img, (64 - w) / 2, (64 - h) / 2, w, h); URL.revokeObjectURL(img.src);
+                    for (const lv of [32, 16, 8, 4]) { const d = g.getImageData(0, 0, 64, 64), st = 256 / lv; for (let i = 0; i < d.data.length; i++) if (i % 4 !== 3) d.data[i] = Math.min(255, Math.floor(d.data[i] / st) * st + st / 2); g.putImageData(d, 0, 0); if (cv.toDataURL('image/png').length <= 16000) break; }
+                    painted = true; $('skMode').value = 'paint'; $('skPaint').style.display = ''; prev(); toast('📂 Importiert', 'Mit Pinsel weiter anpassen oder direkt veröffentlichen'); };
+                img.onerror = () => toast('Fehler', 'Bild konnte nicht gelesen werden'); img.src = URL.createObjectURL(f); };
             $('skMode').onchange = () => { const on = paint(); $('skPaint').style.display = on ? '' : 'none'; if (on && !painted) tpl(); prev(); };
             ['skW', 'skN', 'skP', 'skC1', 'skC2', 'skC3', 'skR'].forEach(i => $(i).oninput = prev); prev();
             $('btnBack').onclick = () => showShop();
