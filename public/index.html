@@ -4507,9 +4507,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 case 'shell': tone(3200 + Math.random() * 800, 0.03, 0.04 * vol, pan, 'triangle'); later(() => tone(2800, 0.02, 0.025 * vol, pan, 'triangle'), 70); break;
                 case 'ui': tone(1250, 0.025, 0.05, 0, 'triangle'); break;
                 case 'hurt': noise(0.2, 600, 0.5, 0); tone(80, 0.2, 0.3, 0); break;
-                case 'step': { const sk = x === undefined ? 0.75 : 2, ft = (STEPF = -STEPF), pp = clamp(pan + (x === undefined ? ft * 0.07 : 0), -1, 1), rv = () => 0.85 + Math.random() * 0.3; // natürlicher Schritt: dumpfe Ferse + kurzes Sohlen-Knirschen + Abrollen, jeder Schritt leicht anders, Füße abwechselnd
-                    noise(0.06 * rv(), 230 * rv(), 0.8 * vol * sk, pp, 'bandpass', 95); noise(0.016, 3400 * rv(), 0.08 * vol * sk, pp, 'bandpass');
-                    later(() => noise(0.045 * rv(), 1250 * rv(), 0.13 * vol * sk, pp, 'bandpass', 650), 40 + Math.random() * 35); break; }
+                case 'step': { const sk = x === undefined ? 0.75 : 2, ft = (STEPF = -STEPF), pp = clamp(pan + (x === undefined ? ft * 0.07 : 0), -1, 1), rv = () => 0.85 + Math.random() * 0.3; // natürlicher, dumpfer Schritt: Ferse + weiches Abrollen (nur Tiefpass, nichts Schrilles), jeder Schritt leicht anders, Füße abwechselnd
+                    noise(0.075 * rv(), 340 * rv(), 0.5 * vol * sk, pp, 'lowpass', 85); // dumpfe Ferse (nur Tiefen, kein Klicken)
+                    later(() => noise(0.05 * rv(), 520 * rv(), 0.16 * vol * sk, pp, 'lowpass', 160), 45 + Math.random() * 35); break; } // weiches Abrollen
                 case 'reload': noise(0.07, 2600, 0.09, 0, 'bandpass'); tone(900, 0.03, 0.1, 0, 'square'); later(() => { noise(0.1, 1800, 0.08, 0, 'bandpass'); tone(650, 0.04, 0.12, 0, 'square'); }, 260); break;
                 case 'empty': tone(1200, 0.03, 0.1, 0, 'square'); break;
                 case 'beep': tone(1046, 0.08, 0.25 * Math.max(vol, 0.3), pan); break;
@@ -6939,7 +6939,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🦶 SCHRITTE</p>
- Schritte klingen jetzt <b>natürlich</b>: dumpfe Ferse, kurzes Knirschen der Sohle, leises Abrollen – jeder Schritt etwas anders, die Füße wechseln sich ab.<br>
+ Schritte klingen jetzt <b>natürlich und dumpf</b>: weiche Ferse und leises Abrollen statt schrillem Klicken – jeder Schritt etwas anders, die Füße wechseln sich ab.<br>
  Gegner-Schritte bleiben deutlich lauter als Deine eigenen – gut zu orten.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔊 LAUTSTÄRKE</p>
