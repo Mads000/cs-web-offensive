@@ -3401,7 +3401,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Weiter ›":"Next ›",
 "Überspringen":"Skip",
 "‹ Zurück":"‹ Back",
-"NEU · PATCH 2.7 „KLEIDUNG\"":"NEW · PATCH 2.7 „CLOTHING\"",
+"NEU · PATCH 2.8 „GEFÜHL\"":"NEW · PATCH 2.8 „FEEL\"",
+"PATCH 2.7 „KLEIDUNG\"":"PATCH 2.7 „CLOTHING\"",
 "PATCH 2.6 „TAKTIK\"":"PATCH 2.6 „TACTICS\"",
 "PATCH 2.5 „ULTIMATE\"":"PATCH 2.5 „ULTIMATE\"",
 "NEU":"NEW",
@@ -3981,7 +3982,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, bots: 1, agTheme: 0, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
         const CFG = Object.assign({}, CFG_DEF, JSON.parse(localStorage.getItem('gamecfg') || '{}'));
         const SKILL_VAL = [0.6, 0.85, 1.05], SKILL_LBL = ['Leicht', 'Normal', 'Schwer'];
-        const BOT_SPEED = 5.6;
+        const BOT_SPEED = 5.2;
         let BOT_SKILL, ROUND_TIME, FREEZE_TIME, BOMB_TIME, WIN_SCORE, MAX_ROUNDS;
         function applyCfg() { BOT_SKILL = SKILL_VAL[CFG.skill]; ROUND_TIME = CFG.roundTime; FREEZE_TIME = CFG.freeze; BOMB_TIME = CFG.bombTime; MAX_ROUNDS = CFG.rounds; WIN_SCORE = Math.floor(CFG.rounds / 2) + 1; }
         applyCfg();
@@ -4348,13 +4349,24 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (!IS_TOUCH && OPT.gfx > 0) { const len = AC.sampleRate * 1.3 | 0, ir = AC.createBuffer(2, len, AC.sampleRate); for (let ch = 0; ch < 2; ch++) { const d2 = ir.getChannelData(ch); for (let i = 0; i < len; i++) d2[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.4); } const cv = AC.createConvolver(); cv.buffer = ir; const rg = AC.createGain(); rg.gain.value = THEME === THEMES.de_foundry || THEME === THEMES.de_moisty ? 0.22 : 0.14; OUT.connect(cv); cv.connect(rg); rg.connect(comp); }
         }
         // Schuss = Knall (Höhen) + Körper + Bass + Nachhall: [knall, kDauer, kF0, kVol, kF1, bassF0, bassDauer, bassVol, bassF1, hallDauer, hallVol]
-        function gun(v, p, a) { noise(0.03, 9000, a[0] * v * v, p, 'highpass', 2500); noise(a[1], a[2], a[3] * v, p, 'lowpass', a[4]); tone(a[5], a[6], a[7] * v, p, 'sine', a[8]); noise(a[9], 1100, a[10] * v, p, 'lowpass', 140); }
-        function spatial(x, z) { if (x === undefined) return { vol: 1, pan: 0 }; const dx = x - player.x, dz = z - player.z, d = Math.hypot(dx, dz); return { vol: Math.max(0, 1 - d / 75), pan: d > 0.01 ? clamp((dx * Math.cos(player.yaw) - dz * Math.sin(player.yaw)) / d, -1, 1) : 0 }; }
-        function noise(dur, f0, vol, pan, type = 'lowpass', f1) { const s = AC.createBufferSource(); s.buffer = noiseBuf; s.loop = true; const f = AC.createBiquadFilter(); f.type = type; f.frequency.setValueAtTime(f0, AC.currentTime); if (f1) f.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; s.connect(f).connect(g).connect(p).connect(OUT); s.start(); s.stop(AC.currentTime + dur); }
-        function tone(fr, dur, vol, pan, type = 'sine', f1) { const o = AC.createOscillator(); o.type = type; o.frequency.setValueAtTime(fr, AC.currentTime); if (f1) o.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; o.connect(g).connect(p).connect(OUT); o.start(); o.stop(AC.currentTime + dur); }
+        function gun(v, p, a) { // + harter Knack-Transient, Körper-Thump & kurzes Echo (leichter Hall, auch ohne Grafik-Hall)
+            noise(0.012, 12000, a[0] * v * v * 1.2, p, 'highpass', 4000); tone(a[5] * 2.2, 0.05, a[7] * v * 0.9, p, 'triangle', a[5] * 0.5);
+            noise(0.03, 9000, a[0] * v * v, p, 'highpass', 2500); noise(a[1], a[2], a[3] * v, p, 'lowpass', a[4]); tone(a[5], a[6] * 1.3, a[7] * v * 1.15, p, 'sine', a[8]); noise(a[9] * 1.25, 1100, a[10] * v, p, 'lowpass', 140);
+            const lp = SF.lp; setTimeout(() => { SF.lp = lp || 1800; noise(a[9] * 0.8, 1400, a[10] * v * 0.45, -p * 0.6, 'lowpass', 200); SF.lp = 0; }, 85); }
+        const SF = { lp: 0 }, _sRay = new THREE.Raycaster(), _sO = new THREE.Vector3(), _sD = new THREE.Vector3(); // SF.lp: Tiefpass für den gerade erzeugten Sound (Wand / hinten / Entfernung)
+        const SND_R = { rifle: 70, pistol: 55, smg: 55, scout: 85, awp: 95, pump: 60, knife: 14, shell: 12, step: 26, beep: 30, plant: 25, smokepop: 35, flashbang: 60, fire: 25, grunt: 30 }; // Hörweite je Sound
+        function sndOut() { if (!SF.lp) return OUT; const f = AC.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = SF.lp; f.Q.value = 0.5; f.connect(OUT); return f; }
+        function wallBetween(x, z) { _sO.set(player.x, 1.5, player.z); _sD.set(x - player.x, 0, z - player.z); const L = _sD.length(); if (L < 0.5) return false; _sD.normalize(); _sRay.set(_sO, _sD); _sRay.far = L; return _sRay.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false).length > 0; }
+        function spatial(x, z, r = 60) { // Lautstärke fällt quadratisch bis zur Hörweite ab · hinter Wänden dumpf · von hinten gedämpft · Entfernung schluckt Höhen
+            if (x === undefined) return { vol: 1, pan: 0, lp: 0 }; const dx = x - player.x, dz = z - player.z, d = Math.hypot(dx, dz); if (d >= r) return { vol: 0, pan: 0, lp: 0 };
+            const k = 1 - d / r, pan = d > 0.01 ? clamp((dx * Math.cos(player.yaw) - dz * Math.sin(player.yaw)) / d, -1, 1) : 0; let vol = d < 3 ? 1 : k * k, lp = 0;
+            if (d > 1.5 && wallBetween(x, z)) { vol *= 0.5; lp = 900; } else if ((-Math.sin(player.yaw) * dx - Math.cos(player.yaw) * dz) / Math.max(d, 0.01) < -0.3) lp = 4200;
+            if (d > 8) { const dl = Math.max(1500, 20000 - d * 260); lp = lp ? Math.min(lp, dl) : dl; } return { vol, pan, lp }; }
+        function noise(dur, f0, vol, pan, type = 'lowpass', f1) { const s = AC.createBufferSource(); s.buffer = noiseBuf; s.loop = true; const f = AC.createBiquadFilter(); f.type = type; f.frequency.setValueAtTime(f0, AC.currentTime); if (f1) f.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; s.connect(f).connect(g).connect(p).connect(sndOut()); s.start(); s.stop(AC.currentTime + dur); }
+        function tone(fr, dur, vol, pan, type = 'sine', f1) { const o = AC.createOscillator(); o.type = type; o.frequency.setValueAtTime(fr, AC.currentTime); if (f1) o.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; o.connect(g).connect(p).connect(sndOut()); o.start(); o.stop(AC.currentTime + dur); }
         function sfx(n, x, z) {
             if (!AC) return; if (n === 'kill' && !OPT.killSnd) return; if (n === 'hit' || n === 'hs') { if (OPT.hitSnd === 3) return; if (OPT.hitSnd === 1) n = 'hs'; else if (OPT.hitSnd === 2) n = 'ui'; }
-            const { vol, pan } = spatial(x, z); if (vol <= 0.01) return; switch (n) {
+            const { vol, pan, lp } = spatial(x, z, SND_R[n] || 50); if (vol <= 0.01) return; SF.lp = lp; try { switch (n) {
                 case 'rifle': gun(vol, pan, [0.35, 0.12, 4200, 0.5, 500, 130, 0.12, 0.5, 45, 0.28, 0.22]); break;
                 case 'pistol': gun(vol, pan, [0.4, 0.09, 5000, 0.42, 700, 170, 0.08, 0.35, 60, 0.2, 0.15]); break;
                 case 'scout': gun(vol, pan, [0.38, 0.24, 3300, 0.55, 140, 95, 0.26, 0.6, 22, 0.55, 0.28]); setTimeout(() => { tone(1100, 0.025, 0.07 * vol, pan, 'square'); setTimeout(() => noise(0.05, 3000, 0.07 * vol, pan, 'bandpass'), 110); }, 520); break;
@@ -4367,7 +4379,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 case 'shell': tone(3200 + Math.random() * 800, 0.03, 0.04 * vol, pan, 'triangle'); setTimeout(() => tone(2800, 0.02, 0.025 * vol, pan, 'triangle'), 70); break;
                 case 'ui': tone(1250, 0.025, 0.05, 0, 'triangle'); break;
                 case 'hurt': noise(0.2, 600, 0.5, 0); tone(80, 0.2, 0.3, 0); break;
-                case 'step': noise(0.07, 450 + Math.random() * 350, 0.11 * vol, pan, 'lowpass', 120); tone(65 + Math.random() * 20, 0.05, 0.05 * vol, pan); break;
+                case 'step': { const sk = x === undefined ? 0.8 : 2.1, l0 = SF.lp; noise(0.06, 700 + Math.random() * 500, 0.12 * vol * sk, pan, 'lowpass', 140); tone(62 + Math.random() * 20, 0.06, 0.06 * vol * sk, pan); setTimeout(() => { SF.lp = l0; noise(0.04, 1600, 0.05 * vol * sk, pan, 'bandpass'); SF.lp = 0; }, 55); break; } // Ferse + Abrollen, Gegner deutlich lauter
                 case 'reload': noise(0.07, 2600, 0.09, 0, 'bandpass'); tone(900, 0.03, 0.1, 0, 'square'); setTimeout(() => { noise(0.1, 1800, 0.08, 0, 'bandpass'); tone(650, 0.04, 0.12, 0, 'square'); }, 260); break;
                 case 'empty': tone(1200, 0.03, 0.1, 0, 'square'); break;
                 case 'beep': tone(1046, 0.08, 0.25 * Math.max(vol, 0.3), pan); break;
@@ -4379,7 +4391,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 case 'win': [523, 659, 784].forEach((f, i) => setTimeout(() => tone(f, 0.25, 0.2, 0), i * 140)); break;
                 case 'lose': [400, 330].forEach((f, i) => setTimeout(() => tone(f, 0.35, 0.2, 0, 'triangle'), i * 220)); break;
                 case 'kill': tone(600, 0.05, 0.12, 0, 'square'); setTimeout(() => tone(900, 0.06, 0.12, 0, 'square'), 60); break;
-            }
+                case 'grunt': { const f0 = 120 + Math.random() * 70; noise(0.2, 850, 0.4 * vol, pan, 'bandpass', 380); tone(f0, 0.17, 0.2 * vol, pan, 'triangle', f0 * 0.68); break; } // Aufkeuchen bei Treffer
+                case 'land': noise(0.12, 380, 0.3, 0, 'lowpass', 70); tone(58, 0.12, 0.28, 0, 'sine', 35); break; // Aufprall nach Sprung
+            } } finally { SF.lp = 0; }
         }
 
         // =====================================================================
@@ -4623,7 +4637,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             m.needsUpdate = true;
         }
         // Community-Skins: als normale Skins registriert (u: 1, nicht in Cases/Gamble)
-        function regSkins(list) { let add = 0; for (const k of list || []) { if (!W[k.w]) continue; const o = SKINS.find(x => x.id === k.id), d = { id: k.id, w: k.w, km: KNIVES[k.km] ? k.km : undefined, n: (KNIVES[k.km] ? KNIVES[k.km] : W[k.w].name) + ' | ' + k.n, c: k.c, c2: k.c2, c3: k.c3, p: k.p, img: k.p === 'paint' ? k.img : undefined, r: k.r, noCase: 1, u: 1, by: k.by, sold: k.sold || 0 }; if (o) o.sold = d.sold; else { SKINS.push(d); add++; } } return add; }
+        function regSkins(list) { let add = 0; for (const k of list || []) { if (!W[k.w]) continue; const o = SKINS.find(x => x.id === k.id), d = { id: k.id, w: k.w, km: KNIVES[k.km] ? k.km : undefined, n: (KNIVES[k.km] ? KNIVES[k.km] : W[k.w].name) + ' | ' + k.n, c: k.c, c2: k.c2, c3: k.c3, p: k.p, img: k.p === 'paint' ? k.img : undefined, r: k.r, noCase: 1, u: 1, by: k.by, sold: k.sold || 0, off: k.off ? 1 : 0 }; if (o) { o.sold = d.sold; o.off = d.off; } else { SKINS.push(d); add++; } } return add; }
         function dropSkins(ids) { for (let i = SKINS.length - 1; i >= 0; i--) if (SKINS[i].u && !ids.has(SKINS[i].id)) SKINS.splice(i, 1); }
         try { regSkins(JSON.parse(localStorage.getItem('cskins') || '[]')); } catch (e) { }
         let PRICES = (() => { try { return JSON.parse(localStorage.getItem('cprices')) || {}; } catch (e) { return {}; } })(); // Shop-Preise vom Server (Preiseditor)
@@ -5085,7 +5099,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (GA.cur) { b.path = (bfsArena(cr(b.z), cr(b.x - GA.cur.ox), r, c, (b.y || 0) > 2) || []).map(p => ({ r: p.r, c: p.c, ax: GA.cur.ox + cx(p.c), az: cx(p.r) })); }
             else b.path = bfs(cr(b.z), cr(b.x), r, c, (b.y || 0) > 2) || [];
         } function randomNear(r, c, rad) { for (let i = 0; i < 12; i++) { const rr = r + Math.round((Math.random() * 2 - 1) * rad), cc = c + Math.round((Math.random() * 2 - 1) * rad); if (!solid(cell(rr, cc))) return { r: rr, c: cc }; } return { r, c }; }
-        function botMoveToward(b, tx, tz, dt, spd) { const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz); if (d < 0.05) return; const s = Math.min(spd * (b.spdMul || 1) * slowAt(b.x, b.z) * CFG.speed / 100 * dt, d); collideMove(b, dx / d * s, dz / d * s); if (!b.target) b.yaw = lerpAngle(b.yaw, Math.atan2(dx, dz), Math.min(1, dt * 12)); b.moving = true; b.wantMove = true; }
+        function botMoveToward(b, tx, tz, dt, spd) { const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz); if (d < 0.05) return; const s = Math.min(spd * (b.spdMul || 1) * (b.tagT > now ? 0.6 : 1) * slowAt(b.x, b.z) * CFG.speed / 100 * dt, d); collideMove(b, dx / d * s, dz / d * s); if (!b.target) b.yaw = lerpAngle(b.yaw, Math.atan2(dx, dz), Math.min(1, dt * 12)); b.moving = true; b.wantMove = true; }
         function followPath(b, dt) { if (!b.path.length) return false; const wp = b.path[0], tx = wp.ax !== undefined ? wp.ax : cx(wp.c), tz = wp.az !== undefined ? wp.az : cx(wp.r); if (Math.hypot(tx - b.x, tz - b.z) < 0.6) { b.path.shift(); return followPath(b, dt); } botMoveToward(b, tx, tz, dt, BOT_SPEED); return true; } function separate() {
             const all = ents, bot = e => !e.isPlayer && !e.remote;
             for (let i = 0; i < all.length; i++) { const a = all[i]; if (!a.alive) continue; for (let j = i + 1; j < all.length; j++) { const b = all[j]; if (!b.alive) continue;
@@ -5101,6 +5115,13 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         //  KAMPF & EFFEKTE
         // =====================================================================
         const _ray = new THREE.Raycaster(), _o = new THREE.Vector3(), _d = new THREE.Vector3(), _fwd = new THREE.Vector3(), _right = new THREE.Vector3(), _up = new THREE.Vector3();
+        const BLOOD = [], bloodMat = new THREE.MeshBasicMaterial({ color: 0x4a0000, transparent: true, opacity: 0.85, depthWrite: false }), bloodGeo = new THREE.CircleGeometry(1, 10);
+        function bleed(e, hs) { // Treffer-Feedback: Blutspritzer, Fleck am Boden, Aufkeuchen (Robo im Gauntlet: Funken)
+            const y = (e.y || 0) + (hs ? 1.65 : 1.05); if (e.robo) { burst(e.x, y, e.z, 0xffc040, 10, 3); return; } burst(e.x, y, e.z, 0x7a0000, hs ? 22 : 12, hs ? 4 : 3);
+            const m = new THREE.Mesh(bloodGeo, bloodMat), r = 0.18 + Math.random() * (hs ? 0.3 : 0.18); m.scale.set(r, r * (0.6 + Math.random() * 0.5), 1); m.rotation.set(-Math.PI / 2, 0, Math.random() * 6.28); m.position.set(e.x + (Math.random() - 0.5) * 0.6, (e.y || 0) + 0.02 + Math.random() * 0.005, e.z + (Math.random() - 0.5) * 0.6); scene.add(m); BLOOD.push(m); if (BLOOD.length > 40) scene.remove(BLOOD.shift());
+            if (now - (e._gT || 0) > 0.45) { e._gT = now; sfx('grunt', e.x, e.z); } }
+        function clearBlood() { for (const m of BLOOD) scene.remove(m); BLOOD.length = 0; }
+        const sprayKick = n => n < 7 ? [0, 1] : [Math.sin((n - 7) * 0.5) * 0.75, 0.3]; // festes Spray-Muster: erst gerade hoch, dann S-Kurve links/rechts
         function hasLOS(ax, ay, az, bx, by, bz) {
             for (const s of smokeBlock) { if (s.vox) { const L = Math.hypot(bx - ax, bz - az), st = Math.ceil(L / (SV * 0.5)); for (let i = 1; i < st; i++) { const t = i / st; if (s.vox.get(Math.floor((ax + (bx - ax) * t) / SV) + ',' + Math.floor((az + (bz - az) * t) / SV)) === 0) return false; } continue; } const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1; let t = ((s.x - ax) * dx + (s.z - az) * dz) / L2; t = clamp(t, 0, 1); if (Math.hypot(ax + dx * t - s.x, az + dz * t - s.z) < s.r) return false; }
             _o.set(ax, ay, az); _d.set(bx - ax, by - ay, bz - az); const L = _d.length(); _d.normalize(); _ray.set(_o, _d); _ray.far = L; return _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false).length === 0;
@@ -5131,8 +5152,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (e.immune && w && (w.key === 'he' || /Granate|Cluster|Molotov|Giftwolke|Sprengfalle/.test(w.name || ''))) return; // Bollwerk
             if (CFG.hsOnly && !hs && w && (w.slot === 1 || w.slot === 2)) return; // Spaß-Modus: nur Headshots zählen
             if (e.armor > 0 && !(hs && !e.helmet)) { const a = Math.min(e.armor, dmg * 0.5); e.armor -= a; dmg -= a; }
-            dmg = Math.round(dmg); e.health -= dmg;
-            if (e.isPlayer) { dmgFlash = 1; sfx('hurt'); shake = Math.max(shake, Math.min(0.22, 0.04 + dmg / 300)); if (att && att !== e && att.x !== undefined) dmgDir(att); } else burst(e.x, e.y + (hs ? 1.65 : 1.0), e.z, 0x8a0000, 8, 3);
+            dmg = Math.round(dmg); e.health -= dmg; e.tagT = now + (hs ? 0.5 : 0.35); // Tagging: Treffer bremsen kurz ab
+            if (e.isPlayer) { dmgFlash = 1; sfx('hurt'); shake = Math.max(shake, Math.min(0.22, 0.04 + dmg / 300)); if (att && att !== e && att.x !== undefined) dmgDir(att); } else bleed(e, hs);
             if (att && att.isPlayer && att !== e) { hitT = 0.12; hitHS = !!hs; sfx(hs ? 'hs' : 'hit'); } if (e.health <= 0) { e.health = 0; kill(e, att, w, hs); }
         }
         function kill(e, att, w, hs) {
@@ -5235,7 +5256,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         }
         function startRound() {
             roundKills = 0;
-            clearDrops(); clearNades(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear();
+            clearDrops(); clearNades(); clearBlood(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear();
             const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } funLoadout(p); p.weapons[5] = null; p.alive = true; p.health = 100;
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.rk = 0; p.rushT = 0; p.immune = false; STK.on = false; p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); funLoadout(b); }
             placeTeam('T'); placeTeam('CT');
@@ -5542,7 +5563,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
             // Doppeltipp auf die Tab-Ansicht → Pause-Menü (wie Esc am PC)
             let boardTap = 0; $('board').addEventListener('touchend', e => { const t = performance.now(); if (t - boardTap < 350) { e.preventDefault(); boardTap = 0; $('board').style.display = 'none'; mobPause(); } else boardTap = t; });
-        } const ACCEL = 62, FRICTION = 9, STOP_FRICTION = 17, AIR_ACCEL = 10; // CS-typisch: schnell auf Tempo, ohne Eingabe sofortiger Stopp
+        } const ACCEL = 40, FRICTION = 5, STOP_FRICTION = 10, AIR_ACCEL = 10; // Trägheit: kurz verzögertes Beschleunigen & Abbremsen – die Gegentaste (Counter-Strafe) stoppt sofort
         // Leichte Zielhilfe (nur Touch): zieht das Fadenkreuz sanft zum nächsten sichtbaren Gegner im kleinen Kegel, beim Schießen etwas stärker
         function aimAssist(dt) {
             const p = player; if (!p.alive || FC.on || DH.on || buyOpen || G.state === 'freeze' || (GL.on && GL.phase !== 'duel')) return;
@@ -5564,14 +5585,15 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const f = canMove ? ((down('fwd') ? 1 : 0) - (down('back') ? 1 : 0) + TOUCH.f) : 0;
             const s = canMove ? ((down('right') ? 1 : 0) - (down('left') ? 1 : 0) + TOUCH.s) : 0;
             const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
-            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); if (p.rushT > 0) p.rushT -= dt; let max = (p.rushT > 0 ? 1.2 : 1) * (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * (p.immune ? 1 : slowAt(p.x, p.z)) * CFG.speed / 100; p.walk = canMove && !p.crouch && down('walk'); if (p.crouch) max *= 0.45; else if (p.walk) max *= 0.52; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - (wl > 0 ? FRICTION : STOP_FRICTION) * dt); p.vx *= fr; p.vz *= fr; }
+            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); if (p.rushT > 0) p.rushT -= dt; let max = 0.92 * (p.tagT > now ? 0.55 : 1) * (p.rushT > 0 ? 1.2 : 1) * (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * (p.immune ? 1 : slowAt(p.x, p.z)) * CFG.speed / 100; p.walk = canMove && !p.crouch && down('walk'); if (p.crouch) max *= 0.45; else if (p.walk) max *= 0.52; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - (wl > 0 ? FRICTION : STOP_FRICTION) * dt); p.vx *= fr; p.vz *= fr; }
+            if (p.onGround && wl > 0) { const dt0 = p.vx * wx + p.vz * wz; if (dt0 < 0) { const l2 = wx * wx + wz * wz; p.vx -= dt0 * wx / l2; p.vz -= dt0 * wz / l2; } } // Counter-Strafing: Gegentaste nimmt die Bewegung in diese Richtung sofort raus
             const acc = p.onGround ? ACCEL : AIR_ACCEL;
             p.vx += wx * acc * dt; p.vz += wz * acc * dt;
             const vl = Math.hypot(p.vx, p.vz); if (vl > max) { p.vx *= max / vl; p.vz *= max / vl; }
             if (vl > 0.02) collideMove(p, p.vx * dt, p.vz * dt); else { p.vx = 0; p.vz = 0; }
             if (p.dashT > 0) { const step = Math.min(dt, p.dashT); const n = Math.ceil(step * 60); for (let s = 0; s < n; s++) collideMove(p, p.dashVX * step / n, p.dashVZ * step / n); p.dashT -= dt; if (p.dashT <= 0) { p.vx = p.dashVX * 0.12; p.vz = p.dashVZ * 0.12; } }
             p.speed = Math.hypot(p.vx, p.vz);
-            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { sfx('step'); fovKick = Math.max(fovKick, 3); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
+            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { p.landK = clamp(-p.vy / 11, 0.25, 1); sfx('land'); shake = Math.max(shake, 0.05 * p.landK); fovKick = Math.max(fovKick, 3); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
             const te = p.alive ? (p.crouch ? 1.15 : 1.7) : 0.35; p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
             if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.42; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
@@ -5585,7 +5607,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             } else {
                 if (p.camY === undefined) p.camY = p.y;
                 p.camY += (p.y - p.camY) * Math.min(1, dt * 14);
-                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - vmLand * 0.06 + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); camera.rotation.set(p.pitch, p.yaw, 0);
+                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - vmLand * (0.05 + 0.16 * (p.landK || 0)) + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); camera.rotation.set(p.pitch - vmLand * 0.035 * (p.landK || 0), p.yaw, 0); // Landing-Impact: Kamera sackt ein
             }
             if (buyOpen && !canBuy()) closeBuy();
         }
@@ -5608,7 +5630,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const want = d.auto ? mouseDown : clickQueued; clickQueued = false; if (!want) return; if (now - w.last < d.rate / (p.rushT > 0 ? 1.2 : 1)) return; w.last = now;
             if (d.melee) { sfx('knife'); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: 'knife', x: p.x, z: p.z }); p.kick = 1; const h = castShot(0); if (h && h.distance < 2.3) { const ud = h.object.userData; if (ud.ent && ud.ent.dh) dhShot(ud.ent, ud.part === 'head'); else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) { const dmg = d.dmg * (ud.part === 'head' ? 2 : 1); if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs: false }); hitT = 0.12; hitHS = false; sfx('hit'); } else applyDamage(ud.ent, dmg, p, d, false); } else if (!ud.ent) { addDecal(h.point, h.face.normal); } } return; } if (w.ammo <= 0) { sfx('empty'); startReload(); return; }
             if (!CFG.infAmmo) w.ammo--; p.lastShotT = now;
-            let spread = d.spread; if (d.scope) spread = p.scoped ? d.scopedSpread : d.spread; else { spread *= (1 + p.recoil * 0.9); if (p.speed > 3) spread *= 2.5; else if (p.speed > 0) spread *= 1.5; if (p.crouch) spread *= 0.7; if (!p.onGround) spread *= 4; }
+            let spread = d.spread; if (d.scope) spread = p.scoped ? d.scopedSpread : d.spread; else { spread *= (1 + p.recoil * 0.3); if (p.speed > 3) spread *= 2.5; else if (p.speed > 1.2) spread *= 1.5; /* Restschwung nach Counter-Strafe zählt als Stehen */ if (p.crouch) spread *= 0.7; if (!p.onGround) spread *= 4; }
             for (let pi = 0; pi < (d.pellets || 1); pi++) {
                 const h = castShot(spread); if (smokes.length) smokeShot(h ? h.distance : 80);
                 if (!h) continue;
@@ -5619,13 +5641,13 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                     const hs = ud.part === 'head';
                     const dmg = d.key === 'awp' ? 9999 : Math.round(d.dmg * (hs ? (d.pellets ? 1.8 : 4) : ud.part === 'legs' ? 0.75 : 1) * Math.max(d.pellets ? 0.2 : 0.6, 1 - h.distance * (d.pellets ? 0.025 : 0.004)));
                     if (CFG.hsOnly && !hs) continue;
-                    if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx(hs ? 'hs' : 'hit'); }
-                    else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx(hs ? 'hs' : 'hit'); }
+                    if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx(hs ? 'hs' : 'hit'); bleed(ud.ent, hs); }
+                    else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx(hs ? 'hs' : 'hit'); bleed(ud.ent, hs); }
                     else applyDamage(ud.ent, dmg, p, d, hs);
                 }
                 else if (!ud.ent) { addDecal(h.point, h.face.normal); burst(h.point.x, h.point.y, h.point.z, d.pellets ? 1 : 4, 2.5); }
 
-            } p.pitch = Math.min(1.5, p.pitch + d.recoil); p.yaw += (Math.random() - 0.5) * d.recoil * 0.6; p.recoil = Math.min(6, p.recoil + 1);
+            } const sn = now - (p.sprT || -9) < Math.max(0.3, d.rate * 2.5) ? (p.sprN || 0) + 1 : 0, [kx, ky] = sprayKick(sn); p.sprN = sn; p.sprT = now; p.pitch = Math.min(1.5, p.pitch + d.recoil * ky); p.yaw += d.recoil * kx; p.recoil = Math.min(6, p.recoil + 1);
             sfx(d.snd); if (NET.on) netSend({ type: 'fx', pid: NET.pid, snd: d.snd, x: p.x, z: p.z }); p.kick = 1; shake = Math.max(shake, d.key === 'awp' ? 0.22 : d.key === 'scout' ? 0.14 : d.slot === 1 ? 0.07 : 0.05); if (!p.scoped) ejectShell(d.key === 'pump'); const m = vmModels[d.key]; if (m.userData.barrel) { muzzleSprite.position.copy(m.userData.barrel); muzzleSprite.visible = true; } muzzleLight.intensity = 2.5; flashT = 0.05;
             if (d.scope && p.scoped) setScoped(false);
         }
@@ -5960,9 +5982,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const list = SKINS.filter(sk => !sk.noCase && SHOP_PRICE[sk.r]).sort((a, b) => (ORDER.indexOf(a.w) - ORDER.indexOf(b.w)) || (b.r - a.r));
             const cards = list.map(sk => { const has = own.has(sk.id), pr = skPrice(sk), ok = !has && coins >= pr;
                 return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; }).join('');
-            const me = ACC ? ACC.u : null, com = SKINS.filter(sk => sk.u).sort((a, b) => (b.sold - a.sold) || (b.r - a.r));
+            const me = ACC ? ACC.u : null, com = SKINS.filter(sk => sk.u && !sk.off).sort((a, b) => (b.sold - a.sold) || (b.r - a.r));
             const ccards = com.map(sk => { const has = own.has(sk.id), pr = skPrice(sk), mine = sk.by === me;
-                return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Löschen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; }).join('');
+                return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Aus dem Shop nehmen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; }).join('');
             showOverlay(`<h1 style="font-size:34px">🪙 SHOP<small>SKINS FÜR COINS · SIEG +100 · NIEDERLAGE +20 · KILL +10</small></h1>
  <p>Du hast <b style="color:var(--hl)">🪙 ${coins}</b> Coins</p>
  <div class="invbox" id="shopBox" style="max-height:56vh;overflow-y:auto">
@@ -5980,13 +6002,13 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
                 PRG.st.coins -= pr; localStorage.setItem('prog', JSON.stringify(PRG)); store.inv.push(sk.id); saveStore(); sfx('win'); toast('🎁 Gekauft: ' + sk.n, 'Jetzt im Inventar – dort ausrüsten'); showShop(true);
             });
+            $('btnMkSkin').onclick = () => showSkinMaker();
             document.querySelectorAll('[data-fitshop]').forEach(el => el.onclick = () => { const [sl, id] = el.dataset.fitshop.split(':'), it = FIT_ITEMS[sl].find(i => i.id === id), key = sl + ':' + id;
                 if (fitOwn.includes(key)) return toast('Schon im Inventar', it.n);
                 if ((PRG.st.coins || 0) < it.pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (it.pr - (PRG.st.coins || 0)) + ' Coins'); }
                 PRG.st.coins -= it.pr; localStorage.setItem('prog', JSON.stringify(PRG)); fitOwn.push(key); localStorage.setItem('fitown', JSON.stringify(fitOwn)); FIT[sl][0] = id; localStorage.setItem('fit', JSON.stringify(FIT)); store.agent = 'fit'; localStorage.setItem('agent', 'fit'); dropMenuChar();
                 if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: 0 }); sfx('win'); toast('🎁 Gekauft & angezogen: ' + it.n, 'Farbe im Inventar unter 👤 Agenten wählen'); showShop(true); });
-            $('btnMkSkin').onclick = () => showSkinMaker();
-            document.querySelectorAll('[data-rmsk]').forEach(el => el.onclick = e => { e.stopPropagation(); if (!confirm('Skin wirklich aus dem Shop löschen?')) return; accApi('rmskin', { tok: ACC.tok, id: el.dataset.rmsk }).then(r => { if (!r.ok) return toast('Fehler', r.err || ''); loadSkins(() => showShop(true)); }); });
+            document.querySelectorAll('[data-rmsk]').forEach(el => el.onclick = e => { e.stopPropagation(); if (!confirm('Skin aus dem Shop nehmen? Wer ihn schon gekauft hat, behält ihn.')) return; accApi('rmskin', { tok: ACC.tok, id: el.dataset.rmsk }).then(r => { if (!r.ok) return toast('Fehler', r.err || ''); toast('🗑 Aus dem Shop genommen', 'Käufer behalten den Skin'); loadSkins(() => showShop(true)); }); });
             document.querySelectorAll('[data-cshop]').forEach(el => el.onclick = () => {
                 const sk = SKINS.find(x => x.id === el.dataset.cshop), pr = skPrice(sk);
                 if (store.inv.includes(sk.id)) return toast('Schon im Inventar', sk.n);
@@ -6197,7 +6219,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 { go: () => { INV.tab = 'ag'; showInventory(); }, sel: '.invbox', t: '👤 Dein Agent', d: 'Wähle Dein <b>Spielermodell</b>: Standard, <b>Eigener Agent</b> oder eine Ente.<br>Für den eigenen Agenten stellst Du <b>Hautton, Frisur und Haarfarbe</b> gratis ein und ziehst ihm <b>Kleidung</b> an – Kopf, Oberteil, Hose, Schuhe. Gekaufte Teile färbst Du frei ein.<br>Die <b>Team-Armbinde</b> zeigt immer, zu welchem Team Du gehörst. Mitspieler sehen Deinen Look.' },
                 { go: () => { INV.tab = 'wr'; showInventory(); }, sel: '.invbox', t: '🖼 Wraps', d: 'Lege eigene <b>PNG-Bilder</b> auf Deine Waffen – ein Wrap ersetzt den Skin.' },
                 { go: () => { INV.tab = 'sk'; showCases(); }, sel: '#reelbox', t: '📦 Cases', d: 'Für jedes beendete Match bekommst Du ein <b>Case</b>. Hier öffnest Du es – der Skin landet sofort im Inventar.<br>Bei <b>🎰 Gamble</b> kannst Du Skins eintauschen und auf bessere hoffen.' },
-                { go: () => showShop(true), sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Oben die <b>Community-Skins</b> anderer Spieler, dann <b>Kleidung</b> für Deinen Agenten und darunter alle offiziellen Skins.' },
+                { go: () => showShop(true), sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Oben die <b>Community-Skins</b> anderer Spieler, dann <b>Kleidung</b> für Deinen Agenten und darunter alle offiziellen Skins. Eigene Skins nimmst Du mit 🗑 wieder aus dem Shop.' },
                 { go: () => { if (ACC) { showSkinMaker(); const m = $('skMode'); if (m) { m.value = 'paint'; m.onchange(); } } else showShop(true); }, sel: () => ACC ? '.invbox' : '#btnMkSkin', t: '🎨 Skin-Editor', d: 'Erstelle eigene Skins: Muster und Farben wählen – oder <b>selbst malen</b> mit Pinsel, Radierer, Pipette und Spiegeln.<br>Veröffentlichte Skins erscheinen für alle im Shop. Kauft jemand Deinen Skin, bekommst Du <b>50 % als Coins</b>.' + (ACC ? '' : '<br><i>Zum Erstellen brauchst Du einen Account.</i>') },
                 { go: () => showMenu(), sel: '#ctAcc', t: '⭐ Fortschritt & Account', d: 'Für alles im Spiel gibt es <b>XP</b> – steige im Level auf, verdiene Ränge bis zur Global Elite und schalte <b>Erfolge</b> frei.<br>Mit einem <b>Account</b> ist alles auf jedem Gerät da: Skins, Coins, Fortschritt, Einstellungen.' },
                 { go: () => showMenu(), sel: '[data-nav="maps"]', t: '🛠 Map- & Arena-Editor', d: 'Baue eigene <b>Karten</b> für Wettkampf & Deathmatch oder <b>Arenen</b> für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites – und spiele sie direkt, auch online.' },
@@ -6676,7 +6698,30 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 2.7 „KLEIDUNG"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 2.8 „GEFÜHL"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏃 BEWEGUNG</p>
+ <b>Trägheit</b>: Du beschleunigst und bremst leicht verzögert – mehr Gewicht, etwas <b>langsamer</b> als vorher.<br>
+ <b>Counter-Strafing</b>: Die Gegentaste stoppt Dich sofort – danach sitzt der erste Schuss.<br>
+ <b>Tagging</b>: Wer getroffen wird, ist kurz langsamer.<br>
+ <b>Landen</b>: Nach Sprüngen sackt die Kamera spürbar ein, mit dumpfem Aufprall.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 RÜCKSTOSS-MUSTER</p>
+ Dauerfeuer folgt jetzt einem <b>festen Muster</b>: erst gerade nach oben, dann eine S-Kurve nach links und rechts – lernbar statt Zufall.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🩸 TREFFER</p>
+ Treffer zeigen <b>Blutspritzer</b> und Flecken am Boden, Getroffene <b>keuchen auf</b>. Im Gauntlet sprühen Funken.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔊 SOUND</p>
+ Sounds haben jetzt eine <b>Hörweite</b> – nicht mehr über die ganze Map. <b>Hinter Wänden</b> klingt alles dumpf, von hinten gedämpft, in der Ferne verschwinden die Höhen.<br>
+ <b>Schritte</b> von Gegnern sind lauter und klar ortbar – auch online. <b>Schüsse</b> knallen wuchtiger, mit kurzem Echo.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🪙 SHOP</p>
+ Eigene <b>Community-Skins</b> kannst Du mit 🗑 wieder <b>aus dem Shop nehmen</b> – wer sie schon gekauft hat, behält sie.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 2.7 „KLEIDUNG"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👕 BASTEL DIR DEINEN AGENTEN</p>
@@ -7209,7 +7254,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 2.7 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 2.8 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -8480,7 +8525,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const k = Math.min(1, dt * 12);
             for (const rp of NET.players.values()) {
                 if (!rp.alive) { rp.mesh.position.set(rp.x, 0.3, rp.z); continue; }
-                rp.x += (rp.tx - rp.x) * k; rp.y += (rp.ty - rp.y) * k; rp.z += (rp.tz - rp.z) * k; rp.yaw = lerpAngle(rp.yaw, rp.tyaw, k);
+                const ox = rp.x, oz = rp.z; rp.x += (rp.tx - rp.x) * k; rp.y += (rp.ty - rp.y) * k; rp.z += (rp.tz - rp.z) * k; { const dd = Math.hypot(rp.x - ox, rp.z - oz), sp = dd / Math.max(0.001, now - (rp._nt || now)); rp._nt = now; if (sp > 4) { rp._sd = (rp._sd || 0) + dd; if (rp._sd > 2.3) { rp._sd = 0; sfx('step', rp.x, rp.z); } } } // Schritte von Mitspielern/Gegnern online rp.yaw = lerpAngle(rp.yaw, rp.tyaw, k);
                 rp.mesh.position.set(rp.x, rp.y, rp.z); rp.mesh.rotation.y = rp.yaw + Math.PI; /* Kamera-Blick → Modell-Vorderseite (um 180° gedreht) */
             }
         }

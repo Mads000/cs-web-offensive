@@ -115,12 +115,12 @@ function api(p, b, ip) {
  if (!W.includes(k.w) || !P.includes(k.p) || ![1, 2, 3, 4].includes(+k.r)) return { err: 'Ungültiger Skin.' };
  const img = k.p === 'paint' ? String(k.img || '') : ''; if (k.p === 'paint' && (img.length > 16000 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(img))) return { err: 'Bild ungültig oder zu groß.' };
  const name = String(k.n || '').replace(/[<>"'&`|]/g, '').trim().slice(0, 20); if (name.length < 2) return { err: 'Name: mindestens 2 Zeichen.' };
- const all = Object.values(CSK); if (all.filter(x => x.by === u.name).length >= 10) return { err: 'Maximal 10 eigene Skins.' }; if (all.length >= 300) return { err: 'Der Shop ist voll (300 Skins).' };
+ const all = Object.values(CSK); if (all.filter(x => x.by === u.name && !x.off).length >= 10) return { err: 'Maximal 10 eigene Skins.' }; if (all.length >= 300) return { err: 'Der Shop ist voll (300 Skins).' };
  const id = 'u_' + crypto.randomBytes(5).toString('hex'); CSK[id] = { id, w: k.w, km: k.w === 'knife' && ['butterfly', 'karambit'].includes(k.km) ? k.km : undefined, n: name, c: col(k.c), c2: col(k.c2), c3: col(k.c3), p: k.p, img: img || undefined, r: +k.r, by: u.name, sold: 0, t: Date.now() }; persist(); return { ok: 1, skin: CSK[id] };
  }
- if (p === '/api/rmskin') { const k = CSK[b.id]; if (!k || k.by !== u.name) return { err: 'Nicht Dein Skin.' }; delete CSK[b.id]; persist(); return { ok: 1 }; }
+ if (p === '/api/rmskin') { const k = CSK[b.id]; if (!k || k.by !== u.name) return { err: 'Nicht Dein Skin.' }; k.off = 1; persist(); return { ok: 1 }; } // aus dem Shop nehmen: bleibt für Käufer erhalten
  if (p === '/api/buyskin') {
- const k = CSK[b.id]; if (!k) return { err: 'Skin gibt es nicht mehr.' }; k.sold++;
+ const k = CSK[b.id]; if (!k || k.off) return { err: 'Skin gibt es nicht mehr im Shop.' }; k.sold++;
  const owner = USERS[k.by.toLowerCase()]; if (owner && owner !== u) owner.earn = (owner.earn || 0) + Math.floor(((PRICES.s || {})[k.id] ?? (PRICES.r || {})[k.r] ?? ({ 1: 150, 2: 400, 3: 900, 4: 2500 })[k.r]) / 2); persist(); return { ok: 1 };
  }
  if (p === '/api/claim') { const c = u.earn || 0; if (c) { u.earn = 0; persist(); } return { ok: 1, coins: c }; }
