@@ -5,7 +5,7 @@
 const { Client, GatewayIntentBits, ChannelType, PermissionFlagsBits: P, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 const TOKEN = process.env.TOKEN, GUILD = process.env.GUILD, BLEIBEN = process.argv.includes('--bleiben');
-const SPIEL_URL = 'https://cs-web-offensive.onrender.com';
+const SPIEL_URL = 'https://clutchtactic.de', ALTE_URL = 'https://cs-web-offensive.onrender.com'; // alte Adresse wird in bereits geposteten Bot-Nachrichten ersetzt
 if (!TOKEN || !GUILD) { console.error('❌ TOKEN und GUILD fehlen – Beispiel: TOKEN=abc GUILD=123 node setup.js'); process.exit(1); }
 
 // ── Rollen (oben = höchste) ──
@@ -126,6 +126,10 @@ client.once('ready', async () => {
         const { ch, key } = K[k];
         const txt = TEXTE[key].replace('<#REGELN>', link('📜-regelwerk')).replace('<#NEWS>', link('🆕-neuigkeiten')).replace('<#BUGS>', link('🐞-bugs')).replace('<#MITSPIELER>', link('🤝-mitspielersuche')).replace('<#VORSCHLAEGE>', link('📈-vorschläge')).replace('<#MAPS>', link('🗺️-maps-und-arenen'));
         await ch.send(txt); console.log('  ✉ Text gepostet in ' + ch.name);
+    }
+    for (const ch of Object.values(K)) if (ch.type === T) { // alte Spiel-Adresse in schon geposteten Bot-Nachrichten ersetzen
+        const ms = await ch.messages.fetch({ limit: 50 }).catch(() => new Map());
+        for (const m of ms.values()) if (m.author.id === client.user.id && m.content.includes(ALTE_URL)) { await m.edit(m.content.split(ALTE_URL).join(SPIEL_URL)).catch(() => { }); console.log('  🔗 Link aktualisiert in ' + ch.name); }
     }
     if (K['🆕-neuigkeiten']) await postePatches(K['🆕-neuigkeiten']); // Patchnotes ab 1.7 (fehlende werden nachgetragen)
 

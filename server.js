@@ -43,7 +43,7 @@ const byTok = tok => typeof tok === 'string' && tok.length === 48 ? Object.value
 const newTok = u => { const t = crypto.randomBytes(24).toString('hex'); u.toks = [t, ...u.toks].slice(0, 10); return t; };
 // ── Discord (optional): Webhook-URLs als Umgebungsvariablen (bei Render), erstellt von discord/setup.js ──
 const DC = { news: process.env.DISCORD_NEWS_WEBHOOK, status: process.env.DISCORD_STATUS_WEBHOOK, lfg: process.env.DISCORD_LFG_WEBHOOK, bug: process.env.DISCORD_BUG_WEBHOOK };
-const SITE = process.env.SITE_URL || 'https://cs-web-offensive.onrender.com', LFG = new Map();
+const SITE = process.env.SITE_URL || 'https://clutchtactic.de', LFG = new Map();
 const DC_MOD = { comp: '🏆 Wettkampf', dm: '💀 Deathmatch', gl: '⚔️ Gauntlet', v1: '🎯 1v1', duck: '🦆 Entenjagd' };
 const dcEsc = s => String(s || '').replace(/[\\*_`~|>#\[\]()-]/g, '\\$&'); // Discord-Markdown entschärfen
 const dcPost = (url, body, q = '') => !url ? Promise.resolve(null) : fetch(url + (q ? '?' + q : ''), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ allowed_mentions: { parse: [] }, ...body }) }).then(r => r.ok ? (q.includes('wait') ? r.json() : 1) : null).catch(() => null);

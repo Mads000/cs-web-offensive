@@ -1058,6 +1058,9 @@
         .mob #csTut { bottom: 6px; padding: 5px 12px; font-size: 12px }
         #csApp { position: absolute; right: 12px; bottom: 12px; zoom: var(--ui, 1); padding: 7px 14px; font: bold 13px Arial; color: var(--hl); background: rgba(12, 16, 22, .85); border: 1px solid rgba(var(--hl-rgb), .6); border-radius: 4px; text-decoration: none }
         #csApp:hover { background: var(--hl); color: #111 }
+        .dcbtn { display: inline-block; padding: 8px 16px; font: bold 13px Arial; color: #fff; background: #5865f2; border: 1px solid #7983f5; border-radius: 4px; text-decoration: none; letter-spacing: .5px } .dcbtn:hover { background: #4752c4 }
+        #csDc { position: absolute; right: 70px; bottom: 52px; zoom: var(--ui, 1) } .mob #csDc { bottom: 8px; padding: 6px 12px; font-size: 12px }
+        #csmenu:has(#mfr) #csApp { right: 70px } /* nicht unter der Freunde-Leiste */
         #csver {
             position: absolute;
             left: 12px;
@@ -5417,7 +5420,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             showOverlay(`<h1 style="color:${win === player ? 'var(--acc)' : '#8da0b5'}">${win === player ? 'SIEG' : 'PLATZ ' + me}<small>DEATHMATCH BEENDET · ${win ? win.name + ' gewinnt mit ' + win.kills + ' Kills' : ''}</small></h1>
 <div class="panel" style="min-width:320px;text-align:left"><div class="psub">RANGLISTE · ${MAPLABEL.toUpperCase()}</div>
 ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e === player ? 'color:var(--acc);font-weight:bold' : ''}"><span>${i + 1}. ${e.name}${e === player ? ' (Du)' : ''}</span><b>${e.kills} / ${e.deaths}</b></div>`).join('')}
-<div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div></div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button>`);
+<div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div></div><div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button><a class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" style="margin-top:16px">💬 Komm auf unseren Discord</a></div>`);
         }
         function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .35s ease-out'; } function placeTeam(team) { const cells = shuffle(spawnCells[team].slice()); let i = 0; for (const e of ents) { if (e.team !== team) continue; const c = cells[i++ % cells.length]; e.x = cx(c.c) + (Math.random() - 0.5); e.z = cx(c.r) + (Math.random() - 0.5); e.y = 0; e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
         // Spaß-Modus „Waffen": 1 = nur Pistolen (Primärwaffe weg), 2 = nur AWP (gratis für alle)
@@ -5480,7 +5483,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
 <div class="row" style="justify-content:space-between"><span style="color:var(--mut)">TODE</span><b>${player.deaths}</b></div>
 <div class="row" style="justify-content:space-between"><span style="color:var(--mut)">K/D</span><b style="color:${kd >= 1 ? '#9fe08a' : '#ff6b6b'}">${kd}</b></div>
 <div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div>
-</div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button>`);
+</div><div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button><a class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" style="margin-top:16px">💬 Komm auf unseren Discord</a></div>`);
         }
         function updateRound(dt) {
             if (DM.on && G.state === 'live') { G.timer -= dt; for (const b of bots) dmDeadTick(b, dt); if (G.timer <= 0 || ents.some(e => e.kills >= DM.limit)) { gameOver(); return; } if (G.msgT > 0) { G.msgT -= dt; if (G.msgT <= 0) { $('msg').textContent = ''; $('sub').textContent = ''; } } return; }
@@ -6612,6 +6615,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('cfgBack').onclick = back;
         }
         function navBack() { NET.inLobby ? renderLobby() : showMenu(); }
+        const DISCORD_INV = 'https://discord.gg/tEBHrXvVzn'; // Einladung zum CLUTCH-Discord
         const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; 
         
 
@@ -7492,7 +7496,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 2.9 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 2.9 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
