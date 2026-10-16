@@ -5976,25 +5976,43 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             $('prBack').onclick = () => showShop(true);
         }
         function shopClaim() { if (ACC) accApi('claim', { tok: ACC.tok }).then(r => { if (r.ok && r.coins > 0) { PRG.st.coins = (PRG.st.coins || 0) + r.coins; localStorage.setItem('prog', JSON.stringify(PRG)); toast('🪙 +' + r.coins + ' Coins', 'Andere haben Deine Skins gekauft!'); if ($('shopBox')) showShop(true); } }).catch(() => { }); }
+        const SHP = { tab: 'sk', wk: null, cw: 'all', sl: 'head' }; // Shop-Reiter & Auswahl (bleibt beim Neuzeichnen)
         function showShop(noFetch) {
             if (!noFetch) { loadSkins(() => { if ($('shopBox')) showShop(true); }); shopClaim(); }
             const coins = PRG.st.coins || 0, own = new Set(store.inv), ORDER = ['knife', 'awp', 'scout', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
             const list = SKINS.filter(sk => !sk.noCase && SHOP_PRICE[sk.r]).sort((a, b) => (ORDER.indexOf(a.w) - ORDER.indexOf(b.w)) || (b.r - a.r));
-            const cards = list.map(sk => { const has = own.has(sk.id), pr = skPrice(sk), ok = !has && coins >= pr;
-                return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; }).join('');
+            const card = sk => { const has = own.has(sk.id), pr = skPrice(sk), ok = !has && coins >= pr;
+                return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; };
             const me = ACC ? ACC.u : null, com = SKINS.filter(sk => sk.u && !sk.off).sort((a, b) => (b.sold - a.sold) || (b.r - a.r));
-            const ccards = com.map(sk => { const has = own.has(sk.id), pr = skPrice(sk), mine = sk.by === me;
-                return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Aus dem Shop nehmen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; }).join('');
-            showOverlay(`<h1 style="font-size:34px">🪙 SHOP<small>SKINS FÜR COINS · SIEG +100 · NIEDERLAGE +20 · KILL +10</small></h1>
- <p>Du hast <b style="color:var(--hl)">🪙 ${coins}</b> Coins</p>
- <div class="invbox" id="shopBox" style="max-height:56vh;overflow-y:auto">
- <h5 style="margin:4px 0 8px">🎨 COMMUNITY-SKINS · Ersteller bekommt 50 % als Coins <button id="btnMkSkin" style="margin-left:10px;padding:3px 12px;font-size:13px">＋ Skin erstellen</button></h5>
- <div class="invrow" style="flex-wrap:wrap;justify-content:center;margin-bottom:14px">${ccards || '<span style="color:#8fa3b8">Noch keine Community-Skins – erstelle den ersten!</span>'}</div>
- <h5 style="margin:4px 0 8px">👕 KLEIDUNG · im Inventar unter 👤 Agenten anziehen & frei färben</h5>
- <div class="invrow" style="flex-wrap:wrap;justify-content:center;margin-bottom:14px">${FIT_SLOTS.flatMap(([sl, n, ic]) => FIT_ITEMS[sl].filter(it => it.pr).map(it => { const has = fitOwn.includes(sl + ':' + it.id); return `<div class="inv ${has ? 'eq' : coins >= it.pr ? '' : 'locked'}" data-fitshop="${sl}:${it.id}" style="border-color:var(--hl);min-width:130px"><div class="agprev" style="font-size:26px;line-height:44px">${ic}</div><b>${it.n}</b><span>${n}</span><span>${has ? '✓ Im Inventar' : '🪙 ' + it.pr}</span></div>`; })).join('')}</div>
- <h5 style="margin:4px 0 8px">📦 OFFIZIELLE SKINS</h5>
- <div class="invrow" style="flex-wrap:wrap;justify-content:center">${cards}</div></div>
+            const ccard = sk => { const has = own.has(sk.id), pr = skPrice(sk), mine = sk.by === me;
+                return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Aus dem Shop nehmen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; };
+            // Reiter wie im Inventar: links Waffe bzw. Slot, rechts die passenden Karten
+            const tabs = [['sk', '🔫 Skins'], ['cm', '🎨 Community'], ['fit', '👕 Kleidung']].map(([k, t]) => `<b class="${SHP.tab === k ? 'on' : ''}" data-stab="${k}">${t}</b>`).join('');
+            const row = (attr, on, sw, name, sub, cnt) => `<div class="invw ${on ? 'on' : ''}" ${attr}><span class="sksw" style="${sw}"></span><div><b>${name}</b><span>${sub}</span></div><em>${cnt}</em></div>`;
+            const panel = (title, body) => `<div class="invpanel"><h5>${title}</h5><div class="invrow" style="flex-wrap:wrap">${body}</div></div>`;
+            let body = '';
+            if (SHP.tab === 'sk') { // offizielle Skins je Waffe
+                const wks = ORDER.filter(k => list.some(sk => sk.w === k)); if (!wks.includes(SHP.wk)) SHP.wk = wks[0];
+                const left = wks.map(k => { const ls = list.filter(sk => sk.w === k), h = ls.filter(sk => own.has(sk.id)).length; return row(`data-swk="${k}"`, SHP.wk === k, `background-image:url(${skinSwatch(ls[0])})`, W[k].name, 'ab 🪙 ' + Math.min(...ls.map(skPrice)), h + '/' + ls.length); }).join('');
+                body = `<div class="invgrid"><div class="invlist">${left}</div>${panel('📦 ' + (SHP.wk ? W[SHP.wk].name.toUpperCase() : '') + ' · OFFIZIELLE SKINS', list.filter(sk => sk.w === SHP.wk).map(card).join(''))}</div>`;
+            } else if (SHP.tab === 'cm') { // Community-Skins: alle oder je Waffe
+                const wks = ORDER.filter(k => com.some(sk => sk.w === k)); if (SHP.cw !== 'all' && !wks.includes(SHP.cw)) SHP.cw = 'all';
+                const left = row('data-scw="all"', SHP.cw === 'all', 'background:#2a3038', 'Alle', 'nach Verkäufen', com.length) + wks.map(k => { const ls = com.filter(sk => sk.w === k); return row(`data-scw="${k}"`, SHP.cw === k, `background-image:url(${skinSwatch(ls[0])})`, W[k].name, 'Community', ls.length); }).join('');
+                const ls = com.filter(sk => SHP.cw === 'all' || sk.w === SHP.cw);
+                body = `<div class="invgrid"><div class="invlist"><button id="btnMkSkin" style="margin:0 0 6px">＋ Skin erstellen</button>${left}</div>${panel('🎨 COMMUNITY-SKINS · Ersteller bekommt 50 % · eigene mit 🗑 aus dem Shop nehmen', ls.map(ccard).join('') || '<span style="color:#8fa3b8">Noch keine Community-Skins – erstelle den ersten!</span>')}</div>`;
+            } else { // Kleidung je Slot
+                const left = FIT_SLOTS.map(([sl, n, ic]) => { const its = FIT_ITEMS[sl].filter(it => it.pr), h = its.filter(it => fitOwn.includes(sl + ':' + it.id)).length; return `<div class="invw ${SHP.sl === sl ? 'on' : ''}" data-ssl="${sl}"><span class="sksw" style="background:#2a3038;display:flex;align-items:center;justify-content:center;font-size:18px">${ic}</span><div><b>${n}</b><span>${its.length} Teile</span></div><em>${h}/${its.length}</em></div>`; }).join('');
+                const [, sn, sic] = FIT_SLOTS.find(([sl]) => sl === SHP.sl);
+                body = `<div class="invgrid"><div class="invlist">${left}</div>${panel('👕 ' + sn.toUpperCase() + ' · im Inventar unter 👤 Agenten anziehen & frei färben', FIT_ITEMS[SHP.sl].filter(it => it.pr).map(it => { const has = fitOwn.includes(SHP.sl + ':' + it.id); return `<div class="inv ${has ? 'eq' : coins >= it.pr ? '' : 'locked'}" data-fitshop="${SHP.sl}:${it.id}" style="border-color:var(--hl);min-width:130px"><div class="agprev" style="font-size:26px;line-height:44px">${sic}</div><b>${it.n}</b><span>${sn}</span><span>${has ? '✓ Im Inventar' : '🪙 ' + it.pr}</span></div>`; }).join(''))}</div>`;
+            }
+            showOverlay(`<h1 style="font-size:34px">🪙 SHOP<small>🪙 ${coins} COINS · SIEG +100 · NIEDERLAGE +20 · KILL +10</small></h1>
+ <div class="invtabs">${tabs}</div>
+ <div class="invbox" id="shopBox">${body}</div>
  <div><button id="btnInvGo">🎒 Inventar</button><button id="btnCasesGo">📦 Cases</button><button id="btnPrices">💲 Preise anpassen</button><button id="btnBack">Zurück</button></div>`);
+            document.querySelectorAll('[data-stab]').forEach(el => el.onclick = () => { SHP.tab = el.dataset.stab; showShop(true); });
+            document.querySelectorAll('[data-swk]').forEach(el => el.onclick = () => { SHP.wk = el.dataset.swk; showShop(true); });
+            document.querySelectorAll('[data-scw]').forEach(el => el.onclick = () => { SHP.cw = el.dataset.scw; showShop(true); });
+            document.querySelectorAll('[data-ssl]').forEach(el => el.onclick = () => { SHP.sl = el.dataset.ssl; showShop(true); });
             $('btnInvGo').onclick = showInventory; $('btnCasesGo').onclick = showCases; $('btnPrices').onclick = showPriceCode; $('btnBack').onclick = navBack;
             document.querySelectorAll('[data-shop]').forEach(el => el.onclick = () => {
                 const sk = SKINS.find(x => x.id === el.dataset.shop), pr = skPrice(sk);
@@ -6002,7 +6020,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 if ((PRG.st.coins || 0) < pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (pr - (PRG.st.coins || 0)) + ' Coins'); }
                 PRG.st.coins -= pr; localStorage.setItem('prog', JSON.stringify(PRG)); store.inv.push(sk.id); saveStore(); sfx('win'); toast('🎁 Gekauft: ' + sk.n, 'Jetzt im Inventar – dort ausrüsten'); showShop(true);
             });
-            $('btnMkSkin').onclick = () => showSkinMaker();
+            if ($('btnMkSkin')) $('btnMkSkin').onclick = () => showSkinMaker();
             document.querySelectorAll('[data-fitshop]').forEach(el => el.onclick = () => { const [sl, id] = el.dataset.fitshop.split(':'), it = FIT_ITEMS[sl].find(i => i.id === id), key = sl + ':' + id;
                 if (fitOwn.includes(key)) return toast('Schon im Inventar', it.n);
                 if ((PRG.st.coins || 0) < it.pr) { sfx('empty'); return toast('🔒 Zu wenig Coins', 'Dir fehlen ' + (it.pr - (PRG.st.coins || 0)) + ' Coins'); }
@@ -6219,8 +6237,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 { go: () => { INV.tab = 'ag'; showInventory(); }, sel: '.invbox', t: '👤 Dein Agent', d: 'Wähle Dein <b>Spielermodell</b>: Standard, <b>Eigener Agent</b> oder eine Ente.<br>Für den eigenen Agenten stellst Du <b>Hautton, Frisur und Haarfarbe</b> gratis ein und ziehst ihm <b>Kleidung</b> an – Kopf, Oberteil, Hose, Schuhe. Gekaufte Teile färbst Du frei ein.<br>Die <b>Team-Armbinde</b> zeigt immer, zu welchem Team Du gehörst. Mitspieler sehen Deinen Look.' },
                 { go: () => { INV.tab = 'wr'; showInventory(); }, sel: '.invbox', t: '🖼 Wraps', d: 'Lege eigene <b>PNG-Bilder</b> auf Deine Waffen – ein Wrap ersetzt den Skin.' },
                 { go: () => { INV.tab = 'sk'; showCases(); }, sel: '#reelbox', t: '📦 Cases', d: 'Für jedes beendete Match bekommst Du ein <b>Case</b>. Hier öffnest Du es – der Skin landet sofort im Inventar.<br>Bei <b>🎰 Gamble</b> kannst Du Skins eintauschen und auf bessere hoffen.' },
-                { go: () => showShop(true), sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Oben die <b>Community-Skins</b> anderer Spieler, dann <b>Kleidung</b> für Deinen Agenten und darunter alle offiziellen Skins. Eigene Skins nimmst Du mit 🗑 wieder aus dem Shop.' },
-                { go: () => { if (ACC) { showSkinMaker(); const m = $('skMode'); if (m) { m.value = 'paint'; m.onchange(); } } else showShop(true); }, sel: () => ACC ? '.invbox' : '#btnMkSkin', t: '🎨 Skin-Editor', d: 'Erstelle eigene Skins: Muster und Farben wählen – oder <b>selbst malen</b> mit Pinsel, Radierer, Pipette und Spiegeln.<br>Veröffentlichte Skins erscheinen für alle im Shop. Kauft jemand Deinen Skin, bekommst Du <b>50 % als Coins</b>.' + (ACC ? '' : '<br><i>Zum Erstellen brauchst Du einen Account.</i>') },
+                { go: () => { SHP.tab = 'sk'; showShop(true); }, sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Aufgebaut wie das Inventar: Reiter für <b>offizielle Skins</b>, <b>Community-Skins</b> anderer Spieler und <b>Kleidung</b> – links die Waffe bzw. das Kleidungsteil, rechts das Angebot. Eigene Skins nimmst Du mit 🗑 wieder aus dem Shop.' },
+                { go: () => { if (ACC) { showSkinMaker(); const m = $('skMode'); if (m) { m.value = 'paint'; m.onchange(); } } else { SHP.tab = 'cm'; showShop(true); } }, sel: () => ACC ? '.invbox' : '#btnMkSkin', t: '🎨 Skin-Editor', d: 'Erstelle eigene Skins: Muster und Farben wählen – oder <b>selbst malen</b> mit Pinsel, Radierer, Pipette und Spiegeln.<br>Veröffentlichte Skins erscheinen für alle im Shop. Kauft jemand Deinen Skin, bekommst Du <b>50 % als Coins</b>.' + (ACC ? '' : '<br><i>Zum Erstellen brauchst Du einen Account.</i>') },
                 { go: () => showMenu(), sel: '#ctAcc', t: '⭐ Fortschritt & Account', d: 'Für alles im Spiel gibt es <b>XP</b> – steige im Level auf, verdiene Ränge bis zur Global Elite und schalte <b>Erfolge</b> frei.<br>Mit einem <b>Account</b> ist alles auf jedem Gerät da: Skins, Coins, Fortschritt, Einstellungen.' },
                 { go: () => showMenu(), sel: '[data-nav="maps"]', t: '🛠 Map- & Arena-Editor', d: 'Baue eigene <b>Karten</b> für Wettkampf & Deathmatch oder <b>Arenen</b> für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites – und spiele sie direkt, auch online.' },
                 { go: () => nav('news'), sel: '#csnews', t: '📰 News', d: 'Hier stehen alle <b>Patchnotes</b>. Ein Klick auf eine Kachel öffnet sie im Vollbild.' },
