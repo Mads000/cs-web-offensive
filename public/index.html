@@ -3946,7 +3946,11 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const nades = [], smokes = [], smokeBlock = [], fires = [], recons = [], slows = [], reveals = [];
         const bombRing = new THREE.Mesh(new THREE.RingGeometry(15.5, 16, 72), new THREE.MeshBasicMaterial({ color: 0xff4f5e, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide })); bombRing.rotation.x = -Math.PI / 2; bombRing.visible = false; scene.add(bombRing); // Explosionsradius der Bombe
         const slowAt = (x, z) => { for (const s of slows) if (Math.hypot(x - s.x, z - s.z) < s.r) return 0.5; return 1; }; // Slow-Orb
-        const revealTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); g.translate(32, 32); g.rotate(Math.PI / 4); g.strokeStyle = '#ff4f5e'; g.lineWidth = 7; g.strokeRect(-17, -17, 34, 34); g.fillStyle = 'rgba(255,79,94,.35)'; g.fillRect(-17, -17, 34, 34); return new THREE.CanvasTexture(c); })();
+        const revealTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); g.translate(32, 32); g.rotate(Math.PI / 4); g.strokeStyle = '#ffd23a'; g.lineWidth = 7; g.strokeRect(-17, -17, 34, 34); g.fillStyle = 'rgba(255,210,58,.35)'; g.fillRect(-17, -17, 34, 34); return new THREE.CanvasTexture(c); })();
+        const XR_MAT = new THREE.MeshBasicMaterial({ color: 0xffd23a, transparent: true, opacity: 0.6, depthTest: false, depthWrite: false }), XR_EDGE = new THREE.MeshBasicMaterial({ color: 0x7a5200, transparent: true, opacity: 0.85, depthTest: false, depthWrite: false, side: THREE.BackSide });
+        function xray(e, on) { const g = e.mesh; if (!g) return; let L = g.userData.xr; if (!L) { if (!on) return; L = g.userData.xr = []; const list = []; g.traverse(o => { if (o.isMesh && o.geometry && o.geometry.type === 'BoxGeometry' && !o.userData.isOut) list.push(o); }); // gelbe Silhouette, wird über alles gezeichnet
+                for (const o of list) { const P = o.geometry.parameters; if ([P.width, P.height, P.depth].filter(v => v >= 0.1).length < 2) continue; const ed = new THREE.Mesh(new THREE.BoxGeometry(P.width + 0.06, P.height + 0.06, P.depth + 0.06), XR_EDGE), m = new THREE.Mesh(o.geometry, XR_MAT); ed.renderOrder = 996; m.renderOrder = 997; for (const x of [ed, m]) { x.userData.isOut = 1; x.visible = false; x.raycast = () => {}; o.add(x); L.push(x); } } }
+            if (g.userData.xrOn === on) return; g.userData.xrOn = on; for (const x of L) x.visible = on; }
         function reconPulse(r) { // ein Scan: wer in Reichweite & Sichtlinie ist, wird 3 s markiert (nur sichtbar fürs Team des Werfers)
             const ow = r.owner, oT = GL.on ? GL.teams.find(t => t.members.includes(ow)) : null, mine = ow === player || (DM.on ? false : GL.on ? !!(oT && oT.members.includes(player)) : !!ow && ow.team === player.team);
             const ring = r.ring; ring.scale.setScalar(1); tone(1200, 0.1, 0.1, 0, 'sine'); if (!mine) return;
@@ -3965,7 +3969,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             for (const sm of smokes) { for (const p of sm.im.userData.P) { const px = p.x - o.x, py = p.y - o.y, pz = p.z - o.z, t = px * d.x + py * d.y + pz * d.z; if (t < 0 || t > len) continue; const dist = Math.hypot(px - d.x * t, py - d.y * t, pz - d.z * t); if (dist < 1.7) p.hole = Math.max(p.hole, 1 - dist / 2.1); }
                 const steps = Math.ceil(len / (SV * 0.5)); for (let i = 1; i <= steps; i++) { const t = i * len / steps, k = Math.floor((o.x + d.x * t) / SV) + ',' + Math.floor((o.z + d.z * t) / SV); if (sm.blk.vox.has(k)) sm.blk.vox.set(k, 1.4); } } }
         const NADE_GRAV = 26, NADE_POW = 16; const smokePuffGeo = new THREE.SphereGeometry(1, 12, 10);
-        function clearNades() { for (const r of recons) { scene.remove(r.ring); scene.remove(r.dart); } recons.length = 0; for (const s of slows) scene.remove(s.grp); slows.length = 0; for (const v of reveals) scene.remove(v.sp); reveals.length = 0; for (const n of nades) scene.remove(n.mesh); nades.length = 0; for (const s of smokes) scene.remove(s.grp); smokes.length = 0; smokeBlock.length = 0; for (const f of fires) scene.remove(f.grp); fires.length = 0; for (const b of booms) scene.remove(b.ball, b.core, b.ring, b.scorch); booms.length = 0; blindT = 0; bots.forEach(b => b.blindT = 0); } const NADE_COL = { strike: 0xff4f5e, he: 0x3f4a35, smoke: 0x6a6f72, flash: 0xb8bcc0, molly: 0x7a4a18, recon: 0x4fd8ff, cluster: 0xe2457a, slow: 0x9fd8ff };
+        function clearNades() { for (const r of recons) { scene.remove(r.ring); scene.remove(r.dart); } recons.length = 0; for (const s of slows) scene.remove(s.grp); slows.length = 0; for (const v of reveals) { scene.remove(v.sp); xray(v.e, false); } reveals.length = 0; for (const n of nades) scene.remove(n.mesh); nades.length = 0; for (const s of smokes) scene.remove(s.grp); smokes.length = 0; smokeBlock.length = 0; for (const f of fires) scene.remove(f.grp); fires.length = 0; for (const b of booms) scene.remove(b.ball, b.core, b.ring, b.scorch); booms.length = 0; blindT = 0; bots.forEach(b => b.blindT = 0); } const NADE_COL = { strike: 0xff4f5e, he: 0x3f4a35, smoke: 0x6a6f72, flash: 0xb8bcc0, molly: 0x7a4a18, recon: 0x4fd8ff, cluster: 0xe2457a, slow: 0x9fd8ff };
         const nadeLv = (owner, key) => (GL.on && owner && owner.glN && owner.glN[key]) ? owner.glN[key] : 1;
         function launchNade(key, x, y, z, dx, dy, dz, owner, lvOv, gOv) {
             const lv = lvOv || nadeLv(owner, key);
@@ -4114,7 +4118,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             }
             for (let i = recons.length - 1; i >= 0; i--) { const r = recons[i]; r.t += dt; const ph = (r.t % 1.6) / 1.6; r.ring.scale.setScalar(1 + ph * 26); r.ring.material.opacity = 0.6 * (1 - ph); r.dart.rotation.y += dt * 3; // Recon: Pulse
                 if (r.pulses < 2 && r.t >= r.pulses * 1.6) { r.pulses++; reconPulse(r); } if (r.t > 3.2) { scene.remove(r.ring); scene.remove(r.dart); recons.splice(i, 1); } }
-            for (let i = reveals.length - 1; i >= 0; i--) { const v = reveals[i]; v.t -= dt; v.sp.position.set(v.e.x, (v.e.y || 0) + 2.35, v.e.z); if (v.t <= 0 || !v.e.alive) { scene.remove(v.sp); reveals.splice(i, 1); } }
+            for (let i = reveals.length - 1; i >= 0; i--) { const v = reveals[i]; v.t -= dt; v.sp.position.set(v.e.x, (v.e.y || 0) + 2.35, v.e.z); if (v.t <= 0 || !v.e.alive) { scene.remove(v.sp); reveals.splice(i, 1); xray(v.e, false); } else xray(v.e, true); }
             for (let i = slows.length - 1; i >= 0; i--) { const sl = slows[i]; sl.t -= dt; if (sl.t < 1) { sl.mat.opacity = 0.32 * Math.max(0, sl.t); sl.cm.opacity = 0.85 * Math.max(0, sl.t); } if (sl.t <= 0) { scene.remove(sl.grp); slows.splice(i, 1); } }
             for (let i = fires.length - 1; i >= 0; i--) {
                 const f = fires[i]; f.age += dt; f.tick -= dt;
@@ -4539,7 +4543,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         // =====================================================================
         const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF', walk: 'ShiftLeft', inspect: 'KeyF' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)', walk: 'Langsam gehen (leise)', inspect: 'Waffe inspizieren' };
         const BIND = Object.assign({}, BIND_DEF, JSON.parse(localStorage.getItem('cs_binds') || '{}'));
-        const OPT = Object.assign({ outCol: '#ff3b4a', outOn: true, tsens: 1.8, sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
+        const OPT = Object.assign({ mzoom: 1.1, outCol: '#ff3b4a', outOn: true, tsens: 1.8, sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
         const OUT_MAT = new THREE.MeshBasicMaterial({ color: OPT.outCol, side: THREE.BackSide }); // Gegner-Umrandung: leicht größere Rückseiten-Hülle je Körperteil (nur sichtbar, wo der Gegner sichtbar ist)
         function enemyOutline(g) { const L = g.userData.outl = [], list = []; g.traverse(o => { if (o.isMesh && o.geometry && o.geometry.type === 'BoxGeometry' && !o.userData.isOut) list.push(o); });
             for (const o of list) { const P = o.geometry.parameters; if ([P.width, P.height, P.depth].filter(v => v >= 0.12).length < 2) continue; const m = new THREE.Mesh(new THREE.BoxGeometry(P.width + 0.055, P.height + 0.055, P.depth + 0.055), OUT_MAT); m.userData.isOut = 1; m.visible = false; o.add(m); L.push(m); } }
@@ -4931,7 +4935,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             blindT = Math.max(0, blindT - dt); if (blindT > 0) whiteFlash = Math.max(whiteFlash, Math.min(1, blindT / 1.2));
             whiteFlash = Math.max(0, whiteFlash - dt * 0.8); dmgFlash = Math.max(0, dmgFlash - dt * 2); hitT = Math.max(0, hitT - dt); shake = Math.max(0, shake - dt * 1.5);
             fovKick = Math.max(0, fovKick - dt * 35);
-            const wantFov = (player.scoped ? 20 : OPT.fov) + fovKick;
+            const wantFov = (player.scoped ? 20 : OPT.fov / (IS_TOUCH ? clamp(OPT.mzoom || 1, 1, 1.25) : 1)) + fovKick; // Handy: leicht reingezoomt
             if (Math.abs(camera.fov - wantFov) > 0.01) { camera.fov = wantFov; camera.updateProjectionMatrix(); } bombLed.visible = G.bomb.state === 'planted' || G.bomb.state === 'dropped';
         }
 
@@ -5292,7 +5296,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <label style="display:block;margin:6px 0">🖱️ Empfindlichkeit: <b id="sensval">${OPT.sens.toFixed(2)}</b><br>
  <input id="sensSlider" type="range" min="0.1" max="3" step="0.05" value="${OPT.sens}" style="width:100%"></label>
  ${IS_TOUCH ? `<label style="display:block;margin:6px 0">📱 Handy-Empfindlichkeit (Drehen): <b id="tsensval">${OPT.tsens.toFixed(2)}</b><br>
- <input id="tsensSlider" type="range" min="0.3" max="5" step="0.1" value="${OPT.tsens}" style="width:100%"></label>` : ''}
+ <input id="tsensSlider" type="range" min="0.3" max="5" step="0.1" value="${OPT.tsens}" style="width:100%"></label>
+ <label style="display:block;margin:6px 0">🔍 Handy-Zoom: <b id="mzoomval">${Math.round(OPT.mzoom * 100)} %</b><br>
+ <input id="mzoomSlider" type="range" min="1" max="1.25" step="0.01" value="${OPT.mzoom}" style="width:100%"></label>` : ''}
  <label style="display:block;margin:6px 0">🎯 Gegner-Umrandung: <input id="outOn" type="checkbox" ${OPT.outOn !== false ? 'checked' : ''} style="vertical-align:middle"> <input id="outCol" type="color" value="${OPT.outCol}" style="vertical-align:middle;width:40px;height:22px;padding:0;border:0;background:none"></label>
  <label style="display:block;margin:6px 0">🔊 Lautstärke: <b id="volval">${Math.round(OPT.vol * 100)}%</b><br>
  <input id="volSlider" type="range" min="0" max="1" step="0.05" value="${OPT.vol}" style="width:100%"></label>
@@ -5332,6 +5338,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  const beg = $('btnEditGo'); if (beg) beg.onclick = () => btnEditStart();
             document.querySelectorAll('[data-opt]').forEach(el => el.oninput = el.onchange = () => { const k = el.dataset.opt; OPT[k] = el.type === 'checkbox' ? (el.checked ? 1 : 0) : el.type === 'color' ? el.value : +el.value; const v = $(k + 'V'); if (v) v.textContent = el.value; saveOpts(); applyLook(); if (k === 'hitSnd' && el.type !== 'range') { initAudio(); sfx('hit'); } });            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
             $('outCol').oninput = e => { OPT.outCol = e.target.value; OUT_MAT.color.set(OPT.outCol); saveOpts(); }; $('outOn').onchange = e => { OPT.outOn = e.target.checked; saveOpts(); };
+            if ($('mzoomSlider')) $('mzoomSlider').oninput = e => { OPT.mzoom = +e.target.value; $('mzoomval').textContent = Math.round(OPT.mzoom * 100) + ' %'; saveOpts(); };
             if ($('tsensSlider')) $('tsensSlider').oninput = e => { OPT.tsens = +e.target.value; $('tsensval').textContent = OPT.tsens.toFixed(2); saveOpts(); };
             $('sensSlider').oninput = e => { OPT.sens = +e.target.value; $('sensval').textContent = OPT.sens.toFixed(2); saveOpts(); };
             $('volSlider').oninput = e => { OPT.vol = +e.target.value; $('volval').textContent = Math.round(OPT.vol * 100) + '%'; saveOpts(); initAudio(); sfx('hit'); };
