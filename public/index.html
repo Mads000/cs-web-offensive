@@ -936,6 +936,9 @@
         #chatlog div { background: rgba(8, 11, 15, .6); padding: 3px 8px; margin-top: 2px; border-radius: 3px; word-wrap: break-word; text-shadow: 0 1px 2px #000 }
         #chatin { display: none; width: 100%; box-sizing: border-box; margin-top: 4px; padding: 7px 9px; font: 13px Arial; background: rgba(14, 20, 28, .92); color: #fff; border: 1px solid rgba(var(--hl-rgb), .6); border-radius: 3px; pointer-events: auto }
         #chatbox.open #chatin { display: block }
+        #chatrow { display: flex; gap: 4px; align-items: stretch } #chatrow #chatin { flex: 1 }
+        #chatmode { display: none; margin-top: 4px; padding: 0 9px; align-items: center; font: 700 11px Arial; letter-spacing: 1px; background: rgba(14, 20, 28, .92); color: #ffb076; border: 1px solid #ffb076; border-radius: 3px; cursor: pointer; pointer-events: auto } #chatmode.team { color: #9fe08a; border-color: #9fe08a }
+        #chatbox.open #chatmode { display: flex }
         #chatbox.open #chatlog { pointer-events: auto; max-height: 200px; overflow-y: auto }
         #chatbox.touch.ingame.open { bottom: auto; top: 60px } /* Handy: über der Bildschirmtastatur */
         #mfr { position: absolute; right: 0; top: 56px; bottom: 0; width: 58px; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 12px; background: rgba(8, 10, 14, .55); border-left: 1px solid rgba(255, 255, 255, .08); overflow-y: auto } /* Freunde-Leiste rechts wie in CS/Valorant */
@@ -3665,7 +3668,11 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Server nicht erreichbar":"Server unreachable",
 "📨 Einladung von *":"📨 Invite from *",
 "Raum „*\" · 👥 Freunde öffnen zum Beitreten":"Room “*” · 👥 open Friends to join",
-"Chat öffnen":"Open chat"}; // Deutsch → Englisch · # = beliebige Zahl
+"Chat öffnen":"Open chat",
+"ALLE":"ALL",
+"Alle / Team umschalten":"Toggle all / team",
+"An Dein Team … (Enter = senden)":"To your team … (Enter = send)",
+"An alle (auch Gegner) … (Enter = senden)":"To everyone (incl. enemies) … (Enter = send)"}; // Deutsch → Englisch · # = beliebige Zahl
             const NUM = /\d+(?:[.,]\d+)?/g, TPL = new Map(), WILD = [], OT = new WeakMap(), OA = new WeakMap(); // * = beliebiger Text (wird selbst übersetzt)
             for (const k in D) if (k.includes('*')) WILD.push([new RegExp('^' + k.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '(.+?)').replace(/#/g, '(\\d+(?:[.,]\\d+)?)') + '$'), D[k], k.match(/[*#]/g)]); else if (k.includes('#')) TPL.set(k, D[k]);
             const core = t => { if (D[t] !== undefined) return D[t]; if (/\d/.test(t)) { const v = TPL.get(t.replace(NUM, '#')); if (v !== undefined) { const n = t.match(NUM); let i = 0; return v.replace(/#/g, () => n[i++] || ''); } }
@@ -6922,7 +6929,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  Aus der Lobby <b>einladen</b> oder direkt <b>beitreten</b> – Einladungen erscheinen als Hinweis und mit rotem Zähler.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💬 CHAT</p>
- Online-Chat in der Lobby (unten rechts) und im Spiel (unten links): <b>Enter</b> öffnet ihn, auf dem Handy der <b>💬-Knopf</b> unten links.<br><br>
+ Online-Chat in der Lobby (unten rechts) und im Spiel (unten links): <b>Enter</b> = <b>Team-Chat</b>, <b>Shift+Enter</b> = an alle (auch Gegner). Auf dem Handy der <b>💬-Knopf</b> unten links, im Chat lässt sich TEAM / ALLE umschalten.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏃 BEWEGUNG</p>
  <b>Counter-Strafing</b> wie im Original: Gegentaste nur kurz antippen – im Moment des Stillstands sitzt der Schuss. Zu lang gehalten, läufst Du schon in die Gegenrichtung.<br>
@@ -8520,32 +8527,37 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // ================= MULTIPLAYER =================
         const NET = { on: false, host: false, ws: null, pid: Math.random().toString(36).slice(2, 8), players: new Map(), sendT: 0, snapT: 0 };
         // ================= 💬 CHAT (online, ganzer Raum) =================
-        const CHAT = { log: [], open: false }, escH = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+        const CHAT = { log: [], open: false, team: false }, chatTeamOk = () => started && !NET.inLobby && !DM.on && !DH.on && !GL.on, escH =s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
         function chatEl() {
             let el = $('chatbox'); if (el) return el;
-            el = document.createElement('div'); el.id = 'chatbox'; el.innerHTML = '<div id="chatlog"></div><input id="chatin" maxlength="160" autocomplete="off" placeholder="Nachricht … (Enter = senden)">'; document.body.appendChild(el);
-            const inp = $('chatin');
+            el = document.createElement('div'); el.id = 'chatbox'; el.innerHTML = '<div id="chatlog"></div><div id="chatrow"><span id="chatmode" title="Alle / Team umschalten"></span><input id="chatin" maxlength="160" autocomplete="off" placeholder="Nachricht … (Enter = senden)"></div>'; document.body.appendChild(el);
+            const inp = $('chatin'); $('chatmode').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); if (chatTeamOk()) { CHAT.team = !CHAT.team; chatMode(); } inp.focus(); });
             inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { chatSend(inp.value); inp.value = ''; if (!NET.inLobby) chatClose(); } else if (e.key === 'Escape') chatClose(); }); // Tasten nicht ans Spiel weitergeben
             if (IS_TOUCH) { // Handy: eigener Chat-Knopf im Spiel (keine Enter-Taste)
                 el.classList.add('touch'); const b = document.createElement('div'); b.id = 'chatBtn'; b.title = 'Chat öffnen'; b.textContent = '💬'; document.body.appendChild(b);
-                b.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); CHAT.open ? chatClose() : chatOpen(); }, { passive: false });
+                b.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); CHAT.open ? chatClose() : chatOpen(true); }, { passive: false });
             }
             return el;
         }
         function chatShow() {
             const el = chatEl(), on = NET.on && !document.body.classList.contains('edit'), b = $('chatBtn'); el.style.display = on ? 'block' : 'none';
             if (b) b.style.display = on && started && !NET.inLobby && !gameEnded ? 'flex' : 'none'; if (!on) return;
-            el.classList.toggle('open', CHAT.open || NET.inLobby); el.classList.toggle('ingame', started && !NET.inLobby);
+            el.classList.toggle('open', CHAT.open || NET.inLobby); el.classList.toggle('ingame', started && !NET.inLobby); chatMode();
         }
         function chatRender() {
             const el = $('chatlog'); if (!el) return; const t = performance.now(), all = CHAT.open || NET.inLobby;
-            el.innerHTML = CHAT.log.filter(m => all || t - m.at < 10000).slice(-8).map(m => `<div><b style="color:${m.me ? 'var(--hl)' : '#8ab4ff'}">${escH(m.n)}:</b> ${escH(m.t)}</div>`).join('');
+            el.innerHTML = CHAT.log.filter(m => all || t - m.at < 10000).slice(-8).map(m => `<div>${m.team ? '<span style="color:#9fe08a">[TEAM]</span> ' : ''}<b style="color:${m.me ? 'var(--hl)' : '#8ab4ff'}">${escH(m.n)}:</b> ${escH(m.t)}</div>`).join('');
         }
-        function chatAdd(n, t, me) { CHAT.log.push({ n: String(n || '?').slice(0, 16), t: String(t).slice(0, 160), me, at: performance.now() }); if (CHAT.log.length > 50) CHAT.log.shift(); chatShow(); chatRender(); setTimeout(chatRender, 10100); if (!me) sfx('step'); }
-        function chatSend(t) { t = String(t || '').trim().slice(0, 160); if (!t || !NET.on) return; netSend({ type: 'chat', n: player.name, t }); chatAdd(player.name, t, true); }
-        function chatOpen() { CHAT.open = true; for (const k in keys) keys[k] = false; mouseDown = false; chatShow(); chatRender(); $('chatin').focus(); }
+        function chatMode() { // Anzeige Team / Alle vor dem Eingabefeld
+            if (!chatTeamOk()) CHAT.team = false; const m = $('chatmode'), inp = $('chatin'); if (!m) return;
+            m.textContent = CHAT.team ? 'TEAM' : 'ALLE'; m.className = CHAT.team ? 'team' : ''; m.style.display = chatTeamOk() ? '' : 'none';
+            inp.placeholder = CHAT.team ? 'An Dein Team … (Enter = senden)' : chatTeamOk() ? 'An alle (auch Gegner) … (Enter = senden)' : 'Nachricht … (Enter = senden)';
+        }
+        function chatAdd(n, t, me, team) { CHAT.log.push({ n: String(n || '?').slice(0, 16), t: String(t).slice(0, 160), me, team, at: performance.now() }); if (CHAT.log.length > 50) CHAT.log.shift(); chatShow(); chatRender(); setTimeout(chatRender, 10100); if (!me) sfx('step'); }
+        function chatSend(t) { t = String(t || '').trim().slice(0, 160); if (!t || !NET.on) return; const tm = CHAT.team && chatTeamOk() ? player.team : undefined; netSend({ type: 'chat', n: player.name, t, tm }); chatAdd(player.name, t, true, !!tm); }
+        function chatOpen(team) { CHAT.open = true; CHAT.team = !!team; chatMode(); for (const k in keys) keys[k] = false; mouseDown = false; chatShow(); chatRender(); $('chatin').focus(); } // Enter = Team, Shift+Enter = Alle
         function chatClose() { CHAT.open = false; for (const k in keys) keys[k] = false; $('chatin').blur(); chatShow(); chatRender(); }
-        addEventListener('keydown', e => { if (e.code === 'Enter' && NET.on && started && !NET.inLobby && !paused && !CHAT.open && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) { e.preventDefault(); chatOpen(); } });
+        addEventListener('keydown', e => { if (e.code === 'Enter' && NET.on && started && !NET.inLobby && !paused && !CHAT.open && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) { e.preventDefault(); chatOpen(!e.shiftKey); } });
         setInterval(chatShow, 500);
         // ================= 👥 FREUNDE (Account nötig) =================
         const FR = { list: [], rq: [], inv: [], open: false, msg: '' };
@@ -8610,7 +8622,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'dhstart': if (!NET.host) { if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; } if (m.cfg) Object.assign(CFG, m.cfg); NET.inLobby = false; if (!DH.on || DH.ended) dhStart(m.w); } break;
                 case 'dhev': if (!NET.host) { const el = $('dhBan'); if (el) { el.textContent = m.txt; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); } sfx('start'); } break;
                 case 'dhbh': if (!NET.host) dhBossHit(m.by, m.n); break;
-                case 'chat': if (typeof m.t === 'string') chatAdd(m.n, m.t); break;
+                case 'chat': if (typeof m.t === 'string' && (!m.tm || (m.tm === player.team && chatTeamOk()))) chatAdd(m.n, m.t, false, !!m.tm); break; // Team-Nachrichten nur fürs eigene Team
                 case 'dhs': if (!NET.host && DH.on && !DH.ended) dhSnap(m); break;
                 case 'dhhit': if (NET.host && DH.on && !DH.ended) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhKill(d, m.pid, !!m.hs); } break;
                 case 'dhdie': if (!NET.host && DH.on) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhRemove(d, true); else burst(m.x, m.y + 0.5, m.z, 0xffffff, 10, 3); if (m.t === 'b') burst(m.x, m.y + 0.5, m.z, 0xff8a30, 26, 6); dhCredit(m.by, m.t, m.pts, m.m, m.n); } break;
