@@ -6539,7 +6539,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <button id="setReset" style="border-color:#c66;color:#c66">Tasten zurücksetzen</button>
 </div>
  </div>
- <div><button id="setBack">Zurück</button></div>`);
+ <div><button id="setBug">🐞 Bug melden</button><button id="setBack">Zurück</button></div>`);
             const setTab = k => { SETTAB = k; document.querySelectorAll('.setsec').forEach(d => d.style.display = d.dataset.sec === k ? '' : 'none'); document.querySelectorAll('[data-stab]').forEach(b => b.classList.toggle('on', b.dataset.stab === k)); };
             document.querySelectorAll('[data-stab]').forEach(b => b.onclick = () => setTab(b.dataset.stab)); setTab(rebindKey ? 'keys' : SETTAB);
  const beg = $('btnEditGo'); if (beg) beg.onclick = () => btnEditStart();
@@ -6553,7 +6553,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); };
             const chPrev = () => { const g = OPT.chGap, L = OPT.chLen, T = OPT.chThick, c = OPT.chCol, p = (x, y, w, h) => `<i style="position:absolute;left:${45 + x}px;top:${45 + y}px;width:${w}px;height:${h}px;background:${c};box-shadow:0 0 2px #000"></i>`; $('chPrev').innerHTML = p(-T / 2, -(g + L), T, L) + p(-T / 2, g, T, L) + p(-(g + L), -T / 2, L, T) + p(g, -T / 2, L, T) + (OPT.chDot ? p(-T / 2, -T / 2, T, T) : ''); }; chPrev();
             document.querySelectorAll('[data-ch]').forEach(el => el.oninput = () => { OPT[el.dataset.ch] = +el.value; $(el.dataset.ch + 'V').textContent = el.value; saveOpts(); chPrev(); });
-            $('chCol').oninput = e => { OPT.chCol = e.target.value; saveOpts(); chPrev(); }; $('chDot').onchange = e => { OPT.chDot = e.target.checked; saveOpts(); chPrev(); }; $('chDyn').onchange = e => { OPT.chDyn = e.target.checked; saveOpts(); }; if ($('appFps')) $('appFps').onchange = e => { if (confirm('Die App startet dafür neu. Fortfahren?')) window.cswoApp.setFpsUnlock(e.target.checked); else e.target.checked = !e.target.checked; }; $('setBack').onclick = () => { rebindKey = null; if (!started || gameEnded) { showMenu(); return; } if (IS_TOUCH) { paused = false; $('overlay').style.display = 'none'; } else renderer.domElement.requestPointerLock(); };
+            $('chCol').oninput = e => { OPT.chCol = e.target.value; saveOpts(); chPrev(); }; $('chDot').onchange = e => { OPT.chDot = e.target.checked; saveOpts(); chPrev(); }; $('chDyn').onchange = e => { OPT.chDyn = e.target.checked; saveOpts(); }; if ($('appFps')) $('appFps').onchange = e => { if (confirm('Die App startet dafür neu. Fortfahren?')) window.cswoApp.setFpsUnlock(e.target.checked); else e.target.checked = !e.target.checked; }; $('setBug').onclick = () => { rebindKey = null; showBug(showSettings); }; $('setBack').onclick = () => { rebindKey = null; if (!started || gameEnded) { showMenu(); return; } if (IS_TOUCH) { paused = false; $('overlay').style.display = 'none'; } else renderer.domElement.requestPointerLock(); };
             $('setReset').onclick = () => { Object.assign(BIND, BIND_DEF); saveBinds(); rebindKey = null; showSettings(); };
         }
         addEventListener('keydown', e => {
@@ -7492,7 +7492,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 2.8 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 2.9 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -8578,6 +8578,23 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             sessionStorage.setItem('mpjoin', JSON.stringify({ srv: srv || DEF_WS, room, team: 'CT', name: (localStorage.getItem('pname') || (ACC && ACC.u) || 'Spieler').slice(0, 14) })); if (NET.ws) { NET.on = false; NET.ws.close(); } location.reload();
         }
         function frAct(p, n) { accApi(p, { tok: ACC.tok, n, room: NET.room, srv: NET.srv, mode: NET.mode }).then(r => { FR.msg = r.ok ? (r.msg || (p === 'frinv' ? '✓ Einladung an ' + n + ' gesendet' : '✓ Erledigt')) : '⚠ ' + (r.err || 'Fehler'); frPoll(); frRender(); }).catch(() => { FR.msg = '⚠ Server nicht erreichbar'; frRender(); }); }
+        // ================= 🔗 LOBBY TEILEN & 🐞 BUG MELDEN (landet über den Server in Discord) =================
+        function lobLink() { // Link öffnet das Spiel direkt in dieser Lobby
+            const url = NET.srv.replace(/^ws(s?):/, 'http$1:').replace(/\/$/, '') + '/?join=' + encodeURIComponent(NET.room) + '&mode=' + (NET.mode || 'comp');
+            (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast('🔗 Link kopiert', 'Schick ihn Freunden – öffnet direkt diese Lobby')).catch(() => prompt('Link kopieren:', url));
+        }
+        function lobDiscord() { accApi('lfg', { room: NET.room, name: player.name }).then(r => toast(r.ok ? '📣 In Discord gepostet' : '⚠ ' + (r.err || 'Fehler'), r.ok ? '#🤝-mitspielersuche · mit Beitreten-Knopf' : '')).catch(() => toast('⚠ Server nicht erreichbar', '')); }
+        function showBug(back) {
+            const md = !started ? 'Menü' : AL.on ? 'Aim-Lab' : EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : 'Wettkampf';
+            const info = `CLUTCH 2.9 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
+            showOverlay(`<h1 style="font-size:34px">🐞 BUG MELDEN<small>GEHT DIREKT AN DEN ENTWICKLER</small></h1>
+ <textarea id="bugTxt" maxlength="1500" rows="6" placeholder="Was ist passiert? Was hast Du davor gemacht? Passiert es immer wieder?" style="width:min(520px,88vw);font:14px Arial;padding:10px;background:#141e28;color:#fff;border:1px solid rgba(var(--hl-rgb),.5);border-radius:4px;resize:vertical"></textarea>
+ <p style="font-size:11px;color:#8fa3b8;max-width:520px">Wird automatisch mitgeschickt: ${escH(info)}</p><p id="bugMsg" style="font-size:13px;min-height:16px"></p>
+ <div><button id="bugSend">📨 Absenden</button><button id="bugBack">Zurück</button></div>`);
+            const ta = $('bugTxt'); ta.addEventListener('keydown', e => e.stopPropagation()); ta.focus(); $('bugBack').onclick = back;
+            $('bugSend').onclick = () => { const t = ta.value.trim(), m = $('bugMsg'); if (t.length < 5) { m.style.color = '#c66'; m.textContent = 'Bitte beschreibe den Fehler etwas genauer.'; return; } $('bugSend').disabled = true;
+                accApi('bug', { text: t, name: player.name || localStorage.getItem('pname') || 'Gast', tok: ACC ? ACC.tok : undefined, info }).then(r => { if (r.ok) { m.style.color = '#9fe08a'; m.textContent = '✓ Danke! Deine Meldung ist angekommen.'; ta.value = ''; } else { m.style.color = '#c66'; m.textContent = '⚠ ' + (r.err || 'Fehler'); } $('bugSend').disabled = false; }).catch(() => { m.style.color = '#c66'; m.textContent = '⚠ Server nicht erreichbar'; $('bugSend').disabled = false; }); };
+        }
         function frToggle() { FR.open = !FR.open; if (FR.open) frPoll(); frRender(); }
         function frRender() {
             let el = $('frpanel'); if (!FR.open) { if (el) el.remove(); return; }
@@ -8756,6 +8773,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div id="csfriends">${frs}</div>
  <div class="cspanel" style="width:360px">
  <h3>RAUM: ${NET.room.toUpperCase()} · ${NET.players.size + 1} SPIELER</h3>
+ <div style="display:flex;gap:6px;margin:-2px 0 8px"><button id="lobLink" style="flex:1;font-size:11px;padding:5px 8px;margin:0">🔗 Einladungslink</button><button id="lobDc" style="flex:1;font-size:11px;padding:5px 8px;margin:0">📣 In Discord posten</button></div>
  <div class="lobmode">${modeName(md)} · ${MODES[md][2]}${NET.host ? '' : ' <span style="color:#8fa3b8">(vom Host festgelegt)</span>'}</div>
  <div class="lobrules"><div class="lobrh"><b>🎮 REGELN</b><button id="lobRules">${NET.host ? '✏️ Bearbeiten' : '👁 Ansehen'}</button></div><div class="rchips">${ruleChips(NET.host ? CFG : NET.hostCfg)}</div></div>
  <div style="display:flex;flex-direction:column;gap:6px;max-height:290px;overflow-y:auto">${rows}</div>
@@ -8778,7 +8796,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 on('btnDMMp', 'onclick', () => { NET.inLobby = false; DM.on = true; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 1 }); startGame(player.team); });
                 on('glTeamsMp', 'onchange', e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); });
             }
-            document.querySelectorAll('[data-glk]').forEach(el => el.onclick = () => { const k = +el.dataset.glk; if (glAsg()[NET.pid] === k || el.classList.contains('full')) return; glAsg()[NET.pid] = k; glAsgSend({ a: { [NET.pid]: k } }); }); $('lobInv').onclick = showInventory; $('lobFr').onclick = frToggle;
+            document.querySelectorAll('[data-glk]').forEach(el => el.onclick = () => { const k = +el.dataset.glk; if (glAsg()[NET.pid] === k || el.classList.contains('full')) return; glAsg()[NET.pid] = k; glAsgSend({ a: { [NET.pid]: k } }); }); $('lobInv').onclick = showInventory; $('lobFr').onclick = frToggle; $('lobLink').onclick = lobLink; $('lobDc').onclick = lobDiscord;
             $('lobCases').onclick = showCases;
             $('lobLeave').onclick = leaveGame; $('lobLeaveTop').onclick = leaveGame;
         }
@@ -8886,6 +8904,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => { });
         addEventListener('beforeinstallprompt', e => { e.preventDefault(); instEvt = e; const b = $('navInst'); if (b) b.style.display = ''; });
         addEventListener('appinstalled', () => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; toast('📲 Installiert!', 'CLUTCH ist jetzt als App auf Deinem Gerät.'); });
+        { const q = new URLSearchParams(location.search), jq = q.get('join'); if (jq) { history.replaceState(null, '', location.pathname); frJoin(jq.slice(0, 30), DEF_WS, q.get('mode')); } } // Beitreten-Link (?join=Raum&mode=…) aus Discord oder vom Freund
         const mj = sessionStorage.getItem('mpjoin');
         if (mj) { sessionStorage.removeItem('mpjoin'); try { const j = JSON.parse(mj); $('pname').value = j.name; $('srv').value = j.srv; $('room').value = j.room; startMP(j.team); } catch (e) { } }
         loop();

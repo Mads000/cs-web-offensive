@@ -1,0 +1,12 @@
+{
+  "name": "clutch-discord-setup",
+  "private": true,
+  "description": "Richtet den CLUTCH-Discord-Server ein (Kategorien, Kanäle, Rollen, Texte) – Aufbau wie „Die OG's“",
+  "scripts": {
+    "setup": "node setup.js",
+    "bot": "node setup.js --bleiben"
+  },
+  "dependencies": {
+    "discord.js": "14.16.3"
+  }
+}

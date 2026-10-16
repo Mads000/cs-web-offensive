@@ -36,11 +36,31 @@ async function writeUsers() {
 function persist() { clearTimeout(saveT); saveT = setTimeout(writeUsers, GIST_ID ? 3000 : 500); } // Gist: Änderungen 3 s sammeln (schont das GitHub-Limit)
 loadUsers();
 // Render beendet den Server mit SIGTERM (Deploy/Ruhemodus) → offene Änderungen vorher noch speichern
-process.on('SIGTERM', async () => { clearTimeout(saveT); while (writing) await new Promise(r => setTimeout(r, 100)); await writeUsers(); process.exit(0); });
+process.on('SIGTERM', async () => { clearTimeout(saveT); await dcStatus(true).catch(() => { }); while (writing) await new Promise(r => setTimeout(r, 100)); await writeUsers(); process.exit(0); });
 const hashPw = (pw, salt) => crypto.scryptSync(pw, salt, 32).toString('hex');
 const cleanData = d => { const o = {}; if (d && typeof d === 'object') for (const k of SYNC_KEYS) if (typeof d[k] === 'string') o[k] = d[k]; return o; };
 const byTok = tok => typeof tok === 'string' && tok.length === 48 ? Object.values(USERS).find(u => u.toks.includes(tok)) : null;
 const newTok = u => { const t = crypto.randomBytes(24).toString('hex'); u.toks = [t, ...u.toks].slice(0, 10); return t; };
+// ── Discord (optional): Webhook-URLs als Umgebungsvariablen (bei Render), erstellt von discord/setup.js ──
+const DC = { news: process.env.DISCORD_NEWS_WEBHOOK, status: process.env.DISCORD_STATUS_WEBHOOK, lfg: process.env.DISCORD_LFG_WEBHOOK, bug: process.env.DISCORD_BUG_WEBHOOK };
+const SITE = process.env.SITE_URL || 'https://cs-web-offensive.onrender.com', LFG = new Map();
+const DC_MOD = { comp: '🏆 Wettkampf', dm: '💀 Deathmatch', gl: '⚔️ Gauntlet', v1: '🎯 1v1', duck: '🦆 Entenjagd' };
+const dcEsc = s => String(s || '').replace(/[\\*_`~|>#\[\]()-]/g, '\\$&'); // Discord-Markdown entschärfen
+const dcPost = (url, body, q = '') => !url ? Promise.resolve(null) : fetch(url + (q ? '?' + q : ''), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ allowed_mentions: { parse: [] }, ...body }) }).then(r => r.ok ? (q.includes('wait') ? r.json() : 1) : null).catch(() => null);
+async function dcNews() { // neue Patchnotes nach jedem Deploy posten (Stand in LB.newsV)
+ if (!DC.news) return; const { patchnotes, stuecke } = require('./patchnotes'); let list; try { list = patchnotes(); } catch { return; } if (!list.length) return;
+ const neu = list[list.length - 1].v; if (LB.newsV === undefined) { LB.newsV = neu; persist(); return; } // erster Start: Altes hat das Setup-Skript schon gepostet
+ for (const p of list) if (+p.v > +LB.newsV) for (const s of stuecke(p.titel + '\n' + p.body)) await dcPost(DC.news, { content: s }, 'wait=true');
+ if (+neu > +LB.newsV) { LB.newsV = neu; persist(); }
+}
+async function dcStatus(off) { // eine Status-Nachricht, die alle 5 Min bearbeitet wird
+ if (!DC.status) return; const s = Math.floor(Date.now() / 1000), list = [...rooms.entries()].filter(([, r]) => r.clients.length), n = list.reduce((a, [, r]) => a + r.clients.length, 0);
+ const content = off ? `# 🔴 Server schläft\nBeim nächsten Aufruf von ${SITE} startet er neu (ca. 1 Minute).\n-# Stand: <t:${s}:R>`
+ : `# 🟢 Server online\n🎮 **${n}** Spieler online in **${list.length}** ${list.length === 1 ? 'Raum' : 'Räumen'}\n` + list.slice(0, 10).map(([name, r]) => `> **${dcEsc(name)}** · ${DC_MOD[r.mode] || DC_MOD.comp} · ${r.clients.length} Spieler · ${r.started ? '🎮 läuft' : '🛋 Lobby'}`).join('\n') + `${list.length ? '\n' : ''}▶ ${SITE}\n-# aktualisiert <t:${s}:R>`;
+ if (LB.statusMsg) { const r = await fetch(DC.status + '/messages/' + LB.statusMsg, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content, allowed_mentions: { parse: [] } }) }).catch(() => null); if (r && r.ok) return; }
+ const m = await dcPost(DC.status, { content }, 'wait=true'); if (m && m.id) { LB.statusMsg = m.id; persist(); }
+}
+{ const w = setInterval(() => { if (!loaded) return; clearInterval(w); dcNews(); dcStatus(); setInterval(dcStatus, 5 * 60 * 1000); }, 1000); }
 const SEEN = new Map(), INVS = new Map(); // Freunde: zuletzt online (Name → Zeit) & offene Einladungen (Name → Liste) – nur im Speicher
 const tries = new Map(); // einfache Bremse gegen Passwort-Raten: max. 10 Versuche pro Minute und IP
 function limited(ip) { const now = Date.now(), t = (tries.get(ip) || []).filter(x => now - x < 60000); t.push(now); tries.set(ip, t); return t.length > 10; }
@@ -107,6 +127,20 @@ function api(p, b, ip) {
  const col = {}; for (const f of ['sky', 'fog', 'floor', 'wall']) if (m.col && HEX.test(m.col[f])) col[f] = m.col[f];
  PUB[k] = { n: String(m.n || 'Karte').replace(/[<>"'&`]/g, '').slice(0, 20), th: /^de_[a-z]+$/.test(m.th) ? m.th : 'de_dusty', col, tod: [0, 1, 2].includes(+m.tod) ? +m.tod : 0, em: Array.from(String(m.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(m.emc) ? m.emc : '', by: String(b.by || '').replace(/[<>"'&`]/g, '').slice(0, 16), g: m.g };
  persist(); return { ok: 1 };
+ }
+ // ── Discord: Lobby in #mitspielersuche posten (mit Beitreten-Knopf) & Bug-Meldungen aus dem Spiel ──
+ if (p === '/api/lfg') {
+ if (!DC.lfg) return { err: 'Discord ist nicht eingerichtet.' }; const room = String(b.room || '').trim().slice(0, 30), r = rooms.get(room);
+ if (!r || !r.clients.length) return { err: 'Raum nicht gefunden.' }; if (Date.now() - (LFG.get(room.toLowerCase()) || 0) < 120000) return { err: 'Dieser Raum wurde gerade erst gepostet – bitte 2 Minuten warten.' };
+ LFG.set(room.toLowerCase(), Date.now()); const url = SITE + '/?join=' + encodeURIComponent(room) + '&mode=' + (DC_MOD[r.mode] ? r.mode : 'comp');
+ dcPost(DC.lfg, { content: `🤝 **${dcEsc(String(b.name || 'Gast').slice(0, 16))}** sucht Mitspieler!\n🎮 Raum **${dcEsc(room)}** · ${DC_MOD[r.mode] || DC_MOD.comp} · ${r.clients.length} in der Lobby`, components: [{ type: 1, components: [{ type: 2, style: 5, label: '▶ Beitreten', url }] }] }, 'with_components=true');
+ return { ok: 1 };
+ }
+ if (p === '/api/bug') {
+ if (!DC.bug) return { err: 'Discord ist nicht eingerichtet.' }; if (limited(ip)) return { err: 'Zu viele Meldungen – bitte kurz warten.' };
+ const t = String(b.text || '').trim().slice(0, 1500); if (t.length < 5) return { err: 'Bitte beschreibe den Fehler etwas genauer.' }; const by = byTok(b.tok);
+ dcPost(DC.bug, { content: `🐞 **Bug-Meldung** von **${dcEsc(by ? by.name : String(b.name || 'Gast').slice(0, 16))}**${by ? ' ☁️' : ''}\n> ${dcEsc(t).replace(/\n/g, '\n> ')}\n-# ${dcEsc(String(b.info || '').slice(0, 200))}` });
+ return { ok: 1 };
  }
  const u = byTok(b.tok); if (!u) return { err: 'Bitte neu einloggen.', relog: 1 };
  if (p === '/api/pull') return { ok: 1, ver: u.ver, data: u.data };
