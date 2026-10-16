@@ -3428,7 +3428,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Weiter ›":"Next ›",
 "Überspringen":"Skip",
 "‹ Zurück":"‹ Back",
-"NEU · PATCH 2.9 „TRAINING\"":"NEW · PATCH 2.9 „TRAINING\"",
+"NEU · PATCH 3.0 „KLANG\"":"NEW · PATCH 3.0 „SOUND\"",
+"PATCH 2.9 „TRAINING\"":"PATCH 2.9 „TRAINING\"",
+"🦶 SCHRITTE":"🦶 FOOTSTEPS",
+"🔊 LAUTSTÄRKE":"🔊 VOLUME",
+"🎯 AIM-LAB-RANGE":"🎯 AIM LAB RANGE",
+"💬 DISCORD":"💬 DISCORD",
 "PATCH 2.8 „GEFÜHL\"":"PATCH 2.8 „FEEL\"",
 "🎯 AIM-LAB":"🎯 AIM LAB",
 "📊 STATISTIK":"📊 STATS",
@@ -4472,9 +4477,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function gun(v, p, a) { // + harter Knack-Transient, Körper-Thump & kurzes Echo (leichter Hall, auch ohne Grafik-Hall)
             noise(0.012, 12000, a[0] * v * v * 1.2, p, 'highpass', 4000); tone(a[5] * 2.2, 0.05, a[7] * v * 0.9, p, 'triangle', a[5] * 0.5);
             noise(0.03, 9000, a[0] * v * v, p, 'highpass', 2500); noise(a[1], a[2], a[3] * v, p, 'lowpass', a[4]); tone(a[5], a[6] * 1.3, a[7] * v * 1.15, p, 'sine', a[8]); noise(a[9] * 1.25, 1100, a[10] * v, p, 'lowpass', 140);
-            const lp = SF.lp; setTimeout(() => { SF.lp = lp || 1800; noise(a[9] * 0.8, 1400, a[10] * v * 0.45, -p * 0.6, 'lowpass', 200); SF.lp = 0; }, 85); }
-        const SF = { lp: 0 }, _sRay = new THREE.Raycaster(), _sO = new THREE.Vector3(), _sD = new THREE.Vector3(); // SF.lp: Tiefpass für den gerade erzeugten Sound (Wand / hinten / Entfernung)
+            const lp = SF.lp; later(() => { SF.lp = lp || 1800; noise(a[9] * 0.8, 1400, a[10] * v * 0.45, -p * 0.6, 'lowpass', 200); SF.lp = 0; }, 85); }
+        const SF = { lp: 0, g: 1 }, _sRay = new THREE.Raycaster(), _sO = new THREE.Vector3(), _sD = new THREE.Vector3(); // SF.lp: Tiefpass für den gerade erzeugten Sound (Wand / hinten / Entfernung)
         const SND_R = { rifle: 70, pistol: 55, smg: 55, scout: 85, awp: 95, pump: 60, knife: 14, shell: 12, step: 26, beep: 30, plant: 25, smokepop: 35, flashbang: 60, fire: 25, grunt: 30 }; // Hörweite je Sound
+        const MIX = { awp: 0.7, scout: 0.8, pump: 0.8, explosion: 0.75, flashbang: 0.85, hurt: 0.55, grunt: 0.7, land: 0.4, hit: 1.3, knife: 1.4, win: 0.28, start: 0.5, lose: 0.45 }; // Lautstärke-Abgleich je Sound (gemessen, 1 = unverändert)
+        const MENU_VOL = 0.6; let STEPF = 1; // Menü insgesamt leiser · STEPF: abwechselnd linker/rechter Fuß
+        function later(fn, ms) { const g = SF.g, lp = SF.lp; setTimeout(() => { const g1 = SF.g, l1 = SF.lp; SF.g = g; SF.lp = lp; try { fn(); } finally { SF.g = g1; SF.lp = l1; } }, ms); } // Nachklang eines Sounds mit dessen Mix & Filter
         function sndOut() { if (!SF.lp) return OUT; const f = AC.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = SF.lp; f.Q.value = 0.5; f.connect(OUT); return f; }
         function wallBetween(x, z) { _sO.set(player.x, 1.5, player.z); _sD.set(x - player.x, 0, z - player.z); const L = _sD.length(); if (L < 0.5) return false; _sD.normalize(); _sRay.set(_sO, _sD); _sRay.far = L; return _sRay.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false).length > 0; }
         function spatial(x, z, r = 60) { // Lautstärke fällt quadratisch bis zur Hörweite ab · hinter Wänden dumpf · von hinten gedämpft · Entfernung schluckt Höhen
@@ -4482,38 +4490,40 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const k = 1 - d / r, pan = d > 0.01 ? clamp((dx * Math.cos(player.yaw) - dz * Math.sin(player.yaw)) / d, -1, 1) : 0; let vol = d < 3 ? 1 : k * k, lp = 0;
             if (d > 1.5 && wallBetween(x, z)) { vol *= 0.5; lp = 900; } else if ((-Math.sin(player.yaw) * dx - Math.cos(player.yaw) * dz) / Math.max(d, 0.01) < -0.3) lp = 4200;
             if (d > 8) { const dl = Math.max(1500, 20000 - d * 260); lp = lp ? Math.min(lp, dl) : dl; } return { vol, pan, lp }; }
-        function noise(dur, f0, vol, pan, type = 'lowpass', f1) { const s = AC.createBufferSource(); s.buffer = noiseBuf; s.loop = true; const f = AC.createBiquadFilter(); f.type = type; f.frequency.setValueAtTime(f0, AC.currentTime); if (f1) f.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; s.connect(f).connect(g).connect(p).connect(sndOut()); s.start(); s.stop(AC.currentTime + dur); }
-        function tone(fr, dur, vol, pan, type = 'sine', f1) { const o = AC.createOscillator(); o.type = type; o.frequency.setValueAtTime(fr, AC.currentTime); if (f1) o.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; o.connect(g).connect(p).connect(sndOut()); o.start(); o.stop(AC.currentTime + dur); }
+        function noise(dur, f0, vol, pan, type = 'lowpass', f1) { const s = AC.createBufferSource(); s.buffer = noiseBuf; s.loop = true; const f = AC.createBiquadFilter(); f.type = type; f.frequency.setValueAtTime(f0, AC.currentTime); if (f1) f.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol * SF.g * (started ? 1 : MENU_VOL)), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; s.connect(f).connect(g).connect(p).connect(sndOut()); s.start(); s.stop(AC.currentTime + dur); }
+        function tone(fr, dur, vol, pan, type = 'sine', f1) { const o = AC.createOscillator(); o.type = type; o.frequency.setValueAtTime(fr, AC.currentTime); if (f1) o.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol * SF.g * (started ? 1 : MENU_VOL)), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; o.connect(g).connect(p).connect(sndOut()); o.start(); o.stop(AC.currentTime + dur); }
         function sfx(n, x, z) {
             if (!AC) return; if (n === 'kill' && !OPT.killSnd) return; if (n === 'hit' || n === 'hs') { if (OPT.hitSnd === 3) return; if (OPT.hitSnd === 1) n = 'hs'; else if (OPT.hitSnd === 2) n = 'ui'; }
-            const { vol, pan, lp } = spatial(x, z, SND_R[n] || 50); if (vol <= 0.01) return; SF.lp = lp; try { switch (n) {
+            const { vol, pan, lp } = spatial(x, z, SND_R[n] || 50); if (vol <= 0.01) return; SF.lp = lp; SF.g = MIX[n] || 1; try { switch (n) {
                 case 'rifle': gun(vol, pan, [0.35, 0.12, 4200, 0.5, 500, 130, 0.12, 0.5, 45, 0.28, 0.22]); break;
                 case 'pistol': gun(vol, pan, [0.4, 0.09, 5000, 0.42, 700, 170, 0.08, 0.35, 60, 0.2, 0.15]); break;
-                case 'scout': gun(vol, pan, [0.38, 0.24, 3300, 0.55, 140, 95, 0.26, 0.6, 22, 0.55, 0.28]); setTimeout(() => { tone(1100, 0.025, 0.07 * vol, pan, 'square'); setTimeout(() => noise(0.05, 3000, 0.07 * vol, pan, 'bandpass'), 110); }, 520); break;
-                case 'awp': gun(vol, pan, [0.5, 0.3, 2600, 0.75, 120, 85, 0.35, 0.75, 28, 0.7, 0.35]); setTimeout(() => { tone(900, 0.03, 0.08 * vol, pan, 'square'); setTimeout(() => noise(0.07, 2500, 0.08 * vol, pan, 'bandpass'), 130); }, 650); break;
-                case 'pump': gun(vol, pan, [0.45, 0.22, 2400, 0.7, 150, 100, 0.2, 0.6, 35, 0.45, 0.3]); setTimeout(() => { tone(700, 0.04, 0.1 * vol, pan, 'square'); setTimeout(() => tone(500, 0.05, 0.1 * vol, pan, 'square'), 90); }, 350); break;
+                case 'scout': gun(vol, pan, [0.38, 0.24, 3300, 0.55, 140, 95, 0.26, 0.6, 22, 0.55, 0.28]); later(() => { tone(1100, 0.025, 0.07 * vol, pan, 'square'); later(() => noise(0.05, 3000, 0.07 * vol, pan, 'bandpass'), 110); }, 520); break;
+                case 'awp': gun(vol, pan, [0.5, 0.3, 2600, 0.75, 120, 85, 0.35, 0.75, 28, 0.7, 0.35]); later(() => { tone(900, 0.03, 0.08 * vol, pan, 'square'); later(() => noise(0.07, 2500, 0.08 * vol, pan, 'bandpass'), 130); }, 650); break;
+                case 'pump': gun(vol, pan, [0.45, 0.22, 2400, 0.7, 150, 100, 0.2, 0.6, 35, 0.45, 0.3]); later(() => { tone(700, 0.04, 0.1 * vol, pan, 'square'); later(() => tone(500, 0.05, 0.1 * vol, pan, 'square'), 90); }, 350); break;
                 case 'smg': gun(vol, pan, [0.3, 0.07, 5200, 0.32, 800, 200, 0.06, 0.25, 80, 0.14, 0.12]); break;
                 case 'knife': noise(0.14, 3000, 0.22 * vol, pan, 'bandpass', 600); break;
                 case 'hit': tone(1500, 0.035, 0.13, 0, 'triangle'); noise(0.03, 4000, 0.07, 0, 'highpass'); break;
                 case 'hs': tone(2200, 0.06, 0.16, 0, 'triangle'); tone(3300, 0.05, 0.08, 0); noise(0.04, 5000, 0.1, 0, 'highpass'); break;
-                case 'shell': tone(3200 + Math.random() * 800, 0.03, 0.04 * vol, pan, 'triangle'); setTimeout(() => tone(2800, 0.02, 0.025 * vol, pan, 'triangle'), 70); break;
+                case 'shell': tone(3200 + Math.random() * 800, 0.03, 0.04 * vol, pan, 'triangle'); later(() => tone(2800, 0.02, 0.025 * vol, pan, 'triangle'), 70); break;
                 case 'ui': tone(1250, 0.025, 0.05, 0, 'triangle'); break;
                 case 'hurt': noise(0.2, 600, 0.5, 0); tone(80, 0.2, 0.3, 0); break;
-                case 'step': { const sk = x === undefined ? 0.8 : 2.1, l0 = SF.lp; noise(0.06, 700 + Math.random() * 500, 0.12 * vol * sk, pan, 'lowpass', 140); tone(62 + Math.random() * 20, 0.06, 0.06 * vol * sk, pan); setTimeout(() => { SF.lp = l0; noise(0.04, 1600, 0.05 * vol * sk, pan, 'bandpass'); SF.lp = 0; }, 55); break; } // Ferse + Abrollen, Gegner deutlich lauter
-                case 'reload': noise(0.07, 2600, 0.09, 0, 'bandpass'); tone(900, 0.03, 0.1, 0, 'square'); setTimeout(() => { noise(0.1, 1800, 0.08, 0, 'bandpass'); tone(650, 0.04, 0.12, 0, 'square'); }, 260); break;
+                case 'step': { const sk = x === undefined ? 0.75 : 2, ft = (STEPF = -STEPF), pp = clamp(pan + (x === undefined ? ft * 0.07 : 0), -1, 1), rv = () => 0.85 + Math.random() * 0.3; // natürlicher Schritt: dumpfe Ferse + kurzes Sohlen-Knirschen + Abrollen, jeder Schritt leicht anders, Füße abwechselnd
+                    noise(0.06 * rv(), 230 * rv(), 0.8 * vol * sk, pp, 'bandpass', 95); noise(0.016, 3400 * rv(), 0.08 * vol * sk, pp, 'bandpass');
+                    later(() => noise(0.045 * rv(), 1250 * rv(), 0.13 * vol * sk, pp, 'bandpass', 650), 40 + Math.random() * 35); break; }
+                case 'reload': noise(0.07, 2600, 0.09, 0, 'bandpass'); tone(900, 0.03, 0.1, 0, 'square'); later(() => { noise(0.1, 1800, 0.08, 0, 'bandpass'); tone(650, 0.04, 0.12, 0, 'square'); }, 260); break;
                 case 'empty': tone(1200, 0.03, 0.1, 0, 'square'); break;
                 case 'beep': tone(1046, 0.08, 0.25 * Math.max(vol, 0.3), pan); break;
                 case 'plant': tone(880, 0.05, 0.15 * Math.max(vol, 0.2), pan, 'square'); break;
                 case 'explosion': noise(2.0, 900, 1.0, 0, 'lowpass', 40); tone(50, 1.5, 0.8, 0, 'sine', 20); break;
                 case 'smokepop': noise(1.4, 1600, 0.3 * vol, pan, 'lowpass', 250); break;
                 case 'flashbang': noise(0.25, 5000, 0.6 * Math.max(vol, 0.25), pan, 'highpass', 2000); tone(1800, 0.5, 0.3 * Math.max(vol, 0.25), pan, 'sine', 900); break;
-                case 'fire': noise(0.5, 400, 0.25 * vol, pan, 'lowpass', 300); break; case 'start': tone(660, 0.12, 0.2, 0); setTimeout(() => tone(880, 0.2, 0.2, 0), 130); break;
-                case 'win': [523, 659, 784].forEach((f, i) => setTimeout(() => tone(f, 0.25, 0.2, 0), i * 140)); break;
-                case 'lose': [400, 330].forEach((f, i) => setTimeout(() => tone(f, 0.35, 0.2, 0, 'triangle'), i * 220)); break;
-                case 'kill': tone(600, 0.05, 0.12, 0, 'square'); setTimeout(() => tone(900, 0.06, 0.12, 0, 'square'), 60); break;
+                case 'fire': noise(0.5, 400, 0.25 * vol, pan, 'lowpass', 300); break; case 'start': tone(660, 0.12, 0.2, 0); later(() => tone(880, 0.2, 0.2, 0), 130); break;
+                case 'win': [523, 659, 784].forEach((f, i) => later(() => tone(f, 0.25, 0.2, 0), i * 140)); break;
+                case 'lose': [400, 330].forEach((f, i) => later(() => tone(f, 0.35, 0.2, 0, 'triangle'), i * 220)); break;
+                case 'kill': tone(600, 0.05, 0.12, 0, 'square'); later(() => tone(900, 0.06, 0.12, 0, 'square'), 60); break;
                 case 'grunt': { const f0 = 120 + Math.random() * 70; noise(0.2, 850, 0.4 * vol, pan, 'bandpass', 380); tone(f0, 0.17, 0.2 * vol, pan, 'triangle', f0 * 0.68); break; } // Aufkeuchen bei Treffer
                 case 'land': noise(0.12, 380, 0.3, 0, 'lowpass', 70); tone(58, 0.12, 0.28, 0, 'sine', 35); break; // Aufprall nach Sprung
-            } } finally { SF.lp = 0; }
+            } } finally { SF.lp = 0; SF.g = 1; }
         }
 
         // =====================================================================
@@ -5344,8 +5354,13 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             document.querySelectorAll('[data-alm]').forEach(el => el.onclick = () => alStart(el.dataset.alm));
             $('alBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
         }
+        const AL_RANGE = { theme: 'de_dusty', rows: [ // eigene Schießbahn im Sienna-Stil: frei, ohne Kisten · K = Schützenstand, h = Brüstung seitlich
+            "###########", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#",
+            "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "#hh.....hh#", "#.........#", "#....K....#", "###########"] };
         function alStart(mode) {
-            AL.mode = AL_MODES[mode] ? mode : 'grid'; AL.on = true; exStart(null); alReset();
+            AL.mode = AL_MODES[mode] ? mode : 'grid'; AL.on = true;
+            ARENAS.ar_range = AL_RANGE; MAP_NAMES.ar_range = 'Aim-Lab Range'; // nur fürs Training registriert → taucht nicht im Gauntlet/1v1/Arena-Auswahl auf (Verlassen lädt neu)
+            exStart('ar_range'); alReset();
             msg('🎯 Aim-Lab · ' + AL_MODES[AL.mode][1], AL_MODES[AL.mode][2] + ' · ' + AL_TIME + ' s', 4);
         }
         function alReset() {
@@ -5360,6 +5375,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             for (let k = 0; k < 30; k++) {
                 a = B.yaw + (Math.random() - 0.5) * (AL.mode === 'flick' ? 1.6 : 1.0); const maxD = Math.min(14, alFree(B.x, 1.7, B.z, a) - 1), d = maxD < 4 ? maxD : 4 + Math.random() * (maxD - 4);
                 if (d < 2.5) continue; x = B.x - Math.sin(a) * d; z = B.z - Math.cos(a) * d; y = 1.1 + Math.random() * 1.4;
+                _alV.set(B.x, 1.7, B.z); _alD.set(x - B.x, y - 1.7, z - B.z); const ld = _alD.length(); _alRay.set(_alV, _alD.normalize()); _alRay.far = ld + r; // freie Sicht vom Auge bis zum Ziel (keine Kisten davor/darin)
+                if (_alRay.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false).length) continue;
                 if (!AL.targets.some(t => Math.hypot(t.x - x, t.y - y, t.z - z) < r * 5)) break;
             }
             const m = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), new THREE.MeshLambertMaterial({ color: 0xff4d4d, emissive: 0x551010 }));
@@ -5782,7 +5799,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             p.speed = Math.hypot(p.vx, p.vz);
             if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { p.landK = clamp(-p.vy / 11, 0.25, 1); sfx('land'); shake = Math.max(shake, 0.02 * p.landK); fovKick = Math.max(fovKick, 1.5); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
             const te = p.alive ? (p.crouch ? 1.15 : 1.7) : 0.35; p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
-            if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.42; sfx('step'); } } else p.stepT = 0.1;
+            if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.39 + Math.random() * 0.06; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
             p.recoil = Math.max(0, p.recoil - dt * 5); p.moving = p.speed > 0;
             specHide(!p.alive && !FC.on ? specTarget : null);
@@ -6918,7 +6935,28 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 2.9 „TRAINING"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 3.0 „KLANG"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🦶 SCHRITTE</p>
+ Schritte klingen jetzt <b>natürlich</b>: dumpfe Ferse, kurzes Knirschen der Sohle, leises Abrollen – jeder Schritt etwas anders, die Füße wechseln sich ab.<br>
+ Gegner-Schritte bleiben deutlich lauter als Deine eigenen – gut zu orten.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔊 LAUTSTÄRKE</p>
+ Alle Sounds wurden <b>neu abgemischt</b>: Das <b>Menü ist deutlich leiser</b> – vor allem der Sound bei Hinweisen, Käufen und Cases.<br>
+ <b>Landen</b> und <b>Treffer-Schmerz</b> sind leiser, <b>AWP, Scout & Pump</b> übersteuern nicht mehr, Explosion & Flashbang etwas zurückgenommen.<br>
+ <b>Messer</b> und <b>Treffer-Marker</b> sind etwas besser hörbar.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 AIM-LAB-RANGE</p>
+ Das Aim-Lab hat eine <b>eigene Schießbahn</b> im Sienna-Stil – frei, ohne Kisten und Container. Die Ziele erscheinen nie mehr hinter Hindernissen.<br>
+ Du stehst am Schützenstand mit Brüstung links und rechts – wie in der Valorant-Range.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💬 DISCORD</p>
+ Neuer <b>Discord-Knopf</b> im Hauptmenü und nach jedem Match – mit Patchnotes, Mitspielersuche, Live-Server-Status und Bug-Meldungen.<br>
+ In der Lobby: <b>🔗 Einladungslink</b> kopieren oder <b>📣 In Discord posten</b> – mit Beitreten-Knopf. Bugs meldest Du unter ⚙️ Einstellungen → <b>🐞 Bug melden</b>.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 2.9 „TRAINING"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 AIM-LAB</p>
@@ -7496,7 +7534,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 2.9 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 3.0 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -8590,7 +8628,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function lobDiscord() { accApi('lfg', { room: NET.room, name: player.name }).then(r => toast(r.ok ? '📣 In Discord gepostet' : '⚠ ' + (r.err || 'Fehler'), r.ok ? '#🤝-mitspielersuche · mit Beitreten-Knopf' : '')).catch(() => toast('⚠ Server nicht erreichbar', '')); }
         function showBug(back) {
             const md = !started ? 'Menü' : AL.on ? 'Aim-Lab' : EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : 'Wettkampf';
-            const info = `CLUTCH 2.9 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
+            const info = `CLUTCH 3.0 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
             showOverlay(`<h1 style="font-size:34px">🐞 BUG MELDEN<small>GEHT DIREKT AN DEN ENTWICKLER</small></h1>
  <textarea id="bugTxt" maxlength="1500" rows="6" placeholder="Was ist passiert? Was hast Du davor gemacht? Passiert es immer wieder?" style="width:min(520px,88vw);font:14px Arial;padding:10px;background:#141e28;color:#fff;border:1px solid rgba(var(--hl-rgb),.5);border-radius:4px;resize:vertical"></textarea>
  <p style="font-size:11px;color:#8fa3b8;max-width:520px">Wird automatisch mitgeschickt: ${escH(info)}</p><p id="bugMsg" style="font-size:13px;min-height:16px"></p>

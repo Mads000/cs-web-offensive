@@ -24,6 +24,7 @@ const KATEGORIEN = [
         { name: '🔒-owner-notizen', typ: T, nurOwner: true, topic: 'Nur für den Owner: Wichtiges speichern (Links, Codes, Ideen, To-dos)' },
         { name: 'bot', typ: T, topic: 'Bot-Befehle & Logs' },
         { name: 'moderator-only', typ: T, topic: 'Absprachen im Mod-Team' },
+        { name: '📦-itch-io', typ: T, topic: 'Alles für die itch.io-Seite: Anleitung, Texte zum Kopieren, Cover, Screenshots & Upload-Datei', itch: true },
         { name: 'Mod VC', typ: V }] },
     { name: '-----Server-----', kanaele: [
         { name: '👋-willkommen', typ: T, nurLesen: true, topic: 'Hier wird jeder neue Spieler begrüßt', text: 'willkommen', willkommen: true },
@@ -66,6 +67,91 @@ Schön, dass Du da bist! Jeder neue Spieler wird hier begrüßt.
 📜 Lies zuerst das <#REGELN> · 🆕 Updates in <#NEWS> · 🤝 Mitspieler in <#MITSPIELER>
 🎮 **Jetzt spielen:** ${SPIEL_URL}`
 };
+// ── 📦 itch.io: Anleitung + Texte zum Kopieren + Dateien aus discord/itch/ (wird bei jedem Start neu gepostet) ──
+const BT = '```', ITCH = [
+`# 📦 itch.io – Schritt für Schritt
+**1. Account:** https://itch.io/register → einloggen
+**2. Neues Projekt:** oben rechts auf Deinen Namen → **Upload new project** (oder https://itch.io/game/new)
+**3. Oben ausfüllen** (Texte zum Kopieren weiter unten 👇)
+> **Title:** \`CLUTCH\` · **Project URL:** \`clutch\`
+> **Short description or tagline:** siehe unten
+> **Classification:** Games · **Kind of project:** HTML
+> **Release status:** In development · **Pricing:** No payments (oder *$0 or donate* für Spenden)
+**4. Uploads:** \`clutch-itch.zip\` (ganz unten angehängt) hochladen → Haken bei **This file will be played in the browser**
+> Optional zusätzlich die PC-App \`CS-WO-Setup.exe\` (GitHub-Release) hochladen → Haken bei **Windows**
+**5. Embed options:** *Embed in page* · Viewport **1280 × 720**
+> ☑ **Mobile friendly** (Orientation: *Landscape*) · ☑ **Fullscreen button** · ☐ Automatically start on page load · ☐ Enable scrollbars
+**6. Details:** Description (EN + DE unten) · **Genre:** Shooter · **Tags** (unten) · **AI disclosure:** ehrlich beantworten
+**7. Bilder:** **Cover image** = \`cover-630x500.png\` · **Screenshots** = \`screenshot-1\` bis \`-6\` in dieser Reihenfolge · **Banner** = \`banner-960x240.png\` (über *Edit theme* → Banner)
+**8. Links:** Discord & Website stehen schon in der Beschreibung
+**9. Visibility:** erst **Draft** → **Save & view page** → alles testen → dann **Public** → Save`,
+`## ⚠️ Gut zu wissen
+• Die ZIP lädt das **Live-Spiel** von https://clutchtactic.de – jedes Update ist sofort auch auf itch.io, **nie neu hochladen** nötig.
+• Spielstand: Auf itch.io hat der Browser einen **eigenen Speicher**. Gäste starten dort bei 0 – **mit Login** kommt alles mit (Cloud-Save).
+• **Testen:** ins Spiel klicken (Maus wird gefangen), Vollbild-Knopf, Online-Lobby, Login, einmal am Handy.
+• **Edit theme** (oben auf Deiner itch-Seite): Hintergrund \`#0c121a\` · Text \`#ece6df\` · Links/Buttons \`#8fa3b8\` – in den Farben des neuen Icons; Banner hochladen, Titel ausblenden.
+• Danach den itch-Link in Discord #🆕-neuigkeiten posten 🎉`,
+`## ✏️ Short description or tagline
+${BT}
+Free tactical 5v5 shooter in your browser – plant the bomb, win the clutch. Solo vs bots or online with friends.
+${BT}
+## 🏷️ Tags (einzeln eintippen, max. 10)
+${BT}
+fps, shooter, tactical, multiplayer, first-person, low-poly, browser, aim-trainer, level-editor, free
+${BT}`,
+`## 📝 Description (English) – oben in die Beschreibung
+${BT}
+CLUTCH is a fast tactical shooter that runs right in your browser – no download, no account needed. Play solo against bots or online with friends, on PC and mobile.
+
+🏆 COMPETITIVE – 5v5, plant or defuse the bomb, buy weapons & armor every round
+💀 DEATHMATCH – everyone vs everyone, instant respawn, 30 kills to win
+⚔️ GAUNTLET – duo tournament with draft, perks & abilities
+🎯 1v1 – aim duels with the same weapon, first to 5 wins
+🦆 DUCK HUNT – relaxed 2-minute mode with specials & leaderboard
+🎯 AIM LAB – Gridshot, Flick, Precision & Tracking
+
+FEATURES
+• Counter-strafing, spray patterns & tagging like the classics
+• Skins, cases, knives (Butterfly & Karambit) & agents
+• Skin workshop – paint your own skins and sell them in the shop
+• Map & arena editor – build maps and share them as a code
+• Friends list, invites, team chat & all chat
+• Stats: K/D, accuracy, headshot rate, favorite weapon
+• Accounts with cloud save – your progress on every device
+• English & German
+
+CONTROLS (PC)
+WASD move · Mouse aim & shoot · R reload · B buy menu · Tab scoreboard
+Shift walk · Ctrl crouch · Space jump · Q last weapon · G drop · F ability
+Enter team chat · Shift+Enter all chat · all keys can be changed in the settings
+
+💬 Discord: https://discord.gg/tEBHrXvVzn
+🌐 Play directly: https://clutchtactic.de
+${BT}`,
+`## 📝 Beschreibung (Deutsch) – darunter einfügen
+${BT}
+🇩🇪 DEUTSCH
+CLUTCH ist ein schneller Taktik-Shooter direkt im Browser – kein Download, kein Account nötig. Allein gegen Bots oder online mit Freunden, am PC und am Handy.
+
+🏆 Wettkampf (5 gegen 5, Bombe legen & entschärfen) · 💀 Deathmatch · ⚔️ Gauntlet (Duo-Turnier mit Perks) · 🎯 1v1 · 🦆 Entenjagd · 🎯 Aim-Lab
+
+Skins, Cases, Messer & Agenten · eigene Skins malen und verkaufen · Map- & Arena-Editor · Freunde, Einladungen, Team- & Allgemein-Chat · Statistik · Cloud-Save mit Account
+
+💬 Discord: https://discord.gg/tEBHrXvVzn
+🌐 Direkt spielen: https://clutchtactic.de
+${BT}`
+];
+const ITCH_DATEIEN = [ // [Text, Dateien] – max. 10 MB pro Nachricht
+    ['## 🖼️ Cover, Banner & Screenshots 1–3', ['cover-630x500.png', 'banner-960x240.png', 'screenshot-1-menu.png', 'screenshot-2-deathmatch.png', 'screenshot-3-kaufmenue.png']],
+    ['## 🖼️ Screenshots 4–6', ['screenshot-4-aimlab.png', 'screenshot-5-entenjagd.png', 'screenshot-6-mapeditor.png']],
+    ['## 📦 Upload-Datei für itch.io (bei *Uploads* hochladen)', ['clutch-itch.zip']]];
+async function posteItch(ch) {
+    const fs = require('fs'), path = require('path'), dir = path.join(__dirname, 'itch'), alt = await ch.messages.fetch({ limit: 100 }).catch(() => new Map());
+    for (const m of alt.values()) if (m.author.id === client.user.id) await m.delete().catch(() => { }); // alte Version ersetzen
+    for (const t of ITCH) await ch.send(t);
+    for (const [t, fl] of ITCH_DATEIEN) { const files = fl.map(f => path.join(dir, f)).filter(f => fs.existsSync(f)); if (files.length) await ch.send({ content: t, files }); }
+    console.log('  📦 itch.io-Paket gepostet in ' + ch.name);
+}
 const GRUSS = [ // zufällige Begrüßung für neue Mitglieder ({u} = Erwähnung)
     '👋 Willkommen {u}! Schnapp Dir eine AK und ab in die Lobby.', '🎯 {u} ist gelandet – hoffentlich mit gutem Aim!',
     '💣 {u} ist da. Bombe gelegt, Server betreten.', '🦆 {u} ist beigetreten – die Enten zittern schon.', '🔥 {u} hat den Server betreten. Clutch-Zeit!'
@@ -131,7 +217,8 @@ client.once('ready', async () => {
         const ms = await ch.messages.fetch({ limit: 50 }).catch(() => new Map());
         for (const m of ms.values()) if (m.author.id === client.user.id && m.content.includes(ALTE_URL)) { await m.edit(m.content.split(ALTE_URL).join(SPIEL_URL)).catch(() => { }); console.log('  🔗 Link aktualisiert in ' + ch.name); }
     }
-    if (K['🆕-neuigkeiten']) await postePatches(K['🆕-neuigkeiten']); // Patchnotes ab 1.7 (fehlende werden nachgetragen)
+    if (K['🆕-neuigkeiten']) await postePatches(K['🆕-neuigkeiten']);
+    if (K['📦-itch-io']) await posteItch(K['📦-itch-io']); // Patchnotes ab 1.7 (fehlende werden nachgetragen)
 
     // Webhooks: darüber postet der Spielserver (Render) selbst – Patchnotes, Live-Status, Mitspielersuche, Bug-Meldungen
     const hook = async n => { const ch = K[n]; if (!ch) return ''; const ws = await ch.fetchWebhooks(); const w = ws.find(x => x.name === 'CLUTCH' && x.token) || await ch.createWebhook({ name: 'CLUTCH' }); return w.url; };
