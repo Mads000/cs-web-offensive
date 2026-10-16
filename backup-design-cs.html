@@ -4237,12 +4237,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
             let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); let max = (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * CFG.speed / 100; p.walk = canMove && !p.crouch && down('walk'); if (p.crouch) max *= 0.45; else if (p.walk) max *= 0.52; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - (wl > 0 ? FRICTION : STOP_FRICTION) * dt); p.vx *= fr; p.vz *= fr; }
             const acc = p.onGround ? ACCEL : AIR_ACCEL;
-            p.vx += wx * acc * dt; p.vz += wz * acc * dt;
+            let braked = false; // Counter-Strafe: Gegentaste bremst am Boden sehr schnell bis exakt 0 (1 Tick Stillstand), danach normale Beschleunigung
+            if (p.onGround && wl > 0.01) { const sp = Math.hypot(p.vx, p.vz); if (sp > 0.05 && (p.vx * wx + p.vz * wz) / sp < -0.3) { const ns = Math.max(0, sp - max * 14 * dt); p.vx *= ns / sp; p.vz *= ns / sp; braked = ns === 0; } }
+            if (!braked) { p.vx += wx * acc * dt; p.vz += wz * acc * dt; }
             const vl = Math.hypot(p.vx, p.vz); if (vl > max) { p.vx *= max / vl; p.vz *= max / vl; }
             if (vl > 0.02) collideMove(p, p.vx * dt, p.vz * dt); else { p.vx = 0; p.vz = 0; }
             if (p.dashT > 0) { const step = Math.min(dt, p.dashT); const n = Math.ceil(step * 60); for (let s = 0; s < n; s++) collideMove(p, p.dashVX * step / n, p.dashVZ * step / n); p.dashT -= dt; if (p.dashT <= 0) { p.vx = p.dashVX * 0.12; p.vz = p.dashVZ * 0.12; } }
             p.speed = Math.hypot(p.vx, p.vz);
-            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { sfx('step'); fovKick = Math.max(fovKick, 3); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
+            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { sfx('step'); fovKick = Math.max(fovKick, 1.5); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
             const te = p.alive ? (p.crouch ? 1.15 : 1.7) : 0.35; p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
             if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.42; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
@@ -4255,8 +4257,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 if (specTarget) { const st = specTarget; camera.position.set(st.x, (st.y || 0) + 1.62, st.z); camera.rotation.set(0, st.yaw + (st.remote ? 0 : Math.PI), 0); }
             } else {
                 if (p.camY === undefined) p.camY = p.y;
-                p.camY += (p.y - p.camY) * Math.min(1, dt * 14);
-                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - vmLand * 0.06 + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); camera.rotation.set(p.pitch, p.yaw, 0);
+                p.camY += (p.y - p.camY) * Math.min(1, dt * (p.onGround ? 10 : 18));
+                camera.position.set(p.x + (Math.random() - 0.5) * shake * 0.3, p.camY + p.eyeH - (p.camLand = (p.camLand || 0) + (vmLand - (p.camLand || 0)) * Math.min(1, dt * 16)) * 0.045 + (Math.random() - 0.5) * shake * 0.3, p.z + (Math.random() - 0.5) * shake * 0.3); camera.rotation.set(p.pitch, p.yaw, 0);
             }
             if (buyOpen && !canBuy()) closeBuy();
         }
