@@ -214,7 +214,9 @@ const server = http.createServer((req, res) => {
 
 const wss = new WebSocketServer({ server });
 setInterval(() => rk.tick(), 1000).unref();
+setInterval(() => { for (const c of wss.clients) { if (c.alive === false) { c.terminate(); continue; } c.alive = false; try { c.ping(); } catch { } } }, 20000).unref(); // 2× keine Antwort (≤ 40 s) → trennen → Host-Wechsel & Ranked-Regeln greifen
 wss.on('connection', ws => {
+ ws.alive = true; ws.on('pong', () => { ws.alive = true; });
  ws.on('message', raw => {
  let m; try { m = JSON.parse(raw) } catch { return } if (!m || typeof m !== 'object') return;
  if (typeof m.type === 'string' && m.type.startsWith('rk')) { rk.queueMsg(ws, m); return; } // Ranked-Warteschlange; rk*-Nachrichten nie weiterleiten

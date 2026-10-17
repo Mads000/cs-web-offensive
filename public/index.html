@@ -7801,6 +7801,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile; frSide();
             $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
+            else if (sessionStorage.getItem('opentab') === 'ranked') { sessionStorage.removeItem('opentab'); showRanked(); const w = sessionStorage.getItem('rkmsg'); if (w) { sessionStorage.removeItem('rkmsg'); RK.msg = '⚠ ' + w; rkRender(); } }
             else if (sessionStorage.getItem('opentab') === 'maps') { sessionStorage.removeItem('opentab'); showMapList(); }
         }
         // =====================================================================
@@ -8887,7 +8888,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  ${body}<p class="rksub" style="min-height:16px">${escH(RK.msg)}</p><div><button id="rkBack">Zurück</button></div>`);
             const on = (id, f) => { const el = $(id); if (el) el.onclick = f; };
             on('rkBack', () => { if (RK.q) rkSend({ type: 'rkx' }); if (RK.found && !RK.found.ok) rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.q = RK.found = null; RK.open = false; showMenu(); });
-            on('rkLogin', showAccount); on('rkBug', () => showBug(showRanked)); document.querySelectorAll('[data-brgo]').forEach(b => b.onclick = () => { RK.open = false; brStart(b.dataset.brgo); }); on('rkRe', () => rkGo(P.live)); on('rkX', () => { rkSend({ type: 'rkx' }); RK.q = null; rkRender(); });
+            on('rkLogin', showAccount); on('rkBug', () => showBug(showRanked)); document.querySelectorAll('[data-brgo]').forEach(b => b.onclick = () => { RK.open = false; brStart(b.dataset.brgo); }); on('rkRe', () => { const b = $('rkRe'); b.disabled = true; b.textContent = '⏳ Verbinde …';
+                accApi('ranked', { tok: ACC.tok }).then(r => { if (r.ok && r.live) return rkGo(r.live); if (r.ok) RK.prof = r; RK.msg = '⚠ Das Match ist bereits beendet – Ergebnis siehe Historie.'; rkRender(); }).catch(() => rkGo(P.live)); }); on('rkX', () => { rkSend({ type: 'rkx' }); RK.q = null; rkRender(); });
             on('rkAcc', () => { RK.found.ok = true; rkSend({ type: 'rkacc', id: RK.found.id, ok: 1, map: RK.found.vote, ban: RK.found.ban }); rkRender(); });
             on('rkDec', () => { rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.found = null; rkRender(); });
             document.querySelectorAll('[data-rkv]').forEach(b => b.onclick = () => { const F = RK.found, k = b.dataset.rkv; // neutral → Stimme → Bann → neutral (je eine)
@@ -8976,8 +8978,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             NET.ws = new WebSocket(NET.srv);
             NET.ws.onopen = () => NET.ws.send(JSON.stringify({ type: 'join', room: NET.room, pid: NET.pid, acc: ACC ? ACC.tok : undefined }));
             NET.ws.onerror = () => alert('Server nicht erreichbar!');
-            NET.ws.onclose = () => { if (NET.on) msg('Verbindung getrennt', '', 5); };
+            NET.ws.onclose = () => { if (NET.on) netLost(); };
             NET.ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data) } catch { return } netMsg(m); };
+        }
+        function netLost() { // Verbindung weg (WLAN, Standby, Server-Neustart) → automatisch zurück in denselben Raum (max. 3 Versuche pro Minute)
+            const n = JSON.parse(sessionStorage.getItem('netre') || '[]').filter(t => Date.now() - t < 60000);
+            const v1 = RK.cur && RK.cur.mode === 'v1' && started; // Ranked-1v1 kennt keinen Wiedereinstieg (Server wertet die Trennung)
+            if (GL.on && !v1 || v1 || n.length >= 3 || !NET.room) { msg('Verbindung getrennt', v1 ? 'Ranked-1v1: Trennung zählt als Verlassen' : 'Zurück ins Menü über ⏻ (Pause)', 8); return; }
+            n.push(Date.now()); sessionStorage.setItem('netre', JSON.stringify(n)); msg('Verbindung getrennt', 'Verbinde neu …', 5);
+            setTimeout(() => { sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); }, 2000);
         }
         function netMsg(m) {
             switch (m.type) {
@@ -8994,7 +9003,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'team': { const rp = NET.players.get(m.pid); if (rp && (m.team === 'CT' || m.team === 'T')) { rp.team = m.team; if (rp.mesh) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, rp.ag, false, rp.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } if (NET.inLobby) renderLobby(); } break; }
                 case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
                 case 'rkst': RK.st = m; RK.all = m.n >= m.N; if (NET.inLobby) renderLobby(); break;
-                case 'rkdeny': sessionStorage.removeItem('rk'); alert('Ranked: ' + m.why); leaveGame(); break;
+                case 'rkdeny': sessionStorage.removeItem('rk'); sessionStorage.setItem('rkmsg', m.why || 'Beitritt abgelehnt'); sessionStorage.setItem('opentab', 'ranked'); leaveGame(); break;
                 case 'rkdone': rkDone(m); break;
                 case 'hello': addRemote(m.pid, m.name, m.team, m.ag, m.hat); rkTryStart(); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w: DH.w }); }
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: myLook(), hat: duckHat() || 0 });
