@@ -3445,6 +3445,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "🪙 SHOP & CASES":"🪙 SHOP & CASES",
 "📊 STATISTIK":"📊 STATS",
 "🌐 ONLINE-LOBBY":"🌐 ONLINE LOBBY",
+"🔋 WENIGER AKKU":"🔋 LESS BATTERY",
 "PATCH 2.9 „TRAINING\"":"PATCH 2.9 „TRAINING\"",
 "🦶 SCHRITTE":"🦶 FOOTSTEPS",
 "🔊 LAUTSTÄRKE":"🔊 VOLUME",
@@ -3695,6 +3696,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "📨 Einladung von *":"📨 Invite from *",
 "Raum „*\" · 👥 Freunde öffnen zum Beitreten":"Room “*” · 👥 open Friends to join",
 "Chat öffnen":"Open chat",
+"🔋 Akku-Sparmodus:":"🔋 Battery saver:",
+"30 FPS · keine Schatten · niedrige Auflösung":"30 FPS · no shadows · low resolution",
 "KILLS PRO WAFFE":"KILLS PER WEAPON",
 "📦 CASES (#)":"📦 CASES (#)",
 "🪙 SKIN-SHOP":"🪙 SKIN SHOP",
@@ -4613,23 +4616,27 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const N = o => { o.userData.ns = true; return o; }; // Kleinteil bleibt Metall (kein Skin)
             g.userData.hand = B(0.09, 0.09, 0.12, skin, 0, -0.1, 0.05);
             switch (key) {
-                case 'knife': {
-                    if (knifeType() === 'karambit') { // gebogene Klinge + Fingerring
-                        const grip = M(0x2b2b30); B(0.022, 0.045, 0.13, grip, 0, -0.02, 0.07); B(0.026, 0.012, 0.02, metal, 0, -0.045, 0.02);
-                        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.007, 6, 14), metal); ring.rotation.y = Math.PI / 2; ring.position.set(0, -0.02, 0.165); g.add(ring);
-                        B(0.024, 0.05, 0.02, metal, 0, -0.012, 0.0);
-                        let y = -0.005, z = -0.01; for (let i = 0; i < 5; i++) { const a = 0.05 + i * 0.26, L = 0.045; B(0.012, 0.042 - i * 0.005, L + 0.006, silver, 0, y - Math.sin(a) * L / 2, z - Math.cos(a) * L / 2, -a); B(0.006, 0.01, L, dark2, 0.006, y - Math.sin(a) * L / 2 + 0.018 - i * 0.003, z - Math.cos(a) * L / 2, -a); y -= Math.sin(a) * L; z -= Math.cos(a) * L; }
-                        break;
+                case 'knife': { // Messer als präzise Umrisse: Klinge & Griffschalen je EIN Teil, Skin läuft durchgehend
+                    const qb = (p0, p1, p2, n = 8) => { const o = []; for (let i = 1; i <= n; i++) { const t = i / n, u = 1 - t; o.push([u * u * p0[0] + 2 * u * t * p1[0] + t * t * p2[0], u * u * p0[1] + 2 * u * t * p1[1] + t * t * p2[1]]); } return o; }; // Kurve → Punkte
+                    const knifePose = () => { const kg = new THREE.Group(); g.children.slice().forEach(o => kg.add(o)); kg.position.set(-0.035, 0.075, 0.0); kg.rotation.set(0.32, 0, 0.22); g.add(kg); }; // Klinge im Bild: angehoben, leicht nach oben/innen gekippt
+                    const edgeM = M(0xdfe5ec), pin = (x, y, z, r = 0.004) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.022, 10), silver); c.rotation.z = Math.PI / 2; c.position.set(x, y, z); g.add(N(c)); };
+                    if (knifeType() === 'karambit') { // gebogene Klauenklinge + Griff mit Fingerring
+                        const grip = M(0x2b2b30);
+                        PR([[0.0, 0.016], ...qb([0.0, 0.016], [0.07, 0.022], [0.11, -0.02]), ...qb([0.11, -0.02], [0.135, -0.05], [0.125, -0.085]), ...qb([0.125, -0.085], [0.1, -0.04], [0.045, -0.014]), [0.0, -0.012]], 0.006, silver, 0, -0.01, null, 0.001); // Klinge
+                        N(PR([...qb([0.112, -0.03], [0.128, -0.055], [0.123, -0.08]), ...qb([0.118, -0.075], [0.104, -0.045], [0.05, -0.019]), [0.03, -0.016]], 0.0068, edgeM, 0, -0.01, null, 0.0005)); // Schneide (Innenseite)
+                        PR([[-0.115, -0.03], [-0.115, 0.018], [-0.06, 0.022], [0.005, 0.018], [0.005, -0.02], [-0.03, -0.034], [-0.06, -0.026], [-0.09, -0.038]], 0.022, grip, 0, -0.01, null, 0.004); // Griff mit Fingermulden
+                        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.027, 0.0075, 8, 20), metal); ring.rotation.y = Math.PI / 2; ring.position.set(0, -0.008, 0.142); g.add(N(ring)); // Fingerring
+                        pin(0, 0.0, 0.03); pin(0, -0.008, 0.09); N(B(0.024, 0.04, 0.008, metal, 0, -0.008, 0.0)); // Nieten & Parierstück
+                        knifePose(); break;
                     }
-                    const grip = M(0x2a6b4f);
-                    const hA = B(0.016, 0.042, 0.17, grip, -0.014, -0.015, 0.06); hA.rotation.z = 0.3;
-                    const hB = B(0.016, 0.042, 0.17, grip, 0.014, -0.015, 0.06); hB.rotation.z = -0.3;
-                    B(0.013, 0.048, 0.2, silver, 0, 0.005, -0.11);
-                    B(0.013, 0.025, 0.07, silver, 0, 0.028, -0.2);
-                    B(0.006, 0.05, 0.19, dark2, 0.006, 0.004, -0.105);
-                    B(0.022, 0.022, 0.025, metal, 0, 0, 0.145);
-                    B(0.03, 0.012, 0.02, metal, 0, -0.032, 0.14);
-                    break;
+                    const grip = M(0x2a6b4f), slot = (a0, a1) => [[a0, -0.005], [a1, -0.005], [a1, 0.005], [a0, 0.005]];
+                    PR([[0.0, -0.018], [0.0, 0.018], [0.15, 0.02], [0.198, 0.012], [0.226, 0.0], [0.19, -0.012], [0.12, -0.02], [0.03, -0.022]], 0.006, silver, 0, 0.004, null, 0.001); // Klinge (Clip Point)
+                    N(PR([[0.03, -0.022], [0.12, -0.02], [0.19, -0.012], [0.226, 0.0], [0.198, -0.003], [0.12, -0.011], [0.03, -0.013]], 0.0068, edgeM, 0, 0.004, null, 0.0005)); // geschliffene Schneide
+                    for (const sx of [-0.0085, 0.0085]) { // zwei skelettierte Griffschalen
+                        PR([[-0.175, -0.012], [-0.175, 0.013], [-0.01, 0.016], [0.006, 0.0], [-0.01, -0.016]], 0.008, grip, sx, -0.012, [slot(-0.155, -0.12), slot(-0.105, -0.07), slot(-0.055, -0.025)], 0.002);
+                    }
+                    pin(0, -0.012, 0.0); pin(0, -0.012, 0.012); N(B(0.024, 0.006, 0.012, metal, 0, -0.012, 0.168)); // Drehpunkte & Verschluss
+                    knifePose(); break;
                 }
                 // ── Schusswaffen: präziser Seitenumriss als EIN Teil (extrudiert) + wenige Anbauteile ──
                 // Profil-Koordinaten: [vorn (+) / hinten (−) in m, Höhe in m] · N() = Metall-Kleinteil ohne Skin (Visier, Lauf, Abzug …)
@@ -4983,7 +4990,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const drops = [];
         function makeDropModel(key, sid, own) {
             const g = makeViewModel(key);
-            if (g.userData.hand) g.remove(g.userData.hand);
+            if (g.userData.hand && g.userData.hand.parent) g.userData.hand.parent.remove(g.userData.hand); // (beim Messer sitzt die Hand in der Haltungs-Gruppe)
             g.visible = true; g.scale.setScalar(1.8);
             const sk = own ? skinOf(key) : (sid ? SKINS.find(s => s.id === sid) : null); let i = 0;
             g.traverse(o => { if (o.isMesh) { o.castShadow = true; if (sk && !o.userData.ns && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); skinMat(o, sk, i); i++; } } });
@@ -5720,11 +5727,17 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function applyLook() { $('hud').style.color = OPT.hudCol === '#e8c98a' && document.documentElement.classList.contains('dsV') ? '#ece8e1' : OPT.hudCol; const r = $('radar'); r.style.display = OPT.radar ? '' : 'none'; if (OPT.radar) r.style.width = r.style.height = Math.round((IS_TOUCH ? 100 : 170) * OPT.radar) + 'px'; $('killfeed').style.display = OPT.kf ? '' : 'none'; let fe = $('fpsBox'); if (OPT.fps && !fe) { fe = document.createElement('div'); fe.id = 'fpsBox'; document.body.appendChild(fe); } if (fe) fe.style.display = OPT.fps ? '' : 'none'; const ds = document.documentElement.style; ds.setProperty('--tbs', OPT.tbs); ds.setProperty('--tba', OPT.tba); }
         // Handy: alle 2 s FPS prüfen – unter 40 FPS Auflösung senken, über 56 FPS wieder bis zur Grafikstufe anheben
         const DRS = { t: 0, n: 0 };
-        function dynRes(fdt) { DRS.t += fdt; DRS.n++; if (DRS.t < 2000) return; const fps = DRS.n * 1000 / DRS.t; DRS.t = DRS.n = 0; if (document.hidden) return;
-            const max = OPT.gfx === 0 ? 1 : Math.min(devicePixelRatio, OPT.gfx === 1 ? 1.5 : 2), cur = renderer.getPixelRatio(); let pr = cur;
+        function fpsCap() { // 0 = keine Grenze (PC im Spiel); Bilder dazwischen werden übersprungen → spart Akku & Wärme
+            const play = started && !paused && !gameEnded, sub = !started && !document.getElementById('csmenu');
+            if (OPT.eco) return play ? 30 : 15;
+            if (!play) return sub || started ? 20 : IS_TOUCH ? 30 : 0;
+            return IS_TOUCH ? 60 : 0;
+        }
+        function dynRes(fdt) { DRS.t += fdt; DRS.n++; if (DRS.t < 2000) return; const fps = DRS.n * 1000 / DRS.t; DRS.t = DRS.n = 0; if (document.hidden) return; { const c = fpsCap(); if (c && c < 50) return; } // gedrosselt (Menü/Akku-Sparmodus): Auflösung nicht absenken
+            const max = OPT.gfx === 0 || OPT.eco ? 1 : Math.min(devicePixelRatio, OPT.gfx === 1 ? 1.5 : 2), cur = renderer.getPixelRatio(); let pr = cur;
             if (fps < 40) pr = Math.max(IS_TOUCH ? 0.6 : 0.75, cur - 0.15); else if (fps > 56) pr = Math.min(max, cur + 0.1); if (Math.abs(pr - cur) > 0.01) renderer.setPixelRatio(pr); }
         function applyGfx() {
-            const g = OPT.gfx;
+            const g = OPT.eco ? 0 : OPT.gfx; // Akku-Sparmodus = niedrige Grafik
             renderer.setPixelRatio(g === 0 ? 1 : g === 1 ? Math.min(devicePixelRatio, 1.5) : Math.min(devicePixelRatio, 2));
             renderer.shadowMap.enabled = g > 0;
             sun.castShadow = g > 0;
@@ -6549,6 +6562,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <option value="1" ${OPT.gfx === 1 ? 'selected' : ''}>Mittel</option>
  <option value="2" ${OPT.gfx === 2 ? 'selected' : ''}>Hoch</option>
  </select></label>
+ <label style="display:block;margin:6px 0">🔋 Akku-Sparmodus: <input id="ecoChk" type="checkbox" ${OPT.eco ? 'checked' : ''} style="vertical-align:middle"> <span style="font-size:11px;color:#8fa3b8">30 FPS · keine Schatten · niedrige Auflösung</span></label>
  <label style="display:block;margin:6px 0">🎯 Gegner-Umrandung: <input id="outOn" type="checkbox" ${OPT.outOn !== false ? 'checked' : ''} style="vertical-align:middle"> <input id="outCol" type="color" value="${OPT.outCol}" style="vertical-align:middle;width:40px;height:22px;padding:0;border:0;background:none"></label>
 </div>
  <div class="setsec" data-sec="ctl">
@@ -6602,7 +6616,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if ($('tsensSlider')) $('tsensSlider').oninput = e => { OPT.tsens = +e.target.value; $('tsensval').textContent = OPT.tsens.toFixed(2); saveOpts(); };
             $('sensSlider').oninput = e => { OPT.sens = +e.target.value; $('sensval').textContent = OPT.sens.toFixed(2); saveOpts(); };
             $('volSlider').oninput = e => { OPT.vol = +e.target.value; $('volval').textContent = Math.round(OPT.vol * 100) + '%'; saveOpts(); initAudio(); sfx('hit'); };
-            $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); };
+            $('ecoChk').onchange = e => { OPT.eco = e.target.checked; saveOpts(); applyGfx(); }; $('gfxSel').onchange = e => { OPT.gfx = +e.target.value; saveOpts(); applyGfx(); };
             const chPrev = () => { const g = OPT.chGap, L = OPT.chLen, T = OPT.chThick, c = OPT.chCol, p = (x, y, w, h) => `<i style="position:absolute;left:${45 + x}px;top:${45 + y}px;width:${w}px;height:${h}px;background:${c};box-shadow:0 0 2px #000"></i>`; $('chPrev').innerHTML = p(-T / 2, -(g + L), T, L) + p(-T / 2, g, T, L) + p(-(g + L), -T / 2, L, T) + p(g, -T / 2, L, T) + (OPT.chDot ? p(-T / 2, -T / 2, T, T) : ''); }; chPrev();
             document.querySelectorAll('[data-ch]').forEach(el => el.oninput = () => { OPT[el.dataset.ch] = +el.value; $(el.dataset.ch + 'V').textContent = el.value; saveOpts(); chPrev(); });
             $('chCol').oninput = e => { OPT.chCol = e.target.value; saveOpts(); chPrev(); }; $('chDot').onchange = e => { OPT.chDot = e.target.checked; saveOpts(); chPrev(); }; $('chDyn').onchange = e => { OPT.chDyn = e.target.checked; saveOpts(); }; if ($('appFps')) $('appFps').onchange = e => { if (confirm('Die App startet dafür neu. Fortfahren?')) window.cswoApp.setFpsUnlock(e.target.checked); else e.target.checked = !e.target.checked; }; $('setBug').onclick = () => { rebindKey = null; showBug(showSettings); }; $('setBack').onclick = () => { rebindKey = null; if (!started || gameEnded) { showMenu(); return; } if (IS_TOUCH) { paused = false; $('overlay').style.display = 'none'; } else renderer.domElement.requestPointerLock(); };
@@ -6979,7 +6993,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔫 NEUE WAFFENMODELLE</p>
  Alle Schusswaffen wurden <b>komplett neu gebaut</b> – echte Umrisse statt Würfel-Stapel:<br>
  <b>USP-S</b> mit Schalldämpfer, <b>Glock</b>, <b>Desert Eagle</b>, <b>MP5</b> mit gebogenem Magazin, <b>Pump</b>, <b>AK-47</b> mit Bananen-Magazin, <b>M4A1-S</b> mit Schiene, <b>Scout</b> & <b>AWP</b> mit Daumenloch-Schaft.<br>
- Griffwinkel, Abzugsbügel, Visier & Lauf sitzen jetzt da, wo sie hingehören.<br><br>
+ Griffwinkel, Abzugsbügel, Visier & Lauf sitzen jetzt da, wo sie hingehören.<br>
+ Auch die <b>Messer</b> sind neu: <b>Butterfly</b> mit skelettierten Griffschalen & geschliffener Schneide, <b>Karambit</b> mit echter Klauen-Krümmung & Fingerring – und gut sichtbar in der Hand.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎨 SKINS SITZEN SAUBER</p>
  Skins liegen jetzt <b>durchgehend über die ganze Waffe</b> – das Muster läuft am Stück, statt auf jedem Teil neu anzufangen.<br>
@@ -6996,6 +7011,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📊 STATISTIK</p>
  Neues, übersichtliches Layout: große Werte für <b>K/D</b>, <b>Trefferquote</b>, <b>Headshot-Rate</b>, <b>Lieblingswaffe</b>, <b>Siegquote</b> & <b>Bomben</b> – nichts überlappt mehr.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔋 WENIGER AKKU</p>
+ Am <b>Handy</b> läuft das Spiel mit max. <b>60 FPS</b>, das Menü mit 30 – auch auf 120-Hz-Displays. Offene Seiten wie Inventar, Shop oder Pause brauchen kaum noch Leistung.<br>
+ Neu in ⚙️: <b>🔋 Akku-Sparmodus</b> – 30 FPS, keine Schatten, niedrige Auflösung.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🌐 ONLINE-LOBBY</p>
  Kompakter & klarer: Raum, Modus & Spielerzahl oben, darunter <b>👥 Freunde · 🔗 Link · 📣 Discord</b> in einer Reihe, unten nur noch Inventar & Verlassen.
@@ -8978,7 +8997,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const FPS = { n: 0, t: 0, worst: 0 }; function fpsTick(fdt) { FPS.n++; FPS.t += fdt; FPS.worst = Math.max(FPS.worst, fdt); if (FPS.t >= 1000) { const el = $('fpsBox'); if (el) { const f = Math.round(FPS.n * 1000 / FPS.t); el.textContent = f + ' FPS · max ' + Math.round(FPS.worst) + ' ms · ' + renderer.getPixelRatio().toFixed(2) + 'x'; el.style.color = FPS.worst > 60 ? '#ff6b6b' : f < 45 ? '#ffd84a' : '#7c7'; } FPS.n = FPS.t = FPS.worst = 0; } }
         const SHD = { k: '', f: 0, on: 0 }; // Schatten-Takt
         let last = performance.now(), frameN = 0; function loop() {
-            requestAnimationFrame(loop); const t = performance.now(); const fdt = t - last; const dt = Math.min(0.05, fdt / 1000); if (OPT.fps) fpsTick(fdt); dynRes(fdt); last = t; now = t / 1000;
+            requestAnimationFrame(loop); const t = performance.now(); { const cap = fpsCap(); if (cap && t - last < 1000 / cap - 2) return; } const fdt = t - last; const dt = Math.min(0.05, fdt / 1000); if (OPT.fps) fpsTick(fdt); dynRes(fdt); last = t; now = t / 1000;
             if (!started) {
                 menuT += dt; const a = menuT * 0.07, r = Math.min(WORLD_W, WORLD_D) * 0.42;
                 camera.position.set(WORLD_W / 2 + Math.cos(a) * r, 22, WORLD_D / 2 + Math.sin(a) * r);
