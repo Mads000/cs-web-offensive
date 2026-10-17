@@ -54,10 +54,13 @@ function createWindow() {
   Menu.setApplicationMenu(null);
   win = new BrowserWindow({
     width: 1600, height: 900, minWidth: 960, minHeight: 540,
-    backgroundColor: '#0a0e13', title: 'CLUTCH', show: false, autoHideMenuBar: true,
+    backgroundColor: '#0a0e13', title: 'CLUTCH', show: false, autoHideMenuBar: true, fullscreen: true,
     webPreferences: { backgroundThrottling: false, contextIsolation: true, sandbox: true, devTools: false, preload: path.join(__dirname, 'preload.js') }
   });
-  win.once('ready-to-show', () => { win.maximize(); win.show(); });
+  win.once('ready-to-show', () => { win.setFullScreen(true); win.show(); });
+  // immer Vollbild (auch im Menü): verlässt das Spiel den HTML-Vollbildmodus (Esc), bleibt das Fenster trotzdem im Vollbild
+  const keepFull = () => setTimeout(() => { if (win && !win.isDestroyed() && !win.isFullScreen()) win.setFullScreen(true); }, 50);
+  win.on('leave-full-screen', keepFull); win.on('leave-html-full-screen', keepFull);
   win.webContents.on('did-fail-load', (e, code, desc, url, isMain) => {
     if (!isMain || code === -3 || offline) return; // -3 = abgebrochen (normal beim Neuladen)
     if (OFFLINE_CODES.has(code)) return loadOffline(); // kein Internet → Offline-Modus
@@ -66,10 +69,10 @@ function createWindow() {
   });
   win.webContents.on('did-finish-load', () => { if (!offline && win.webContents.getURL().startsWith(GAME_URL)) cacheLatest(); });
   win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
-  // F11 = Vollbild, F5 / Strg+R = neu laden (versucht dabei wieder online zu gehen); Konsolen-Tastenkürzel blockiert
+  // F11 ohne Wirkung (immer Vollbild), F5 / Strg+R = neu laden (versucht dabei wieder online zu gehen); Konsolen-Tastenkürzel blockiert
   win.webContents.on('before-input-event', (e, inp) => {
     if (inp.type !== 'keyDown') return; const k = inp.key.toLowerCase();
-    if (inp.key === 'F11') { win.setFullScreen(!win.isFullScreen()); e.preventDefault(); }
+    if (inp.key === 'F11') e.preventDefault();
     else if (inp.key === 'F5' || (inp.control && k === 'r')) { e.preventDefault(); loadOnline(); }
     else if (inp.key === 'F12' || (inp.control && inp.shift && 'ijc'.includes(k))) e.preventDefault();
   });

@@ -4413,6 +4413,11 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 else { const z0 = dir[0] > 0 ? z + a : z - b, z1 = dir[0] > 0 ? z + b : z - a; add(x - S / 2, x + S / 2, 0, top, z0, z1); }
             }
         }
+        // Comic-Konturen für Waffen & Agenten (wie die Kanten der Map). each: Linien je Teil (folgen jeder Animation, fürs Viewmodel); sonst je Elterngruppe zusammengefasst (wenige Draw-Calls, Agenten)
+        const INK_MAT = {}; function inkify(root, op, each) { if (!DSV) return; const by = new Map(), v = new THREE.Vector3(), mat = INK_MAT[op] || (INK_MAT[op] = new THREE.LineBasicMaterial({ color: 0x121419, transparent: true, opacity: op }));
+            root.traverse(o => { if (o.isMesh && o.geometry && !o.userData.isOut) { const P = each ? o : o.parent; if (!by.has(P)) by.set(P, []); by.get(P).push(o); } });
+            for (const [P, list] of by) { const pos = []; for (const o of list) { o.updateMatrix(); const e = new THREE.EdgesGeometry(o.geometry, 30), a = e.attributes.position; for (let i = 0; i < a.count; i++) { v.fromBufferAttribute(a, i).multiplyScalar(1.02); if (!each) v.applyMatrix4(o.matrix); pos.push(v.x, v.y, v.z); } e.dispose(); }
+                if (!pos.length) continue; const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); const L = new THREE.LineSegments(g, mat); L.raycast = () => { }; P.add(L); } }
         function outlines(list, parent = scene) { // neues Design: feine dunkle Kanten (Comic/Low-Poly), minimal nach außen versetzt gegen Flimmern
             const pos = [], v = new THREE.Vector3(), ctr = new THREE.Vector3();
             for (const o of list) { if (!o.geometry || o.geometry.type !== 'BoxGeometry') continue; const e = new THREE.EdgesGeometry(o.geometry), a = e.attributes.position; ctr.setFromMatrixPosition(o.matrixWorld);
@@ -4847,7 +4852,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             g.visible = false; return g;
         }
         const vm = new THREE.Group(); camera.add(vm); const vmModels = {}; for (const k in W) { vmModels[k] = makeViewModel(k); vm.add(vmModels[k]); }
-        for (const k in vmModels) vmModels[k].traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679 && !o.userData.ns) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });// ================= SKINS & CASES =================
+        for (const k in vmModels) vmModels[k].traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679 && !o.userData.ns) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } }); for (const k in vmModels) inkify(vmModels[k], 0.9, 1);// ================= SKINS & CASES =================
         const SKINS = [
             { id: 'glock_candy', w: 'glock', n: 'Glock-18 | Candy Apple', c: 0xc23b22, r: 1 },
             { id: 'usp_royal', w: 'usp', n: 'USP .45 | Royal Blue', c: 0x2255cc, r: 1 },
@@ -5029,7 +5034,22 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const col = GL.on ? '#46e07a' : player.team === 'T' ? '#ff7a3d' : '#4a8dff';
             for (const e of ents) { if (e === player || !e.mesh || e.decoy) continue;
                 if (!e.mate || e.mate.parent !== e.mesh) { e.mate = new THREE.Sprite(mateMat(col)); e.mate.scale.set(0.32, 0.32, 1); e.mate.position.set(0, 2.25, 0); e.mate.renderOrder = 999; e.mesh.add(e.mate); }
-                e.mate.material = mateMat(col); e.mate.visible = e.alive && isMate(e); }
+                e.mate.material = mateMat(col); const mt = e.alive && isMate(e); e.mate.visible = mt; mateXray(e, col, mt); }
+        }
+        // Mitspieler durch Wände: Silhouette nur dort, wo eine Wand davor ist (GreaterDepth) + Name unter der Figur
+        const MXR_MAT = {}, mxrMat = col => MXR_MAT[col] || (MXR_MAT[col] = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.5, depthWrite: false, depthFunc: THREE.GreaterDepth }));
+        function nameMat(name, col) { const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d'); g.font = 'bold 30px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 6; g.strokeStyle = 'rgba(0,0,0,.85)'; g.strokeText(name, 128, 32); g.fillStyle = col; g.fillText(name, 128, 32);
+            return new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, depthWrite: false, transparent: true }); }
+        function mateXray(e, col, on) {
+            if (!on && !e.xr) return;
+            if (on && (e.xrMesh !== e.mesh || e.xrCol !== col)) { // (neu) aufbauen: Kopie jedes Körperteils als Kind, folgt so jeder Animation
+                if (e.xr) for (const m of e.xr) m.parent && m.parent.remove(m); e.xr = []; e.xrMesh = e.mesh; e.xrCol = col; const parts = [];
+                e.mesh.traverse(o => { if (o.isMesh && !o.userData.isOut) parts.push(o); });
+                for (const o of parts) { const x = new THREE.Mesh(o.geometry, mxrMat(col)); x.userData.isOut = 1; x.raycast = () => {}; x.renderOrder = 998; o.add(x); e.xr.push(x); }
+                if (e.ntag) e.ntag.parent && e.ntag.parent.remove(e.ntag); e.ntag = null;
+            }
+            if (on && (!e.ntag || e.ntName !== e.name)) { if (e.ntag) e.ntag.parent && e.ntag.parent.remove(e.ntag); e.ntag = new THREE.Sprite(nameMat(String(e.name || ''), col)); e.ntag.scale.set(1.4, 0.35, 1); e.ntag.position.set(0, -0.15, 0); e.ntag.renderOrder = 999; e.ntName = e.name; e.mesh.add(e.ntag); }
+            for (const m of e.xr || []) m.visible = on; if (e.ntag) e.ntag.visible = on;
         }
         function animChars(dt) {
             for (const e of ents) { if (e === player || !e.mesh) continue; const L = e.mesh.userData.limbs; if (!L) continue;
@@ -5057,7 +5077,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 const legL = mk(0.12, 0.65, 0.12, orange, -0.16, 0.33, 0, 'legs', 1), legR = mk(0.12, 0.65, 0.12, orange, 0.16, 0.33, 0, 'legs', 1);
                 mk(0.24, 0.05, 0.32, orange, -0.16, 0.025, 0.08, 0, 1); mk(0.24, 0.05, 0.32, orange, 0.16, 0.025, 0.08, 0, 1); mk(0.08, 0.12, 0.75, M(0x222222), 0.3, 1.12, 0.5);
                 const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.3, 1.12, 0.95); fl.visible = false; g.add(fl);
-                scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
+                inkify(g, 0.5); scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
             }
             // Menschliches Modell im Block-Stil – Trefferzonen wie bisher: Kopf (1,66 m), Körper (1,05–1,4 m), Beine
             const fv = !!F && F.top[0] === 'vest', col = F ? { b: fv ? 0x3a3f46 : fitC(F.top[1]), l: fitC(F.legs[1]), h: fitC(SKIN_TONES[F.skin]) } : AG ? { b: AG.body, l: AG.legs, h: AG.head } : T ? (DSV ? { b: 0x8a5440, l: 0x3a3f48, h: 0xc99c76 } : { b: 0x9b7c4e, l: 0x5e513a, h: 0xc99c76 }) : (DSV ? { b: 0x3d5068, l: 0x262f3b, h: 0x1b222c } : { b: 0x2c3b58, l: 0x1d2634, h: 0x151c2a }); // neues Design: T terrakotta/anthrazit, CT stahlblau
@@ -5093,7 +5113,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 if (AG.visor) { const v = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.08, 0.05), new THREE.MeshBasicMaterial({ color: AG.visor })); v.position.set(0, 1.69, 0.175); g.add(v); }
             }
             const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: flashTex, color: 0xffd080, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); fl.scale.set(0.6, 0.6, 1); fl.position.set(0.28, 1.18, 1.05); fl.visible = false; g.add(fl);
-            scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
+            inkify(g, 0.5); scene.add(g); return { group: g, hit: [body, head, legL, legR], flash: fl };
         }
         function createBot(name, team) { const lk = freeLook() ? rndFit() : undefined, m = makeBotMesh(team, lk); const b = { ultK: rnd(ULT_KEYS), ag: lk, isPlayer: false, id: bots.length, name, team, x: 0, y: 0, z: 0, r: 0.4, yaw: 0, health: 100, armor: 0, helmet: false, alive: true, kills: 0, deaths: 0, money: CFG.money, weapon: team === 'T' ? W.glock : W.usp, ammo: 0, reloadT: 0, fireT: 0, burst: 0, target: null, losT: Math.random(), reaction: 0, path: [], goal: null, waitT: 0, stuckT: 0, lastX: 0, lastZ: 0, wantMove: false, moving: false, strafeT: 0, strafeDir: 1, crouch: false, crouchT: 0, nades: [], nadeT: 0, plantT: 0, defuseT: 0, kit: false, stepT: 0, flashT: 0, lastShotT: -9, speed: 0, mesh: m.group, hit: m.hit, flash: m.flash }; m.hit.forEach(h => h.userData.ent = b); bots.push(b); return b; }
 
@@ -6068,7 +6088,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function setKnife(t) { // Messer wechseln: Viewmodel neu bauen, Namen anpassen
             if (!KNIVES[t]) return; localStorage.setItem('knifetype', t); W.knife.name = KNIVES[t]; knifeNames();
             const old = vmModels.knife, g = makeViewModel('knife'); g.traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679 && !o.userData.ns) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });
-            g.visible = old.visible; vm.remove(old); vm.add(g); vmModels.knife = g; applySkins(); if (started && player.weapons[player.slot]) updateVM();
+            inkify(g, 0.9, 1); g.visible = old.visible; vm.remove(old); vm.add(g); vmModels.knife = g; applySkins(); if (started && player.weapons[player.slot]) updateVM();
         }
         function vmSkin(key, sid) {
             const sk = sid ? SKINS.find(s => s.id === sid) : null; let i = 0;
@@ -7173,7 +7193,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  👻 <b>Geister-Ente</b> – nur zeitweise sichtbar, 6 Punkte<br>
  ✂️ <b>Spalt-Ente</b> – zerfällt in zwei Küken<br><br>
  <b>Power-ups:</b> Schieß die leuchtenden Kisten ab – je 20 Sekunden 💥 Sprengmunition, 🔫 Dauerfeuer ohne Nachladen oder 🔗 Combo-Halter.<br><br>
- <b>Combo-Anzeige</b> direkt neben dem Fadenkreuz mit Zeitbalken und Multiplikator, Ansage alle 5 Treffer. Am Ende siehst Du Deine beste Combo.
+ <b>Combo-Anzeige</b> direkt neben dem Fadenkreuz mit Zeitbalken und Multiplikator, Ansage alle 5 Treffer. Am Ende siehst Du Deine beste Combo.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👥 MITSPIELER IMMER IM BLICK</p>
+ In allen Teammodi siehst Du Deine Mitspieler jetzt als <b>farbige Silhouette durch Wände</b>, mit ihrem <b>Namen</b> darunter. Gegner bleiben natürlich unsichtbar.
 
  </div></div>
  <div class="cspanel newscard"><h3>PATCH 3.3 „ZUSAMMEN"</h3>
