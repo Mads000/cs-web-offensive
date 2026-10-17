@@ -982,6 +982,26 @@
         #frpanel button { padding: 3px 8px; font-size: 12px; margin: 0 }
         #frpanel .fradd { display: flex; gap: 6px; margin: 8px 0 2px } #frpanel .fradd input { flex: 1; padding: 6px; background: #141e28; color: #fff; border: 1px solid #39506a; border-radius: 3px }
         #frpanel .frmsg { font-size: 12px; color: #9fe08a; min-height: 14px; margin: 2px 0 6px }
+        .avi { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-style: normal; font-weight: 700; font-family: Arial; color: #fff; flex: 0 0 auto; vertical-align: middle; line-height: 1; box-shadow: 0 0 0 1px rgba(255, 255, 255, .18) }
+        .avi { position: relative; overflow: hidden } .avi b { position: absolute; inset: 0; background: center / cover no-repeat; border-radius: 50% } /* hochgeladenes Bild liegt über der Initiale (Fallback) */
+        .bdg { margin-left: 4px; font-size: .9em; cursor: help } .na { color: #6c7d90 } [data-pp] { cursor: pointer }
+        #pppanel { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(460px, calc(100vw - 32px)); max-height: 86vh; overflow-y: auto; z-index: 99990; background: rgba(10, 14, 20, .97); border: 1px solid rgba(var(--hl-rgb), .55); border-radius: 8px; padding: 14px; color: #e8eef5; font: 13px Arial; box-shadow: 0 10px 40px rgba(0, 0, 0, .7); box-sizing: border-box; outline: none; text-align: left }
+        #pppanel .frh { display: flex; justify-content: space-between; margin-bottom: 10px; letter-spacing: 2px } #pppanel .frh span { cursor: pointer; padding: 0 4px }
+        #pppanel .pptop { display: flex; gap: 12px; align-items: center; margin-bottom: 8px } #pppanel .ppn { font: 700 22px Rajdhani; display: block }
+        #pppanel .ppb { font-size: 12px; padding: 5px 8px; margin: 4px 0; border-left: 3px solid #ffd84a; background: rgba(255, 216, 74, .07) }
+        .ppm { border: 1px solid rgba(255, 255, 255, .1); border-radius: 6px; padding: 8px 10px; margin: 8px 0 } .ppmh { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap } .ppmh span { color: var(--acc); font-weight: 700 }
+        .ppst { display: flex; gap: 12px; flex-wrap: wrap; margin: 6px 0 4px; font-size: 12px; color: #8fa3b8 } .ppst b { color: #e8eef5; font-size: 14px }
+        .pph { display: flex; gap: 4px; margin-top: 6px } .pph i { font: 700 11px Arial; font-style: normal; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 3px; background: #556 } .pph i.w { background: #3f7d3a } .pph i.l { background: #8a3434 } .pph i.d { background: #8a7a2a }
+        #pppanel .ppbtn { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px } #pppanel button { margin: 0; padding: 5px 10px; font-size: 12px }
+        .avpick { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-width: 420px; margin: 8px auto } .avpick button { padding: 3px; margin: 0; border-radius: 50%; min-height: 0; line-height: 0 } .avpick button.on { border-color: #9fe08a; box-shadow: 0 0 0 2px #9fe08a }
+        .rkparty { max-width: 640px; margin: 12px auto 0; text-align: left } .ptmem { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 } .ptm { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 6px; min-width: 170px } .ptm .rksub { display: block } .ptm button { margin: 0 0 0 auto; padding: 2px 7px; min-height: 0 }
+        .ptinv { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 } .ptinv button { margin: 0; padding: 4px 9px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px } .rkparty .frr { display: flex; gap: 8px; align-items: center; padding: 6px; background: rgba(var(--hl-rgb), .12); border-radius: 4px; margin: 4px 0 } .rkparty .frr span { flex: 1; font-size: 12px; color: #8fa3b8 } .rkparty .frr button { margin: 0; padding: 3px 9px }
+        .eosb { width: min(860px, calc(100vw - 32px)); margin: 14px auto 0; text-align: left } .eohd { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 6px } .eohd b { font: 700 20px Rajdhani; letter-spacing: 1px } .eohd span { color: var(--mut); font-size: 12px }
+        .eotm { border: 1px solid rgba(255, 255, 255, .1); border-left: 4px solid #8ab4ff; border-radius: 6px; margin: 8px 0; background: rgba(8, 11, 15, .5) } .eotm.t { border-left-color: #ffb076 } .eotm.me { box-shadow: 0 0 0 1px rgba(var(--hl-rgb), .35) }
+        .eoth { display: flex; justify-content: space-between; padding: 6px 10px; font-size: 13px } .eoth span { font-weight: 700 } .eotw { overflow-x: auto; -webkit-overflow-scrolling: touch }
+        .eotm table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 620px } .eotm th { font-size: 11px; color: var(--mut); text-align: right; padding: 3px 8px; font-weight: 400 } .eotm th:first-child, .eotm td:first-child { text-align: left } .eotm td { text-align: right; padding: 4px 8px; border-top: 1px solid rgba(255, 255, 255, .06); white-space: nowrap } .eotm td small { color: var(--mut) } .eotm .up, .eoc .up { color: #9fe08a } .eotm .dn, .eoc .dn { color: #ff6b6b }
+        .eopp { background: none; border: 1px solid transparent; margin: 0; padding: 2px 4px; min-height: 0; display: inline-flex; align-items: center; gap: 6px; color: inherit; font: inherit; text-align: left; border-radius: 4px } .eopp:hover, .eopp:focus-visible { border-color: rgba(var(--hl-rgb), .6) }
+        .eov1 { display: flex; gap: 10px; align-items: stretch; justify-content: center; flex-wrap: wrap } .eoc { flex: 1 1 220px; max-width: 340px; border: 1px solid rgba(255, 255, 255, .12); border-radius: 8px; padding: 10px; text-align: center; background: rgba(8, 11, 15, .5) } .eoc.w { border-color: #9fe08a } .eoc.l { border-color: #a04a4a } .eoc .eopp { flex-direction: column } .eosc { font: 700 34px Rajdhani } .eoc .ppst { justify-content: center } .eovs { align-self: center; font: 700 18px Rajdhani; color: var(--mut) }
         #csfriends .fr {
             width: 44px;
             height: 44px;
@@ -2140,6 +2160,17 @@
 #tSpecL{ left:max(20px, env(safe-area-inset-left)); } #tSpecR{ right:max(20px, env(safe-area-inset-right)); }
 #touch.dead #tSpecL, #touch.dead #tSpecR{ display:flex; }
 #touch.dead #tstick, #touch.dead .tb:not(.spec){ display:none; }
+/* ── Customs-Zuschauer: Freecam-Stick & Umschalt-Knopf, Namensschilder, Teamleiste ── */
+#tSpecM{ display:none; left:50%; bottom:max(24px, env(safe-area-inset-bottom)); width:64px; height:64px; font-size:26px; transform:translateX(-50%) scale(var(--tbs,1)); }
+body.specmode #touch.dead #tSpecM{ display:flex; } body.specmode #touch.dead #tstick{ display:block; }
+body.specmode #cross, body.specmode #hpwrap, body.specmode #money, body.specmode #ammo{ display:none !important; }
+#spectags{ position:fixed; inset:0; pointer-events:none; z-index:20; overflow:hidden; } #spectags .stag{ position:absolute; left:0; top:0; padding:2px 7px; border-radius:3px; font:700 12px Arial; color:#fff; white-space:nowrap; text-shadow:0 1px 2px #000; } .stag.ct{ background:rgba(60,110,220,.82); border-bottom:2px solid #8ab4ff; } .stag.t{ background:rgba(210,110,30,.85); border-bottom:2px solid #ffb076; }
+#spechud{ position:fixed; top:8px; left:50%; transform:translateX(-50%); z-index:21; pointer-events:none; width:min(760px, calc(100vw - 32px)); font:12px Arial; color:#e8eef5; text-align:center; }
+#spechud .shrow{ display:flex; gap:8px; align-items:flex-start; } #spechud .shtm{ flex:1; display:flex; flex-wrap:wrap; gap:4px; padding:5px 8px; border-radius:5px; background:rgba(8,11,15,.7); } #spechud .shtm.ct{ border-left:4px solid #8ab4ff; } #spechud .shtm.t{ border-right:4px solid #ffb076; justify-content:flex-end; }
+#spechud .shtm b{ width:100%; font:700 13px Rajdhani; letter-spacing:1px; } #spechud .shtm.ct b{ color:#8ab4ff; } #spechud .shtm.t b{ color:#ffb076; } #spechud .shtm span{ padding:1px 5px; border-radius:3px; background:rgba(255,255,255,.08); } #spechud .shtm span.dead{ opacity:.35; text-decoration:line-through; }
+#spechud .shmid{ padding:5px 10px; border-radius:5px; background:rgba(8,11,15,.75); font-size:11px; color:#8fa3b8; min-width:120px; } #spechud .shmid b{ font-size:14px; color:#fff; } #spechud .ct{ color:#8ab4ff; } #spechud .t{ color:#ffb076; } #spechud .shkeys{ margin-top:5px; font-size:11px; color:#aab4c0; text-shadow:0 1px 2px #000; }
+.lobspec{ margin-top:10px; padding:8px 12px; border:1px dashed rgba(var(--hl-rgb),.5); border-radius:6px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; cursor:pointer; text-align:left; } .lobspec.mine{ border-style:solid; background:rgba(var(--hl-rgb),.12); } .lobspec em{ margin-left:auto; font-size:12px; color:#8fa3b8; } .lobspec span{ font-size:13px; }
+@media (max-width:600px){ #spechud .shtm span{ font-size:10px; } #spechud .shkeys{ display:none; } }
 /* ── Map-Editor ── */
 #meWrap{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; align-items:flex-start; }
 #meCv{ width:min(560px,92vw,66vh); height:auto; touch-action:none; border:1px solid rgba(var(--hl-rgb), .5); cursor:crosshair; }
@@ -2708,7 +2739,7 @@ html.dsV #cstabs a:hover { color: #fff; background: none }
 html.dsV #cstabs a.on { color: #fff }
 html.dsV #cstabs a.on:after { left: 30%; right: 30%; bottom: 10px; height: 2px; background: var(--cream); box-shadow: none }
 html.dsV #cstabs a[data-nav="inv"] { order: 1 } html.dsV #cstabs a[data-nav="store"] { order: 2 } html.dsV #cstabs a[data-nav="shop"] { order: 3 }
-html.dsV #cstabs a[data-nav="play"] { order: 4 } html.dsV #cstabs a[data-nav="ranked"] { order: 4 } html.dsV #cstabs a[data-nav="news"] { order: 5 } html.dsV #cstabs a[data-nav="maps"], html.dsV #cstabs a[data-nav="editor"] { order: 6 } html.dsV #cstabs a[data-nav="arenas"] { order: 7 }
+html.dsV #cstabs a[data-nav="play"] { order: 4 } html.dsV #cstabs a[data-nav="ranked"] { order: 4 } html.dsV #cstabs a[data-nav="unranked"] { order: 4 } html.dsV #cstabs a[data-nav="news"] { order: 5 } html.dsV #cstabs a[data-nav="maps"], html.dsV #cstabs a[data-nav="editor"] { order: 6 } html.dsV #cstabs a[data-nav="arenas"] { order: 7 }
 /* SPIELEN: breiter Block mit roter Linie unten, ohne Trapez */
 html.dsV body:not(.mob) #cstabs a[data-nav="play"] { margin: 0 20px; padding: 17px 54px 16px; font-size: 18px; font-weight: 800; letter-spacing: .2em; color: var(--cream); background: linear-gradient(180deg, rgba(236,232,225,.04), rgba(236,232,225,.12)); border-left: 1px solid rgba(236,232,225,.14); border-right: 1px solid rgba(236,232,225,.14) }
 html.dsV body:not(.mob) #cstabs a[data-nav="play"]:hover, html.dsV body:not(.mob) #cstabs a[data-nav="play"].on { color: #fff; background: linear-gradient(180deg, rgba(var(--hl-rgb),.06), rgba(var(--hl-rgb),.24)) }
@@ -2777,7 +2808,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "🏆 WETTKAMPF":"🏆 COMPETITIVE",
 "🦆 ENTENJAGD":"🦆 DUCK HUNT",
 "🧭 ERKUNDEN":"🧭 EXPLORE",
-"Attacker gegen Defender · Bombe legen & entschärfen":"Attackers vs Defenders · plant & defuse the bomb",
+"Eigene Lobby & Regeln · Attacker gegen Defender · Bombe legen & entschärfen · ohne Ranked-Rating":"Own lobby & rules · Attackers vs Defenders · plant & defuse the bomb · no ranked rating",
 "Jeder gegen jeden · Respawn · 30 Kills oder 10 Min":"Free for all · respawn · 30 kills or 10 min",
 "Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten":"Duo tournament on arenas · draft, perks & abilities",
 "Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen":"Aim duel on arenas · same weapon · first to 5 wins",
@@ -3431,7 +3462,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "🛠 Map- & Arena-Editor":"🛠 Map & arena editor",
 "Baue eigene":"Build your own",
 "Karten":"maps",
-"für Wettkampf & Deathmatch oder":"for Competitive & Deathmatch or",
+"für Customs & Deathmatch oder":"for Customs & Deathmatch or",
 "Arenen":"arenas",
 "für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites – und spiele sie direkt, auch online.":"for Gauntlet & 1v1: walls, crates, steps, catwalks, spawns and bombsites – and play them right away, online too.",
 "📰 News":"📰 News",
@@ -3441,7 +3472,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "🎉 Fertig!":"🎉 Done!",
 "Jetzt kennst Du alles.":"Now you know everything.",
 "Tipp: Fang mit einem":"Tip: start with an",
-"Wettkampf offline":"offline Competitive match",
+"Customs-Match offline":"offline Customs match",
 "an, um Dich einzuspielen.":"to warm up.",
 "Das Tutorial findest Du jederzeit unten auf dem Startbildschirm:":"You can find the tutorial anytime at the bottom of the start screen:",
 "Viel Spaß!":"Have fun!",
@@ -3730,7 +3761,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "🗺️ KARTEN":"🗺️ MAPS",
 "🏟 ARENEN":"🏟 ARENAS",
 "Große Karten mit Bombsites":"Large maps with bomb sites",
-"für Wettkampf & Deathmatch":"for competitive & deathmatch",
+"für Customs & Deathmatch":"for Customs & deathmatch",
 "Kleine Arenen":"Small arenas",
 "für Gauntlet & 1v1":"for gauntlet & 1v1",
 "Karten öffnen":"Open maps",
@@ -3830,6 +3861,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             <div class="tb" id="tBoard">☰</div>
             <div class="tb spec" id="tSpecL">◀</div>
             <div class="tb spec" id="tSpecR">▶</div>
+            <div class="tb spec" id="tSpecM" title="Freecam / Ego">🎥</div>
         </div>
         <div id="buy" class="panel"></div>
         <div id="board" class="panel"></div>
@@ -3934,10 +3966,19 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function showAccount() {
             if (ACC) {
                 showOverlay(`<h1 style="font-size:36px">☁️ ACCOUNT<small>EINGELOGGT</small></h1>
- <p>Eingeloggt als <b style="color:var(--hl)">${ACC.u}</b><br><span style="font-size:12px;color:#8fa3b8">Cases, Inventar, Skins, Karten & Einstellungen werden automatisch gespeichert.</span></p>
+ <p>${avH(ACC.u, myAv(), 44)} Eingeloggt als <b style="color:var(--hl)">${ACC.u}</b><br><span style="font-size:12px;color:#8fa3b8">Cases, Inventar, Skins, Karten & Einstellungen werden automatisch gespeichert.</span></p>
+ <div style="font:bold 12px Arial;letter-spacing:2px;color:#8fa3b8">PROFILBILD</div><div class="avpick">${[-1, ...AVS.keys()].map(i => `<button data-av="${i}" class="${myAv() === i ? 'on' : ''}" title="${i < 0 ? 'Standard (Initiale)' : 'Profilbild ' + (i + 1)}" aria-label="${i < 0 ? 'Standard-Profilbild' : 'Profilbild ' + (i + 1)}">${avH(ACC.u, i, 34)}</button>`).join('')}</div>
+ <div><input type="file" id="avFile" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none"><button id="avUp" class="${typeof myAv() === 'string' ? 'on' : ''}">📷 Eigenes Bild hochladen</button></div><p style="font-size:11px;color:#8fa3b8;margin:4px 0">Wird quadratisch auf 96×96 verkleinert · keine anstößigen oder fremden Bilder – solche werden entfernt</p>
  <p id="accMsg" style="font-size:13px;min-height:16px;color:#7c7"></p>
- <div><button id="accSync">☁️ Jetzt speichern</button><button id="accOut" style="border-color:#c66;color:#c66">Logout</button><button id="accBack">Zurück</button></div>`);
-                $('accSync').onclick = () => { accPush(); $('accMsg').textContent = '✓ Gespeichert'; }; $('accOut').onclick = () => accLogout(); $('accBack').onclick = showMenu; return;
+ <div><button data-pp="${escH(ACC.u)}">👤 Mein Profil</button><button id="accSync">☁️ Jetzt speichern</button><button id="accOut" style="border-color:#c66;color:#c66">Logout</button><button id="accBack">Zurück</button></div>`);
+                $('accSync').onclick = () => { accPush(); $('accMsg').textContent = '✓ Gespeichert'; }; $('avUp').onclick = () => $('avFile').click();
+                $('avFile').onchange = e => { const f = e.target.files[0], msg = t => { $('accMsg').textContent = t; }; if (!f) return; if (!/^image\//.test(f.type) || f.size > 8e6) return msg('⚠ Bitte ein Bild bis 8 MB wählen');
+                    const url = URL.createObjectURL(f), img = new Image(); img.onerror = () => { URL.revokeObjectURL(url); msg('⚠ Bild konnte nicht gelesen werden'); };
+                    img.onload = () => { URL.revokeObjectURL(url); const c = document.createElement('canvas'), x = c.getContext('2d'), s = Math.min(img.width, img.height); c.width = c.height = 96; x.fillStyle = '#141e28'; x.fillRect(0, 0, 96, 96); x.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 96, 96); // mittig quadratisch zuschneiden & neu kodieren
+                        let d = c.toDataURL('image/jpeg', 0.85); if (d.length > 23000) d = c.toDataURL('image/jpeg', 0.6); msg('⏳ Lade hoch …');
+                        accApi('setav', { tok: ACC.tok, img: d }).then(r => { if (!r.ok) return msg('⚠ ' + (r.err || 'Fehler')); ACC.av = r.av; accStore(); showAccount(); }).catch(() => msg('⚠ Server nicht erreichbar')); };
+                    img.src = url; };
+                document.querySelectorAll('[data-av]').forEach(b => b.onclick = () => accApi('setav', { tok: ACC.tok, av: +b.dataset.av }).then(r => { if (!r.ok) { $('accMsg').textContent = '⚠ ' + (r.err || 'Fehler'); return; } ACC.av = r.av; accStore(); showAccount(); }).catch(() => { $('accMsg').textContent = '⚠ Server nicht erreichbar'; })); $('accOut').onclick = () => accLogout(); $('accBack').onclick = showMenu; return;
             }
             const inp = 'font:bold 15px Arial;padding:9px 12px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px;width:240px;margin:4px';
             showOverlay(`<h1 style="font-size:36px">👤 LOGIN<small>SPIELSTAND AUF ALLEN GERÄTEN</small></h1>
@@ -3950,7 +3991,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 const m = $('accMsg'); m.style.color = '#8fa3b8'; m.textContent = '…';
                 accApi(reg ? 'register' : 'login', { u: $('accU').value.trim(), p: $('accP').value, data: reg ? accData() : undefined }).then(r => {
                     if (!r.ok) { m.style.color = '#c66'; m.textContent = r.err; return; }
-                    ACC = { u: r.u, tok: r.tok, ver: r.ver }; accStore(); accReady = true;
+                    ACC = { u: r.u, tok: r.tok, ver: r.ver, av: r.av }; accStore(); accReady = true;
                     if (!reg && r.data && Object.keys(r.data).length && confirm('Account-Spielstand laden?\n\nOK = Spielstand vom Account übernehmen\nAbbrechen = Spielstand von diesem Gerät hochladen')) { accApply(r.data, r.ver); location.reload(); return; }
                     if (!reg) accPush(); showAccount();
                 }).catch(() => { m.style.color = '#c66'; m.textContent = 'Server nicht erreichbar.'; });
@@ -5354,7 +5395,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function specHide(e) { if (specHidden === e) return; if (specHidden && specHidden.mesh) specHidden.mesh.visible = true; specHidden = e; if (e && e.mesh) e.mesh.visible = false; }
         function cycleSpec(dir = 1) {
             if (DM.on) { specTarget = null; return; }
-            const mates = ents.filter(e => e !== player && e.alive && e.team === player.team);
+            const mates = ents.filter(e => e !== player && e.alive && (NET.spec ? !e.spec && (e.team === 'CT' || e.team === 'T') : e.team === player.team)); // Zuschauer: beide Teams
             if (!mates.length) { specTarget = null; return; }
             specTarget = mates[((mates.indexOf(specTarget) + dir) % mates.length + mates.length) % mates.length];
             const el = $('specname'); if (el) el.textContent = '👁 ' + specTarget.name;
@@ -5519,13 +5560,13 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             placeTeam('T'); placeTeam('CT');
             bots.forEach(b => { b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; b.lastX = b.x; b.lastZ = b.z; });
             if (DM.on) for (const e of ents) if (!e.remote) dmRespawn(e);
-            const car = DM.on ? null : rnd(ents.filter(e => e.team === 'T')); G.bomb.carrier = car; if (car && car.isPlayer) p.weapons[5] = mkWeapon(W.c4);
+            const car = DM.on ? null : rnd(ents.filter(e => e.team === 'T' && !(NET.spec && e === player))); G.bomb.carrier = car; if (car && car.isPlayer) p.weapons[5] = mkWeapon(W.c4);
             if (DM.on) msg('💀 Deathmatch', `Jeder gegen jeden · ${DM.limit} Kills oder 10 Min · Waffen gratis`, 4); else msg(`Runde ${G.round}`, p.team === 'T' ? `Taktik: Angriff auf Bombsite ${G.site}${car.isPlayer ? ' – Du trägst die Bombe!' : ''}` : 'Verteidigt die Bombsites A und B', 4); sfx('start');
-            if (!EX.on) openBuy(true); updateVM();
+            if (!EX.on) openBuy(true); updateVM(); if (NET.spec) specRound(); // zuschauender Host: jede Runde wieder „tot“
             if (NET.on && NET.host) { netSend({ type: 'round', rd: G.round, site: G.site }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); }
         }
         function endRound(winner, reason) {
-            if (G.state !== 'live') return; G.state = 'end'; G.t = 5; G.score[winner]++; if (winner === player.team) xpEvent('round'); const loser = winner === 'CT' ? 'T' : 'CT'; G.loss[winner] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
+            if (G.state !== 'live') return; G.state = 'end'; G.t = 5; G.score[winner]++; if (winner === player.team && !NET.spec) xpEvent('round'); const loser = winner === 'CT' ? 'T' : 'CT'; G.loss[winner] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
             const winBonus = reason.includes('explodiert') ? 3500 : 3250, loseBonus = 1400 + 500 * (G.loss[loser] - 1);
             for (const e of ents) { e.money = Math.min(16000, e.money + (e.team === winner ? winBonus : loseBonus)); if (e.team === 'T' && G.bomb.state !== 'carried' && G.bomb.state !== 'dropped') e.money = Math.min(16000, e.money + 300); }
             msg(winner === 'CT' ? 'Defender gewinnen' : 'Attacker gewinnen', reason, 5); sfx(player.team === winner ? 'win' : 'lose'); hideProgress(); closeBuy();
@@ -5545,8 +5586,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             for (const e of ents) { if (!e.alive || e.remote) continue; const d = Math.hypot(e.x - G.bomb.x, e.z - G.bomb.z); if (d < 16) applyDamage(e, 400 * (1 - d / 16), null, null, false); }
         }
         function gameOver() {
-            if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); $('hud').style.display = 'none'; store.cases++; saveStore(); xpEvent('match', { won: DM.on ? dmRank()[0] === player : G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT'] }); if (DM.on) { dmReport(); return; } const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; if (BR.on) setTimeout(() => brEnd(won), 0); const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
-            showOverlay(`<h1 style="color:${won ? 'var(--acc)' : '#8da0b5'}">${won ? 'SIEG' : 'NIEDERLAGE'}<small>SPIEL BEENDET</small></h1>
+            if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); $('hud').style.display = 'none'; if (NET.spec) specClear(); else { store.cases++; saveStore(); } if (!NET.spec) xpEvent('match', { won: DM.on ? dmRank()[0] === player : G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT'] }); if (DM.on) { dmReport(); return; } const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; if (BR.on) setTimeout(() => brEnd(won), 0); const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
+            showOverlay(`<h1 style="color:${won ? 'var(--acc)' : '#8da0b5'}">${NET.spec ? '👁 ' + (G.score.CT > G.score.T ? 'DEFENDER GEWINNEN' : G.score.T > G.score.CT ? 'ATTACKER GEWINNEN' : 'UNENTSCHIEDEN') : won ? 'SIEG' : 'NIEDERLAGE'}<small>SPIEL BEENDET</small></h1>
 <div class="panel" style="min-width:320px;text-align:left">
 <div class="psub">MATCH-REPORT · ${MAPLABEL.toUpperCase()}</div>
 <div style="font:700 34px Rajdhani;text-align:center;margin-bottom:10px"><span class="ct">${G.score.CT}</span> <span style="color:var(--mut)">:</span> <span class="t">${G.score.T}</span></div>
@@ -5660,6 +5701,31 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             }
         }
 
+        // ================= 🛠 CUSTOMS: ZUSCHAUER – max. 2 pro Lobby (prüft der Server); Freecam wie im Gauntlet oder Ego-Sicht eines Spielers =================
+        // Zuschauer = Team „SPEC“ im Netz: unsichtbar, nie lebendig, kein Ziel für Bots, sendet keinen Spielerstatus. Lokal bleibt player.team gültig (Spawn-/Kauflogik).
+        const SPV = new THREE.Vector3(); let specUiT = 0;
+        function specSet(on) { NET.spec = on; netSend({ type: 'team', pid: NET.pid, team: on ? 'SPEC' : player.team }); if (NET.inLobby) renderLobby(); }
+        function specFree() { FC.on = true; specTarget = null; FC.x = MAP[0].length * S / 2; FC.z = MAP.length * S + 6; FC.y = 32; FC.yaw = 0; FC.pitch = -0.8; } // von Süden schräg über die Karte
+        function specToggle() { if (FC.on) { stopFreecam(); specTarget = null; cycleSpec(); if (!specTarget) specFree(); } else specFree(); specUiT = 0; }
+        function specStart() { document.body.classList.add('specmode'); specRound(); specFree(); msg('👁 Du schaust zu', IS_TOUCH ? '🎥 Freecam/Ego · ◀ ▶ Spieler wechseln' : 'F / Rechtsklick: Freecam ↔ Ego', 5); }
+        function specRound() { const p = player; p.alive = false; p.health = 0; p.weapons[5] = null; closeBuy(); $('dead').style.display = 'none'; if (!FC.on && (!specTarget || !specTarget.alive)) cycleSpec(); }
+        function specClear() { document.body.classList.remove('specmode'); for (const id of ['spectags', 'spechud']) { const el = $(id); if (el) el.remove(); } }
+        function specTick() { // Teams erkennbar: farbige Namensschilder mit HP (auch durch Wände) + Teamleiste mit Lebenden/Toten
+            if (gameEnded) { specClear(); return; } const show = !paused && $('overlay').style.display !== 'flex';
+            let box = $('spectags'); if (!box) { box = document.createElement('div'); box.id = 'spectags'; document.body.appendChild(box); } box.style.display = show ? '' : 'none';
+            const list = show ? ents.filter(e => e !== player && !e.spec && e.alive && (e.team === 'CT' || e.team === 'T') && (FC.on || e !== specTarget)) : [];
+            while (box.children.length < list.length) box.appendChild(document.createElement('div'));
+            [...box.children].forEach((d, i) => { const e = list[i]; if (e) SPV.set(e.x, (e.y || 0) + 2.15, e.z).project(camera);
+                if (!e || SPV.z > 1 || Math.abs(SPV.x) > 1.1 || Math.abs(SPV.y) > 1.1) { d.style.display = 'none'; return; }
+                d.style.display = ''; d.className = 'stag ' + (e.team === 'CT' ? 'ct' : 't'); const t = e.name + ' · ' + Math.max(0, Math.round(e.health || 0)); if (d.textContent !== t) d.textContent = t;
+                d.style.transform = `translate(${Math.round((SPV.x + 1) / 2 * innerWidth)}px,${Math.round((1 - SPV.y) / 2 * innerHeight)}px) translate(-50%,-100%)`; });
+            if (performance.now() - specUiT < 250) return; specUiT = performance.now();
+            let hud = $('spechud'); if (!hud) { hud = document.createElement('div'); hud.id = 'spechud'; document.body.appendChild(hud); } hud.style.display = show ? '' : 'none';
+            const col = tm => ents.filter(e => e !== player && !e.spec && e.team === tm).map(e => `<span class="${e.alive ? '' : 'dead'}">${escH(e.name)}</span>`).join(''), st = !FC.on && specTarget;
+            hud.innerHTML = `<div class="shrow"><div class="shtm ct"><b>DEFENDER · ${G.score.CT}</b>${col('CT')}</div><div class="shmid">👁 ZUSCHAUER<br><b>${FC.on ? '🚁 Freecam' : st ? `<span class="${st.team === 'CT' ? 'ct' : 't'}">${escH(st.name)}</span>` : '–'}</b></div><div class="shtm t"><b>${G.score.T} · ATTACKER</b>${col('T')}</div></div>
+ <div class="shkeys">${IS_TOUCH ? '🎥 Freecam/Ego · ◀ ▶ Spieler · Stick: fliegen' : 'F / Rechtsklick: Freecam ↔ Ego · Linksklick: nächster Spieler' + (FC.on ? ' · WASD fliegen · Leertaste / Ducken: hoch / runter' : '')}</div>`;
+        }
+        addEventListener('keydown', e => { if (NET.spec && started && !gameEnded && !paused && e.code === 'KeyF' && !e.repeat) specToggle(); });
         // ================= GAUNTLET: FREECAM =================
         const FC = { on: false, x: 0, y: 0, z: 0, yaw: 0, pitch: 0 };
         function startFreecam() {
@@ -5680,6 +5746,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             FC.y += Math.sin(FC.pitch) * f * spd + ((down('jump') ? 1 : 0) - (down('crouch') ? 1 : 0)) * 10 * dt;
             FC.y = clamp(FC.y, 1, 40);
             if (GA.cur) { const A = GA.cur; FC.x = clamp(FC.x, A.ox - 10, A.ox + A.C * S + 10); FC.z = clamp(FC.z, -10, A.R * S + 10); }
+            else if (NET.spec) { FC.x = clamp(FC.x, -10, MAP[0].length * S + 10); FC.z = clamp(FC.z, -10, MAP.length * S + 10); } // Customs-Zuschauer: Kartengrenzen
             camera.position.set(FC.x, FC.y, FC.z);
             camera.rotation.set(FC.pitch, FC.yaw, 0);
         }
@@ -5822,7 +5889,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             hold('tAbil', () => glUseAbility());
             hold('tNext', () => { const o = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); if (o.length) { const n = o[(o.indexOf(player.slot) + 1) % o.length]; n === 4 && player.slot === 4 ? cycleNade() : selectSlot(n); } });
             hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
-            hold('tSpecL', () => { if (!player.alive && !FC.on) cycleSpec(-1); }); hold('tSpecR', () => { if (!player.alive && !FC.on) cycleSpec(1); });
+            hold('tSpecL', () => { if (!player.alive && !FC.on) cycleSpec(-1); }); hold('tSpecR', () => { if (!player.alive && !FC.on) cycleSpec(1); }); hold('tSpecM', () => { if (NET.spec) specToggle(); });
             hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
             // Doppeltipp auf die Tab-Ansicht → Pause-Menü (wie Esc am PC)
             let boardTap = 0; $('board').addEventListener('touchend', e => { const t = performance.now(); if (t - boardTap < 350) { e.preventDefault(); boardTap = 0; $('board').style.display = 'none'; mobPause(); } else boardTap = t; });
@@ -5862,7 +5929,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.39 + Math.random() * 0.06; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
             p.recoil = Math.max(0, p.recoil - dt * 5); p.moving = p.speed > 0;
-            specHide(!p.alive && !FC.on ? specTarget : null);
+            specHide(!p.alive && !FC.on ? specTarget : null); if (NET.spec) specTick();
             if (FC.on) {
                 updateFreecam(dt);
             } else if (!p.alive && specTarget) {
@@ -6125,8 +6192,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (DH.on) { $('board').innerHTML = '<h3 style="margin:0 0 8px">🦆 Entenjagd</h3>' + ($('dhHud') ? $('dhHud').innerHTML : ''); return; }
             if (GL.on) { $('board').innerHTML = glBoard(); return; }
             if (DM.on) { $('board').innerHTML = `<h3 style="margin:0 0 8px">💀 Deathmatch – ${MAPLABEL}</h3><table><tr><th>Spieler</th><th>K</th><th>T</th></tr>${dmRank().map((e, i) => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${i + 1}. ${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td></tr>`).join('')}</table>${IS_TOUCH ? '<p style="font-size:11px;color:#8fa3b8">Doppeltipp: Einstellungen</p>' : ''}`; return; }
-            const rows = t => ents.filter(e => e.team === t).sort((a, b) => b.kills - a.kills).map(e => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${e.isPlayer ? '<b>' + e.name + ' (Du)</b>' : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td><td>$ ${e.money}</td></tr>`).join('');
-            $('board').innerHTML = `<h3 style="margin:0 0 8px">${MAPLABEL} – Runde ${G.round}</h3><table><tr><th class="ct">Defender (${G.score.CT})</th><th>K</th><th>T</th><th>$</th></tr>${rows('CT')}<tr><th class="t" style="padding-top:12px">Attacker (${G.score.T})</th><th>K</th><th>T</th><th>$</th></tr>${rows('T')}</table>`;
+            const rows = t => ents.filter(e => e.team === t && !(NET.spec && e === player)).sort((a, b) => b.kills - a.kills).map(e => `<tr style="${e.alive ? '' : 'opacity:.45'}"><td>${e.isPlayer ? (ACC ? avH(ACC.u, myAv(), 18) + ' ' : '') + '<b>' + e.name + ' (Du)</b>' : e.remote && e.acc ? avH(e.acc, e.av, 18) + ` <span data-pp="${escH(e.acc)}">${e.name}</span>${bdH(e.bd)}` : e.name}</td><td>${e.kills}</td><td>${e.deaths}</td><td>$ ${e.money}</td></tr>`).join('');
+            $('board').innerHTML = `<h3 style="margin:0 0 8px">${MAPLABEL} – Runde ${G.round}</h3><table><tr><th class="ct">Defender (${G.score.CT})</th><th>K</th><th>T</th><th>$</th></tr>${rows('CT')}<tr><th class="t" style="padding-top:12px">Attacker (${G.score.T})</th><th>K</th><th>T</th><th>$</th></tr>${rows('T')}</table>${(sp => sp.length ? '<p style="font-size:11px;color:#8fa3b8;margin:6px 0 0">👁 Zuschauer: ' + sp.map(escH).join(', ') + '</p>' : '')([...NET.players.values()].filter(r => r.spec).map(r => r.name).concat(NET.spec ? [player.name + ' (Du)'] : []))}`;
         }
         const arenaBase = document.createElement('canvas'); arenaBase.width = arenaBase.height = radar.width;
         let RB = null;
@@ -6192,7 +6259,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (e.code === BIND.lastw) selectSlot(player.lastSlot);
             if (e.code === BIND.drop) dropCurrent(); if (e.code === BIND.abil) glUseAbility(); if (e.code === BIND.inspect && !(GL.on && e.code === BIND.abil)) inspectWeapon(); if (/^Digit[0-9]$/.test(e.code)) { const n = +e.code[5]; if (!buyOpen && [1, 2, 3, 4, 5].includes(n)) { if (n === 4 && player.slot === 4) cycleNade(); else selectSlot(n); } }
         });
-        addEventListener('keyup', e => { keys[e.code] = false; if (e.code === BIND.board) $('board').style.display = 'none'; }); addEventListener('mousedown', e => { if (GL.on && GL.phase !== 'duel') return; if (started && !paused && !gameEnded && !player.alive) { if (FC.on) { if (!locked) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) cycleSpec(); return; } if (!locked) { if (started && !paused && !buyOpen && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) { mouseDown = true; clickQueued = true; } if (e.button === 2) toggleScope(); }); addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; }); addEventListener('contextmenu', e => e.preventDefault());
+        addEventListener('keyup', e => { keys[e.code] = false; if (e.code === BIND.board) $('board').style.display = 'none'; }); addEventListener('mousedown', e => { if (GL.on && GL.phase !== 'duel') return; if (started && !paused && !gameEnded && NET.spec && e.button === 2) { specToggle(); return; } if (started && !paused && !gameEnded && !player.alive) { if (FC.on) { if (!locked) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) cycleSpec(); return; } if (!locked) { if (started && !paused && !buyOpen && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) { mouseDown = true; clickQueued = true; } if (e.button === 2) toggleScope(); }); addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; }); addEventListener('contextmenu', e => e.preventDefault());
         addEventListener('wheel', e => { if (!locked) return; const order = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); let i = order.indexOf(player.slot); i = (i + (e.deltaY > 0 ? 1 : -1) + order.length) % order.length; selectSlot(order[i]); });
         addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on && !AL.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
         document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button,.mapc,[data-cat],.subnav b,#cstabs a,.inv,.gltb')) { initAudio(); sfx('ui'); } }, true);
@@ -6506,7 +6573,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             const k = a => '<b class="tk">' + keyName(BIND[a]) + '</b>', nav = n => { showMenu(); const el = document.querySelector('#cstabs a[data-nav="' + n + '"]'); if (el) el.click(); };
             return [
                 { go: () => showMenu(), t: '👋 Willkommen bei CLUTCH', d: 'Taktik-Shooter direkt im Browser – offline gegen Bots oder online mit Freunden. Ich zeige Dir jetzt Seite für Seite, was Du alles machen kannst.<br><br>Mit <b>Weiter</b> oder den Pfeiltasten geht\'s durch, <b>Esc</b> beendet.' },
-                { go: () => nav('play'), sel: '#csplayview', t: '▶ Spielen', d: 'Hier startest Du ein Spiel – <b>Offline</b> gegen Bots oder <b>Online</b> über eine Lobby:<br>• <b>Wettkampf</b>: T legen die Bombe, CT verteidigen oder entschärfen<br>• <b>Deathmatch</b>: jeder gegen jeden, Waffen gratis<br>• <b>Gauntlet</b>: Duo-Turnier mit Draft, Perks & Fähigkeiten<br>• <b>1v1</b>: Duelle mit Kaufphase, Erster mit 5 Siegen<br>• <b>Entenjagd</b>: Enten jagen mit Bestenliste<br>Online wählst Du Dein Team in der Lobby.' },
+                { go: () => nav('play'), sel: '#csplayview', t: '▶ Spielen', d: 'Hier startest Du ein Spiel – <b>Offline</b> gegen Bots oder <b>Online</b> über eine Lobby:<br>• <b>Customs</b>: T legen die Bombe, CT verteidigen oder entschärfen<br>• <b>Deathmatch</b>: jeder gegen jeden, Waffen gratis<br>• <b>Gauntlet</b>: Duo-Turnier mit Draft, Perks & Fähigkeiten<br>• <b>1v1</b>: Duelle mit Kaufphase, Erster mit 5 Siegen<br>• <b>Entenjagd</b>: Enten jagen mit Bestenliste<br>Online wählst Du Dein Team in der Lobby.' },
                 IS_TOUCH
                     ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br><b>Taktik</b>: Icon unter den Ult-Rauten antippen, dann Feuerknopf = werfen · <b>Ultimate</b>: Rauten antippen.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
                     : { t: '⌨️ Steuerung', d: 'Laufen ' + ['fwd', 'left', 'back', 'right'].map(k).join(' ') + ' · Umsehen mit der Maus · Schießen <b class="tk">Linksklick</b> · Zielfernrohr <b class="tk">Rechtsklick</b><br>Springen ' + k('jump') + ' · Ducken ' + k('crouch') + ' · Leise gehen ' + k('walk') + '<br>Nachladen ' + k('reload') + ' · Benutzen/Entschärfen ' + k('use') + ' · Waffe fallen lassen ' + k('drop') + '<br>Letzte Waffe ' + k('lastw') + ' · Waffe inspizieren ' + k('inspect') + ' · Waffen <b class="tk">1–5</b> · Scoreboard ' + k('board') + '<br>Alle Tasten kannst Du in den ⚙️ Einstellungen ändern.' },
@@ -6520,9 +6587,9 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 { go: () => { SHP.tab = 'sk'; showShop(true); }, sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Aufgebaut wie das Inventar: Reiter für <b>offizielle Skins</b>, <b>Community-Skins</b> anderer Spieler und <b>Kleidung</b> – links die Waffe bzw. das Kleidungsteil, rechts das Angebot. Eigene Skins nimmst Du mit 🗑 wieder aus dem Shop.' },
                 { go: () => { if (ACC) { showSkinMaker(); const m = $('skMode'); if (m) { m.value = 'paint'; m.onchange(); } } else { SHP.tab = 'cm'; showShop(true); } }, sel: () => ACC ? '.invbox' : '#btnMkSkin', t: '🎨 Skin-Editor', d: 'Erstelle eigene Skins: Muster und Farben wählen – oder <b>selbst malen</b> mit Pinsel, Radierer, Pipette und Spiegeln.<br>Veröffentlichte Skins erscheinen für alle im Shop. Kauft jemand Deinen Skin, bekommst Du <b>50 % als Coins</b>.' + (ACC ? '' : '<br><i>Zum Erstellen brauchst Du einen Account.</i>') },
                 { go: () => showMenu(), sel: '#ctAcc', t: '⭐ Fortschritt & Account', d: 'Für alles im Spiel gibt es <b>XP</b> – steige im Level auf, verdiene Ränge bis zur Global Elite und schalte <b>Erfolge</b> frei.<br>Mit einem <b>Account</b> ist alles auf jedem Gerät da: Skins, Coins, Fortschritt, Einstellungen.' },
-                { go: () => showMenu(), sel: '[data-nav="editor"]', t: '🛠 Map- & Arena-Editor', d: 'Baue eigene <b>Karten</b> für Wettkampf & Deathmatch oder <b>Arenen</b> für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites – und spiele sie direkt, auch online.' },
+                { go: () => showMenu(), sel: '[data-nav="editor"]', t: '🛠 Map- & Arena-Editor', d: 'Baue eigene <b>Karten</b> für Customs & Deathmatch oder <b>Arenen</b> für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites – und spiele sie direkt, auch online.' },
                 { go: () => nav('news'), sel: '#csnews', t: '📰 News', d: 'Hier stehen alle <b>Patchnotes</b>. Ein Klick auf eine Kachel öffnet sie im Vollbild.' },
-                { go: () => showMenu(), t: '🎉 Fertig!', d: 'Jetzt kennst Du alles.<br>Tipp: Fang mit einem <b>Wettkampf offline</b> an, um Dich einzuspielen.<br><br>Das Tutorial findest Du jederzeit unten auf dem Startbildschirm: <b>❓ Wie funktioniert alles?</b><br><b>Viel Spaß!</b>' }];
+                { go: () => showMenu(), t: '🎉 Fertig!', d: 'Jetzt kennst Du alles.<br>Tipp: Fang mit einem <b>Customs-Match offline</b> an, um Dich einzuspielen.<br><br>Das Tutorial findest Du jederzeit unten auf dem Startbildschirm: <b>❓ Wie funktioniert alles?</b><br><b>Viel Spaß!</b>' }];
         }
         function startTutorial() {
             const inGame = started && !gameEnded;
@@ -6701,7 +6768,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; 
         
 
-        const MODES = { comp: ['🏆', 'Wettkampf', 'Attacker gegen Defender · Bombe legen & entschärfen'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'], ex: ['🧭', 'Erkunden', 'Allein · Karten & Arenen in Ruhe ansehen · Map-Editor jederzeit über das Pausenmenü'], al: ['🔴', 'Aim-Lab', 'Training auf eigener Schießbahn · Gridshot, Flick, Präzision & Tracking'] };
+        const MODES = { comp: ['🛠', 'Customs', 'Eigene Lobby & Regeln · Attacker gegen Defender · Bombe legen & entschärfen · ohne Ranked-Rating'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'], ex: ['🧭', 'Erkunden', 'Allein · Karten & Arenen in Ruhe ansehen · Map-Editor jederzeit über das Pausenmenü'], al: ['🔴', 'Aim-Lab', 'Training auf eigener Schießbahn · Gridshot, Flick, Präzision & Tracking'] };
         const modeName = k => MODES[k] ? MODES[k][0] + ' ' + MODES[k][1] : '';
          function fetchRooms() {
  const el = $('roomlist'); if (!el) return;
@@ -6737,10 +6804,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function saveCARS() { localStorage.setItem('customarenas', JSON.stringify(CARS)); }
         function newMapKey(n, ar) { const base = (ar ? 'myar_' : 'my_') + (String(n).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'map'); let k = base, i = 2; while ((ar ? ARENAS : MAPS)[k]) k = base + '_' + i++; return k; }
         // Karten teilen: Code = "CSWO:" + Base64(JSON) – lässt sich per Chat verschicken
-        function askCode(title, then) { // eigenes Eingabefenster für Codes (prompt() geht in der PC-App nicht)
+        function askCode(title, then, plain) { // eigenes Eingabefenster für Codes (prompt() geht in der PC-App nicht); plain = sichtbarer Text mit Vorgabe
             const bx = document.createElement('div'); bx.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center';
-            bx.innerHTML = '<div class="cspanel" style="padding:18px 20px;text-align:center;min-width:260px"><b style="display:block;margin-bottom:10px">' + title + '</b><input type="password" style="font:bold 14px Arial;padding:7px 10px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px;width:180px"><div style="margin-top:10px"><button data-k="ok">OK</button><button data-k="no">Abbrechen</button></div></div>';
-            document.body.appendChild(bx); const inp = bx.querySelector('input'), done = v => { bx.remove(); if (v) then(v); };
+            bx.innerHTML = '<div class="cspanel" style="padding:18px 20px;text-align:center;min-width:260px"><b style="display:block;margin-bottom:10px">' + title + '</b><input type="' + (plain === undefined ? 'password' : 'text') + '" style="font:bold 14px Arial;padding:7px 10px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px;width:180px"><div style="margin-top:10px"><button data-k="ok">OK</button><button data-k="no">Abbrechen</button></div></div>';
+            document.body.appendChild(bx); const inp = bx.querySelector('input'), done = v => { bx.remove(); if (v) then(v); }; if (plain) inp.value = plain;
             bx.querySelector('[data-k=ok]').onclick = () => done(inp.value.trim()); bx.querySelector('[data-k=no]').onclick = () => done('');
             inp.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter') done(inp.value.trim()); if (e.key === 'Escape') done(''); }; setTimeout(() => inp.focus(), 50);
         }
@@ -6757,6 +6824,9 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const pubCall = (path, body, done) => askCode('Code zum ' + (path === 'publish' ? 'Veröffentlichen' : 'Entfernen') + ':', code => accApi(path, Object.assign({ code }, body)).then(r => { if (!r.ok) return alert(r.err); done(); sessionStorage.setItem('opentab', edFrom); location.reload(); }).catch(() => alert('Server nicht erreichbar.')));
             if (own) items.push(['🌍 Veröffentlichen', () => { const pk = 'pub_' + k.slice(3), map = Object.assign({ g: MAPS[k] }, CMAP_INFO[k]); pubCall('publish', { k: pk, map, by: ACC ? ACC.u : (localStorage.getItem('pname') || '') }, () => { PUBC[pk] = Object.assign({}, map, { by: ACC ? ACC.u : '' }); localStorage.setItem('pubmaps', JSON.stringify(PUBC)); alert('Karte ist jetzt für alle sichtbar!'); }); }]);
             if (k.startsWith('pub_')) items.push(['❌ Veröffentlichung entfernen', () => pubCall('unpublish', { k }, () => { delete PUBC[k]; localStorage.setItem('pubmaps', JSON.stringify(PUBC)); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); })]);
+            if (k.startsWith('pub_')) { const poolCall = (body, msg) => askCode('Code für den Ranked-Pool:', code => accApi('mappool', Object.assign({ code, k }, body)).then(r => { alert(r.ok ? r.msg : r.err); if (r.ok) { sessionStorage.setItem('opentab', edFrom); location.reload(); } }).catch(() => alert('Server nicht erreichbar.')));
+                if (PUBC[k] && PUBC[k].off) items.push(['🏆 Aus Ranked-Pool nehmen', () => poolCall({ on: 0 })], ['⛔ Aus Pool + Creator-Badge entziehen', () => { if (confirm('Badge wirklich entziehen? Nur bei Regelverstoß (z. B. kopierte Karte).')) poolCall({ on: 0, revoke: 1 }); }]);
+                else items.push(['🏆 In Ranked-Pool aufnehmen', () => askCode('Creator-Account (Accountname):', creator => poolCall({ on: 1, creator }), (PUBC[k] && PUBC[k].by) || '')]); }
             items.push(['📥 Code importieren', importMap]);
             if (own) items.push(['🏷️ Umbenennen', () => { const n = (prompt('Neuer Name:', CMAPS[k].n) || '').trim().slice(0, 20); if (n) { CMAPS[k].n = n; saveCMaps(); sessionStorage.setItem('opentab', edFrom); location.reload(); } }],
                 ['🗑️ Löschen', () => { if (!confirm(`Karte „${CMAPS[k].n}" wirklich löschen?`)) return; delete CMAPS[k]; saveCMaps(); if (MAPNAME === k) localStorage.setItem('map', 'de_dusty'); sessionStorage.setItem('opentab', edFrom); location.reload(); }]);
@@ -6935,7 +7005,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function showEditorPick() { // EDITOR-Tab: Karten oder Arenen bauen
             showOverlay(`<h1 style="font-size:34px">🛠 EDITOR<small>WAS MÖCHTEST DU BAUEN?</small></h1>
  <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:10px 0">
- <div class="mcard" id="edPickMap" style="min-width:250px;cursor:pointer"><h2>🗺️ KARTEN</h2><p>Große Karten mit Bombsites<br>für Wettkampf & Deathmatch</p><button>Karten öffnen</button></div>
+ <div class="mcard" id="edPickMap" style="min-width:250px;cursor:pointer"><h2>🗺️ KARTEN</h2><p>Große Karten mit Bombsites<br>für Customs & Deathmatch</p><button>Karten öffnen</button></div>
  <div class="mcard" id="edPickAr" style="min-width:250px;cursor:pointer"><h2>🏟 ARENEN</h2><p>Kleine Arenen<br>für Gauntlet & 1v1</p><button>Arenen öffnen</button></div></div>
  <div><button id="edPickBack">Zurück</button></div>`);
             $('edPickMap').onclick = showMapList; $('edPickAr').onclick = showArenaList; $('edPickBack').onclick = showMenu;
@@ -6956,6 +7026,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <nav id="cstabs">
  <a data-nav="inv">INVENTAR</a>
  <a data-nav="play">SPIELEN</a>
+ <a data-nav="unranked">UNRANKED</a>
  <a data-nav="ranked">RANKED <sup class="betatag">BETA</sup></a>
  <a data-nav="shop">SHOP</a>
  <a data-nav="news">NEWS</a>
@@ -7007,7 +7078,51 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 3.2 „RANKED BETA"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 3.3 „ZUSAMMEN"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎮 NEU: UNRANKED</p>
+ Neuer Reiter <b>UNRANKED</b> im Hauptmenü: 5v5 mit <b>Spielersuche wie im Ranked</b> – Suche starten, Match annehmen, Map wählen, los.<br>
+ Kein Rang, kein Rating, kein Druck. Nach <b>15 Sekunden</b> füllen <b>Bots</b> freie Plätze auf, damit Du nie lange wartest – ihre Stärke richtet sich nach den Spielern im Match.<br>
+ Ablehnen gibt hier <b>keine Suchsperre</b>. Dein Ranked-Rating bleibt komplett unberührt.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👥 NEU: GRUPPEN</p>
+ Spiel zusammen mit Freunden: Lade sie im <b>Ranked- oder Unranked-Menü</b> ein oder direkt in der <b>Freundesliste</b> über 👥.<br>
+ Der <b>Gruppenleiter 👑</b> startet und stoppt die Suche – ihr landet <b>immer im selben Team</b>. Alle sehen Profilbild, Name, Rang und ob jemand online ist.<br>
+ Größen: 1v1 nur allein, 2v2 bis 2, 5v5 & Unranked bis 5. Der Leiter kann Mitglieder entfernen, jeder kann die Gruppe verlassen.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🛠 WETTKAMPF HEISST JETZT CUSTOMS</p>
+ Der bisherige Lobby- & Offline-Modus „Wettkampf“ heißt jetzt <b>Customs</b>: eigene Lobby, eigene Regeln, alles wie gewohnt – und ohne Einfluss auf Ranked.<br>
+ Für Wettkampf mit Rang gibt es <b>RANKED</b>, zum lockeren Spielen mit Spielersuche <b>UNRANKED</b>.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👁 NEU: ZUSCHAUEN IN CUSTOMS</p>
+ In jeder Customs-Lobby gibt es <b>2 Zuschauerplätze</b> – auch der Host darf zuschauen.<br>
+ Flieg in der <b>Freecam</b> wie im Gauntlet über die Karte oder schau aus der <b>Ego-Sicht</b> jedes Spielers beider Teams. Wechseln mit <b>F</b> oder <b>Rechtsklick</b>, nächster Spieler mit <b>Linksklick</b> (Handy: 🎥 und ◀ ▶).<br>
+ <b>Teams erkennbar:</b> farbige Namensschilder mit HP über allen Spielern (blau Defender, orange Attacker) und eine Teamleiste oben mit Spielstand und wer noch lebt.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🖼 PROFILBILDER</p>
+ Unter <b>☁️ Account</b> wählst Du eins von <b>16 Motiven</b> – oder lädst <b>Dein eigenes Bild</b> hoch (wird automatisch quadratisch auf 96×96 zugeschnitten).<br>
+ Dein Bild erscheint in Freundesliste, Gruppe, Lobby, Scoreboard, Endbildschirm und Profil. Bitte keine anstößigen oder fremden Bilder – solche werden entfernt.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👤 SPIELERPROFILE</p>
+ <b>Klick auf einen Namen</b> – in Freundesliste, Gruppe, Lobby, Scoreboard oder Endbildschirm – öffnet das Profil:<br>
+ Profilbild, Level, Badges, Rang und Durchschnittswerte <b>ADR, KAST, Headshot-Quote, K/D</b>, Siegquote und die letzten Matches – getrennt nach 5v5, 2v2, 1v1 und Unranked.<br>
+ Die Werte zählt der Server in gewerteten Matches. Bei wenigen Matches steht ein Hinweis dabei, damit niemand nach 2 Spielen als Profi gilt. Direkt aus dem Profil: Freund hinzufügen oder in die Gruppe einladen.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📊 NEUER ENDBILDSCHIRM</p>
+ Nach Ranked- & Unranked-Matches siehst Du <b>beide Teams</b> gegenübergestellt – im 1v1 beide Spieler nebeneinander.<br>
+ Pro Spieler: <b>K / D / A, K/D, ADR, KAST, HS-Quote</b>, im Ranked zusätzlich <b>Ratingänderung & Rang</b>. Dazu Map, Dauer und Ergebnis. Klick auf einen Namen öffnet sein Profil.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🗺️ 🎨 CREATOR-BADGES</p>
+ <b>Map-Creator 🗺️</b>: Gute Community-Karten können offiziell in den <b>Ranked-Map-Pool</b> aufgenommen werden – sie stehen dann im Map-Voting von Ranked & Unranked. Der Ersteller bekommt das Badge, und es bleibt, auch wenn die Karte später rotiert.<br>
+ <b>Skin-Creator 🎨</b>: Haben Deine Community-Skins zusammen <b>5.000 Coins</b> eingebracht, bekommst Du das Badge. Jeder Käufer zählt pro Skin nur einmal, eigene Käufe zählen nicht.<br>
+ Badges siehst Du neben dem Namen und im Profil.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏆 RANKED</p>
+ Ratings, Ränge und Regeln bleiben gleich. Neu: Gruppen, Community-Maps aus dem offiziellen Pool im Voting, die Statistik im Endbildschirm und die Profilwerte.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 3.2 „RANKED BETA"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏆 RANKED IST DA – ALS BETA</p>
@@ -7700,7 +7815,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 3.2 BETA | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 3.3 BETA | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -7739,7 +7854,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const nav = a.dataset.nav;
                 if (nav === 'inv') { showInventory(); return; }
                 if (nav === 'store') { showCases(); return; } // (Cases liegen jetzt im SHOP-Reiter)
-                if (nav === 'shop') { showShop(); return; } if (nav === 'ranked') { showRanked(); return; }
+                if (nav === 'shop') { showShop(); return; } if (nav === 'ranked') { showRanked('rk'); return; } if (nav === 'unranked') { showRanked('ur'); return; }
                 if (nav === 'maps') { showMapList(); return; } if (nav === 'arenas') { showArenaList(); return; } if (nav === 'editor') { showEditorPick(); return; }
                 setTab(nav);
             });
@@ -7801,7 +7916,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile; frSide();
             $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
-            else if (sessionStorage.getItem('opentab') === 'ranked') { sessionStorage.removeItem('opentab'); showRanked(); const w = sessionStorage.getItem('rkmsg'); if (w) { sessionStorage.removeItem('rkmsg'); RK.msg = '⚠ ' + w; rkRender(); } }
+            else if (sessionStorage.getItem('opentab') === 'ranked' || sessionStorage.getItem('opentab') === 'unranked') { showRanked(sessionStorage.getItem('opentab') === 'unranked' ? 'ur' : 'rk'); sessionStorage.removeItem('opentab'); const w = sessionStorage.getItem('rkmsg'); if (w) { sessionStorage.removeItem('rkmsg'); RK.msg = '⚠ ' + w; rkRender(); } }
             else if (sessionStorage.getItem('opentab') === 'maps') { sessionStorage.removeItem('opentab'); showMapList(); }
         }
         // =====================================================================
@@ -8001,7 +8116,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             player.weapons[2] = mkWeapon(team === 'T' ? W.glock : W.usp); const ctN = ['Cliffe', 'Minh', 'Gooseman', 'Kyle', 'Steel'], tN = ['Vitaliy', 'Zim', 'Opie', 'Ron', 'Wolf'];
             // Bots füllen nur freie Plätze auf (5 pro Team)
             const humans = { CT: 0, T: 0 };
-            humans[player.team]++;
+            if (!NET.spec) humans[player.team]++; // zuschauender Host zählt nicht als Spieler → Bots füllen seinen Platz
             for (const rp of NET.players.values()) humans[rp.team]++;
             if (!EX.on && (CFG.bots !== 0 || !NET.on)) { // Regel „Bots: Aus“ gilt nur online – offline braucht man Gegner
             for (let i = humans.CT; i < CFG.teamSize; i++) createBot(ctN[i - humans.CT], 'CT');
@@ -8009,7 +8124,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             ents = [player, ...bots, ...NET.players.values()]; if (NET.on && NET.host) netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, a: b.ag })) });
             started = true; $('overlay').style.display = 'none';
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
-            renderer.domElement.requestPointerLock(); startRound();
+            renderer.domElement.requestPointerLock(); startRound(); if (NET.spec) specStart();
         }
 
         // ================= GAUNTLET: ARENEN =================
@@ -8769,17 +8884,18 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         addEventListener('keydown', e => { if (e.code === 'Enter' && NET.on && started && !NET.inLobby && !paused && !CHAT.open && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) { e.preventDefault(); chatOpen(!e.shiftKey); } });
         setInterval(chatShow, 500);
         // ================= 👥 FREUNDE (Account nötig) =================
-        const FR = { list: [], rq: [], inv: [], open: false, msg: '' };
+        const FR = { list: [], rq: [], inv: [], pinv: [], open: false, msg: '' };
         function frPoll() {
             if (!ACC) return; accApi('friends', { tok: ACC.tok }).then(r => { if (!r.ok) return; FR.list = r.fr || []; FR.rq = r.rq || [];
                 for (const i of r.inv || []) { FR.inv = FR.inv.filter(o => o.from !== i.from).concat(i); toast('📨 Einladung von ' + i.from, 'Raum „' + i.room + '" · 👥 Freunde öffnen zum Beitreten'); }
+                const pi = r.pinv || []; for (const i of pi) if (!FR.pinv.some(o => o.id === i.id) && !RK.pinv.some(o => o.id === i.id)) toast('👥 Gruppeneinladung von ' + i.from, 'Ranked · 👥 Freunde oder RANKED öffnen'); FR.pinv = pi; if (RK.open) rkRender();
                 frSide(); if (FR.open) frRender(); }).catch(() => { });
         }
         setTimeout(frPoll, 1500); setInterval(frPoll, 20000);
-        function frBadge() { const b = $('frBadge'), n = FR.rq.length + FR.inv.length; if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; } }
+        function frBadge() { const b = $('frBadge'), n = FR.rq.length + FR.inv.length + FR.pinv.length; if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; } }
         function frSide() { // Freunde-Leiste rechts im Hauptmenü: oben der Freunde-Knopf, darunter Freunde (online zuerst)
             const el = $('mfr'); if (!el) return;
-            el.innerHTML = '<div class="fr frbtn" title="Freunde">👥<i id="frBadge" style="display:none"></i></div>' + FR.list.slice().sort((a, b) => (b.on ? 1 : 0) - (a.on ? 1 : 0)).map(f => `<div class="fr${f.on ? ' on' : ''}" title="${escH(f.n)} – ${f.room ? (f.st ? 'Im Spiel' : 'Lobby') + ': ' + escH(f.room) : f.on ? 'Online' : 'Offline'}">${escH((f.n[0] || '?').toUpperCase())}<i class="dot"></i></div>`).join('');
+            el.innerHTML = '<div class="fr frbtn" title="Freunde">👥<i id="frBadge" style="display:none"></i></div>' + FR.list.slice().sort((a, b) => (b.on ? 1 : 0) - (a.on ? 1 : 0)).map(f => `<div class="fr${f.on ? ' on' : ''}" title="${escH(f.n)} – ${f.room ? (f.st ? 'Im Spiel' : 'Lobby') + ': ' + escH(f.room) : f.on ? 'Online' : 'Offline'}">${AVS[f.av] ? AVS[f.av][0] : escH((f.n[0] || '?').toUpperCase())}<i class="dot"></i></div>`).join('');
             el.querySelectorAll('.fr').forEach(d => d.onclick = frToggle); frBadge();
         }
         function frJoin(room, srv, mode) { // über den vorhandenen Rejoin-Ablauf (Seite neu laden → startMP)
@@ -8787,6 +8903,45 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             sessionStorage.setItem('mpjoin', JSON.stringify({ srv: srv || DEF_WS, room, team: 'CT', name: (localStorage.getItem('pname') || (ACC && ACC.u) || 'Spieler').slice(0, 14) })); if (NET.ws) { NET.on = false; NET.ws.close(); } location.reload();
         }
         function frAct(p, n) { accApi(p, { tok: ACC.tok, n, room: NET.room, srv: NET.srv, mode: NET.mode }).then(r => { FR.msg = r.ok ? (r.msg || (p === 'frinv' ? '✓ Einladung an ' + n + ' gesendet' : '✓ Erledigt')) : '⚠ ' + (r.err || 'Fehler'); frPoll(); frRender(); }).catch(() => { FR.msg = '⚠ Server nicht erreichbar'; frRender(); }); }
+        // ================= 🖼 PROFILBILDER, BADGES & SPIELERPROFILE – der Server speichert nur die Motiv-Nummer, Werte kommen aus /api/pprof =================
+        const AVS = [['🦊', '#c8642e'], ['🐺', '#4f5f80'], ['🦅', '#7d5f32'], ['🐯', '#c47d16'], ['🦈', '#2f6f96'], ['🐻', '#6b4730'], ['🐉', '#33804e'], ['🦂', '#93491f'], ['👾', '#6a43b0'], ['🤖', '#4c6e7c'], ['💀', '#43434e'], ['🎯', '#b03232'], ['🔥', '#bf4a15'], ['⚡', '#a88c12'], ['🦆', '#43852f'], ['👑', '#9c7a20']]; // muss zu AV_N in server.js passen
+        const avCol = n => { let h = 0; for (const c of String(n || '?').toLowerCase()) h = (h * 31 + c.charCodeAt(0)) >>> 0; return 'hsl(' + h % 360 + ',40%,38%)'; };
+        const myAv = () => ACC && (Number.isInteger(ACC.av) || /^u\d+$/.test(ACC.av)) ? ACC.av : -1;
+        function avH(n, av, px = 28) { const a = AVS[av], up = typeof av === 'string' && /^u\d+$/.test(av); return `<i class="avi" aria-hidden="true" style="width:${px}px;height:${px}px;font-size:${Math.round(px * (a ? .58 : .46))}px;background:${a ? a[1] : avCol(n)}">${a ? a[0] : escH((String(n || '?')[0] || '?').toUpperCase())}${up ? `<b style="background-image:url('/av/${encodeURIComponent(String(n)).replace(/'/g, '%27')}?v=${av.slice(1)}')"></b>` : ''}</i>`; } // av: 0–15 Motiv, 'u3' = hochgeladenes Bild (Version 3), sonst Initiale // ohne Auswahl: Initiale auf Farbe aus dem Namen
+        function bdH(bd) { bd = String(bd || ''); return (bd.includes('m') ? '<span class="bdg" title="Map-Creator · eigene Karte im offiziellen Ranked-Map-Pool">🗺️</span>' : '') + (bd.includes('s') ? '<span class="bdg" title="Skin-Creator · eigene Community-Skins haben das Einnahmen-Ziel erreicht">🎨</span>' : ''); }
+        const mapLbl = k => !k ? 'Arenen' : MAP_NAMES[k] || (CMAP_INFO[k] || {}).n || (PUBC[k] && PUBC[k].n) || k;
+        if (ACC && ACC.av === undefined) accApi('pprof', { n: ACC.u }).then(r => { if (r.ok && ACC) { ACC.av = r.av; accStore(); } }).catch(() => { }); // ältere Logins: Profilbild einmal nachladen
+        const PP = { n: null };
+        function ppOpen(n) { // Profil als eigenes Fenster über allem (Menü, Lobby, Endbildschirm, Scoreboard)
+            n = String(n || '').trim(); if (!n) return; PP.n = n; let el = $('pppanel');
+            if (!el) { el = document.createElement('div'); el.id = 'pppanel'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Spielerprofil'); el.tabIndex = -1; document.body.appendChild(el); el.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Escape') ppClose(); }); }
+            if (document.pointerLockElement) document.exitPointerLock();
+            el.innerHTML = '<div class="frh"><b>👤 SPIELERPROFIL</b><span data-ppx tabindex="0" role="button" aria-label="Schließen">✕</span></div><p class="rksub">Lade Profil …</p>'; el.focus();
+            accApi('pprof', { n }).then(r => { if (PP.n === n && $('pppanel')) ppRender(r); }).catch(() => { if (PP.n === n && $('pppanel')) ppRender({ err: 'Server nicht erreichbar' }); });
+        }
+        function ppClose() { PP.n = null; const el = $('pppanel'); if (el) el.remove(); }
+        function ppRender(r) {
+            const el = $('pppanel'), head = '<div class="frh"><b>👤 SPIELERPROFIL</b><span data-ppx tabindex="0" role="button" aria-label="Schließen">✕</span></div>';
+            if (!r.ok) { el.innerHTML = head + `<p>⚠ ${escH(r.err || 'Fehler')}</p><div class="ppbtn"><button data-ppx>Schließen</button></div>`; return; }
+            const me = ACC && ACC.u.toLowerCase() === r.n.toLowerCase(), fr = FR.list.some(f => f.n.toLowerCase() === r.n.toLowerCase()), B = r.badges || {}, pc = (a, b) => b ? Math.round(a / b * 100) + ' %' : '–', na = x => x === null || x === undefined ? '–' : x;
+            const mode = md => { const x = md === 'ur' ? r.ur : r.m[md]; if (!x) return `<div class="ppm"><div class="ppmh"><b>${RK_TI[md]}</b><span>–</span></div><div class="rksub">Noch keine Matches</div></div>`;
+                const s = x.st, gp = x.w + x.l + x.d, few = s.n > 0 && s.n < 5;
+                return `<div class="ppm"><div class="ppmh"><b>${RK_TI[md]}</b><span>${md === 'ur' ? 'ohne Rang' : x.placed ? escH(x.rank) + ' · ' + x.r : x.pl ? 'Placement ' + x.pl + '/' + x.pq : 'Ohne Rang'}</span></div>
+ <div class="ppst"><span>ADR <b>${na(s.adr)}</b></span><span>KAST <b>${md === 'v1' ? 'n. v.' : s.kast === null || s.kast === undefined ? '–' : s.kast + ' %'}</b></span><span>HS <b>${s.hs === null || s.hs === undefined ? '–' : s.hs + ' %'}</b></span><span>K/D <b>${s.n ? (s.kd !== null ? s.kd.toFixed(2) : s.k + '.00') : '–'}</b></span></div>
+ <div class="rksub">${s.n ? 'Ø aus ' + s.n + ' gewertet' + (s.n === 1 ? 'em Match' : 'en Matches') : 'Noch keine gewerteten Matches mit Statistik'}${few ? ' · ⚠ wenige Matches – noch wenig aussagekräftig' : ''} · ${md === 'ur' ? 'Gesamt' : 'Saison ' + r.season}: ${gp ? x.w + '–' + x.l + (x.d ? '–' + x.d : '') + ' · Siegquote ' + pc(x.w, gp) : 'keine Matches'}</div>
+ ${x.hist.length ? '<div class="pph" aria-label="Letzte Matches">' + x.hist.map(h => `<i class="${h.st !== 'rated' ? 'x' : h.res === 1 ? 'w' : h.res === 0 ? 'l' : 'd'}" title="${escH(mapLbl(h.map))} · ${h.sc ? h.sc.join(':') : '–'}${h.st === 'rated' ? ' · ' + (h.d >= 0 ? '+' : '') + h.d : ' · ohne Wertung'}">${h.st !== 'rated' ? '–' : h.res === 1 ? 'S' : h.res === 0 ? 'N' : 'U'}</i>`).join('') + '</div>' : ''}</div>`; };
+            el.innerHTML = head + `<div class="pptop">${avH(r.n, r.av, 56)}<div><b class="ppn">${escH(r.n)}${bdH((B.map ? 'm' : '') + (B.skin ? 's' : ''))}</b><span class="rksub">${r.xp !== null ? 'Level ' + lvlOf(r.xp) : 'Level unbekannt'}</span></div></div>
+ ${B.map ? `<div class="ppb">🗺️ <b>Map-Creator</b> · ${B.map.maps.map(x => escH(x.n) + (x.now ? ' (im Ranked-Pool)' : ' (ehemals im Pool)')).join(', ')}</div>` : ''}${B.skin ? `<div class="ppb">🎨 <b>Skin-Creator</b> · eigene Skins haben über ${B.skin.goal} Coins eingebracht</div>` : ''}
+ ${['comp', 'duo', 'v1', 'ur'].map(mode).join('')}<div class="rksub">ADR, KAST, HS & K/D: Durchschnitt über alle gewerteten Ranked-Matches, vom Server gezählt. 5v5, 2v2 und 1v1 getrennt.</div>
+ <div class="ppbtn">${typeof r.av === 'string' ? `<button data-ppmod="${escH(r.n)}" title="Admin: hochgeladenes Profilbild entfernen (Code nötig)" aria-label="Profilbild entfernen (Admin)">🛡</button>` : ''}${!ACC || me ? '' : fr ? `<button data-ppg="${escH(r.n)}">👥 In Gruppe einladen</button>` : `<button data-ppf="${escH(r.n)}">＋ Freund hinzufügen</button>`}<button data-ppx>Schließen</button></div>`;
+            el.querySelectorAll('[data-ppmod]').forEach(b => b.onclick = () => askCode('Code: Profilbild entfernen', code => accApi('rmav', { code, n: b.dataset.ppmod }).then(x => { alert(x.ok ? 'Profilbild entfernt.' : x.err); if (x.ok) ppOpen(b.dataset.ppmod); }).catch(() => alert('Server nicht erreichbar.'))));
+            el.querySelectorAll('[data-ppf]').forEach(b => b.onclick = () => { frAct('fradd', b.dataset.ppf); b.disabled = true; b.textContent = '✓ Anfrage gesendet'; });
+            el.querySelectorAll('[data-ppg]').forEach(b => b.onclick = () => { ptInvite(b.dataset.ppg); b.disabled = true; b.textContent = '✓ Eingeladen'; });
+        }
+        // Klick auf einen Namen mit data-pp (Freunde, Lobby, Scoreboard, Endbildschirm) öffnet das Profil; Capture, damit z. B. der Team-Wechsel in der Lobby nicht mit auslöst
+        document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-pp],[data-ppx]'); if (!t) return; e.stopPropagation(); e.preventDefault(); if (t.dataset.ppx !== undefined) ppClose(); else ppOpen(t.dataset.pp); }, true);
+        document.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') return; const t = e.target.closest && e.target.closest('[data-pp][tabindex],[data-ppx][tabindex]'); if (t) { e.preventDefault(); t.click(); } });
+        function ptInvite(n) { if (ACC) rkConn(() => { rkHi(); rkSend({ type: 'rkpinv', n }); }); } // Gruppe läuft über die Ranked-Verbindung
         // ================= 🔗 LOBBY TEILEN & 🐞 BUG MELDEN (landet über den Server in Discord) =================
         function lobLink() { // Link öffnet das Spiel direkt in dieser Lobby
             const url = NET.srv.replace(/^ws(s?):/, 'http$1:').replace(/\/$/, '') + '/?join=' + encodeURIComponent(NET.room) + '&mode=' + (NET.mode || 'comp');
@@ -8794,8 +8949,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         }
         function lobDiscord() { accApi('lfg', { room: NET.room, name: player.name }).then(r => toast(r.ok ? '📣 In Discord gepostet' : '⚠ ' + (r.err || 'Fehler'), r.ok ? '#🤝-mitspielersuche · mit Beitreten-Knopf' : '')).catch(() => toast('⚠ Server nicht erreichbar', '')); }
         function showBug(back) {
-            const md = !started ? 'Menü' : AL.on ? 'Aim-Lab' : EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : 'Wettkampf';
-            const info = `CLUTCH 3.2 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
+            const md = !started ? 'Menü' : AL.on ? 'Aim-Lab' : EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : RK.cur ? (RK.cur.mode === 'ur' ? 'Unranked' : 'Ranked') : 'Customs';
+            const info = `CLUTCH 3.3 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
             showOverlay(`<h1 style="font-size:34px">🐞 BUG MELDEN<small>GEHT DIREKT AN DEN ENTWICKLER</small></h1>
  <textarea id="bugTxt" maxlength="1500" rows="6" placeholder="Was ist passiert? Was hast Du davor gemacht? Passiert es immer wieder?" style="width:min(520px,88vw);font:14px Arial;padding:10px;background:#141e28;color:#fff;border:1px solid rgba(var(--hl-rgb),.5);border-radius:4px;resize:vertical"></textarea>
  <p style="font-size:11px;color:#8fa3b8;max-width:520px">Wird automatisch mitgeschickt: ${escH(info)}</p><p id="bugMsg" style="font-size:13px;min-height:16px"></p>
@@ -8811,28 +8966,33 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const head = '<div class="frh"><b>👥 FREUNDE</b><span id="frX">✕</span></div>';
             if (!ACC) { el.innerHTML = head + '<p>Freunde & Einladungen brauchen einen Account.</p><button id="frLogin">👤 Login / Registrieren</button>'; $('frX').onclick = frToggle; $('frLogin').onclick = () => { frToggle(); showAccount(); }; return; }
             const inv = FR.inv.map((i, k) => `<div class="frr inv">📨 <b>${escH(i.from)}</b><span>lädt Dich ein · ${escH(i.room)}${MODES[i.mode] ? ' · ' + modeName(i.mode) : ''}</span><button data-ij="${k}">Beitreten</button><button data-ix="${k}">✕</button></div>`).join('');
+            const pinv = FR.pinv.map(i => `<div class="frr inv">👥 <b>${escH(i.from)}</b><span>lädt Dich in eine Ranked-Gruppe ein</span><button data-pj="${escH(i.id)}">Beitreten</button></div>`).join('');
             const rq = FR.rq.map(n => `<div class="frr">🙋 <b>${escH(n)}</b><span>möchte Dein Freund sein</span><button data-fa="${escH(n)}">✓</button><button data-fd="${escH(n)}">✕</button></div>`).join('');
-            const list = FR.list.slice().sort((a, b) => (b.on ? 1 : 0) - (a.on ? 1 : 0)).map(f => `<div class="frr">${f.on ? '🟢' : '⚫'} <b>${escH(f.n)}</b><span>${f.room ? (f.st ? '🎮 Im Spiel' : '🛋 Lobby') + ' · ' + escH(f.room) : f.on ? 'Online' : 'Offline'}</span>${NET.on ? `<button data-fi="${escH(f.n)}">Einladen</button>` : f.room && f.room !== NET.room ? `<button data-fj="${escH(f.n)}">Beitreten</button>` : ''}<button data-fd="${escH(f.n)}" title="Entfernen">🗑</button></div>`).join('');
-            el.innerHTML = head + inv + rq + `<div class="fradd"><input id="frName" maxlength="16" placeholder="Accountname"><button id="frAdd">+ Hinzufügen</button></div><p class="frmsg">${escH(FR.msg)}</p>` + (list || '<p style="font-size:12px;color:#8fa3b8">Noch keine Freunde – füge jemanden über den Accountnamen hinzu.</p>') + (NET.on ? '' : '<p style="font-size:11px;color:#8fa3b8">Einladen geht, sobald Du in einer Online-Lobby bist.</p>');
+            const list = FR.list.slice().sort((a, b) => (b.on ? 1 : 0) - (a.on ? 1 : 0)).map(f => `<div class="frr">${f.on ? '🟢' : '⚫'} ${avH(f.n, f.av, 22)} <b data-pp="${escH(f.n)}" title="Profil ansehen">${escH(f.n)}</b>${bdH(f.bd)}<span>${f.room ? (f.st ? '🎮 Im Spiel' : '🛋 Lobby') + ' · ' + escH(f.room) : f.on ? 'Online' : 'Offline'}</span>${NET.on ? `<button data-fi="${escH(f.n)}">Einladen</button>` : f.room && f.room !== NET.room ? `<button data-fj="${escH(f.n)}">Beitreten</button>` : ''}${f.on && !NET.on ? `<button data-fg="${escH(f.n)}" title="In Ranked-Gruppe einladen">👥</button>` : ''}<button data-fd="${escH(f.n)}" title="Entfernen">🗑</button></div>`).join('');
+            el.innerHTML = head + inv + pinv + rq + `<div class="fradd"><input id="frName" maxlength="16" placeholder="Accountname"><button id="frAdd">+ Hinzufügen</button></div><p class="frmsg">${escH(FR.msg)}</p>` + (list || '<p style="font-size:12px;color:#8fa3b8">Noch keine Freunde – füge jemanden über den Accountnamen hinzu.</p>') + (NET.on ? '' : '<p style="font-size:11px;color:#8fa3b8">Einladen geht, sobald Du in einer Online-Lobby bist.</p>');
             $('frX').onclick = frToggle; const inp = $('frName'); inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') $('frAdd').click(); });
             $('frAdd').onclick = () => { const n = inp.value.trim(); if (n) frAct('fradd', n); };
             el.querySelectorAll('[data-fa]').forEach(b => b.onclick = () => frAct('fradd', b.dataset.fa)); el.querySelectorAll('[data-fd]').forEach(b => b.onclick = () => frAct('frdel', b.dataset.fd));
             el.querySelectorAll('[data-fi]').forEach(b => b.onclick = () => frAct('frinv', b.dataset.fi));
+            el.querySelectorAll('[data-fg]').forEach(b => b.onclick = () => { ptInvite(b.dataset.fg); FR.msg = '✓ Gruppeneinladung an ' + b.dataset.fg + ' gesendet'; frRender(); });
+            el.querySelectorAll('[data-pj]').forEach(b => b.onclick = () => { const id = b.dataset.pj; FR.pinv = FR.pinv.filter(i => i.id !== id); frToggle(); if (!started) showRanked(); rkConn(() => { rkHi(); rkSend({ type: 'rkpjoin', id }); }); });
             el.querySelectorAll('[data-fj]').forEach(b => b.onclick = () => { const f = FR.list.find(x => x.n === b.dataset.fj); if (f && f.room) frJoin(f.room, DEF_WS, f.mode); });
             el.querySelectorAll('[data-ij]').forEach(b => b.onclick = () => { const i = FR.inv[+b.dataset.ij]; if (i) frJoin(i.room, i.srv, i.mode); });
             el.querySelectorAll('[data-ix]').forEach(b => b.onclick = () => { FR.inv.splice(+b.dataset.ix, 1); frBadge(); frRender(); });
         }
         // ================= 🏆 RANKED – Rang, Warteschlange, Annehmen & Map-Voting (Server rechnet & speichert alles) =================
-        const RK = { ws: null, q: null, found: null, prof: null, open: false, mode: 'comp', msg: '', cur: null, all: false, st: null, go: 0, ban: 0, view: 'hist', lb: {} };
-        const RK_MN = { comp: '5v5', duo: '2v2', v1: '1v1' }, RK_TI = { comp: '🏆 WETTKAMPF 5V5', duo: '👥 WETTKAMPF 2V2', v1: '🎯 1V1 DUELL' }, mmss = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+        const RK = { ws: null, q: null, found: null, prof: null, open: false, mode: 'comp', msg: '', cur: null, all: false, st: null, go: 0, ban: 0, view: 'hist', lb: {}, pt: null, pinv: [] };
+        const RK_MN = { comp: '5v5', duo: '2v2', v1: '1v1', ur: 'Unranked 5v5' }, RK_TI = { comp: '🏆 WETTKAMPF 5V5', duo: '👥 WETTKAMPF 2V2', v1: '🎯 1V1 DUELL', ur: '🎮 UNRANKED 5V5' }, mmss = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
         function rkConn(then) {
             if (RK.ws && RK.ws.readyState === 1) { then(); return; }
+            if (RK.ws && RK.ws.readyState === 0) { const o = RK.ws.onopen; RK.ws.onopen = () => { if (o) o(); then(); }; return; } // Verbindung baut sich gerade auf → mitbenutzen statt zweite öffnen
             try { RK.ws = new WebSocket(DEF_WS); } catch (e) { RK.msg = '⚠ Server nicht erreichbar'; rkRender(); return; }
             RK.ws.onopen = then; RK.ws.onerror = () => { RK.msg = '⚠ Server nicht erreichbar'; rkRender(); };
-            RK.ws.onclose = () => { RK.ws = null; if (RK.q || RK.found) { RK.q = RK.found = null; RK.msg = '⚠ Verbindung getrennt – Suche beendet'; rkRender(); } };
+            RK.ws.onclose = () => { RK.ws = null; RK.pt = null; if (RK.q || RK.found) { RK.q = RK.found = null; RK.msg = '⚠ Verbindung getrennt – Suche beendet'; rkRender(); } };
             RK.ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } rkMsg(m); };
         }
-        const rkSend = o => { if (RK.ws && RK.ws.readyState === 1) RK.ws.send(JSON.stringify(o)); };
+        const rkSend = o => { if (RK.ws && RK.ws.readyState === 1) RK.ws.send(JSON.stringify(o)); }, rkHi = () => ACC && rkSend({ type: 'rkhi', tok: ACC.tok });
+        if (ACC && sessionStorage.getItem('rkpt')) setTimeout(() => rkConn(rkHi), 1500); // in einer Gruppe: nach Neuladen (z. B. Match-Ende) wieder verbinden
         function rkMsg(m) {
             if (m.type === 'rkq') { RK.q = m; RK.found = null; RK.msg = ''; }
             else if (m.type === 'rkoff') { RK.q = RK.found = null; RK.msg = m.why ? '⚠ ' + m.why : ''; if (m.ban) RK.ban = m.ban; if (m.live && RK.prof) RK.prof.live = m; }
@@ -8840,26 +9000,32 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             else if (m.type === 'rkfound') { RK.q = null; RK.found = Object.assign(m, { t0: Date.now(), ok: false, vote: null, ban: null, a: 0 }); sfx('start'); }
             else if (m.type === 'rkacc') { if (RK.found) RK.found.a = m.a; }
             else if (m.type === 'rkgo') { rkGo(m); return; }
+            else if (m.type === 'rkpst') { RK.pt = m.pt; try { if (m.pt && m.pt.mem.length > 1) sessionStorage.setItem('rkpt', '1'); else sessionStorage.removeItem('rkpt'); } catch (e) { } if (m.why) { RK.msg = m.why; if (!RK.open) toast('👥 Gruppe', m.why); } }
+            else if (m.type === 'rkpinv') { const nw = (m.inv || []).filter(i => !RK.pinv.some(o => o.id === i.id) && !FR.pinv.some(o => o.id === i.id)); RK.pinv = m.inv || []; FR.pinv = FR.pinv.filter(i => RK.pinv.some(o => o.id === i.id)); frBadge(); for (const i of nw) toast('👥 Gruppeneinladung von ' + i.from, 'RANKED öffnen zum Annehmen'); }
+            else if (m.type === 'rkperr') RK.msg = (m.ok ? '' : '⚠ ') + m.why;
+            if ((m.type === 'rkq' || m.type === 'rkfound') && !RK.open && !started && ACC) { showRanked(m.mode === 'ur' ? 'ur' : 'rk'); return; } // Gruppenmitglied: Suche/Annehmen sofort sichtbar
             rkRender();
         }
         function rkGo(m) { // wie der Freundes-Beitritt: Seite neu laden → startMP im Ranked-Raum (Team & Map vom Server)
             sessionStorage.setItem('rk', JSON.stringify(m)); sessionStorage.setItem('playcat', m.mode === 'v1' ? 'v1' : 'comp'); /* 2v2 & 5v5 = Wettkampf */ sessionStorage.setItem('playmode', '1');
-            if (m.map && MAPS[m.map]) localStorage.setItem('map', m.map);
+            if (m.cmap) sessionStorage.setItem('netmap', JSON.stringify(m.cmap)); // offizielle Community-Map: Kartendaten vom Server
+            if (m.map && (MAPS[m.map] || m.cmap)) localStorage.setItem('map', m.map);
             sessionStorage.setItem('mpjoin', JSON.stringify({ srv: DEF_WS, room: m.room, team: m.team, name: ACC.u.slice(0, 14) }));
             if (RK.ws) { RK.ws.onclose = null; RK.ws.close(); } location.reload();
         }
-        function showRanked() {
-            RK.open = true; RK.msg = ''; rkRender(); if (!ACC) return;
+        function showRanked(pg) { // pg: 'ur' = Unranked, 'rk' = Ranked, leer = aktuelle Seite (beide teilen Verbindung & Gruppe)
+            if (pg === 'ur') { RK.mode = 'ur'; RK.view = 'hist'; } else if (pg === 'rk' && RK.mode === 'ur') RK.mode = 'comp';
+            RK.open = true; RK.msg = ''; rkRender(); if (!ACC) return; rkConn(rkHi); frPoll();
             accApi('ranked', { tok: ACC.tok }).then(r => { if (r.ok) { RK.prof = r; RK.ban = r.ban || 0; } else RK.msg = '⚠ ' + (r.err || 'Fehler'); rkRender(); }).catch(() => { RK.msg = '⚠ Server nicht erreichbar'; rkRender(); });
         }
         function rkCard(md) {
-            const p = RK.prof.m[md], rk = p.rank, nx = RK.prof.ranks[rk.i + 1], busy = RK.q || RK.found || RK.prof.live || RK.ban > Date.now();
+            const p = RK.prof.m[md], rk = p.rank, nx = RK.prof.ranks[rk.i + 1], notLead = RK.pt && RK.pt.mem.length > 1 && RK.pt.lead !== ACC.u, busy = RK.q || RK.found || RK.prof.live || RK.ban > Date.now() || notLead;
             return `<div class="panel rkcard${RK.mode === md ? ' on' : ''}" data-rkm="${md}"><div class="psub">${RK_TI[md]}</div>
  <div class="rkrank">${p.placed ? rk.name : 'VORLÄUFIG · ' + rk.name}</div><div class="rkr">${p.r}<small> RATING</small></div>
  <div class="rkbar"><i style="width:${Math.round((p.placed ? rk.prog : p.pl / p.pq) * 100)}%"></i></div>
  <div class="rksub">${!p.placed ? `Placement ${p.pl}/${p.pq} – danach wird Dein Rang sichtbar` : nx ? `Noch ${nx[0] - p.r} bis ${nx[1]}` : 'Höchster Rang erreicht'}${p.placed && rk.lo !== null ? ' · Abstieg unter ' + rk.lo : ''}</div>
  <div class="rkst"><span>✔ ${p.w}</span><span>✖ ${p.l}</span>${p.d ? `<span>= ${p.d}</span>` : ''}<span>Peak ${p.peak}</span><span>K ${p.k}</span>${p.ab ? `<span title="Verbindungsabbrüche – nur Statistik">⚡ ${p.ab}</span>` : ""}</div>
- <button data-rkq="${md}"${busy ? ' disabled' : ''}>🔍 ${RK_MN[md]} SUCHEN</button></div>`;
+ <button data-rkq="${md}"${busy ? ' disabled' : ''}>🔍 ${RK_MN[md]} ${RK.pt && RK.pt.mem.length > 1 ? (notLead ? 'NUR LEITER' : 'MIT GRUPPE') : ''} SUCHEN</button></div>`;
         }
         function rkRender() {
             if (!RK.open) return; const P = RK.prof, F = RK.found;
@@ -8867,24 +9033,35 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (!ACC) body = '<div class="rkcards"><div class="panel"><p>Online-Ranked braucht einen Account – Rating & Historie werden auf dem Server gespeichert.</p><button id="rkLogin">👤 Login / Registrieren</button></div>' + brCard() + '</div>';
             else if (!P) body = '<p class="rksub">Lade Ranked-Daten…</p><div class="rkcards">' + brCard() + '</div>';
             else {
-                const hist = P.m[RK.mode].hist.map(h => { const c = h.st !== 'rated' ? 'x' : h.res === 1 ? 'w' : h.res === 0 ? 'l' : 'd';
-                    return `<div class="rkh ${c}"><b>${{ x: h.st === 'invalid' ? 'UNGÜLTIG' : 'ABGEBROCHEN', w: 'SIEG', l: 'NIEDERLAGE', d: 'UNENTSCHIEDEN' }[c]}</b><span>${h.sc ? h.sc.join(' : ') : '–'}</span><span>${h.map ? escH(MAP_NAMES[h.map] || h.map) : 'Arenen'}</span><span>vs ${escH(h.opp.join(', '))}</span><span class="rkd">${h.st === 'rated' ? (h.d >= 0 ? '+' : '') + h.d : '±0'}</span>${h.ps && h.ps.k !== undefined ? `<small>K/D ${h.ps.k}/${h.ps.d} · ADR ${h.ps.adr}${h.ps.left ? ' · verlassen' : ''}</small>` : ''}${h.why ? `<small>${escH(h.why)}</small>` : ''}</div>`; }).join('') || '<p class="rksub">Noch keine Ranked-Matches in diesem Modus.</p>';
+                const UR = RK.mode === 'ur', hist = (UR ? P.ur : P.m[RK.mode]).hist.map(h => { const c = h.st !== 'rated' ? 'x' : h.res === 1 ? 'w' : h.res === 0 ? 'l' : 'd';
+                    return `<div class="rkh ${c}"><b>${{ x: h.st === 'invalid' ? 'UNGÜLTIG' : 'ABGEBROCHEN', w: 'SIEG', l: 'NIEDERLAGE', d: 'UNENTSCHIEDEN' }[c]}</b><span>${h.sc ? h.sc.join(' : ') : '–'}</span><span>${escH(mapLbl(h.map))}</span><span>vs ${escH(h.opp.join(', '))}</span><span class="rkd">${UR ? '' : h.st === 'rated' ? (h.d >= 0 ? '+' : '') + h.d : '±0'}</span>${h.ps && h.ps.k !== undefined ? `<small>K/D ${h.ps.k}/${h.ps.d} · ADR ${h.ps.adr}${h.ps.left ? ' · verlassen' : ''}</small>` : ''}${h.why ? `<small>${escH(h.why)}</small>` : ''}</div>`; }).join('') || '<p class="rksub">Noch keine Ranked-Matches in diesem Modus.</p>';
                 let st = '';
                 if (P.live) st = `<div class="rkbox"><b>⚠ Du bist noch in einem laufenden Ranked-Match (${RK_MN[P.live.mode]})</b><button id="rkRe">↩ Wieder verbinden</button></div>`;
                 else if (F) st = `<div class="rkbox found"><b>✅ MATCH GEFUNDEN · ${RK_MN[F.mode]}${F.bots ? ' · ' + (F.n) + ' Spieler + ' + F.bots + ' Bots (Stufe ' + F.blv + ')' : ''} · <span id="rkFT">${F.sec}</span> s</b>
- ${F.maps && !F.ok ? '<div class="rkmaps">' + F.maps.map(k => `<button data-rkv="${k}" class="${F.vote === k ? 'on' : F.ban === k ? 'ban' : ''}">${F.vote === k ? '✔ ' : F.ban === k ? '✖ ' : ''}${escH(MAP_NAMES[k] || k)}</button>`).join('') + '</div><span class="rksub">Optional · 1× klicken = Stimme ✔, 2× = Bann ✖ · Stimmen minus Banns, höchste Map gewinnt, Gleichstand = Zufall</span>' : ''}
+ ${F.maps && !F.ok ? '<div class="rkmaps">' + F.maps.map(k => `<button data-rkv="${k}" class="${F.vote === k ? 'on' : F.ban === k ? 'ban' : ''}">${F.vote === k ? '✔ ' : F.ban === k ? '✖ ' : ''}${escH(MAP_NAMES[k] || (F.names && F.names[k]) || mapLbl(k))}${F.names && F.names[k] ? ' 🗺️' : ''}</button>`).join('') + '</div><span class="rksub">Optional · 1× klicken = Stimme ✔, 2× = Bann ✖ · Stimmen minus Banns, höchste Map gewinnt, Gleichstand = Zufall</span>' : ''}
  ${F.ok ? `<span class="rksub">Angenommen – warte auf die anderen (${F.a}/${F.n})…</span>` : '<div><button id="rkAcc" style="border-color:#9fe08a;color:#9fe08a">✔ ANNEHMEN</button><button id="rkDec" style="border-color:#c66;color:#c66">✖ Ablehnen</button></div>'}</div>`;
                 else if (RK.ban > Date.now()) st = `<div class="rkbox"><b>⛔ Suchsperre · <span id="rkBan">${mmss((RK.ban - Date.now()) / 1000)}</span></b><span class="rksub">Wegen wiederholtem Ablehnen/Verpassen gefundener Matches (max. 5 Min)</span></div>`;
-                else if (RK.q) st = `<div class="rkbox"><b>🔍 Suche ${RK_MN[RK.q.mode]} · <span id="rkT">${mmss((Date.now() - RK.q.t) / 1000)}</span></b><span class="rksub">${RK.q.n} in der Warteschlange · Ratingfenster ±${RK.q.win}${RK.q.mode !== 'v1' ? ' · nach 30 s füllen Bots auf' : ''}</span><button id="rkX">✖ Suche abbrechen</button></div>`;
+                else if (RK.q) st = `<div class="rkbox"><b>🔍 Suche ${RK_MN[RK.q.mode]} · <span id="rkT">${mmss((Date.now() - RK.q.t) / 1000)}</span></b><span class="rksub">${RK.q.pn > 1 ? '👥 Gruppe (' + RK.q.pn + ') · ' : ''}${RK.q.n} in der Warteschlange · Ratingfenster ±${RK.q.win}${RK.q.mode !== 'v1' ? (RK.q.mode === 'ur' ? ' · nach ' + ((P.ur && P.ur.fill) || 15) + ' s füllen Bots auf' : ' · nach 30 s füllen Bots auf') : ''}</span><button id="rkX">✖ Suche abbrechen</button></div>`;
                 const past = P.past.length ? '<div class="psub" style="margin-top:12px">FRÜHERE SAISONS</div>' + P.past.slice().reverse().map(s => `<div class="rkh x"><b>S${s.s} · ${RK_MN[s.mode]}</b><span>${s.rank ? escH(s.rank) : 'ohne Rang'}</span><span>${s.r}</span><span>Peak ${s.peak}</span><span>${s.w}–${s.l}</span></div>`).join('') : '';
                 const L = RK.lb[RK.mode], lb = !L ? '<p class="rksub">Lade Bestenliste…</p>' : (L.top.map((x, i) => `<div class="rkh lb${ACC && x.n === ACC.u ? ' w' : ''}"><b>#${i + 1}</b><span>${escH(x.n)}</span><span>${escH(x.rank)}</span><span class="rkd">${x.r}</span><span>${x.w}–${x.l}</span></div>`).join('') || '<p class="rksub">Noch niemand platziert – sei der Erste!</p>') + (L.me ? `<p class="rksub">Dein Platz: #${L.me.pos} von ${L.total}</p>` : '<p class="rksub">Du erscheinst nach Deinen Placement-Matches.</p>');
-                body = `<div class="rkcards">${rkCard('comp')}${rkCard('duo')}${rkCard('v1')}</div>${st}
+                const pt = RK.pt, lead = !pt || pt.lead === ACC.u, inP = n => pt && pt.mem.some(x => x.n.toLowerCase() === n.toLowerCase());
+                const pinv = RK.pinv.map(i => `<div class="frr">📨 <b>${escH(i.from)}</b><span>lädt Dich in eine Gruppe ein</span><button data-ptj="${escH(i.id)}">✔ Annehmen</button><button data-ptd="${escH(i.id)}" aria-label="Ablehnen">✕</button></div>`).join('');
+                const mem = pt ? pt.mem.map(x => `<div class="ptm">${avH(x.n, x.av, 34)}<div><b data-pp="${escH(x.n)}" tabindex="0" role="button" title="Profil ansehen">${escH(x.n)}</b>${bdH(x.bd)}${x.lead ? ' 👑' : ''}<span class="rksub">${x.on ? '🟢' : '⚫ getrennt'} · ${x.rk[UR ? 'comp' : RK.mode] ? escH(x.rk[UR ? 'comp' : RK.mode]) : 'ohne Rang'} (${RK_MN[UR ? 'comp' : RK.mode]})${x.q ? ' · 🔍' : ''}</span></div>${pt.lead === ACC.u && !x.lead ? `<button data-ptk="${escH(x.n)}" title="Aus der Gruppe entfernen" aria-label="${escH(x.n)} entfernen">✕</button>` : ''}</div>`).join('') : '';
+                const cand = lead ? FR.list.filter(f => f.on && !inP(f.n) && !(pt && pt.inv.includes(f.n))).map(f => `<button data-pti="${escH(f.n)}">${avH(f.n, f.av, 18)} ${escH(f.n)} ＋</button>`).join('') : '';
+                const party = `<div class="panel rkparty"><div class="psub">👥 GRUPPE${pt ? ' · ' + pt.mem.length + '/5' : ''}</div>${pinv}${mem ? '<div class="ptmem">' + mem + '</div>' : '<p class="rksub">Spielt zusammen: Lade Freunde ein – ihr sucht gemeinsam und landet im selben Team. 1v1 nur allein, 2v2 bis 2, 5v5 bis 5.</p>'}${pt && pt.inv.length ? '<p class="rksub">Eingeladen: ' + pt.inv.map(escH).join(', ') + '</p>' : ''}${lead ? (cand ? '<div class="rksub">Freunde online einladen:</div><div class="ptinv">' + cand + '</div>' : '<p class="rksub">Gerade keine Freunde online.</p>') : '<p class="rksub">Nur der Gruppenleiter (' + escH(pt.lead) + ') lädt ein und startet die Suche.</p>'}${pt ? '<button id="ptLeave">🚪 Gruppe verlassen</button>' : ''}</div>`;
+                const U = P.ur, urBusy = RK.q || RK.found || P.live || RK.ban > Date.now() || (pt && pt.mem.length > 1 && !lead);
+                if (UR) body = `<div class="rkcards"><div class="panel rkcard on" style="cursor:default;max-width:560px"><div class="psub">🎮 UNRANKED 5V5</div><div class="rkrank">Spielen ohne Druck</div>
+ <div class="rksub">Spielersuche wie im Ranked · nach ${U.fill} s füllen <b>Bots</b> freie Plätze auf – ihre Stärke richtet sich nach den Spielern im Match · <b>kein Rang, kein Rating, keine Suchsperre</b> · Gruppen bis 5 · offizieller Map-Pool</div>
+ <div class="rkst"><span>✔ ${U.w}</span><span>✖ ${U.l}</span>${U.d ? `<span>= ${U.d}</span>` : ''}<span>${U.n} Matches</span></div>
+ <button data-rkq="ur"${urBusy ? ' disabled' : ''}>🔍 UNRANKED ${pt && pt.mem.length > 1 ? (lead ? 'MIT GRUPPE ' : 'NUR LEITER ') : ''}SUCHEN</button></div></div>${st}${party}
+ <div class="panel rklist"><div class="psub" style="margin-bottom:6px">LETZTE UNRANKED-MATCHES</div>${hist.replace('Noch keine Ranked-Matches in diesem Modus.', 'Noch keine Unranked-Matches.')}</div>`;
+                else body = `<div class="rkcards">${rkCard('comp')}${rkCard('duo')}${rkCard('v1')}</div>${st}${party}
  <div class="rkcards" style="margin-top:12px">${brCard()}</div>
  <div class="panel rklist"><div class="subnav" style="margin-bottom:6px"><b data-rkview="hist" class="${RK.view === 'hist' ? 'on' : ''}">LETZTE MATCHES · ${RK_MN[RK.mode]}</b><b data-rkview="lb" class="${RK.view === 'lb' ? 'on' : ''}">🏅 BESTENLISTE · ${RK_MN[RK.mode]}</b></div>${RK.view === 'lb' ? lb : hist + past}</div>`;
             }
             showOverlay(`<style>.rkbeta{max-width:640px;margin:0 auto 10px;padding:7px 12px;border:1px dashed #ffd84a;border-radius:6px;color:#ffd84a;font-size:12px;display:flex;gap:10px;align-items:center;justify-content:space-between}.rkbeta button{margin:0;padding:4px 10px;font-size:12px;min-height:0}.rkcards{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}.rkcards>.panel{position:relative}.rkcard{min-width:260px;cursor:pointer;opacity:.8}.rkcard.on{opacity:1;border-color:var(--acc)}.rkrank{font:700 26px Rajdhani;color:var(--acc);text-transform:uppercase}.rkr{font:700 20px Rajdhani}.rkr small,.rksub{font-size:12px;color:var(--mut)}.rkbar{height:6px;background:rgba(255,255,255,.1);border-radius:3px;margin:8px 0 4px;overflow:hidden}.rkbar i{display:block;height:100%;background:var(--acc)}.rkst{display:flex;gap:10px;font-size:12px;margin:8px 0;color:#cfd8e3}.rkbox{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px auto;padding:10px 16px;border:1px solid var(--line);border-radius:6px;max-width:640px}.rkbox.found{border-color:#9fe08a}.rkmaps{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.rkmaps button.on{border-color:#9fe08a;color:#9fe08a}.rkmaps button.ban{border-color:#c66;color:#c66;text-decoration:line-through}.rklist{max-width:640px;margin:0 auto;text-align:left;max-height:34vh;overflow-y:auto}.rkh{display:grid;grid-template-columns:110px 54px 1fr 1.4fr 70px;gap:8px;font-size:12px;padding:5px 6px;border-left:3px solid #556;margin:3px 0;align-items:center}.rkh.w{border-color:#9fe08a}.rkh.l{border-color:#ff6b6b}.rkh.d{border-color:#ffd84a}.rkh .rkd{text-align:right;font-weight:700}.rkh small{grid-column:1/-1;color:var(--mut);font-size:11px}.rkh.lb{grid-template-columns:44px 1fr 1fr 60px 60px}.rkcard{min-width:230px}.rkh.w .rkd{color:#9fe08a}.rkh.l .rkd{color:#ff6b6b}.mob .rkh{grid-template-columns:90px 44px 1fr 60px}.mob .rkh span:nth-child(4){display:none}</style>
- <h1 style="font-size:34px">🏆 RANKED <span style="color:#ffd84a">BETA</span><small>${P ? 'SAISON ' + P.season + ' · ' : ''}5V5 · 2V2 · 1V1 · GETRENNTE RATINGS</small></h1>
- <div class="rkbeta"><span>🚧 Beta: Ratings können sich bis zum offiziellen Start noch ändern oder zurückgesetzt werden. Details in den NEWS.</span><button id="rkBug">🐞 Fehler melden</button></div>
+ ${RK.mode === 'ur' ? '<h1 style="font-size:34px">🎮 UNRANKED<small>5V5 · SPIELERSUCHE · BOTS FÜLLEN AUF · OHNE RANG</small></h1>' : `<h1 style="font-size:34px">🏆 RANKED <span style="color:#ffd84a">BETA</span><small>${P ? 'SAISON ' + P.season + ' · ' : ''}5V5 · 2V2 · 1V1 · GETRENNTE RATINGS</small></h1>`}
+ <div class="rkbeta"${RK.mode === 'ur' ? ' style="display:none"' : ''}><span>🚧 Beta: Ratings können sich bis zum offiziellen Start noch ändern oder zurückgesetzt werden. Details in den NEWS.</span><button id="rkBug">🐞 Fehler melden</button></div>
  ${body}<p class="rksub" style="min-height:16px">${escH(RK.msg)}</p><div><button id="rkBack">Zurück</button></div>`);
             const on = (id, f) => { const el = $(id); if (el) el.onclick = f; };
             on('rkBack', () => { if (RK.q) rkSend({ type: 'rkx' }); if (RK.found && !RK.found.ok) rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.q = RK.found = null; RK.open = false; showMenu(); });
@@ -8898,6 +9075,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             document.querySelectorAll('[data-rkm]').forEach(c => c.onclick = () => { if (RK.mode !== c.dataset.rkm) { RK.mode = c.dataset.rkm; rkRender(); } });
             document.querySelectorAll('[data-rkview]').forEach(b => b.onclick = () => { RK.view = b.dataset.rkview; if (RK.view === 'lb') RK.lb = {}; rkRender(); }); rkLb();
             document.querySelectorAll('[data-rkq]').forEach(b => b.onclick = e => { e.stopPropagation(); RK.mode = b.dataset.rkq; RK.msg = ''; rkConn(() => rkSend({ type: 'rkq', tok: ACC.tok, mode: RK.mode })); });
+            document.querySelectorAll('[data-pti]').forEach(b => b.onclick = () => { b.disabled = true; rkSend({ type: 'rkpinv', n: b.dataset.pti }); });
+            document.querySelectorAll('[data-ptk]').forEach(b => b.onclick = () => rkSend({ type: 'rkpkick', n: b.dataset.ptk }));
+            document.querySelectorAll('[data-ptj]').forEach(b => b.onclick = () => rkSend({ type: 'rkpjoin', id: b.dataset.ptj }));
+            document.querySelectorAll('[data-ptd]').forEach(b => b.onclick = () => rkSend({ type: 'rkpdec', id: b.dataset.ptd }));
+            on('ptLeave', () => rkSend({ type: 'rkpleave' }));
         }
         setInterval(() => { if (!RK.open) return; const t = $('rkT'); if (t && RK.q) t.textContent = mmss((Date.now() - RK.q.t) / 1000); const f = $('rkFT'); if (f && RK.found) f.textContent = Math.max(0, Math.ceil(RK.found.sec - (Date.now() - RK.found.t0) / 1000));
             const bn = $('rkBan'); if (bn) { if (RK.ban > Date.now()) bn.textContent = mmss((RK.ban - Date.now()) / 1000); else { RK.ban = 0; rkRender(); } } }, 500);
@@ -8952,23 +9134,38 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (RK.cur.mode === 'v1') { GL.v1 = true; glStartMP(2); }
                 else { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 0 }); startGame(player.team); } }, 1500);
         }
-        const rkLobbyInfo = () => `<p style="font-size:13px;color:var(--acc);margin-top:14px">🏆 RANKED BETA ${RK_MN[RK.cur.mode]}${RK.cur.map ? ' · ' + escH(MAP_NAMES[RK.cur.map] || RK.cur.map) : ''} · ${RK.st ? RK.st.n : 1}/${RK.cur.n} Spieler verbunden${RK.cur.rules && RK.cur.rules.blv ? ' · + ' + (RK.cur.nb[0] + RK.cur.nb[1]) + ' Bots (Stufe ' + RK.cur.rules.blv + ', zählen nicht als Spieler)' : ''}<br><span style="color:#8fa3b8">Teams & Regeln vom Server · Start automatisch, sobald alle da sind</span></p>`;
+        const rkLobbyInfo = () => `<p style="font-size:13px;color:var(--acc);margin-top:14px">${RK.cur.mode === 'ur' ? '🎮 UNRANKED' : '🏆 RANKED BETA ' + RK_MN[RK.cur.mode]}${RK.cur.map ? ' · ' + escH(MAP_NAMES[RK.cur.map] || RK.cur.map) : ''} · ${RK.st ? RK.st.n : 1}/${RK.cur.n} Spieler verbunden${RK.cur.rules && RK.cur.rules.blv ? ' · + ' + (RK.cur.nb[0] + RK.cur.nb[1]) + ' Bots (Stufe ' + RK.cur.rules.blv + ', zählen nicht als Spieler)' : ''}<br><span style="color:#8fa3b8">Teams & Regeln vom Server · Start automatisch, sobald alle da sind</span></p>`;
         function rkDone(m) { // Ergebnis vom Server (genau eine Wertung pro Match)
             if (!gameEnded && !m.later) { m.later = 1; setTimeout(() => rkDone(m), 800); return; } // Endstand-Nachricht des Hosts kommt kurz danach → Endbildschirm abwarten
             sessionStorage.removeItem('rk');
-            const res = m.st === 'rated' ? `${m.res === 1 ? 'SIEG' : m.res === 0 ? 'NIEDERLAGE' : 'UNENTSCHIEDEN'} · ${m.d >= 0 ? '+' : ''}${m.d} → ${m.r}` : (m.st === 'invalid' ? 'UNGÜLTIG' : 'ABGEBROCHEN') + ' · keine Ratingänderung', me = m.me;
+            const res = m.st === 'rated' ? `${m.res === 1 ? 'SIEG' : m.res === 0 ? 'NIEDERLAGE' : 'UNENTSCHIEDEN'}${m.mode === 'ur' ? '' : ` · ${m.d >= 0 ? '+' : ''}${m.d} → ${m.r}`}` : (m.st === 'invalid' ? 'UNGÜLTIG' : 'ABGEBROCHEN') + ' · keine Ratingänderung', me = m.me;
             const rank = !me ? '' : !me.placed ? `Placement ${me.pl}/${me.pq}` : m.prev && m.prev !== me.rank.name ? `${m.d > 0 ? '⬆ AUFSTIEG' : '⬇ ABSTIEG'}: ${m.prev} → ${me.rank.name}` : me.rank.name;
             const pn = gameEnded && document.querySelector('#overlay .panel');
-            if (pn && !$('rkRes')) pn.insertAdjacentHTML('beforeend', `<div id="rkRes" class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">🏆 RANKED</span><b style="color:${m.d > 0 ? '#9fe08a' : m.d < 0 ? '#ff6b6b' : 'var(--text)'}">${escH(res)}</b></div>${rank ? `<div class="row" style="justify-content:space-between"><span style="color:var(--mut)">RANG</span><b style="color:var(--acc)">${escH(rank)}</b></div>` : ''}${m.why ? `<div class="row" style="font-size:11px;color:var(--mut)">${escH(m.why)}</div>` : ''}`);
+            if (pn && m.sb && !$('eosb')) pn.insertAdjacentHTML('afterend', rkBoard(m.sb, m.side)); // komplettes Scoreboard beider Teams
+            if (pn && !$('rkRes')) pn.insertAdjacentHTML('beforeend', `<div id="rkRes" class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">${m.mode === 'ur' ? '🎮 UNRANKED' : '🏆 RANKED'}</span><b style="color:${m.d > 0 ? '#9fe08a' : m.d < 0 ? '#ff6b6b' : 'var(--text)'}">${escH(res)}</b></div>${rank ? `<div class="row" style="justify-content:space-between"><span style="color:var(--mut)">RANG</span><b style="color:var(--acc)">${escH(rank)}</b></div>` : ''}${m.why ? `<div class="row" style="font-size:11px;color:var(--mut)">${escH(m.why)}</div>` : ''}`);
             else toast('🏆 Ranked: ' + res, m.why || rank);
+        }
+        function rkBoard(sb, side) { // Endbildschirm Ranked: nur vom Server bestätigte Werte, Fehlendes als „–“; Rating nur bei gewerteten Matches
+            const na = '<span class="na" title="nicht verfügbar">–</span>', v = x => x === null || x === undefined ? na : x, rated = sb.st === 'rated';
+            const kd = p => p.k === null || p.d === null ? na : (p.k / Math.max(1, p.d)).toFixed(2), hs = p => p.hs === null || p.k === null || !p.k ? na : Math.round(p.hs / p.k * 100) + ' %';
+            const rt = p => !rated || p.ch === null ? na : `<b class="${p.ch > 0 ? 'up' : p.ch < 0 ? 'dn' : ''}">${p.ch >= 0 ? '+' : ''}${p.ch}</b> <small>${p.r}${p.rank ? ' · ' + escH(p.rank) : ''}</small>`;
+            const who = (p, big) => `<button class="eopp" data-pp="${escH(p.n)}" title="Profil von ${escH(p.n)}">${avH(p.n, p.av, big ? 48 : 24)}<span>${escH(p.n)}${bdH(p.bd)}${p.left ? ' <small class="na">verlassen</small>' : ''}</span></button>`;
+            const won = s => sb.res === null ? null : sb.res === 0.5 ? 'd' : (sb.res === 1) === (s === 0) ? 'w' : 'l', WL = { w: 'SIEG', l: 'NIEDERLAGE', d: 'UNENTSCHIEDEN' };
+            const head = `<div class="eohd"><b>${escH(mapLbl(sb.map))}</b><span>${RK_MN[sb.mode] || ''} · Dauer ${sb.dur ? mmss(sb.dur) : '–'}${!rated ? ' · ohne Wertung' : sb.mode === 'ur' ? ' · kein Rating' : ''}</span></div>`;
+            if (sb.mode === 'v1') return `<div class="eosb" id="eosb">${head}<div class="eov1">${[side, 1 - side].map(s => { const p = sb.rows.find(x => x.side === s); return !p ? '' : `<div class="eoc ${won(s) || ''}">${who(p, 1)}<div class="eosc">${sb.sc ? sb.sc[s] : '–'}</div><div>${won(s) ? WL[won(s)] : ''}</div><div class="ppst"><span>K <b>${v(p.k)}</b></span><span>D <b>${v(p.d)}</b></span><span>K/D <b>${kd(p)}</b></span><span>HS <b>${hs(p)}</b></span><span>ADR <b>${v(p.adr)}</b></span></div><div>${rt(p)}</div></div>`; }).join('<div class="eovs">VS</div>')}</div></div>`;
+            const team = s => { const w = won(s); return `<div class="eotm ${s ? 't' : 'ct'}${s === side ? ' me' : ''}"><div class="eoth"><b>${s ? 'ATTACKER' : 'DEFENDER'}${s === side ? ' · DEIN TEAM' : ''}</b><span>${sb.sc ? sb.sc[s] : '–'}${w ? ' · ' + WL[w] : ''}</span></div>
+ <div class="eotw"><table><tr><th>Spieler</th><th>K</th><th>D</th><th>A</th><th>K/D</th><th>ADR</th><th>KAST</th><th>HS</th>${sb.mode === 'ur' ? '' : '<th>Rating</th>'}</tr>${sb.rows.filter(x => x.side === s).map(p => `<tr><td>${who(p)}</td><td>${v(p.k)}</td><td>${v(p.d)}</td><td>${v(p.a)}</td><td>${kd(p)}</td><td>${v(p.adr)}</td><td>${p.kast === null ? na : p.kast + ' %'}</td><td>${hs(p)}</td>${sb.mode === 'ur' ? '' : `<td>${rt(p)}</td>`}</tr>`).join('')}${sb.nb[s] ? `<tr><td class="na">🤖 ${sb.nb[s]} Bot${sb.nb[s] > 1 ? 's' : ''}</td><td colspan="${sb.mode === 'ur' ? 7 : 8}" class="na">keine Statistik · kein Rating</td></tr>` : ''}</table></div></div>`; };
+            return `<div class="eosb" id="eosb">${head}${team(side)}${team(1 - side)}</div>`;
         }
         function netSend(o) { if (NET.ws && NET.ws.readyState === 1) NET.ws.send(JSON.stringify(o)); }
         function addRemote(pid, name, team, ag, hat) {
             if (pid === NET.pid || NET.players.has(pid)) return;
-            const m = makeBotMesh(team, ag, false, hat);
+            const m = makeBotMesh(team === 'SPEC' ? 'CT' : team, ag, false, hat);
             const rp = { remote: true, isPlayer: false, pid, name, team, ag, hat, x: 0, y: 0, z: 0, tx: 0, ty: 0, tz: 0, yaw: 0, tyaw: 0, r: 0.4, alive: true, health: 100, kills: 0, deaths: 0, money: 0, mesh: m.group, hit: m.hit, flash: m.flash, lastShotT: -9, speed: 0, moving: true };
+            if (team === 'SPEC') { rp.spec = true; rp.alive = false; m.group.visible = false; } // Zuschauer: unsichtbar & nie lebendig
             m.hit.forEach(h => h.userData.ent = rp); NET.players.set(pid, rp); ents.push(rp); msg(name + ' ist beigetreten', '', 3);
         }
+        function rpAcc(m) { const rp = NET.players.get(m.pid); if (rp) { rp.acc = typeof m.acc === 'string' ? m.acc : null; rp.av = Number.isInteger(m.av) || /^u\d+$/.test(m.av) ? m.av : -1; rp.bd = typeof m.bd === 'string' ? m.bd : ''; } } // vom Server gesetzt
         function startMP(team) {
             const name = ($('pname').value || '').trim();
             if (!name) { alert('Bitte gib zuerst einen Namen ein!'); $('pname').focus(); return; }
@@ -8985,13 +9182,13 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const n = JSON.parse(sessionStorage.getItem('netre') || '[]').filter(t => Date.now() - t < 60000);
             const v1 = RK.cur && RK.cur.mode === 'v1' && started; // Ranked-1v1 kennt keinen Wiedereinstieg (Server wertet die Trennung)
             if (GL.on && !v1 || v1 || n.length >= 3 || !NET.room) { msg('Verbindung getrennt', v1 ? 'Ranked-1v1: Trennung zählt als Verlassen' : 'Zurück ins Menü über ⏻ (Pause)', 8); return; }
-            n.push(Date.now()); sessionStorage.setItem('netre', JSON.stringify(n)); msg('Verbindung getrennt', 'Verbinde neu …', 5);
+            n.push(Date.now()); sessionStorage.setItem('netre', JSON.stringify(n)); msg('Verbindung getrennt', 'Verbinde neu …', 5); if (NET.spec) sessionStorage.setItem('specre', '1');
             setTimeout(() => { sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); }, 2000);
         }
         function netMsg(m) {
             switch (m.type) {
-                case 'joined': NET.on = true; NET.host = m.host; NET.inLobby = true; if (NET.host) netSend({ type: 'lmode', mode: NET.mode }); renderLobby();
-                    netSend({ type: 'hello', pid: NET.pid, name: player.name, team: player.team, ag: myLook(), hat: duckHat() || 0 }); break;
+                case 'joined': NET.on = true; NET.host = m.host; NET.inLobby = true; if (sessionStorage.getItem('specre')) { sessionStorage.removeItem('specre'); NET.spec = true; setTimeout(() => netSend({ type: 'team', pid: NET.pid, team: 'SPEC' }), 0); } if (NET.host) netSend({ type: 'lmode', mode: NET.mode }); renderLobby();
+                    netSend({ type: 'hello', pid: NET.pid, name: player.name, team: NET.spec ? 'SPEC' : player.team, ag: myLook(), hat: duckHat() || 0 }); break;
                 case 'dhstart': if (!NET.host) { if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; } if (m.cfg) Object.assign(CFG, m.cfg); NET.inLobby = false; if (!DH.on || DH.ended) dhStart(m.w); } break;
                 case 'dhev': if (!NET.host) { const el = $('dhBan'); if (el) { el.textContent = m.txt; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); } sfx('start'); } break;
                 case 'dhbh': if (!NET.host) dhBossHit(m.by, m.n); break;
@@ -9000,14 +9197,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'dhhit': if (NET.host && DH.on && !DH.ended) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhKill(d, m.pid, !!m.hs); } break;
                 case 'dhdie': if (!NET.host && DH.on) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhRemove(d, true); else burst(m.x, m.y + 0.5, m.z, 0xffffff, 10, 3); if (m.t === 'b') burst(m.x, m.y + 0.5, m.z, 0xff8a30, 26, 6); dhCredit(m.by, m.t, m.pts, m.m, m.n); } break;
                 case 'dhend': if (!NET.host && DH.on) dhEnd(m.sc); break;
-                case 'team': { const rp = NET.players.get(m.pid); if (rp && (m.team === 'CT' || m.team === 'T')) { rp.team = m.team; if (rp.mesh) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, rp.ag, false, rp.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } if (NET.inLobby) renderLobby(); } break; }
+                case 'team': { const rp = NET.players.get(m.pid); if (rp && m.team === 'SPEC') { rp.team = 'SPEC'; rp.spec = true; rp.alive = false; rp.mesh.visible = false; if (NET.inLobby) renderLobby(); break; } if (rp && rp.spec && (m.team === 'CT' || m.team === 'T')) { rp.spec = false; rp.alive = true; } if (rp && (m.team === 'CT' || m.team === 'T')) { rp.team = m.team; if (rp.mesh) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, rp.ag, false, rp.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } if (NET.inLobby) renderLobby(); } break; }
                 case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
                 case 'rkst': RK.st = m; RK.all = m.n >= m.N; if (NET.inLobby) renderLobby(); break;
-                case 'rkdeny': sessionStorage.removeItem('rk'); sessionStorage.setItem('rkmsg', m.why || 'Beitritt abgelehnt'); sessionStorage.setItem('opentab', 'ranked'); leaveGame(); break;
+                case 'rkdeny': sessionStorage.removeItem('rk'); sessionStorage.setItem('rkmsg', m.why || 'Beitritt abgelehnt'); sessionStorage.setItem('opentab', RK.cur && RK.cur.mode === 'ur' ? 'unranked' : 'ranked'); leaveGame(); break;
                 case 'rkdone': rkDone(m); break;
-                case 'hello': addRemote(m.pid, m.name, m.team, m.ag, m.hat); rkTryStart(); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w: DH.w }); }
-                    netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: myLook(), hat: duckHat() || 0 });
-                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, a: b.ag })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp) { rp.ag = m.ag; rp.hat = m.hat; } if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag, false, m.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.inLobby) renderLobby(); } break;
+                case 'hello': addRemote(m.pid, m.name, m.team, m.ag, m.hat); rpAcc(m); rkTryStart(); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w: DH.w }); }
+                    netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: NET.spec ? 'SPEC' : player.team, ag: myLook(), hat: duckHat() || 0 });
+                    if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, a: b.ag })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp) { rp.ag = m.ag; rp.hat = m.hat; } if (rp && !rp.robo && !rp.spec) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag, false, m.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag, m.hat); rpAcc(m); if (NET.inLobby) renderLobby(); } break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
                 case 'plant': if (NET.host) plantBomb({ x: m.x, z: m.z, isPlayer: false, money: 0, plantT: 0 }); break;
                 case 'defuse': if (NET.host && G.bomb.state === 'planted') defuseBomb({ isPlayer: false, money: 0, defuseT: 0 }); break;
@@ -9018,7 +9215,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
                     if (!NET.host && !started) { NET.inLobby = false; $('overlay').style.display = 'none'; startGameClient(); } break; case 'roster': if (!NET.host && bots.length === 0) { m.bots.forEach(b => createBot(b.n, b.t)); m.bots.forEach((x, i) => { if (bots[i] && x.a) bots[i].ag = x.a; }); remeshAll(); ents = [player, ...bots, ...NET.players.values()]; } break;
                 case 'round': if (!NET.host && (!m.to || m.to === NET.pid)) { G.round = m.rd; G.site = m.site; clientRound(); } break; case 'end': if (!NET.host) {
-                    G.state = 'end'; const loser = m.w === 'CT' ? 'T' : 'CT'; if (m.w === player.team) xpEvent('round');
+                    G.state = 'end'; const loser = m.w === 'CT' ? 'T' : 'CT'; if (m.w === player.team && !NET.spec) xpEvent('round');
                     G.loss[m.w] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
                     player.money = Math.min(16000, player.money + (player.team === m.w ? (m.rs.includes('explodiert') ? 3500 : 3250) : 1400 + 500 * (G.loss[loser] - 1)));
                     msg(m.w === 'CT' ? 'Defender gewinnen' : 'Attacker gewinnen', m.rs, 5);
@@ -9082,6 +9279,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 } break;
                 case 'glover': if (!NET.host) glGameOver(m.w !== null ? GL.teams.find(t => t.id === m.w) : null); break;
                 case 'glabil': { if (m.bot !== undefined) { if (!NET.host && bots[m.bot]) { bots[m.bot].yaw = m.yaw; doAbility(bots[m.bot], m.k, m.lv, m.g); } break; } const ow = m.pid === NET.pid ? null : (NET.players.get(m.pid) || null); if (ow) { ow.yaw = m.yaw; doAbility(ow, m.k, m.lv, m.g); } break; } case 'snap': if (!NET.host) applySnap(m); break;
+                case 'specdeny': NET.spec = false; toast('👁 Zuschauen nicht möglich', m.why || ''); if (NET.inLobby) renderLobby(); break;
                 case 'promote': {
                     if (NET.host) break;
                     NET.host = true;
@@ -9106,20 +9304,21 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); // aktuelle Regeln an alle (auch neue Spieler)
             $('hud').style.display = 'none'; setupMenuScene();
             const md = MODES[NET.mode] ? NET.mode : 'comp', isGl = md === 'gl';
-            const card = (team, name, crown) => `<div class="lobp" style="border-left-color:${md !== 'comp' ? 'var(--hl)' : team === 'CT' ? '#8ab4ff' : '#ffb076'}"><b>${name}</b><span>${md !== 'comp' ? 'Bereit' : team === 'CT' ? 'Defender' : 'Attacker'}${crown ? ' · 👑 Host' : ''}</span></div>`;
+            const card = (team, name, crown, o = {}) => `<div class="lobp" style="border-left-color:${md !== 'comp' ? 'var(--hl)' : team === 'CT' ? '#8ab4ff' : '#ffb076'}">${o.acc ? avH(o.acc, o.av, 22) + ' ' : ''}<b${o.acc ? ` data-pp="${escH(o.acc)}" title="Profil ansehen"` : ''}>${name}</b>${bdH(o.bd)}<span>${md !== 'comp' ? 'Bereit' : team === 'CT' ? 'Defender' : 'Attacker'}${crown ? ' · 👑 Host' : ''}</span></div>`;
             const hostBtns = {
-                comp: '<button id="btnStart" style="border-color:#9fe08a;color:#9fe08a">▶ WETTKAMPF STARTEN</button>',
+                comp: '<button id="btnStart" style="border-color:#9fe08a;color:#9fe08a">▶ CUSTOM STARTEN</button>',
                 dm: '<button id="btnDMMp" style="border-color:#ff6b6b;color:#ff6b6b">💀 DEATHMATCH STARTEN</button>',
                 gl: '<select id="glTeamsMp" style="flex:0 0 90px">' + [4, 6, 8].map(n => `<option value="${n}" ${(NET.glN || 4) === n ? 'selected' : ''}>${n} Teams</option>`).join('') + '</select><button id="btnGlMp">⚔️ GAUNTLET STARTEN</button>',
                 v1: '<button id="btnV1Mp" style="border-color:#7ec8e3;color:#7ec8e3">🎯 1V1-TURNIER STARTEN</button>',
                 duck: '<button id="btnDuckMp" style="border-color:#ffd84a;color:#ffd84a">🦆 ENTENJAGD STARTEN</button>'
             }[md];
-            let rows = card(player.team, player.name + ' (Du)', NET.host);
-            for (const rp of NET.players.values()) rows += card(rp.team, rp.name, false);
+            let rows = card(player.team, player.name + ' (Du)', NET.host, ACC ? { acc: ACC.u, av: myAv() } : {});
+            for (const rp of NET.players.values()) rows += card(rp.team, rp.name, false, rp);
             if (md === 'comp') { // Wettkampf: zwei Team-Kästen, Klick = Team wechseln (wie im Gauntlet)
-                const all = [{ team: player.team, name: player.name + ' (Du)', host: NET.host, me: 1 }, ...[...NET.players.values()].map(rp => ({ team: rp.team, name: rp.name }))];
+                const myT = NET.spec ? 'SPEC' : player.team, all = [{ team: myT, name: player.name + ' (Du)', host: NET.host, me: 1, acc: ACC && ACC.u, av: myAv() }, ...[...NET.players.values()].map(rp => ({ team: rp.team, name: rp.name, acc: rp.acc, av: rp.av, bd: rp.bd }))];
                 rows = '<div class="lobteams">' + ['CT', 'T'].map(tm => { const mem = all.filter(p => p.team === tm);
-                    return `<div class="lobteam ${tm === 'CT' ? 'ct' : 't'} ${player.team === tm ? 'mine' : ''}" data-lteam="${tm}"><h4>${tm === 'CT' ? 'COUNTER-TERRORISTS' : 'TERRORISTEN'}<span>${mem.length}</span></h4>${mem.map(p => `<div class="lobp" style="border-left-color:${tm === 'CT' ? '#8ab4ff' : '#ffb076'}"><b>${p.name}</b><span>${p.host ? '👑 Host' : p.me ? 'Du' : 'Bereit'}</span></div>`).join('')}${player.team === tm ? '' : '<em>＋ Klicken zum Beitreten</em>'}</div>`; }).join('') + '</div>';
+                    return `<div class="lobteam ${tm === 'CT' ? 'ct' : 't'} ${myT === tm ? 'mine' : ''}" data-lteam="${tm}"><h4>${tm === 'CT' ? 'COUNTER-TERRORISTS' : 'TERRORISTEN'}<span>${mem.length}</span></h4>${mem.map(p => `<div class="lobp" style="border-left-color:${tm === 'CT' ? '#8ab4ff' : '#ffb076'}">${p.acc ? avH(p.acc, p.av, 22) + ' ' : ''}<b${p.acc ? ` data-pp="${escH(p.acc)}" title="Profil ansehen"` : ''}>${p.name}</b>${bdH(p.bd)}<span>${p.host ? '👑 Host' : p.me ? 'Du' : 'Bereit'}</span></div>`).join('')}${myT === tm ? '' : '<em>＋ Klicken zum Beitreten</em>'}</div>`; }).join('') + '</div>'
+                    + (RK.cur ? '' : (sp => `<div class="lobspec${NET.spec ? ' mine' : ''}" data-lspec="1" role="button" tabindex="0"><b>👁 ZUSCHAUER ${sp.length}/2</b>${sp.map(p => `<span>${p.acc ? avH(p.acc, p.av, 18) + ' ' : ''}${p.name}</span>`).join('')}<em>${NET.spec ? 'Klick auf ein Team: wieder mitspielen' : sp.length >= 2 ? 'Plätze belegt' : '＋ Klicken zum Zuschauen · Freecam & Ego-Sicht'}</em></div>`)(all.filter(p => p.team === 'SPEC')));
             }
             const frs = [player.name, ...[...NET.players.values()].map(r => r.name)].map(n => `<div class="fr" title="${n}">${(n[0] || '?').toUpperCase()}</div>`).join('');
             showOverlay(`
@@ -9146,7 +9345,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div id="csver">LOBBY | ${modeName(md)} | ${md === 'gl' || md === 'v1' ? 'Arenen' : MAPLABEL}</div>
  </div>`, true);
             $('lobRules').onclick = () => { if (NET.host || NET.hostCfg) showGameSettings({ cfg: NET.host ? CFG : NET.hostCfg, ro: !NET.host || !!RK.cur, back: renderLobby }); };
-            document.querySelectorAll('[data-lteam]').forEach(el => el.onclick = () => { const tm = el.dataset.lteam; if (tm === player.team || RK.cur) return; player.team = tm; netSend({ type: 'team', pid: NET.pid, team: tm }); renderLobby(); });
+            document.querySelectorAll('[data-lteam]').forEach(el => el.onclick = () => { const tm = el.dataset.lteam; if ((tm === player.team && !NET.spec) || RK.cur) return; NET.spec = false; player.team = tm; netSend({ type: 'team', pid: NET.pid, team: tm }); renderLobby(); });
+            document.querySelectorAll('[data-lspec]').forEach(el => { el.onclick = () => { if (NET.spec) return; if ([...NET.players.values()].filter(r => r.spec).length >= 2) { toast('👁 Zuschauen', 'Alle 2 Plätze sind belegt'); return; } specSet(true); }; el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); } }; });
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
                 on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
@@ -9163,7 +9363,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             player.weapons[2] = mkWeapon(player.team === 'T' ? W.glock : W.usp); updateVM();
             started = true; $('overlay').style.display = 'none';
             $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
-            renderer.domElement.requestPointerLock(); msg('Verbunden – warte auf Host…', '', 4);
+            renderer.domElement.requestPointerLock(); msg('Verbunden – warte auf Host…', '', 4); if (NET.spec) specStart();
         }
         function clientRound() {
             roundKills = 0;
@@ -9175,7 +9375,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (CFG.wpn) { funLoadout(p); p.slot = p.weapons[1] ? 1 : 2; updateVM(); }
             p.slot = p.weapons[1] ? 1 : 2; updateVM();
             if (DM.on) dmRespawn(p); else { const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = 0; } $('dead').style.display = 'none';
-            G.state = FREEZE_TIME > 0 ? 'freeze' : 'live'; G.t = FREEZE_TIME; G.timer = DM.on ? DM.time : ROUND_TIME; msg(DM.on ? '💀 Deathmatch' : 'Runde ' + G.round, DM.on ? 'Jeder gegen jeden · Waffen gratis' : '', 3); openBuy(true);
+            G.state = FREEZE_TIME > 0 ? 'freeze' : 'live'; G.t = FREEZE_TIME; G.timer = DM.on ? DM.time : ROUND_TIME; msg(DM.on ? '💀 Deathmatch' : 'Runde ' + G.round, DM.on ? 'Jeder gegen jeden · Waffen gratis' : '', 3); openBuy(true); if (NET.spec) specRound();
         }
         function applySnap(m) {
             const prev = G.bomb.state;
@@ -9195,7 +9395,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function netTick(dt) {
             NET.sendT -= dt; if (NET.sendT <= 0) {
                 NET.sendT = 1 / 15; const p = player;
-                netSend({ type: 'st', pid: NET.pid, x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), yaw: +p.yaw.toFixed(2), al: p.alive, k: p.kills, d: p.deaths, mo: p.money, c: p.crouch ? 1 : 0, h: Math.round(p.health) });
+                if (!NET.spec) netSend({ type: 'st', pid: NET.pid, x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), yaw: +p.yaw.toFixed(2), al: p.alive, k: p.kills, d: p.deaths, mo: p.money, c: p.crouch ? 1 : 0, h: Math.round(p.health) });
             }
             if (NET.host) {
                 NET.snapT -= dt; if (NET.snapT <= 0) {

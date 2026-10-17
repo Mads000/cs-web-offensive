@@ -10,7 +10,7 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.
 // Mit GIST_ID + GIST_TOKEN (Umgebungsvariablen, z.B. bei Render) → dauerhaft in einem privaten GitHub-Gist,
 // sonst lokal in data/users.json. Render löscht die Festplatte bei jedem Deploy/Neustart, daher der Gist.
 const crypto = require('crypto');
-const PUBLISH_CODE = 'baumeister42'; // Code zum Veröffentlichen von Community-Karten – hier ändern
+const PUBLISH_CODE = process.env.PUBLISH_CODE || 'baumeister42'; // Code zum Veröffentlichen von Community-Karten, Shop-Preisen & Ranked-Map-Pool – am besten als Umgebungsvariable PUBLISH_CODE setzen
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json'), LB_FILE = path.join(DATA_DIR, 'leaderboard.json'), SKIN_FILE = path.join(DATA_DIR, 'skins.json'), PRICE_FILE = path.join(DATA_DIR, 'prices.json'), RANKED_FILE = path.join(DATA_DIR, 'ranked.json');
 const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'botrk'];
 const GIST_ID = process.env.GIST_ID, GIST_TOKEN = process.env.GIST_TOKEN, GIST_FILE = 'users.json';
@@ -34,7 +34,22 @@ async function writeUsers() {
  } catch (e) { console.error('Accounts speichern fehlgeschlagen: ' + e.message); again = true; }
  writing = false; if (again) { again = false; persist(); }
 }
-const rooms = new Map(), rk = require('./ranked').createRanked({ RK, persist: () => persist(), rooms, auth: tok => byTok(tok) });
+// ── Profilbild & Badges (nur Server-Felder, nie aus u.data → vom Client nicht setzbar) ──
+// Profilbild: Auswahl aus AV_N festen Motiven (kein Upload, keine fremden Bild-URLs); ohne Auswahl = -1 → Initiale als Standard-Avatar
+// Map-Creator (u.cr): vom Admin vergeben, sobald eine Community-Karte offiziell in den Ranked-Pool kommt. Regel: bleibt dauerhaft,
+// auch wenn die Karte später aus dem Pool rotiert (wird als „ehemals“ geführt); entzogen nur ausdrücklich (revoke, z. B. Plagiat).
+// Skin-Creator: Lebenszeit-Einnahmen (u.earnT) aus Verkäufen eigener Community-Skins ≥ SKIN_BADGE Coins – getrenntes Kriterium.
+const AV_N = 16, SKIN_BADGE = +process.env.SKIN_BADGE_COINS || 5000;
+const avOf = u => !u ? -1 : u.avImg ? 'u' + (u.avV || 1) : Number.isInteger(u.av) && u.av >= 0 && u.av < AV_N ? u.av : -1; // 'u3' = hochgeladenes Bild (Version 3)
+// Hochgeladenes Profilbild: nur PNG/JPEG/WebP (Dateisignatur geprüft), max. AV_MAX Zeichen Base64 (~18 KB) – das Spiel verkleinert vorher auf 96×96.
+// Gespeichert als Base64 im Account, ausgeliefert nur über GET /av/<Name> als Bild (nosniff, CSP ohne Skripte) → nichts davon kann ausgeführt werden.
+const AV_MAX = 24000, AV_SIG = { 'image/png': b => b.length > 24 && b.readUInt32BE(0) === 0x89504e47 && b.readUInt32BE(4) === 0x0d0a1a0a, 'image/jpeg': b => b.length > 4 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff, 'image/webp': b => b.length > 12 && b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP' };
+function avImg(s) { const m = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(String(s || '')); if (!m || m[2].length > AV_MAX) return null; const buf = Buffer.from(m[2], 'base64'); return AV_SIG[m[1]](buf) ? { mime: m[1], data: m[2] } : null; }
+const isCreator = u => !!(u && u.cr && !u.cr.rv && Object.keys(u.cr.maps || {}).length);
+const bdOf = u => (isCreator(u) ? 'm' : '') + (u && (u.earnT || 0) >= SKIN_BADGE ? 's' : ''); // Kurzform für Listen: m = Map-Creator, s = Skin-Creator
+const rooms = new Map(), rk = require('./ranked').createRanked({ RK, persist: () => persist(), rooms, auth: tok => byTok(tok),
+ user: n => USERS[String(n).toLowerCase()] || null, friends: (a, b) => !!USERS[a] && (USERS[a].fr || []).some(x => x.toLowerCase() === b),
+ info: k => ({ av: avOf(USERS[k]), bd: bdOf(USERS[k]) }), maps: () => Object.keys(PUB).filter(k => /^pub_/.test(k) && PUB[k].off), mapData: k => PUB[k] && PUB[k].off ? PUB[k] : null });
 function persist() { clearTimeout(saveT); saveT = setTimeout(writeUsers, GIST_ID ? 3000 : 500); } // Gist: Änderungen 3 s sammeln (schont das GitHub-Limit)
 loadUsers();
 // Render beendet den Server mit SIGTERM (Deploy/Ruhemodus) → offene Änderungen vorher noch speichern
@@ -45,8 +60,8 @@ const byTok = tok => typeof tok === 'string' && tok.length === 48 ? Object.value
 const newTok = u => { const t = crypto.randomBytes(24).toString('hex'); u.toks = [t, ...u.toks].slice(0, 10); return t; };
 // ── Discord (optional): Webhook-URLs als Umgebungsvariablen (bei Render), erstellt von discord/setup.js ──
 const DC = { news: process.env.DISCORD_NEWS_WEBHOOK, status: process.env.DISCORD_STATUS_WEBHOOK, lfg: process.env.DISCORD_LFG_WEBHOOK, bug: process.env.DISCORD_BUG_WEBHOOK };
-const SITE = process.env.SITE_URL || 'https://clutchtactic.de', LFG = new Map();
-const DC_MOD = { comp: '🏆 Wettkampf', dm: '💀 Deathmatch', gl: '⚔️ Gauntlet', v1: '🎯 1v1', duck: '🦆 Entenjagd' };
+const SITE = process.env.SITE_URL || 'https://clutchtactic.de', LFG = new Map(), SPEC_MAX = 2; // Customs: max. Zuschauer pro Lobby
+const DC_MOD = { comp: '🛠 Customs', dm: '💀 Deathmatch', gl: '⚔️ Gauntlet', v1: '🎯 1v1', duck: '🦆 Entenjagd' };
 const dcEsc = s => String(s || '').replace(/[\\*_`~|>#\[\]()-]/g, '\\$&'); // Discord-Markdown entschärfen
 const dcPost = (url, body, q = '') => !url ? Promise.resolve(null) : fetch(url + (q ? '?' + q : ''), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ allowed_mentions: { parse: [] }, ...body }) }).then(r => r.ok ? (q.includes('wait') ? r.json() : 1) : null).catch(() => null);
 async function dcNews() { // neue Patchnotes nach jedem Deploy posten (Stand in LB.newsV)
@@ -58,7 +73,7 @@ async function dcNews() { // neue Patchnotes nach jedem Deploy posten (Stand in 
 async function dcStatus(off) { // eine Status-Nachricht, die alle 5 Min bearbeitet wird
  if (!DC.status) return; const s = Math.floor(Date.now() / 1000), list = [...rooms.entries()].filter(([, r]) => r.clients.length), n = list.reduce((a, [, r]) => a + r.clients.length, 0);
  const content = off ? `# 🔴 Server schläft\nBeim nächsten Aufruf von ${SITE} startet er neu (ca. 1 Minute).\n-# Stand: <t:${s}:R>`
- : `# 🟢 Server online\n🎮 **${n}** Spieler online in **${list.length}** ${list.length === 1 ? 'Raum' : 'Räumen'}\n` + list.slice(0, 10).map(([name, r]) => `> **${dcEsc(name)}** · ${DC_MOD[r.mode] || DC_MOD.comp} · ${r.clients.length} Spieler · ${r.started ? '🎮 läuft' : '🛋 Lobby'}`).join('\n') + `${list.length ? '\n' : ''}▶ ${SITE}\n-# aktualisiert <t:${s}:R>`;
+ : `# 🟢 Server online\n🎮 **${n}** Spieler online in **${list.length}** ${list.length === 1 ? 'Raum' : 'Räumen'}\n` + list.slice(0, 10).map(([name, r]) => `> **${dcEsc(name)}** · ${name.startsWith('rk_') ? '🎯 Ranked/Unranked' : DC_MOD[r.mode] || DC_MOD.comp} · ${r.clients.length} Spieler · ${r.started ? '🎮 läuft' : '🛋 Lobby'}`).join('\n') + `${list.length ? '\n' : ''}▶ ${SITE}\n-# aktualisiert <t:${s}:R>`;
  if (LB.statusMsg) { const r = await fetch(DC.status + '/messages/' + LB.statusMsg, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content, allowed_mentions: { parse: [] } }) }).catch(() => null); if (r && r.ok) return; }
  const m = await dcPost(DC.status, { content }, 'wait=true'); if (m && m.id) { LB.statusMsg = m.id; persist(); }
 }
@@ -76,10 +91,10 @@ function api(p, b, ip) {
  if (p === '/api/register') {
  if (USERS[key]) return { err: 'Name ist schon vergeben.' };
  const salt = crypto.randomBytes(16).toString('hex'), u = USERS[key] = { name, salt, hash: hashPw(pw, salt), toks: [], ver: 1, data: cleanData(b.data) };
- const tok = newTok(u); persist(); return { ok: 1, u: name, tok, ver: u.ver };
+ const tok = newTok(u); persist(); return { ok: 1, u: name, tok, ver: u.ver, av: -1 };
  }
  const u = USERS[key]; if (!u || !crypto.timingSafeEqual(Buffer.from(hashPw(pw, u.salt), 'hex'), Buffer.from(u.hash, 'hex'))) return { err: 'Name oder Passwort falsch.' };
- const tok = newTok(u); persist(); return { ok: 1, u: u.name, tok, ver: u.ver, data: u.data };
+ const tok = newTok(u); persist(); return { ok: 1, u: u.name, tok, ver: u.ver, data: u.data, av: avOf(u) };
  }
  // ── Weitere Codes (Code nur als Render-Umgebungsvariable, Inhalt als Render-Secret-File) ──
  if (p === '/api/code') {
@@ -94,6 +109,35 @@ function api(p, b, ip) {
  if (p === '/api/ranked') { const u = byTok(b.tok); if (!u) return { err: 'Bitte neu einloggen.', relog: 1 }; return Object.assign({ ok: 1 }, rk.profile(u)); }
  if (p === '/api/rklb') { const u = byTok(b.tok); return Object.assign({ ok: 1 }, rk.board(String(b.mode || ''), u ? u.name.toLowerCase() : null)); } // Ranked-Bestenliste
  if (p === '/api/skins') return { ok: 1, skins: Object.values(CSK), prices: PRICES };
+ // ── Spielerprofil (öffentlich): nur Name, Profilbild, Level, Badges & Ranked-Werte – keine Inventare, Freunde oder Kontodaten ──
+ if (p === '/api/pprof') {
+ const t = USERS[String(b.n || '').trim().toLowerCase()]; if (!t) return { err: 'Spieler nicht gefunden.' }; const key = t.name.toLowerCase();
+ let xp = null; try { const v = Math.floor(+JSON.parse(t.data.prog || 'null').xp); if (v >= 0) xp = v; } catch { } // Level-XP kommt aus dem Spielstand (wie im eigenen Profil)
+ const maps = Object.entries((t.cr && t.cr.maps) || {}).map(([k, x]) => ({ n: x.n, t: x.t, now: !!(PUB[k] && PUB[k].off && PUB[k].cr === key) }));
+ return Object.assign({ ok: 1, n: t.name, av: avOf(t), xp, badges: { map: isCreator(t) ? { maps } : null, skin: (t.earnT || 0) >= SKIN_BADGE ? { coins: t.earnT, goal: SKIN_BADGE } : null } }, rk.pub(key));
+ }
+ // ── Hochgeladenes Profilbild eines Spielers entfernen (Moderation, nur mit Code) → zurück zum Standard-Avatar ──
+ if (p === '/api/rmav') {
+ if (limited(ip)) return { err: 'Zu viele Versuche – bitte kurz warten.' };
+ const c = Buffer.from(String(b.code || '')), want = Buffer.from(PUBLISH_CODE);
+ if (c.length !== want.length || !crypto.timingSafeEqual(c, want)) return { err: 'Falscher Code.' };
+ const t = USERS[String(b.n || '').trim().toLowerCase()]; if (!t) return { err: 'Spieler nicht gefunden.' }; delete t.avImg; delete t.avM; persist(); return { ok: 1 };
+ }
+ // ── Ranked-Map-Pool: veröffentlichte Community-Karte offiziell aufnehmen/entfernen (nur mit Code) – vergibt das Map-Creator-Badge ──
+ if (p === '/api/mappool') {
+ if (limited(ip)) return { err: 'Zu viele Versuche – bitte kurz warten.' };
+ const c = Buffer.from(String(b.code || '')), want = Buffer.from(PUBLISH_CODE);
+ if (c.length !== want.length || !crypto.timingSafeEqual(c, want)) return { err: 'Falscher Code.' };
+ const k = String(b.k || ''), M = PUB[k]; if (!/^pub_[a-z0-9_]{1,40}$/.test(k) || !M) return { err: 'Nur veröffentlichte Community-Karten können in den Pool.' };
+ if (b.on) {
+ const cu = USERS[String(b.creator || '').trim().toLowerCase()]; if (!cu) return { err: 'Creator-Account nicht gefunden.' }; const ck = cu.name.toLowerCase();
+ if (M.off && M.cr && M.cr !== ck && USERS[M.cr] && USERS[M.cr].cr && USERS[M.cr].cr.maps[k]) USERS[M.cr].cr.maps[k].out = Date.now(); // Creator gewechselt
+ M.off = 1; M.cr = ck; cu.cr = cu.cr || { maps: {} }; cu.cr.maps[k] = { n: M.n, t: (cu.cr.maps[k] || {}).t || Date.now() }; delete cu.cr.rv;
+ persist(); return { ok: 1, msg: M.n + ' ist jetzt im Ranked-Pool · Creator: ' + cu.name };
+ }
+ const cu = M.cr && USERS[M.cr]; if (cu && cu.cr && cu.cr.maps[k]) { cu.cr.maps[k].out = Date.now(); if (b.revoke) cu.cr.rv = { t: Date.now(), k }; }
+ delete M.off; delete M.cr; persist(); return { ok: 1, msg: M.n + ' ist nicht mehr im Ranked-Pool' + (b.revoke ? ' · Creator-Badge entzogen' : ' · Creator-Badge bleibt') };
+ }
  // ── Shop-Preise: mit Code prüfen (check) oder für alle speichern ──
  if (p === '/api/setprices') {
  if (limited(ip)) return { err: 'Zu viele Versuche – bitte kurz warten.' };
@@ -125,12 +169,13 @@ function api(p, b, ip) {
  const c = Buffer.from(String(b.code || '')), want = Buffer.from(PUBLISH_CODE);
  if (c.length !== want.length || !crypto.timingSafeEqual(c, want)) return { err: 'Falscher Code.' };
  const k = String(b.k || ''); if (!/^puba?_[a-z0-9_]{1,40}$/.test(k)) return { err: 'Ungültige Karte.' }; const AR = k.startsWith('puba_'); // puba_ = Arena (11×18, ohne Bombsites)
- if (p === '/api/unpublish') { delete PUB[k]; persist(); return { ok: 1 }; }
+ if (p === '/api/unpublish') { const cu = PUB[k] && PUB[k].off && USERS[PUB[k].cr]; if (cu && cu.cr && cu.cr.maps[k]) cu.cr.maps[k].out = Date.now(); delete PUB[k]; persist(); return { ok: 1 }; }
  const m = b.map || {}, HEX = /^#[0-9a-f]{6}$/i;
  if (!Array.isArray(m.g) || m.g.length !== (AR ? 18 : 28) || !m.g.every(r => typeof r === 'string' && (AR ? /^[#.cCh=1-6TKsbDW]{11}$/ : /^[#.cCh=1-6ABTKsbDWR]{28}$/).test(r))) return { err: 'Ungültige Kartendaten.' };
  if (!PUB[k] && Object.keys(PUB).length >= 50) return { err: 'Maximal 50 Community-Karten.' };
  const col = {}; for (const f of ['sky', 'fog', 'floor', 'wall']) if (m.col && HEX.test(m.col[f])) col[f] = m.col[f];
- PUB[k] = { n: String(m.n || 'Karte').replace(/[<>"'&`]/g, '').slice(0, 20), th: /^de_[a-z]+$/.test(m.th) ? m.th : 'de_dusty', col, tod: [0, 1, 2].includes(+m.tod) ? +m.tod : 0, em: Array.from(String(m.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(m.emc) ? m.emc : '', by: String(b.by || '').replace(/[<>"'&`]/g, '').slice(0, 16), g: m.g };
+ const was = PUB[k]; PUB[k] = { n: String(m.n || 'Karte').replace(/[<>"'&`]/g, '').slice(0, 20), th: /^de_[a-z]+$/.test(m.th) ? m.th : 'de_dusty', col, tod: [0, 1, 2].includes(+m.tod) ? +m.tod : 0, em: Array.from(String(m.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(m.emc) ? m.emc : '', by: String(b.by || '').replace(/[<>"'&`]/g, '').slice(0, 16), g: m.g };
+ if (was && was.off) { PUB[k].off = 1; PUB[k].cr = was.cr; } // Neu-Veröffentlichen hält eine Karte im Ranked-Pool
  persist(); return { ok: 1 };
  }
  // ── Discord: Lobby in #mitspielersuche posten (mit Beitreten-Knopf) & Bug-Meldungen aus dem Spiel ──
@@ -161,7 +206,11 @@ function api(p, b, ip) {
  if (p === '/api/rmskin') { const k = CSK[b.id]; if (!k || k.by !== u.name) return { err: 'Nicht Dein Skin.' }; k.off = 1; persist(); return { ok: 1 }; } // aus dem Shop nehmen: bleibt für Käufer erhalten
  if (p === '/api/buyskin') {
  const k = CSK[b.id]; if (!k || k.off) return { err: 'Skin gibt es nicht mehr im Shop.' }; k.sold++;
- const owner = USERS[k.by.toLowerCase()]; if (owner && owner !== u) owner.earn = (owner.earn || 0) + Math.floor(((PRICES.s || {})[k.id] ?? (PRICES.r || {})[k.r] ?? ({ 1: 150, 2: 400, 3: 900, 4: 2500 })[k.r]) / 2); persist(); return { ok: 1 };
+ const owner = USERS[k.by.toLowerCase()], share = Math.floor(((PRICES.s || {})[k.id] ?? (PRICES.r || {})[k.r] ?? ({ 1: 150, 2: 400, 3: 900, 4: 2500 })[k.r]) / 2); if (owner && owner !== u) owner.earn = (owner.earn || 0) + share;
+ // Skin-Creator-Badge: zählt nur den ersten Kauf je Käufer & Skin (wiederholte/manipulierte Anfragen erhöhen die Einnahmen nicht), keine Eigenkäufe.
+ // Hinweis: Coins sind eine reine Spielwährung im Spielstand – es gibt keine Zahlungsabwicklung, Rückerstattung oder Echtgeld-Auszahlung.
+ u.bought = u.bought || []; if (owner && owner !== u && !u.bought.includes(k.id)) { u.bought.push(k.id); owner.earnT = (owner.earnT || 0) + share; }
+ persist(); return { ok: 1 };
  }
  // ── Freunde: Anfragen (u.frq), Freundesliste (u.fr), Online-Status & Einladungen nur im Speicher ──
  if (p === '/api/friends' || p === '/api/fradd' || p === '/api/frdel' || p === '/api/frinv') {
@@ -181,7 +230,15 @@ function api(p, b, ip) {
  }
  const inRoom = {}; for (const c of wss.clients) if (c.acc && c.room && c.readyState === 1) { const r = rooms.get(c.room); inRoom[c.acc] = { room: c.room, mode: r && r.mode || null, st: r && r.started ? 1 : 0 }; }
  const inv = (INVS.get(me) || []).filter(i => Date.now() - i.t < 300000); INVS.delete(me);
- return { ok: 1, fr: u.fr.map(n => { const k = n.toLowerCase(), r = inRoom[k]; return { n, on: !!r || Date.now() - (SEEN.get(k) || 0) < 60000, room: r ? r.room : null, mode: r ? r.mode : null, st: r ? r.st : 0 }; }), rq: u.frq, inv };
+ return { ok: 1, fr: u.fr.map(n => { const k = n.toLowerCase(), r = inRoom[k]; return { n, av: avOf(USERS[k]), bd: bdOf(USERS[k]), on: !!r || Date.now() - (SEEN.get(k) || 0) < 60000, room: r ? r.room : null, mode: r ? r.mode : null, st: r ? r.st : 0 }; }), rq: u.frq, inv, pinv: rk.pinv(me) };
+ }
+ if (p === '/api/setav') {
+ if (b.img !== undefined) { // eigenes Bild hochladen (höchstens alle 10 s)
+ if (Date.now() - (u.avUp || 0) < 10000) return { err: 'Bitte kurz warten und dann nochmal.' };
+ const im = avImg(b.img); if (!im) return { err: 'Bild ungültig oder zu groß (nur PNG, JPEG oder WebP).' };
+ u.avImg = im.data; u.avM = im.mime; u.avV = (u.avV || 0) + 1; u.avUp = Date.now(); persist(); return { ok: 1, av: avOf(u) };
+ }
+ const a = Math.floor(+b.av); if (!(a >= -1 && a < AV_N)) return { err: 'Ungültiges Profilbild.' }; delete u.avImg; delete u.avM; if (a < 0) delete u.av; else u.av = a; persist(); return { ok: 1, av: avOf(u) };
  }
  if (p === '/api/claim') { const c = u.earn || 0; if (c) { u.earn = 0; persist(); } return { ok: 1, coins: c }; }
  if (p === '/api/save') { u.data = cleanData(b.data); u.ver++; persist(); return { ok: 1, ver: u.ver }; }
@@ -200,7 +257,13 @@ const server = http.createServer((req, res) => {
  });
  return;
  }
- let p = decodeURIComponent(req.url.split('?')[0]);
+ let p; try { p = decodeURIComponent(req.url.split('?')[0]); } catch { res.writeHead(400); res.end(); return; }
+ if (p.startsWith('/av/')) { // hochgeladenes Profilbild – nur als Bild, nie als Seite/Skript
+ const t = USERS[p.slice(4).toLowerCase()];
+ if (!t || !t.avImg || !AV_SIG[t.avM]) { res.writeHead(404, { 'Cache-Control': 'no-cache' }); res.end(); return; }
+ res.writeHead(200, { 'Content-Type': t.avM, 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; sandbox", 'Content-Disposition': 'inline', 'Cache-Control': 'public, max-age=86400' }); // ?v=Version im Link → neues Bild sofort sichtbar
+ res.end(Buffer.from(t.avImg, 'base64')); return;
+ }
  if (p === '/') p = '/index.html';
  const file = path.join(__dirname, 'public', path.normalize(p).replace(/^(\.\.[/\\])+/, ''));
  fs.readFile(file, (err, data) => {
@@ -239,7 +302,12 @@ wss.on('connection', ws => {
  if (m.type === 'chat') { if (typeof m.t !== 'string' || !m.t.trim() || m.t.length > 160) return; const n = Date.now(); ws.chatT = (ws.chatT || []).filter(x => n - x < 5000); if (ws.chatT.length >= 5) return; ws.chatT.push(n); } // Chat: max. 160 Zeichen, 5 Nachrichten / 5 s
  if (r && (m.type === 'start' || m.type === 'glstart')) r.started = true;
  if (r && m.type === 'lmode') r.mode = m.mode;
- let out = raw.toString(); if (ws.rk && r) { out = rk.msg(ws, r, m, out); if (out === false) return; } // Ranked: Server zählt mit & prüft
+ if (r && m.type === 'team') { // Zuschauer (Team „SPEC“): nur Customs, höchstens SPEC_MAX (auch der Host darf zuschauen – er rechnet das Spiel trotzdem weiter) – sonst ablehnen statt weiterleiten
+ if (m.team === 'SPEC') { const why = ws.rk ? 'Im Ranked gibt es keine Zuschauer.' : r.mode && r.mode !== 'comp' ? 'Zuschauen geht nur in Customs.' : r.clients.filter(c => c !== ws && c.spec).length >= SPEC_MAX ? 'Alle ' + SPEC_MAX + ' Zuschauerplätze sind belegt.' : '';
+ if (why) { ws.send(JSON.stringify({ type: 'specdeny', why })); return; } ws.spec = true; } else ws.spec = false;
+ }
+ let out = raw.toString(); if (m.type === 'hello' || m.type === 'hello2') { if (m.team === 'SPEC' && !ws.spec) m.team = 'CT'; const a = ws.acc && USERS[ws.acc]; m.acc = a ? a.name : null; m.av = a ? avOf(a) : -1; m.bd = a ? bdOf(a) : ''; out = JSON.stringify(m); } // Account, Profilbild & Badges vom Server (nicht fälschbar)
+ if (ws.rk && r) { out = rk.msg(ws, r, m, out); if (out === false) return; } // Ranked: Server zählt mit & prüft
  for (const c of (r ? r.clients : []))
  if (c !== ws && c.readyState === 1) c.send(out);
  }
@@ -252,7 +320,7 @@ wss.on('connection', ws => {
  rk.leave(ws);
  if (r.clients.length === 0) { rooms.delete(ws.room); return; }
  if (ws.pid === r.hostPid) {
- const next = r.clients[0];
+ const next = r.clients.find(c => !c.spec) || r.clients[0]; // Zuschauer werden nur Host, wenn keine Spieler mehr da sind
  r.hostPid = next.pid;
  if (next.readyState === 1) next.send(JSON.stringify({ type: 'promote' }));
  for (const c of r.clients) if (c !== next && c.readyState === 1) c.send(JSON.stringify({ type: 'newhost', pid: next.pid }));

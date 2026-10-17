@@ -11,7 +11,7 @@ self.addEventListener('activate', e => {
 });
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
-  if (req.method !== 'GET' || url.pathname.startsWith('/api/')) return; // Accounts/Karten-API nie zwischenspeichern
+  if (req.method !== 'GET' || url.pathname.startsWith('/api/') || url.pathname.startsWith('/av/')) return; // Accounts/Karten-API & Profilbilder nie zwischenspeichern (entfernte Bilder sollen verschwinden)
   const page = req.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('.html');
   if (page) {
     e.respondWith(fetch(req.url, { cache: 'no-store', credentials: 'same-origin' }).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put('/', cp)); return r; }).catch(() => caches.match('/')));

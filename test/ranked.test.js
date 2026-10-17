@@ -209,12 +209,94 @@ test('Saison: Soft-Reset behält Historie, neue Placements', () => {
  assert.strictEqual(p.season, 2); assert.strictEqual(p.m.v1.r, 1010); assert.strictEqual(p.m.v1.pq, CFG.placementsReturn); assert.strictEqual(p.past[0].r, 1020); assert.strictEqual(p.m.v1.hist.length, 1);
 });
 
+// ── Gruppen, Statistik, Map-Pool ──
+function setupP(n, o = {}) { // wie setup, aber mit Freunden & Accountsuche
+ const RK = {}, rooms = new Map(), users = {}; for (let i = 0; i < n; i++) users['t' + i] = { name: 'P' + i };
+ const rk = createRanked(Object.assign({ RK, rooms, persist: () => { }, auth: t => users[t], user: nm => Object.values(users).find(u => u.name.toLowerCase() === nm.toLowerCase()) || null, friends: () => true }, o));
+ return { RK, rooms, rk };
+}
+test('Gruppe: Einladung, Beitritt, nur Leiter sucht, Gruppe landet im selben Team', () => {
+ const S = setupP(4), w = [0, 1, 2, 3].map(() => fakeWs()); w.forEach((x, i) => S.rk.queueMsg(x, { type: 'rkhi', tok: 't' + i }));
+ S.rk.queueMsg(w[0], { type: 'rkpinv', n: 'p1' }); const inv = w[1].last('rkpinv').inv[0]; assert.strictEqual(inv.from, 'P0');
+ S.rk.queueMsg(w[1], { type: 'rkpjoin', id: inv.id }); assert.strictEqual(w[0].last('rkpst').pt.mem.length, 2); assert.strictEqual(w[1].last('rkpst').pt.lead, 'P0');
+ S.rk.queueMsg(w[1], { type: 'rkq', tok: 't1', mode: 'duo' }); assert.match(w[1].last('rkoff').why, /Gruppenleiter/);
+ S.rk.queueMsg(w[0], { type: 'rkq', tok: 't0', mode: 'v1' }); assert.match(w[0].last('rkoff').why, /zu groß/);
+ S.rk.queueMsg(w[0], { type: 'rkq', tok: 't0', mode: 'duo' }); assert.ok(S.rk._.Q.has('p0') && S.rk._.Q.has('p1'), 'ganze Gruppe sucht');
+ S.rk.queueMsg(w[0], { type: 'rkpinv', n: 'p2' }); assert.match(w[0].last('rkperr').why, /Suche/, 'keine Einladung während der Suche');
+ S.rk.queueMsg(w[2], { type: 'rkq', tok: 't2', mode: 'duo' }); S.rk.queueMsg(w[3], { type: 'rkq', tok: 't3', mode: 'duo' }); S.rk.tick(T);
+ const f = w[0].last('rkfound'); assert.ok(f && w[1].last('rkfound') && w[1].last('rkfound').id === f.id); const L = S.rk._.LIVE.get(f.id);
+ assert.ok(L.tm.some(t => t.includes('p0') && t.includes('p1')), 'Gruppe zusammen in einem Team');
+ // Gruppenmitglied lehnt ab → ganze Gruppe raus, die anderen suchen weiter
+ [0, 2, 3].forEach(i => S.rk.queueMsg(w[i], { type: 'rkacc', id: f.id, ok: 1 })); S.rk.queueMsg(w[1], { type: 'rkacc', id: f.id, ok: 0 });
+ assert.ok(!S.rk._.Q.has('p0') && !S.rk._.Q.has('p1') && S.rk._.Q.has('p2') && S.rk._.Q.has('p3')); assert.match(w[0].last('rkoff').why, /Gruppenmitglied/);
+ // Abbrechen durch Mitglied beendet die Suche für alle; Verbindung weg → nach 120 s raus aus der Gruppe
+ S.rk.queueMsg(w[0], { type: 'rkq', tok: 't0', mode: 'duo' }); S.rk.queueMsg(w[1], { type: 'rkx' }); assert.ok(!S.rk._.Q.has('p0') && !S.rk._.Q.has('p1'));
+ S.rk.queueMsg(w[2], { type: 'rkx' }); S.rk.queueMsg(w[3], { type: 'rkx' });
+ w[1].readyState = 3; S.rk.wsClose(w[1]); S.rk.tick(T); assert.strictEqual(S.rk._.PT.size, 1); T += (CFG.party.offSec + 1) * 1000; S.rk.tick(T);
+ assert.strictEqual(S.rk._.PT.size, 0, 'nur noch Leiter → Gruppe aufgelöst'); assert.strictEqual(w[0].last('rkpst').pt, null);
+ // Kick & Verlassen
+ S.rk.queueMsg(w[2], { type: 'rkpinv', n: 'P3' }); S.rk.queueMsg(w[3], { type: 'rkpjoin', id: w[3].last('rkpinv').inv[0].id });
+ S.rk.queueMsg(w[3], { type: 'rkpkick', n: 'p2' }); assert.match(w[3].last('rkperr').why, /Gruppenleiter/);
+ S.rk.queueMsg(w[2], { type: 'rkpkick', n: 'p3' }); assert.strictEqual(S.rk._.PT.size, 0); assert.match(w[3].last('rkpst').why, /entfernt/);
+});
+test('Matchmaking: Gruppen werden nie getrennt', () => {
+ const q = (key, pt, pn, r = 1000) => ({ key, r, t: 0, pt, pn });
+ const out = pickMatches([q('a', 'X', 2), q('b', 'X', 2), q('c', 'Y', 2), q('d', 'Y', 2)], 2, 0); assert.strictEqual(out.length, 1);
+ assert.deepStrictEqual(out[0].map(t => t.map(p => p.key).sort()), [['a', 'b'], ['c', 'd']]);
+ assert.strictEqual(pickMatches([q('a', 'X', 2), q('c', 'Y', 2), q('d', 'Y', 2)], 2, 0).length, 0, 'unvollständige Gruppe wartet');
+ assert.strictEqual(pickMatches([q('a', 'X', 3), q('b', 'X', 3), q('c', 'X', 3), q('d'), q('e'), q('f')], 2, 0).length, 0, 'Gruppe größer als Team');
+});
+test('Statistik: Kills, Assists, HS, KAST & Trades werden vom Server gezählt und ins Profil übernommen', () => {
+ CFG.team.comp = 2; const S = setup(4), r = queueAll(S, 'comp', 4), ws = r.go.map((g, i) => enter(S, g, i)), host = ws[0], hT = r.go[0].team, oT = hT === 'CT' ? 'T' : 'CT';
+ const A = ws.filter((_, i) => r.go[i].team === hT), B = ws.filter((_, i) => r.go[i].team !== hT);
+ send(S, host, { type: 'start', map: r.go[0].map, cfg: CFG.rules }); send(S, host, { type: 'roster', bots: [] });
+ T += 9000; send(S, A[0], { type: 'dmg', to: B[0].pid, d: 40 });
+ send(S, B[0], { type: 'kf', ap: A[1].pid, hs: true }); send(S, B[0], { type: 'kf', ap: A[1].pid, hs: true }); // doppelt → zählt einmal
+ T += 6000; send(S, A[1], { type: 'kf', ap: B[1].pid }); T += 2000; send(S, B[1], { type: 'kf', ap: A[0].pid }); // A1 wird von A0 getradet, B0 nicht (> 5 s)
+ send(S, host, { type: 'end', w: hT }); for (let i = 0; i < 7; i++) { T += 9000; send(S, host, { type: 'end', w: hT }); }
+ T += 1000; send(S, host, { type: 'over', sc: { [hT]: 8, [oT]: 0 } });
+ const mt = S.RK.mt[r.go[0].id], st = k => mt.stats[k.acc]; assert.strictEqual(mt.st, 'rated');
+ assert.deepStrictEqual([st(A[1]).k, st(A[1]).d, st(A[1]).hs, st(A[1]).kast], [1, 1, 1, 8]); assert.deepStrictEqual([st(A[0]).k, st(A[0]).a, st(A[0]).d], [1, 1, 0]);
+ assert.deepStrictEqual([st(B[0]).k, st(B[0]).d, st(B[0]).kast, st(B[0]).rd], [0, 1, 7, 8]);
+ const sb = host.last('rkdone').sb; assert.strictEqual(sb.rows.length, 4); assert.ok(sb.rows.every(x => typeof x.ch === 'number')); assert.strictEqual(sb.rows.find(x => x.n.toLowerCase() === B[0].acc).kast, 88);
+ const pr = S.rk.pub(A[1].acc).m.comp.st; assert.deepStrictEqual([pr.n, pr.kd, pr.hs, pr.kast], [1, 1, 100, 100]); assert.strictEqual(S.rk.pub('niemand').m.comp, undefined);
+ CFG.team.comp = 5;
+});
+test('Map-Pool: offizielle Community-Map, Kartendaten vom Server, Host muss genau diese spielen', () => {
+ CFG.team.comp = 2; const g = Array(28).fill('#'.repeat(28)), mk = () => setupP(4, { maps: () => ['pub_x'], mapData: k => k === 'pub_x' ? { n: 'X-Map', g } : null });
+ let S = mk(), ws = [0, 1, 2, 3].map(() => fakeWs()); ws.forEach((x, i) => S.rk.queueMsg(x, { type: 'rkq', tok: 't' + i, mode: 'comp' })); S.rk.tick(T);
+ let f = ws[0].last('rkfound'); assert.ok(f.maps.includes('pub_x')); assert.strictEqual(f.names.pub_x, 'X-Map');
+ ws.forEach(x => S.rk.queueMsg(x, { type: 'rkacc', id: f.id, ok: 1, map: 'pub_x' })); let go = ws.map(x => x.last('rkgo')); assert.strictEqual(go[0].map, 'pub_x'); assert.strictEqual(go[0].cmap.g.length, 28);
+ let c = go.map((x, i) => enter(S, x, i)); send(S, c[0], { type: 'start', map: 'pub_x', cfg: CFG.rules }); assert.strictEqual(S.RK.mt[go[0].id].st, 'invalid', 'ohne Kartendaten');
+ S = mk(); ws = [0, 1, 2, 3].map(() => fakeWs()); ws.forEach((x, i) => S.rk.queueMsg(x, { type: 'rkq', tok: 't' + i, mode: 'comp' })); S.rk.tick(T); f = ws[0].last('rkfound');
+ ws.forEach(x => S.rk.queueMsg(x, { type: 'rkacc', id: f.id, ok: 1, map: 'pub_x' })); go = ws.map(x => x.last('rkgo')); c = go.map((x, i) => enter(S, x, i));
+ send(S, c[0], { type: 'start', map: 'pub_x', cmap: go[0].cmap, cfg: CFG.rules }); assert.strictEqual(S.RK.mt[go[0].id].st, 'live');
+ CFG.team.comp = 5;
+});
+
+test('Unranked: eigene Schlange, Bots nach 15 s nach Spielerstärke, Ranked-Rating unberührt, keine Suchsperre', () => {
+ CFG.team.ur = 2; const S = setup(2), a = fakeWs(), b = fakeWs();
+ // Ablehnen ohne Suchsperre
+ S.rk.queueMsg(a, { type: 'rkq', tok: 't0', mode: 'ur' }); S.rk.queueMsg(b, { type: 'rkq', tok: 't1', mode: 'ur' }); T += 16000; S.rk.tick(T);
+ for (let i = 0; i < 3; i++) { const f = a.last('rkfound'); S.rk.queueMsg(a, { type: 'rkacc', id: f.id, ok: 0 }); S.rk.queueMsg(a, { type: 'rkq', tok: 't0', mode: 'ur' }); S.rk.queueMsg(b, { type: 'rkq', tok: 't1', mode: 'ur' }); T += 16000; S.rk.tick(T); }
+ assert.ok(!S.rk._.BAN.get('p0'), 'keine Suchsperre im Unranked');
+ const f = a.last('rkfound'); assert.strictEqual(f.mode, 'ur'); assert.strictEqual(f.bots, 2, '2 Menschen + 2 Bots'); assert.ok(f.blv >= 1);
+ S.rk.queueMsg(a, { type: 'rkacc', id: f.id, ok: 1 }); S.rk.queueMsg(b, { type: 'rkacc', id: f.id, ok: 1 }); const go = [a.last('rkgo'), b.last('rkgo')];
+ const ws = go.map((g, i) => enter(S, g, i)), host = ws[0], L = host.rk, hT = go[0].team, oT = hT === 'CT' ? 'T' : 'CT';
+ send(S, host, { type: 'start', map: go[0].map, cfg: L.rules }); send(S, host, { type: 'roster', bots: L.side.flatMap((sd, i) => Array.from({ length: L.nb[i] }, (_, j) => ({ n: 'Bot' + i + j, t: sd }))) });
+ for (let i = 0; i < 8; i++) { T += 9000; send(S, host, { type: 'end', w: hT }); } T += 1000; send(S, host, { type: 'over', sc: { [hT]: 8, [oT]: 0 } });
+ const mt = S.RK.mt[go[0].id]; assert.strictEqual(mt.st, 'rated'); assert.ok(!mt.ch, 'keine sichtbare Ratingänderung');
+ for (const k of ['p0', 'p1']) { assert.strictEqual(S.RK.p[k].m.comp.r, 1000); assert.strictEqual(S.RK.p[k].m.comp.n, 0); assert.strictEqual(S.RK.p[k].u.n, 1); }
+ const pr = S.rk.profile({ name: 'P0' }); assert.strictEqual(pr.ur.n, 1); assert.strictEqual(pr.ur.r, undefined, 'Stärke bleibt versteckt'); assert.strictEqual(host.last('rkdone').me, null);
+ assert.strictEqual(S.rk.board('comp').total, 0); CFG.team.ur = 5;
+});
+
 // ── Echter Server: Registrieren, Warteschlange per WebSocket, Raum-Zugang ──
 test('Server-Integration (HTTP + WebSocket)', { timeout: 20000 }, async () => {
  Date.now = realNow;
  const { spawn } = require('child_process'), path = require('path'), os = require('os'), fs = require('fs'), WebSocket = require('ws');
  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rk-')), port = 18000 + Math.floor(Math.random() * 2000);
- const srv = spawn(process.execPath, [path.join(__dirname, '..', 'server.js')], { env: Object.assign({}, process.env, { PORT: port, DATA_DIR: dir, GIST_ID: '', GIST_TOKEN: '' }), stdio: 'pipe' });
+ const srv = spawn(process.execPath, [path.join(__dirname, '..', 'server.js')], { env: Object.assign({}, process.env, { PORT: port, DATA_DIR: dir, GIST_ID: '', GIST_TOKEN: '', SKIN_BADGE_COINS: '1300' }), stdio: 'pipe' });
  try {
   await new Promise((ok, no) => { srv.stdout.on('data', d => /läuft/.test(d) && ok()); srv.on('exit', no); });
   const api = (p, b) => fetch(`http://localhost:${port}/api/${p}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json());
@@ -229,6 +311,43 @@ test('Server-Integration (HTTP + WebSocket)', { timeout: 20000 }, async () => {
   const ra = await open(); ra.send(JSON.stringify({ type: 'join', room: g.room, pid: 'aa', acc: A.tok })); await wait(ra, 'joined');
   const guest = await open(); guest.send(JSON.stringify({ type: 'join', room: g.room, pid: 'gg' })); await wait(guest, 'rkdeny');
   const lst = await open(); lst.send(JSON.stringify({ type: 'rooms' })); assert.ok(!(await wait(lst, 'rooms')).rooms.some(r => r.name.startsWith('rk_')), 'Ranked-Räume nicht öffentlich');
-  [qa, qb, ra, guest, lst].forEach(w => w.close());
+  // Profilbild nur aus fester Auswahl, Profil öffentlich, Account & Bild im Raum vom Server
+  assert.ok((await api('setav', { tok: A.tok, av: 99 })).err); assert.strictEqual((await api('setav', { tok: A.tok, av: 3 })).av, 3);
+  const pp = await api('pprof', { n: 'rktesta' }); assert.strictEqual(pp.n, 'rkTestA'); assert.strictEqual(pp.av, 3); assert.strictEqual(pp.badges.map, null); assert.ok(!('data' in pp) && !('fr' in pp));
+  // Profilbild hochladen: nur echte PNG/JPEG/WebP, Auslieferung als Bild mit Schutz-Headern, Preset setzt zurück
+  const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+  assert.ok((await api('setav', { tok: B.tok, img: 'data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=' })).err, 'SVG abgelehnt');
+  assert.ok((await api('setav', { tok: B.tok, img: 'data:image/png;base64,PGh0bWw+PHNjcmlwdD48L3NjcmlwdD4=' })).err, 'falsche Signatur abgelehnt');
+  assert.ok((await api('setav', { tok: B.tok, img: 'data:image/png;base64,' + 'A'.repeat(30000) })).err, 'zu groß');
+  assert.strictEqual((await api('setav', { tok: B.tok, img: png })).av, 'u1'); assert.ok((await api('setav', { tok: B.tok, img: png })).err, 'Upload-Bremse');
+  const im = await fetch(`http://localhost:${port}/av/rktestb?v=1`); assert.strictEqual(im.headers.get('content-type'), 'image/png'); assert.strictEqual(im.headers.get('x-content-type-options'), 'nosniff'); assert.strictEqual(Buffer.from(await im.arrayBuffer()).readUInt32BE(0), 0x89504e47);
+  assert.strictEqual((await fetch(`http://localhost:${port}/av/rkTestA`)).status, 404); assert.strictEqual((await api('pprof', { n: 'rkTestB' })).av, 'u1');
+  assert.strictEqual((await api('setav', { tok: B.tok, av: 2 })).av, 2); assert.strictEqual((await fetch(`http://localhost:${port}/av/rktestb`)).status, 404, 'Preset ersetzt Upload');
+  const h1 = await open(), h2 = await open(); h1.send(JSON.stringify({ type: 'join', room: 'custom1', pid: 'h1', acc: A.tok })); await wait(h1, 'joined'); h2.send(JSON.stringify({ type: 'join', room: 'custom1', pid: 'h2' })); await wait(h2, 'joined');
+  h1.send(JSON.stringify({ type: 'hello', pid: 'h1', name: 'x', av: 15, acc: 'rkTestB' })); const hh = await wait(h2, 'hello'); assert.strictEqual(hh.acc, 'rkTestA'); assert.strictEqual(hh.av, 3);
+  assert.ok((await api('mappool', { code: 'falsch', k: 'pub_x', on: 1 })).err);
+  // Map-Pool: veröffentlichte Karte offiziell aufnehmen → Creator-Badge; Entfernen lässt das Badge (Regel), revoke entzieht es
+  const mg = ['#'.repeat(28), ...Array(26).fill('#' + '.'.repeat(26) + '#'), '#'.repeat(28)];
+  assert.ok((await api('publish', { code: 'baumeister42', k: 'pub_testmap', map: { n: 'Testmap', g: mg }, by: 'rkTestA' })).ok);
+  assert.ok((await api('mappool', { code: 'baumeister42', k: 'pub_testmap', on: 1, creator: 'rktesta' })).ok);
+  let pa = await api('pprof', { n: 'rkTestA' }); assert.deepStrictEqual(pa.badges.map.maps.map(x => [x.n, x.now]), [['Testmap', true]]);
+  assert.ok((await api('ranked', { tok: A.tok })).maps.includes('pub_testmap'), 'Karte im Ranked-Pool');
+  assert.ok((await api('publish', { code: 'baumeister42', k: 'pub_testmap', map: { n: 'Testmap', g: mg }, by: 'rkTestA' })).ok); assert.ok((await api('maps', {})).maps.pub_testmap.off, 'Neu-Veröffentlichen hält die Karte im Pool');
+  await api('mappool', { code: 'baumeister42', k: 'pub_testmap', on: 0 }); pa = await api('pprof', { n: 'rkTestA' }); assert.strictEqual(pa.badges.map.maps[0].now, false, 'Badge bleibt, Karte als ehemals');
+  await api('mappool', { code: 'baumeister42', k: 'pub_testmap', on: 1, creator: 'rkTestA' }); await api('mappool', { code: 'baumeister42', k: 'pub_testmap', on: 0, revoke: 1 }); assert.strictEqual((await api('pprof', { n: 'rkTestA' })).badges.map, null, 'revoke entzieht');
+  // Skin-Einnahmen: nur erster Kauf je Käufer zählt (Ziel im Test 1300, Anteil je Kauf 1250)
+  const C = await api('register', { u: 'rkTestC', p: 'pass3' }), sk = await api('mkskin', { tok: A.tok, s: { w: 'ak47', p: 'solid', r: 4, n: 'Testskin' } }); assert.ok(sk.ok);
+  await api('buyskin', { tok: B.tok, id: sk.skin.id }); await api('buyskin', { tok: B.tok, id: sk.skin.id }); await api('buyskin', { tok: A.tok, id: sk.skin.id });
+  assert.strictEqual((await api('pprof', { n: 'rkTestA' })).badges.skin, null, 'Doppelkauf & Eigenkauf zählen nicht');
+  await api('buyskin', { tok: C.tok, id: sk.skin.id }); assert.strictEqual((await api('pprof', { n: 'rkTestA' })).badges.skin.coins, 2500);
+  // Customs-Zuschauer: max. 2 (auch der Host), Host-Wechsel überspringt Zuschauer
+  const sw = []; for (const id of ['s0', 's1', 's2', 's3']) { const w = await open(); w.send(JSON.stringify({ type: 'join', room: 'spec1', pid: id })); await wait(w, 'joined'); sw.push(w); }
+  sw[0].send(JSON.stringify({ type: 'lmode', mode: 'comp' }));   sw[1].send(JSON.stringify({ type: 'team', pid: 's1', team: 'SPEC' })); sw[2].send(JSON.stringify({ type: 'team', pid: 's2', team: 'SPEC' })); sw[3].send(JSON.stringify({ type: 'team', pid: 's3', team: 'SPEC' }));
+  assert.match((await wait(sw[3], 'specdeny')).why, /belegt/); await new Promise(r => setTimeout(r, 150));
+  assert.strictEqual(sw[0].msgs.filter(x => x.type === 'team' && x.team === 'SPEC').length, 2, 'nur 2 Zuschauer weitergeleitet');
+  sw[1].send(JSON.stringify({ type: 'team', pid: 's1', team: 'CT' })); sw[0].send(JSON.stringify({ type: 'team', pid: 's0', team: 'SPEC' })); await new Promise(r => setTimeout(r, 150));
+  assert.ok(!sw[0].msgs.some(x => x.type === 'specdeny'), 'Host darf zuschauen'); assert.strictEqual(sw[3].msgs.filter(x => x.type === 'team' && x.team === 'SPEC' && x.pid === 's0').length, 1);
+  sw[0].close(); assert.ok(await wait(sw[1], 'promote'), 'Spieler statt Zuschauer wird Host');
+  [qa, qb, ra, guest, lst, h1, h2, ...sw].forEach(w => w.close());
  } finally { srv.kill(); }
 });
