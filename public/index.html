@@ -973,6 +973,13 @@
         #mfr .fr { position: relative; flex: 0 0 auto; width: 42px; height: 42px; border-radius: 6px; background: #1d2733; border: 1px solid rgba(255, 255, 255, .12); display: flex; align-items: center; justify-content: center; font: bold 15px Arial; color: #8fa3b8; cursor: pointer }
         #mfr .fr.on { color: #fff; border-color: rgba(120, 220, 120, .6) } #mfr .fr .dot { position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; border-radius: 50%; background: #556; border: 2px solid #0b0f14 } #mfr .fr.on .dot { background: #4cd964 }
         #mfr .frbtn { font-size: 20px; background: rgba(var(--hl-rgb), .15); border-color: rgba(var(--hl-rgb), .5) } #mfr #frBadge { position: absolute; top: -6px; right: -6px; background: #e04848; color: #fff; font: 700 10px Arial; border-radius: 8px; padding: 1px 5px; font-style: normal }
+        /* Aufklappen beim Drüberfahren (Handy: .open per Tippen): voller Name, Status & Aktionen direkt in der Leiste statt Popup */
+        #mfr { align-items: stretch; overflow-x: hidden; transition: width .16s ease, background .16s } #mfr:hover, #mfr:focus-within, #mfr.open { width: 280px; z-index: 30; background: rgba(8, 10, 14, .94); box-shadow: -10px 0 30px rgba(0, 0, 0, .5) }
+        #mfr .frw { display: flex; align-items: center; gap: 10px; width: 264px; padding: 4px 0 4px 8px; flex: 0 0 auto; border-radius: 4px } #mfr .frw .fr { border-radius: 50%; padding: 0 } #mfr .frw.head { padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, .08) }
+        #mfr .frx { min-width: 0; flex: 1; opacity: 0; transition: opacity .12s; pointer-events: none } #mfr:hover .frx, #mfr:focus-within .frx, #mfr.open .frx { opacity: 1; pointer-events: auto }
+        #mfr .frx b { display: block; font: 700 14px Arial; color: #e8eef5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis } #mfr .frx span { display: block; font-size: 11px; color: #8fa3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+        #mfr .frb { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px } #mfr .frb button { margin: 0; padding: 3px 7px; min-height: 0; font-size: 11px; line-height: 1.3 }
+        #mfr:hover .frw:not(.head):hover, #mfr.open .frw:not(.head):hover { background: rgba(255, 255, 255, .05) } #mfr .frw:not(.on):not(.head) { opacity: .7 }
         #csmenu:has(#mfr) #csplayview { left: calc(50% - 30px) !important; width: min(1340px, calc((96vw - 64px) / var(--ui, 1))) !important }
         #chatBtn { display: none; position: fixed; left: 10px; bottom: 10px; width: 44px; height: 44px; z-index: 9100; align-items: center; justify-content: center; font-size: 22px; background: rgba(8, 11, 15, .55); border: 1px solid rgba(var(--hl-rgb), .5); border-radius: 50%; touch-action: none }
         #frpanel { position: fixed; right: 72px; top: 62px; width: min(330px, 86vw); max-height: 75vh; overflow-y: auto; z-index: 9500; background: rgba(10, 14, 20, .96); border: 1px solid rgba(var(--hl-rgb), .45); border-radius: 6px; padding: 12px; color: #e8eef5; font: 13px Arial; box-shadow: 0 8px 30px rgba(0, 0, 0, .6) }
@@ -2779,6 +2786,19 @@ html.dsV #csmenu #catnav b { border-bottom: 2px solid transparent }
 .qtile small { position: absolute; z-index: 1; left: 14px; right: 14px; bottom: 10px; font-size: 11px; color: #cfd8e3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .qtile .qtag { position: absolute; z-index: 1; left: 10px; top: 10px; padding: 2px 8px; font: 700 11px Arial; letter-spacing: 1px; color: #111; background: var(--qc); border-radius: 2px }
 .qtile.big::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--qc) }
+#csplayview.rkv > :not(#rkview):not(#qback) { display: none !important } #csplayview:not(.rkv) > #rkview { display: none }
+#rkview { width: 100%; text-align: left } #rkview .subnav { margin-bottom: 4px } .rkdesc { margin: 2px 0 10px; font-size: 12px; color: #8fa3b8 } .rkdesc a { color: var(--hl); cursor: pointer; text-decoration: underline }
+.rkgrid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 12px; align-items: stretch } .rkgrid.one { grid-template-columns: minmax(0, 1fr) } #rkview .mcard { margin: 0; padding: 14px 16px; text-align: left; min-width: 0 }
+.rkhd { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap } .rkrank { font: 700 28px Rajdhani; color: var(--acc); text-transform: uppercase; line-height: 1.1 } .rkr { font: 700 20px Rajdhani } .rkr small, .rksub { font-size: 12px; color: var(--mut) }
+.rkbar { height: 6px; background: rgba(255,255,255,.1); margin: 10px 0 4px; overflow: hidden } .rkbar i { display: block; height: 100%; background: var(--acc) } .rkst { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: #cfd8e3 }
+.rkgo { display: block; width: 100%; margin: 14px 0 0; padding: 12px; font: 700 18px Rajdhani; letter-spacing: 2px; border-color: var(--acc); color: var(--acc) }
+.rkbox { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 14px 0 0; padding: 10px 14px; border: 1px solid var(--line); text-align: center } .rkbox.found { border-color: #9fe08a; background: rgba(159,224,138,.06) } .rkbox button { margin: 2px 4px }
+.rkmaps { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center } .rkmaps button.on { border-color: #9fe08a; color: #9fe08a } .rkmaps button.ban { border-color: #c66; color: #c66; text-decoration: line-through }
+#rkview .rkside .ptmem { flex-direction: column } #rkview .ptm { min-width: 0 } .ptm.solo { border-style: dashed } #rkview .rkside > button { margin: 6px 0 0 }
+.rklist { margin-top: 12px !important; max-height: 30vh; overflow-y: auto } .rkh { display: grid; grid-template-columns: 110px 54px 1fr 1.4fr 70px; gap: 8px; font-size: 12px; padding: 5px 6px; border-left: 3px solid #556; margin: 3px 0; align-items: center }
+.rkh.w { border-color: #9fe08a } .rkh.l { border-color: #ff6b6b } .rkh.d { border-color: #ffd84a } .rkh .rkd { text-align: right; font-weight: 700 } .rkh small { grid-column: 1/-1; color: var(--mut); font-size: 11px } .rkh.lb { grid-template-columns: 44px 1fr 1fr 60px 60px } .rkh.w .rkd { color: #9fe08a } .rkh.l .rkd { color: #ff6b6b }
+.rkmsg { min-height: 16px; margin: 6px 0 0 } .mob .rkh { grid-template-columns: 90px 44px 1fr 60px } .mob .rkh span:nth-child(4) { display: none }
+@media (max-width: 800px) { .rkgrid { grid-template-columns: minmax(0, 1fr) } }
 #qback { display: flex; align-items: center; gap: 12px; margin: 0 0 6px } #qback button { margin: 0; padding: 4px 12px; font-size: 12px } #qback b { font: 700 20px Rajdhani; letter-spacing: 2px }
 @media (max-width: 700px) { .qgrid { grid-template-columns: repeat(2, 1fr); gap: 8px } .qtile, .qtile.big { height: 104px } .qtile b { font-size: 18px; bottom: 24px } .qtile i { font-size: 84px } .qhead b { font-size: 20px } }
 html.dsV #csmenu #catnav b.on { color: #fff; background: none; border-bottom-color: var(--hl) }
@@ -7056,7 +7076,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="width:64px;height:3px;background:var(--acc);margin-top:10px"></div>
  </div> <div id="csplayview">
 <div id="qpick"><div class="qhead"><span></span><b>MODUS WÄHLEN</b><span></span></div><div class="qgrid">${QTILES.map(([k, ic, t, d, tag, c1, c2, c]) => `<button class="qtile${['ur', 'rk', 'comp'].includes(k) ? ' big' : ''}" data-q="${k}" style="--qb:linear-gradient(135deg,${c1},${c2});--qc:${c}"><i aria-hidden="true">${ic}</i>${tag ? `<span class="qtag">${tag}</span>` : ''}<b>${t}</b><small>${d}</small></button>`).join('')}</div></div>
-<div id="qback"><button id="qbackBtn">← ALLE MODI</button><b id="qtitle"></b></div><div class="subnav" id="catnav" style="display:none">${Object.keys(MODES).map(k => `<b data-cat="${k}">${MODES[k][0]} ${MODES[k][1].toUpperCase()}</b>`).join('')}</div><div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b></div><p id="catdesc" style="margin:2px 0 6px;font-size:12px;color:#8fa3b8"></p>  <div id="mapgrid">${mapCards}</div>
+<div id="qback"><button id="qbackBtn">← ALLE MODI</button><b id="qtitle"></b></div><div id="rkview"></div><div class="subnav" id="catnav" style="display:none">${Object.keys(MODES).map(k => `<b data-cat="${k}">${MODES[k][0]} ${MODES[k][1].toUpperCase()}</b>`).join('')}</div><div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b></div><p id="catdesc" style="margin:2px 0 6px;font-size:12px;color:#8fa3b8"></p>  <div id="mapgrid">${mapCards}</div>
  <div id="roomlist" style="display:none"></div>
  <div id="glpanel" style="display:none;gap:16px;justify-content:center;margin:14px 0;flex-wrap:wrap">
  <div class="mcard" id="glcSolo" style="min-width:270px">
@@ -7098,7 +7118,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧩 NEUE MODUSAUSWAHL</p>
- Im Reiter <b>SPIELEN</b> wählst Du Deinen Modus jetzt über <b>Kacheln</b>: Unranked, Ranked, Customs, Deathmatch, Gauntlet, 1v1, Entenjagd, Erkunden & Aim-Lab – alles an einem Ort. Ranked & Unranked sind keine eigenen Reiter mehr. Mit <b>← ALLE MODI</b> geht es zurück zur Auswahl.<br><br>
+ Im Reiter <b>SPIELEN</b> wählst Du Deinen Modus jetzt über <b>Kacheln</b>: Unranked, Ranked, Customs, Deathmatch, Gauntlet, 1v1, Entenjagd, Erkunden & Aim-Lab – alles an einem Ort. Ranked & Unranked sind keine eigenen Reiter mehr und sehen aus wie die anderen Modi – Ranked mit Unterleiste 5V5 · 2V2 · 1V1 · BOT-RANG, links Rang & Suche, rechts Deine Gruppe, darunter Matches & Bestenliste. Mit <b>← ALLE MODI</b> geht es zurück zur Auswahl.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎮 NEU: UNRANKED</p>
  Neue Kachel <b>UNRANKED</b> im SPIELEN-Reiter: 5v5 mit <b>Spielersuche wie im Ranked</b> – Suche starten, Match annehmen, Map wählen, los.<br>
@@ -7108,7 +7128,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">👥 NEU: GRUPPEN</p>
  Spiel zusammen mit Freunden: Lade sie im <b>Ranked- oder Unranked-Menü</b> ein oder direkt in der <b>Freundesliste</b> über 👥.<br>
  Der <b>Gruppenleiter 👑</b> startet und stoppt die Suche – ihr landet <b>immer im selben Team</b>. Alle sehen Profilbild, Name, Rang und ob jemand online ist.<br>
- Größen: 1v1 nur allein, 2v2 bis 2, 5v5 & Unranked bis 5. Der Leiter kann Mitglieder entfernen, jeder kann die Gruppe verlassen.<br><br>
+ Größen: 1v1 nur allein, 2v2 bis 2, 5v5 & Unranked bis 5. Der Leiter kann Mitglieder entfernen, jeder kann die Gruppe verlassen.<br>
+ <b>Freundesleiste rechts:</b> Fahr mit der Maus drüber (Handy: antippen) – sie klappt auf und zeigt volle Namen, Status und Knöpfe für <b>Profil</b>, <b>Gruppe</b>, <b>Lobby-Einladung</b> & <b>Beitreten</b>.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🛠 WETTKAMPF HEISST JETZT CUSTOMS</p>
  Der bisherige Lobby- & Offline-Modus „Wettkampf“ heißt jetzt <b>Customs</b>: eigene Lobby, eigene Regeln, alles wie gewohnt – und ohne Einfluss auf Ranked.<br>
@@ -7870,7 +7891,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const tb = $('csTut'); if (tb) tb.style.display = nav === 'home' ? '' : 'none'; // Tutorial-Button nur auf der Startseite
             };
             document.querySelectorAll('#cstabs a').forEach(a => a.onclick = () => {
-                const nav = a.dataset.nav;
+                const nav = a.dataset.nav; if (RK.open && nav !== 'play') rkLeave(); // Reiter wechseln beendet Ranked-/Unranked-Suche
                 if (nav === 'inv') { showInventory(); return; }
                 if (nav === 'store') { showCases(); return; } // (Cases liegen jetzt im SHOP-Reiter)
                 if (nav === 'shop') { showShop(); return; } if (nav === 'ranked') { showRanked('rk'); return; } if (nav === 'unranked') { showRanked('ur'); return; }
@@ -7926,8 +7947,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('modeOff').onclick = () => { PM.on = false; setMode(); };
             $('modeOn').onclick = () => { PM.on = true; setMode(); };
             setMode();
-            const qShow = on => { $('csplayview').classList.toggle('qp', on); if (on) sessionStorage.removeItem('playpick'); else { sessionStorage.setItem('playpick', '1'); $('qtitle').textContent = MODES[PM.cat][0] + ' ' + MODES[PM.cat][1].toUpperCase(); } };
-            qShow(!sessionStorage.getItem('playpick'));
+            const qView = v => { // 'pick' = Kacheln, 'mode' = bisheriger Modus-Bildschirm, 'rk' / 'ur' = Ranked / Unranked im selben Rahmen
+                const pv = $('csplayview'); pv.classList.toggle('qp', v === 'pick'); pv.classList.toggle('rkv', v === 'rk' || v === 'ur');
+                if (v === 'pick') sessionStorage.removeItem('playpick'); else sessionStorage.setItem('playpick', v === 'mode' ? '1' : v);
+                $('qtitle').textContent = v === 'rk' ? '🏆 RANKED BETA' : v === 'ur' ? '🎮 UNRANKED' : v === 'mode' ? MODES[PM.cat][0] + ' ' + MODES[PM.cat][1].toUpperCase() : '';
+                if (v !== 'rk' && v !== 'ur' && RK.open) rkLeave(); // Ansicht verlassen = Suche beenden
+            };
+            QV = qView; const qShow = on => qView(on ? 'pick' : 'mode'), pp0 = sessionStorage.getItem('playpick');
+            qView(pp0 === 'rk' || pp0 === 'ur' ? (RK.open ? pp0 : 'pick') : pp0 ? 'mode' : 'pick');
             document.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { const k = b.dataset.q; if (k === 'ur' || k === 'rk') { showRanked(k); return; } PM.cat = k; setMode(); qShow(false); });
             $('qbackBtn').onclick = () => qShow(true);
             const backPlay = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
@@ -7939,7 +7966,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile; frSide();
             $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
-            else if (sessionStorage.getItem('opentab') === 'ranked' || sessionStorage.getItem('opentab') === 'unranked') { showRanked(sessionStorage.getItem('opentab') === 'unranked' ? 'ur' : 'rk'); sessionStorage.removeItem('opentab'); const w = sessionStorage.getItem('rkmsg'); if (w) { sessionStorage.removeItem('rkmsg'); RK.msg = '⚠ ' + w; rkRender(); } }
+            else if (sessionStorage.getItem('opentab') === 'ranked' || sessionStorage.getItem('opentab') === 'unranked') { setTab('play'); showRanked(sessionStorage.getItem('opentab') === 'unranked' ? 'ur' : 'rk'); sessionStorage.removeItem('opentab'); const w = sessionStorage.getItem('rkmsg'); if (w) { sessionStorage.removeItem('rkmsg'); RK.msg = '⚠ ' + w; rkRender(); } }
             else if (sessionStorage.getItem('opentab') === 'maps') { sessionStorage.removeItem('opentab'); showMapList(); }
         }
         // =====================================================================
@@ -8916,10 +8943,24 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         }
         setTimeout(frPoll, 1500); setInterval(frPoll, 20000);
         function frBadge() { const b = $('frBadge'), n = FR.rq.length + FR.inv.length + FR.pinv.length; if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; } }
-        function frSide() { // Freunde-Leiste rechts im Hauptmenü: oben der Freunde-Knopf, darunter Freunde (online zuerst)
+        function frSide() { // Freunde-Leiste rechts im Hauptmenü: klappt beim Drüberfahren (Handy: Tippen) auf – voller Name, Status & Aktionen direkt in der Zeile
             const el = $('mfr'); if (!el) return;
-            el.innerHTML = '<div class="fr frbtn" title="Freunde">👥<i id="frBadge" style="display:none"></i></div>' + FR.list.slice().sort((a, b) => (b.on ? 1 : 0) - (a.on ? 1 : 0)).map(f => `<div class="fr${f.on ? ' on' : ''}" title="${escH(f.n)} – ${f.room ? (f.st ? 'Im Spiel' : 'Lobby') + ': ' + escH(f.room) : f.on ? 'Online' : 'Offline'}">${AVS[f.av] ? AVS[f.av][0] : escH((f.n[0] || '?').toUpperCase())}<i class="dot"></i></div>`).join('');
-            el.querySelectorAll('.fr').forEach(d => d.onclick = frToggle); frBadge();
+            const on = FR.list.filter(f => f.on).length, req = FR.rq.length + FR.inv.length + FR.pinv.length;
+            const row = f => { const st = f.room ? (f.st ? '🎮 Im Spiel' : '🛋 Lobby') + ' · ' + escH(f.room) : f.on ? 'Online' : 'Offline';
+                const btns = [`<button data-pp="${escH(f.n)}" title="Profil ansehen">👤 Profil</button>`,
+                    f.on && ACC ? `<button data-fg="${escH(f.n)}" title="In Ranked-/Unranked-Gruppe einladen">👥 Gruppe</button>` : '',
+                    NET.on && f.on ? `<button data-fi="${escH(f.n)}" title="In Deine Lobby einladen">📨 Lobby</button>` : '',
+                    f.room && f.room !== NET.room ? `<button data-fj="${escH(f.n)}" title="Seiner Lobby beitreten">▶ Beitreten</button>` : ''].join('');
+                return `<div class="frw${f.on ? ' on' : ''}"><div class="fr${f.on ? ' on' : ''}">${avH(f.n, f.av, 40)}<i class="dot"></i></div><div class="frx"><b title="${escH(f.n)}">${escH(f.n)}${bdH(f.bd)}</b><span>${st}</span><div class="frb">${btns}</div></div></div>`; };
+            el.innerHTML = `<div class="frw head"><div class="fr frbtn" title="Freunde verwalten">👥<i id="frBadge" style="display:none"></i></div><div class="frx"><b>FREUNDE</b><span>${on} online${req ? ' · ' + req + ' neu' : ''}</span><div class="frb"><button data-fopen="1">＋ Hinzufügen${req ? ' · Anfragen' : ''}</button></div></div></div>`
+                + (FR.list.length ? FR.list.slice().sort((a, b) => (b.on ? 1 : 0) - (a.on ? 1 : 0)).map(row).join('') : `<div class="frw"><div class="frx" style="padding-left:58px"><span>${ACC ? 'Noch keine Freunde – füge welche hinzu.' : 'Freunde brauchen einen Account.'}</span></div></div>`);
+            el.querySelectorAll('.frbtn, [data-fopen]').forEach(d => d.onclick = e => { e.stopPropagation(); el.classList.remove('open'); frToggle(); });
+            el.querySelectorAll('[data-fg]').forEach(b => b.onclick = e => { e.stopPropagation(); ptInvite(b.dataset.fg); b.disabled = true; b.textContent = '✓ Eingeladen'; });
+            el.querySelectorAll('[data-fi]').forEach(b => b.onclick = e => { e.stopPropagation(); frAct('frinv', b.dataset.fi); b.disabled = true; b.textContent = '✓ Eingeladen'; });
+            el.querySelectorAll('[data-fj]').forEach(b => b.onclick = e => { e.stopPropagation(); const f = FR.list.find(x => x.n === b.dataset.fj); if (f && f.room) frJoin(f.room, DEF_WS, f.mode); });
+            el.querySelectorAll('.frw:not(.head) .fr').forEach(d => d.onclick = e => { e.stopPropagation(); el.classList.toggle('open'); }); // Handy: Tippen klappt auf/zu
+            if (!el.dataset.cl) { el.dataset.cl = '1'; document.addEventListener('click', e => { const m = $('mfr'); if (m && !m.contains(e.target)) m.classList.remove('open'); }); }
+            frBadge();
         }
         function frJoin(room, srv, mode) { // über den vorhandenen Rejoin-Ablauf (Seite neu laden → startMP)
             if (MODES[mode]) sessionStorage.setItem('playcat', mode); sessionStorage.setItem('playmode', '1');
@@ -9026,7 +9067,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             else if (m.type === 'rkpst') { RK.pt = m.pt; try { if (m.pt && m.pt.mem.length > 1) sessionStorage.setItem('rkpt', '1'); else sessionStorage.removeItem('rkpt'); } catch (e) { } if (m.why) { RK.msg = m.why; if (!RK.open) toast('👥 Gruppe', m.why); } }
             else if (m.type === 'rkpinv') { const nw = (m.inv || []).filter(i => !RK.pinv.some(o => o.id === i.id) && !FR.pinv.some(o => o.id === i.id)); RK.pinv = m.inv || []; FR.pinv = FR.pinv.filter(i => RK.pinv.some(o => o.id === i.id)); frBadge(); for (const i of nw) toast('👥 Gruppeneinladung von ' + i.from, 'RANKED öffnen zum Annehmen'); }
             else if (m.type === 'rkperr') RK.msg = (m.ok ? '' : '⚠ ') + m.why;
-            if ((m.type === 'rkq' || m.type === 'rkfound') && !RK.open && !started && ACC) { showRanked(m.mode === 'ur' ? 'ur' : 'rk'); return; } // Gruppenmitglied: Suche/Annehmen sofort sichtbar
+            if (((m.type === 'rkq' && !RK.open) || (m.type === 'rkfound' && !rkVis())) && !started && ACC) { showRanked(m.mode === 'ur' ? 'ur' : 'rk'); return; } // Gruppenmitglied / Match gefunden: Ansicht sofort zeigen // Gruppenmitglied: Suche/Annehmen sofort sichtbar
             rkRender();
         }
         function rkGo(m) { // wie der Freundes-Beitritt: Seite neu laden → startMP im Ranked-Raum (Team & Map vom Server)
@@ -9036,66 +9077,68 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             sessionStorage.setItem('mpjoin', JSON.stringify({ srv: DEF_WS, room: m.room, team: m.team, name: ACC.u.slice(0, 14) }));
             if (RK.ws) { RK.ws.onclose = null; RK.ws.close(); } location.reload();
         }
+        // Ranked & Unranked laufen im SPIELEN-Bereich (wie die anderen Modi): Kachel → #rkview, „← ALLE MODI“ beendet Suche & Ansicht
+        let QV = null; // Ansicht im SPIELEN-Bereich umschalten (setzt showMenu)
+        const rkVis = () => { const v = $('csplayview'); return !!(v && $('rkview') && v.classList.contains('rkv') && v.style.display !== 'none'); };
         function showRanked(pg) { // pg: 'ur' = Unranked, 'rk' = Ranked, leer = aktuelle Seite (beide teilen Verbindung & Gruppe)
-            if (pg === 'ur') { RK.mode = 'ur'; RK.view = 'hist'; } else if (pg === 'rk' && RK.mode === 'ur') RK.mode = 'comp';
-            RK.open = true; RK.msg = ''; rkRender(); if (!ACC) return; rkConn(rkHi); frPoll();
+            if (pg === 'ur') { RK.mode = 'ur'; RK.view = 'hist'; RK.bot = false; } else if (pg === 'rk' && RK.mode === 'ur') RK.mode = 'comp';
+            RK.open = true; RK.msg = ''; const vw = RK.mode === 'ur' ? 'ur' : 'rk';
+            if (!rkVis()) { const v = $('csplayview'); if (v && v.style.display !== 'none' && QV) QV(vw); else { sessionStorage.setItem('opentab', 'play'); sessionStorage.setItem('playpick', vw); showMenu(); } }
+            rkRender(); if (!ACC) return; rkConn(rkHi); frPoll();
             accApi('ranked', { tok: ACC.tok }).then(r => { if (r.ok) { RK.prof = r; RK.ban = r.ban || 0; } else RK.msg = '⚠ ' + (r.err || 'Fehler'); rkRender(); }).catch(() => { RK.msg = '⚠ Server nicht erreichbar'; rkRender(); });
         }
-        function rkCard(md) {
-            const p = RK.prof.m[md], rk = p.rank, nx = RK.prof.ranks[rk.i + 1], notLead = RK.pt && RK.pt.mem.length > 1 && RK.pt.lead !== ACC.u, busy = RK.q || RK.found || RK.prof.live || RK.ban > Date.now() || notLead;
-            return `<div class="panel rkcard${RK.mode === md ? ' on' : ''}" data-rkm="${md}"><div class="psub">${RK_TI[md]}</div>
- <div class="rkrank">${p.placed ? rk.name : 'VORLÄUFIG · ' + rk.name}</div><div class="rkr">${p.r}<small> RATING</small></div>
- <div class="rkbar"><i style="width:${Math.round((p.placed ? rk.prog : p.pl / p.pq) * 100)}%"></i></div>
- <div class="rksub">${!p.placed ? `Placement ${p.pl}/${p.pq} – danach wird Dein Rang sichtbar` : nx ? `Noch ${nx[0] - p.r} bis ${nx[1]}` : 'Höchster Rang erreicht'}${p.placed && rk.lo !== null ? ' · Abstieg unter ' + rk.lo : ''}</div>
- <div class="rkst"><span>✔ ${p.w}</span><span>✖ ${p.l}</span>${p.d ? `<span>= ${p.d}</span>` : ''}<span>Peak ${p.peak}</span><span>K ${p.k}</span>${p.ab ? `<span title="Verbindungsabbrüche – nur Statistik">⚡ ${p.ab}</span>` : ""}</div>
- <button data-rkq="${md}"${busy ? ' disabled' : ''}>🔍 ${RK_MN[md]} ${RK.pt && RK.pt.mem.length > 1 ? (notLead ? 'NUR LEITER' : 'MIT GRUPPE') : ''} SUCHEN</button></div>`;
-        }
+        function rkLeave() { if (RK.q) rkSend({ type: 'rkx' }); if (RK.found && !RK.found.ok) rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.q = RK.found = null; RK.open = false; }
         function rkRender() {
-            if (!RK.open) return; const P = RK.prof, F = RK.found;
+            if (!RK.open || !rkVis()) return; const P = RK.prof, F = RK.found, UR = RK.mode === 'ur', md = UR ? 'ur' : RK.mode;
+            const sub = UR ? '' : `<div class="subnav">${['comp', 'duo', 'v1'].map(k => `<b data-rkm="${k}" class="${!RK.bot && RK.mode === k ? 'on' : ''}">${RK_TI[k]}</b>`).join('')}<b data-rkbot="1" class="${RK.bot ? 'on' : ''}">🤖 BOT-RANG</b></div>`;
+            const desc = UR ? 'Spielersuche wie im Ranked · Bots füllen nach 15 s auf – ihre Stärke richtet sich nach den Spielern im Match · kein Rang, kein Rating, keine Suchsperre · Gruppen bis 5'
+                : RK.bot ? 'Offline gegen Bots · eigener Rang, getrennt vom Online-Rating · Bots werden mit Deinem Rang stärker · Verlassen = Niederlage'
+                : `${P ? 'Saison ' + P.season + ' · ' : ''}Jeder Modus hat ein eigenes Rating · erste 5 Matches = Placements · 🚧 Beta: Ratings können sich bis zum Start noch ändern · <a id="rkBug">🐞 Fehler melden</a>`;
             let body = '';
-            if (!ACC) body = '<div class="rkcards"><div class="panel"><p>Online-Ranked braucht einen Account – Rating & Historie werden auf dem Server gespeichert.</p><button id="rkLogin">👤 Login / Registrieren</button></div>' + brCard() + '</div>';
-            else if (!P) body = '<p class="rksub">Lade Ranked-Daten…</p><div class="rkcards">' + brCard() + '</div>';
+            if (RK.bot) body = `<div class="rkgrid one">${brCard()}</div>`;
+            else if (!ACC) body = `<div class="mcard rkmain"><h2>👤 Account nötig</h2><p>Spielersuche, Rating & Historie werden auf dem Server gespeichert.</p><button id="rkLogin">👤 Login / Registrieren</button></div>`;
+            else if (!P) body = '<p class="rksub">Lade Daten …</p>';
             else {
-                const UR = RK.mode === 'ur', hist = (UR ? P.ur : P.m[RK.mode]).hist.map(h => { const c = h.st !== 'rated' ? 'x' : h.res === 1 ? 'w' : h.res === 0 ? 'l' : 'd';
-                    return `<div class="rkh ${c}"><b>${{ x: h.st === 'invalid' ? 'UNGÜLTIG' : 'ABGEBROCHEN', w: 'SIEG', l: 'NIEDERLAGE', d: 'UNENTSCHIEDEN' }[c]}</b><span>${h.sc ? h.sc.join(' : ') : '–'}</span><span>${escH(mapLbl(h.map))}</span><span>vs ${escH(h.opp.join(', '))}</span><span class="rkd">${UR ? '' : h.st === 'rated' ? (h.d >= 0 ? '+' : '') + h.d : '±0'}</span>${h.ps && h.ps.k !== undefined ? `<small>K/D ${h.ps.k}/${h.ps.d} · ADR ${h.ps.adr}${h.ps.left ? ' · verlassen' : ''}</small>` : ''}${h.why ? `<small>${escH(h.why)}</small>` : ''}</div>`; }).join('') || '<p class="rksub">Noch keine Ranked-Matches in diesem Modus.</p>';
+                const pt = RK.pt, lead = !pt || pt.lead === ACC.u, grp = pt && pt.mem.length > 1, inP = n => pt && pt.mem.some(x => x.n.toLowerCase() === n.toLowerCase()), rmd = UR ? 'comp' : RK.mode;
+                // Status: laufendes Match, gefunden (annehmen & Map-Voting), Sperre, Suche – sonst der große Suchen-Knopf
                 let st = '';
-                if (P.live) st = `<div class="rkbox"><b>⚠ Du bist noch in einem laufenden Ranked-Match (${RK_MN[P.live.mode]})</b><button id="rkRe">↩ Wieder verbinden</button></div>`;
-                else if (F) st = `<div class="rkbox found"><b>✅ MATCH GEFUNDEN · ${RK_MN[F.mode]}${F.bots ? ' · ' + (F.n) + ' Spieler + ' + F.bots + ' Bots (Stufe ' + F.blv + ')' : ''} · <span id="rkFT">${F.sec}</span> s</b>
- ${F.maps && !F.ok ? '<div class="rkmaps">' + F.maps.map(k => `<button data-rkv="${k}" class="${F.vote === k ? 'on' : F.ban === k ? 'ban' : ''}">${F.vote === k ? '✔ ' : F.ban === k ? '✖ ' : ''}${escH(MAP_NAMES[k] || (F.names && F.names[k]) || mapLbl(k))}${F.names && F.names[k] ? ' 🗺️' : ''}</button>`).join('') + '</div><span class="rksub">Optional · 1× klicken = Stimme ✔, 2× = Bann ✖ · Stimmen minus Banns, höchste Map gewinnt, Gleichstand = Zufall</span>' : ''}
- ${F.ok ? `<span class="rksub">Angenommen – warte auf die anderen (${F.a}/${F.n})…</span>` : '<div><button id="rkAcc" style="border-color:#9fe08a;color:#9fe08a">✔ ANNEHMEN</button><button id="rkDec" style="border-color:#c66;color:#c66">✖ Ablehnen</button></div>'}</div>`;
-                else if (RK.ban > Date.now()) st = `<div class="rkbox"><b>⛔ Suchsperre · <span id="rkBan">${mmss((RK.ban - Date.now()) / 1000)}</span></b><span class="rksub">Wegen wiederholtem Ablehnen/Verpassen gefundener Matches (max. 5 Min)</span></div>`;
-                else if (RK.q) st = `<div class="rkbox"><b>🔍 Suche ${RK_MN[RK.q.mode]} · <span id="rkT">${mmss((Date.now() - RK.q.t) / 1000)}</span></b><span class="rksub">${RK.q.pn > 1 ? '👥 Gruppe (' + RK.q.pn + ') · ' : ''}${RK.q.n} in der Warteschlange · Ratingfenster ±${RK.q.win}${RK.q.mode !== 'v1' ? (RK.q.mode === 'ur' ? ' · nach ' + ((P.ur && P.ur.fill) || 15) + ' s füllen Bots auf' : ' · nach 30 s füllen Bots auf') : ''}</span><button id="rkX">✖ Suche abbrechen</button></div>`;
-                const past = P.past.length ? '<div class="psub" style="margin-top:12px">FRÜHERE SAISONS</div>' + P.past.slice().reverse().map(s => `<div class="rkh x"><b>S${s.s} · ${RK_MN[s.mode]}</b><span>${s.rank ? escH(s.rank) : 'ohne Rang'}</span><span>${s.r}</span><span>Peak ${s.peak}</span><span>${s.w}–${s.l}</span></div>`).join('') : '';
-                const L = RK.lb[RK.mode], lb = !L ? '<p class="rksub">Lade Bestenliste…</p>' : (L.top.map((x, i) => `<div class="rkh lb${ACC && x.n === ACC.u ? ' w' : ''}"><b>#${i + 1}</b><span>${escH(x.n)}</span><span>${escH(x.rank)}</span><span class="rkd">${x.r}</span><span>${x.w}–${x.l}</span></div>`).join('') || '<p class="rksub">Noch niemand platziert – sei der Erste!</p>') + (L.me ? `<p class="rksub">Dein Platz: #${L.me.pos} von ${L.total}</p>` : '<p class="rksub">Du erscheinst nach Deinen Placement-Matches.</p>');
-                const pt = RK.pt, lead = !pt || pt.lead === ACC.u, inP = n => pt && pt.mem.some(x => x.n.toLowerCase() === n.toLowerCase());
+                if (P.live) st = `<div class="rkbox"><b>⚠ Du bist noch in einem laufenden Match (${RK_MN[P.live.mode]})</b><button id="rkRe">↩ Wieder verbinden</button></div>`;
+                else if (F) st = `<div class="rkbox found"><b>✅ MATCH GEFUNDEN · ${RK_MN[F.mode]}${F.bots ? ' · ' + F.n + ' Spieler + ' + F.bots + ' Bots (Stufe ' + F.blv + ')' : ''} · <span id="rkFT">${F.sec}</span> s</b>
+ ${F.maps && !F.ok ? '<div class="rkmaps">' + F.maps.map(k => `<button data-rkv="${k}" class="${F.vote === k ? 'on' : F.ban === k ? 'ban' : ''}">${F.vote === k ? '✔ ' : F.ban === k ? '✖ ' : ''}${escH(MAP_NAMES[k] || (F.names && F.names[k]) || mapLbl(k))}${F.names && F.names[k] ? ' 🗺️' : ''}</button>`).join('') + '</div><span class="rksub">Optional · 1× = Stimme ✔, 2× = Bann ✖ · höchste Map gewinnt, Gleichstand = Zufall</span>' : ''}
+ ${F.ok ? `<span class="rksub">Angenommen – warte auf die anderen (${F.a}/${F.n}) …</span>` : '<div><button id="rkAcc" style="border-color:#9fe08a;color:#9fe08a">✔ ANNEHMEN</button><button id="rkDec" style="border-color:#c66;color:#c66">✖ Ablehnen</button></div>'}</div>`;
+                else if (RK.ban > Date.now()) st = `<div class="rkbox"><b>⛔ Suchsperre · <span id="rkBan">${mmss((RK.ban - Date.now()) / 1000)}</span></b><span class="rksub">Wegen wiederholtem Ablehnen/Verpassen (max. 5 Min)</span></div>`;
+                else if (RK.q) st = `<div class="rkbox"><b>🔍 Suche ${RK_MN[RK.q.mode]} · <span id="rkT">${mmss((Date.now() - RK.q.t) / 1000)}</span></b><span class="rksub">${RK.q.pn > 1 ? '👥 Gruppe (' + RK.q.pn + ') · ' : ''}${RK.q.n} in der Warteschlange${RK.q.mode === 'ur' ? '' : ' · Ratingfenster ±' + RK.q.win}${RK.q.mode !== 'v1' ? ' · nach ' + (RK.q.mode === 'ur' ? (P.ur && P.ur.fill) || 15 : 30) + ' s füllen Bots auf' : ''}</span><button id="rkX">✖ Suche abbrechen</button></div>`;
+                else { const busy = (grp && !lead) || (UR ? false : false); st = `<button class="rkgo" data-rkq="${md}"${busy ? ' disabled' : ''}>${busy ? '⏳ NUR DER GRUPPENLEITER STARTET' : '🔍 ' + (UR ? 'UNRANKED' : RK_MN[md]) + (grp ? ' MIT GRUPPE' : '') + ' SUCHEN'}</button>`; }
+                // Hauptkarte: Rang & Fortschritt (Ranked) bzw. Bilanz (Unranked)
+                let main;
+                if (UR) { const U = P.ur; main = `<div class="psub">🎮 UNRANKED 5V5</div><div class="rkhd"><div class="rkrank">Spielen ohne Druck</div><div class="rkst"><span>✔ ${U.w}</span><span>✖ ${U.l}</span>${U.d ? `<span>= ${U.d}</span>` : ''}<span>${U.n} Matches</span></div></div>`; }
+                else { const p = P.m[md], rk = p.rank, nx = P.ranks[rk.i + 1];
+                    main = `<div class="psub">${RK_TI[md]} · RANG</div><div class="rkhd"><div><div class="rkrank">${p.placed ? rk.name : 'Vorläufig · ' + rk.name}</div><div class="rkr">${p.r}<small> RATING</small></div></div><div class="rkst"><span>✔ ${p.w}</span><span>✖ ${p.l}</span>${p.d ? `<span>= ${p.d}</span>` : ''}<span>Peak ${p.peak}</span>${p.ab ? `<span title="Verbindungsabbrüche – nur Statistik">⚡ ${p.ab}</span>` : ''}</div></div>
+ <div class="rkbar"><i style="width:${Math.round((p.placed ? rk.prog : p.pl / p.pq) * 100)}%"></i></div><div class="rksub">${!p.placed ? `Placement ${p.pl}/${p.pq} – danach wird Dein Rang sichtbar` : nx ? `Noch ${nx[0] - p.r} bis ${nx[1]}` : 'Höchster Rang erreicht'}${p.placed && rk.lo !== null ? ' · Abstieg unter ' + rk.lo : ''}</div>`; }
+                // Gruppe
                 const pinv = RK.pinv.map(i => `<div class="frr">📨 <b>${escH(i.from)}</b><span>lädt Dich in eine Gruppe ein</span><button data-ptj="${escH(i.id)}">✔ Annehmen</button><button data-ptd="${escH(i.id)}" aria-label="Ablehnen">✕</button></div>`).join('');
-                const mem = pt ? pt.mem.map(x => `<div class="ptm">${avH(x.n, x.av, 34)}<div><b data-pp="${escH(x.n)}" tabindex="0" role="button" title="Profil ansehen">${escH(x.n)}</b>${bdH(x.bd)}${x.lead ? ' 👑' : ''}<span class="rksub">${x.on ? '🟢' : '⚫ getrennt'} · ${x.rk[UR ? 'comp' : RK.mode] ? escH(x.rk[UR ? 'comp' : RK.mode]) : 'ohne Rang'} (${RK_MN[UR ? 'comp' : RK.mode]})${x.q ? ' · 🔍' : ''}</span></div>${pt.lead === ACC.u && !x.lead ? `<button data-ptk="${escH(x.n)}" title="Aus der Gruppe entfernen" aria-label="${escH(x.n)} entfernen">✕</button>` : ''}</div>`).join('') : '';
+                const mem = pt ? pt.mem.map(x => `<div class="ptm">${avH(x.n, x.av, 32)}<div><b data-pp="${escH(x.n)}" tabindex="0" role="button" title="Profil ansehen">${escH(x.n)}</b>${bdH(x.bd)}${x.lead ? ' 👑' : ''}<span class="rksub">${x.on ? '🟢' : '⚫ getrennt'} · ${x.rk[rmd] ? escH(x.rk[rmd]) : 'ohne Rang'}${x.q ? ' · 🔍' : ''}</span></div>${pt.lead === ACC.u && !x.lead ? `<button data-ptk="${escH(x.n)}" title="Aus der Gruppe entfernen" aria-label="${escH(x.n)} entfernen">✕</button>` : ''}</div>`).join('') : '';
                 const cand = lead ? FR.list.filter(f => f.on && !inP(f.n) && !(pt && pt.inv.includes(f.n))).map(f => `<button data-pti="${escH(f.n)}">${avH(f.n, f.av, 18)} ${escH(f.n)} ＋</button>`).join('') : '';
-                const party = `<div class="panel rkparty"><div class="psub">👥 GRUPPE${pt ? ' · ' + pt.mem.length + '/5' : ''}</div>${pinv}${mem ? '<div class="ptmem">' + mem + '</div>' : '<p class="rksub">Spielt zusammen: Lade Freunde ein – ihr sucht gemeinsam und landet im selben Team. 1v1 nur allein, 2v2 bis 2, 5v5 bis 5.</p>'}${pt && pt.inv.length ? '<p class="rksub">Eingeladen: ' + pt.inv.map(escH).join(', ') + '</p>' : ''}${lead ? (cand ? '<div class="rksub">Freunde online einladen:</div><div class="ptinv">' + cand + '</div>' : '<p class="rksub">Gerade keine Freunde online.</p>') : '<p class="rksub">Nur der Gruppenleiter (' + escH(pt.lead) + ') lädt ein und startet die Suche.</p>'}${pt ? '<button id="ptLeave">🚪 Gruppe verlassen</button>' : ''}</div>`;
-                const U = P.ur, urBusy = RK.q || RK.found || P.live || RK.ban > Date.now() || (pt && pt.mem.length > 1 && !lead);
-                if (UR) body = `<div class="rkcards"><div class="panel rkcard on" style="cursor:default;max-width:560px"><div class="psub">🎮 UNRANKED 5V5</div><div class="rkrank">Spielen ohne Druck</div>
- <div class="rksub">Spielersuche wie im Ranked · nach ${U.fill} s füllen <b>Bots</b> freie Plätze auf – ihre Stärke richtet sich nach den Spielern im Match · <b>kein Rang, kein Rating, keine Suchsperre</b> · Gruppen bis 5 · offizieller Map-Pool</div>
- <div class="rkst"><span>✔ ${U.w}</span><span>✖ ${U.l}</span>${U.d ? `<span>= ${U.d}</span>` : ''}<span>${U.n} Matches</span></div>
- <button data-rkq="ur"${urBusy ? ' disabled' : ''}>🔍 UNRANKED ${pt && pt.mem.length > 1 ? (lead ? 'MIT GRUPPE ' : 'NUR LEITER ') : ''}SUCHEN</button></div></div>${st}${party}
- <div class="panel rklist"><div class="psub" style="margin-bottom:6px">LETZTE UNRANKED-MATCHES</div>${hist.replace('Noch keine Ranked-Matches in diesem Modus.', 'Noch keine Unranked-Matches.')}</div>`;
-                else body = `<div class="rkcards">${rkCard('comp')}${rkCard('duo')}${rkCard('v1')}</div>${st}${party}
- <div class="rkcards" style="margin-top:12px">${brCard()}</div>
- <div class="panel rklist"><div class="subnav" style="margin-bottom:6px"><b data-rkview="hist" class="${RK.view === 'hist' ? 'on' : ''}">LETZTE MATCHES · ${RK_MN[RK.mode]}</b><b data-rkview="lb" class="${RK.view === 'lb' ? 'on' : ''}">🏅 BESTENLISTE · ${RK_MN[RK.mode]}</b></div>${RK.view === 'lb' ? lb : hist + past}</div>`;
+                const party = `<div class="mcard rkside"><div class="psub">👥 GRUPPE${pt ? ' · ' + pt.mem.length + '/5' : ''}</div>${pinv}${mem ? '<div class="ptmem">' + mem + '</div>' : `<div class="ptm solo">${avH(ACC.u, myAv(), 32)}<div><b>${escH(ACC.u)}</b><span class="rksub">Du · allein</span></div></div>`}${pt && pt.inv.length ? '<p class="rksub">Eingeladen: ' + pt.inv.map(escH).join(', ') + '</p>' : ''}${lead ? (cand ? '<div class="rksub">Freunde online einladen:</div><div class="ptinv">' + cand + '</div>' : '<p class="rksub">Keine Freunde online – füge welche über 👥 hinzu.</p>') : '<p class="rksub">Nur der Gruppenleiter (' + escH(pt.lead) + ') lädt ein und startet die Suche.</p>'}<p class="rksub">${UR ? 'Gruppen bis 5' : '1v1 allein · 2v2 bis 2 · 5v5 bis 5'} · ihr landet im selben Team</p>${pt ? '<button id="ptLeave">🚪 Gruppe verlassen</button>' : ''}</div>`;
+                // Matches & Bestenliste
+                const hist = (UR ? P.ur : P.m[md]).hist.map(h => { const c = h.st !== 'rated' ? 'x' : h.res === 1 ? 'w' : h.res === 0 ? 'l' : 'd';
+                    return `<div class="rkh ${c}"><b>${{ x: h.st === 'invalid' ? 'UNGÜLTIG' : 'ABGEBROCHEN', w: 'SIEG', l: 'NIEDERLAGE', d: 'UNENTSCHIEDEN' }[c]}</b><span>${h.sc ? h.sc.join(' : ') : '–'}</span><span>${escH(mapLbl(h.map))}</span><span>vs ${escH(h.opp.join(', '))}</span><span class="rkd">${UR ? '' : h.st === 'rated' ? (h.d >= 0 ? '+' : '') + h.d : '±0'}</span>${h.ps && h.ps.k !== undefined ? `<small>K/D ${h.ps.k}/${h.ps.d} · ADR ${h.ps.adr}${h.ps.left ? ' · verlassen' : ''}</small>` : ''}${h.why ? `<small>${escH(h.why)}</small>` : ''}</div>`; }).join('') || `<p class="rksub">Noch keine ${UR ? 'Unranked' : RK_MN[md]}-Matches.</p>`;
+                const past = !UR && P.past.length ? '<div class="psub" style="margin-top:12px">FRÜHERE SAISONS</div>' + P.past.slice().reverse().map(s => `<div class="rkh x"><b>S${s.s} · ${RK_MN[s.mode]}</b><span>${s.rank ? escH(s.rank) : 'ohne Rang'}</span><span>${s.r}</span><span>Peak ${s.peak}</span><span>${s.w}–${s.l}</span></div>`).join('') : '';
+                const L = RK.lb[md], lb = !L ? '<p class="rksub">Lade Bestenliste …</p>' : (L.top.map((x, i) => `<div class="rkh lb${x.n === ACC.u ? ' w' : ''}"><b>#${i + 1}</b><span data-pp="${escH(x.n)}">${escH(x.n)}</span><span>${escH(x.rank)}</span><span class="rkd">${x.r}</span><span>${x.w}–${x.l}</span></div>`).join('') || '<p class="rksub">Noch niemand platziert – sei der Erste!</p>') + (L.me ? `<p class="rksub">Dein Platz: #${L.me.pos} von ${L.total}</p>` : '<p class="rksub">Du erscheinst nach Deinen Placement-Matches.</p>');
+                const tabs = UR ? '<div class="subnav"><b class="on">LETZTE MATCHES</b></div>' : `<div class="subnav"><b data-rkview="hist" class="${RK.view === 'hist' ? 'on' : ''}">LETZTE MATCHES</b><b data-rkview="lb" class="${RK.view === 'lb' ? 'on' : ''}">🏅 BESTENLISTE</b></div>`;
+                body = `<div class="rkgrid"><div class="mcard rkmain">${main}${st}</div>${party}</div><div class="mcard rklist">${tabs}${!UR && RK.view === 'lb' ? lb : hist + past}</div>`;
             }
-            showOverlay(`<style>.rkbeta{max-width:640px;margin:0 auto 10px;padding:7px 12px;border:1px dashed #ffd84a;border-radius:6px;color:#ffd84a;font-size:12px;display:flex;gap:10px;align-items:center;justify-content:space-between}.rkbeta button{margin:0;padding:4px 10px;font-size:12px;min-height:0}.rkcards{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}.rkcards>.panel{position:relative}.rkcard{min-width:260px;cursor:pointer;opacity:.8}.rkcard.on{opacity:1;border-color:var(--acc)}.rkrank{font:700 26px Rajdhani;color:var(--acc);text-transform:uppercase}.rkr{font:700 20px Rajdhani}.rkr small,.rksub{font-size:12px;color:var(--mut)}.rkbar{height:6px;background:rgba(255,255,255,.1);border-radius:3px;margin:8px 0 4px;overflow:hidden}.rkbar i{display:block;height:100%;background:var(--acc)}.rkst{display:flex;gap:10px;font-size:12px;margin:8px 0;color:#cfd8e3}.rkbox{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px auto;padding:10px 16px;border:1px solid var(--line);border-radius:6px;max-width:640px}.rkbox.found{border-color:#9fe08a}.rkmaps{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.rkmaps button.on{border-color:#9fe08a;color:#9fe08a}.rkmaps button.ban{border-color:#c66;color:#c66;text-decoration:line-through}.rklist{max-width:640px;margin:0 auto;text-align:left;max-height:34vh;overflow-y:auto}.rkh{display:grid;grid-template-columns:110px 54px 1fr 1.4fr 70px;gap:8px;font-size:12px;padding:5px 6px;border-left:3px solid #556;margin:3px 0;align-items:center}.rkh.w{border-color:#9fe08a}.rkh.l{border-color:#ff6b6b}.rkh.d{border-color:#ffd84a}.rkh .rkd{text-align:right;font-weight:700}.rkh small{grid-column:1/-1;color:var(--mut);font-size:11px}.rkh.lb{grid-template-columns:44px 1fr 1fr 60px 60px}.rkcard{min-width:230px}.rkh.w .rkd{color:#9fe08a}.rkh.l .rkd{color:#ff6b6b}.mob .rkh{grid-template-columns:90px 44px 1fr 60px}.mob .rkh span:nth-child(4){display:none}</style>
- ${RK.mode === 'ur' ? '<h1 style="font-size:34px">🎮 UNRANKED<small>5V5 · SPIELERSUCHE · BOTS FÜLLEN AUF · OHNE RANG</small></h1>' : `<h1 style="font-size:34px">🏆 RANKED <span style="color:#ffd84a">BETA</span><small>${P ? 'SAISON ' + P.season + ' · ' : ''}5V5 · 2V2 · 1V1 · GETRENNTE RATINGS</small></h1>`}
- <div class="rkbeta"${RK.mode === 'ur' ? ' style="display:none"' : ''}><span>🚧 Beta: Ratings können sich bis zum offiziellen Start noch ändern oder zurückgesetzt werden. Details in den NEWS.</span><button id="rkBug">🐞 Fehler melden</button></div>
- ${body}<p class="rksub" style="min-height:16px">${escH(RK.msg)}</p><div><button id="rkBack">Zurück</button></div>`);
+            $('rkview').innerHTML = `${sub}<p class="rkdesc">${desc}</p>${body}<p class="rksub rkmsg">${escH(RK.msg)}</p>`;
             const on = (id, f) => { const el = $(id); if (el) el.onclick = f; };
-            on('rkBack', () => { if (RK.q) rkSend({ type: 'rkx' }); if (RK.found && !RK.found.ok) rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.q = RK.found = null; RK.open = false; sessionStorage.setItem('opentab', 'play'); showMenu(); });
-            on('rkLogin', showAccount); on('rkBug', () => showBug(showRanked)); document.querySelectorAll('[data-brgo]').forEach(b => b.onclick = () => { RK.open = false; brStart(b.dataset.brgo); }); on('rkRe', () => { const b = $('rkRe'); b.disabled = true; b.textContent = '⏳ Verbinde …';
+            on('rkLogin', showAccount); on('rkBug', () => showBug(() => { sessionStorage.setItem('opentab', 'ranked'); showMenu(); })); document.querySelectorAll('[data-brgo]').forEach(b => b.onclick = () => { RK.open = false; brStart(b.dataset.brgo); }); on('rkRe', () => { const b = $('rkRe'); b.disabled = true; b.textContent = '⏳ Verbinde …';
                 accApi('ranked', { tok: ACC.tok }).then(r => { if (r.ok && r.live) return rkGo(r.live); if (r.ok) RK.prof = r; RK.msg = '⚠ Das Match ist bereits beendet – Ergebnis siehe Historie.'; rkRender(); }).catch(() => rkGo(P.live)); }); on('rkX', () => { rkSend({ type: 'rkx' }); RK.q = null; rkRender(); });
             on('rkAcc', () => { RK.found.ok = true; rkSend({ type: 'rkacc', id: RK.found.id, ok: 1, map: RK.found.vote, ban: RK.found.ban }); rkRender(); });
             on('rkDec', () => { rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.found = null; rkRender(); });
             document.querySelectorAll('[data-rkv]').forEach(b => b.onclick = () => { const F = RK.found, k = b.dataset.rkv; // neutral → Stimme → Bann → neutral (je eine)
                 if (F.vote === k) { F.vote = null; F.ban = k; } else if (F.ban === k) F.ban = null; else F.vote = k; rkRender(); });
-            const rkLb = () => { if (RK.view !== 'lb' || RK.lb[RK.mode] || RK.lbP === RK.mode) return; RK.lbP = RK.mode; accApi('rklb', { tok: ACC && ACC.tok, mode: RK.mode }).then(r => { RK.lbP = null; if (r.ok) { RK.lb[r.mode] = r; rkRender(); } }).catch(() => { RK.lbP = null; }); };
-            document.querySelectorAll('[data-rkm]').forEach(c => c.onclick = () => { if (RK.mode !== c.dataset.rkm) { RK.mode = c.dataset.rkm; rkRender(); } });
+            const rkLb = () => { if (UR || RK.bot || RK.view !== 'lb' || RK.lb[RK.mode] || RK.lbP === RK.mode) return; RK.lbP = RK.mode; accApi('rklb', { tok: ACC && ACC.tok, mode: RK.mode }).then(r => { RK.lbP = null; if (r.ok) { RK.lb[r.mode] = r; rkRender(); } }).catch(() => { RK.lbP = null; }); };
+            document.querySelectorAll('[data-rkm]').forEach(c => c.onclick = () => { if (RK.mode !== c.dataset.rkm || RK.bot) { RK.mode = c.dataset.rkm; RK.bot = false; rkRender(); } });
+            document.querySelectorAll('[data-rkbot]').forEach(c => c.onclick = () => { RK.bot = true; rkRender(); });
             document.querySelectorAll('[data-rkview]').forEach(b => b.onclick = () => { RK.view = b.dataset.rkview; if (RK.view === 'lb') RK.lb = {}; rkRender(); }); rkLb();
             document.querySelectorAll('[data-rkq]').forEach(b => b.onclick = e => { e.stopPropagation(); RK.mode = b.dataset.rkq; RK.msg = ''; rkConn(() => rkSend({ type: 'rkq', tok: ACC.tok, mode: RK.mode })); });
             document.querySelectorAll('[data-pti]').forEach(b => b.onclick = () => { b.disabled = true; rkSend({ type: 'rkpinv', n: b.dataset.pti }); });
@@ -9145,7 +9188,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function brCard() {
             const b = brGet(), i = brRankI(b.r), placed = b.pl >= 5, nx = BR_RANKS[i + 1], lo = BR_RANKS[i][0], prog = placed ? (nx ? (b.r - (lo === -Infinity ? 0 : lo)) / (nx[0] - (lo === -Infinity ? 0 : lo)) : 1) : b.pl / 5;
             const hist = b.h.slice(0, 5).map(h => `<div class="rkh ${h.S ? 'w' : 'l'}"><b>${h.S ? 'SIEG' : 'NIEDERLAGE'}</b><span>${h.m === 'v1' ? '1v1' : '5v5'}</span><span>Stufe ${h.lv}${h.why ? ' · ' + escH(h.why) : ''}</span><span></span><span class="rkd">${h.d >= 0 ? '+' : ''}${h.d}</span></div>`).join('');
-            return `<div class="panel rkcard on" style="cursor:default"><div class="psub">🤖 BOT-RANG · OFFLINE</div><div class="rkrank">${placed ? BR_RANKS[i][1] : 'VORLÄUFIG · ' + BR_RANKS[i][1]}</div><div class="rkr">${b.r}<small> RATING · BOTS STUFE ${i + 1}/10</small></div>
+            return `<div class="mcard rkmain"><div class="psub">🤖 BOT-RANG · OFFLINE</div><div class="rkrank">${placed ? BR_RANKS[i][1] : 'VORLÄUFIG · ' + BR_RANKS[i][1]}</div><div class="rkr">${b.r}<small> RATING · BOTS STUFE ${i + 1}/10</small></div>
  <div class="rkbar"><i style="width:${Math.round(Math.max(0, Math.min(1, prog)) * 100)}%"></i></div><div class="rksub">${placed ? (nx ? 'Noch ' + (nx[0] - b.r) + ' bis ' + nx[1] : 'Höchster Rang') : 'Placement ' + b.pl + '/5'} · getrennt vom Online-Rang · Verlassen = Niederlage</div>
  <div class="rkst"><span>✔ ${b.w}</span><span>✖ ${b.l}</span></div><div><button data-brgo="comp">🤖 5V5 GEGEN BOTS</button><button data-brgo="v1">🎯 1V1 GEGEN BOT</button></div>${hist}</div>`;
         }
