@@ -2680,7 +2680,7 @@ html.dsV #cstabs a:hover { color: #fff; background: none }
 html.dsV #cstabs a.on { color: #fff }
 html.dsV #cstabs a.on:after { left: 30%; right: 30%; bottom: 10px; height: 2px; background: var(--cream); box-shadow: none }
 html.dsV #cstabs a[data-nav="inv"] { order: 1 } html.dsV #cstabs a[data-nav="store"] { order: 2 } html.dsV #cstabs a[data-nav="shop"] { order: 3 }
-html.dsV #cstabs a[data-nav="play"] { order: 4 } html.dsV #cstabs a[data-nav="news"] { order: 5 } html.dsV #cstabs a[data-nav="maps"] { order: 6 } html.dsV #cstabs a[data-nav="arenas"] { order: 7 }
+html.dsV #cstabs a[data-nav="play"] { order: 4 } html.dsV #cstabs a[data-nav="news"] { order: 5 } html.dsV #cstabs a[data-nav="maps"], html.dsV #cstabs a[data-nav="editor"] { order: 6 } html.dsV #cstabs a[data-nav="arenas"] { order: 7 }
 /* SPIELEN: breiter Block mit roter Linie unten, ohne Trapez */
 html.dsV body:not(.mob) #cstabs a[data-nav="play"] { margin: 0 20px; padding: 17px 54px 16px; font-size: 18px; font-weight: 800; letter-spacing: .2em; color: var(--cream); background: linear-gradient(180deg, rgba(236,232,225,.04), rgba(236,232,225,.12)); border-left: 1px solid rgba(236,232,225,.14); border-right: 1px solid rgba(236,232,225,.14) }
 html.dsV body:not(.mob) #cstabs a[data-nav="play"]:hover, html.dsV body:not(.mob) #cstabs a[data-nav="play"].on { color: #fff; background: linear-gradient(180deg, rgba(var(--hl-rgb),.06), rgba(var(--hl-rgb),.24)) }
@@ -3434,6 +3434,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "🔊 LAUTSTÄRKE":"🔊 VOLUME",
 "🎯 AIM-LAB-RANGE":"🎯 AIM LAB RANGE",
 "💬 DISCORD":"💬 DISCORD",
+"🔫 NEUE WAFFENMODELLE":"🔫 NEW WEAPON MODELS",
+"🧭 AUFGERÄUMTES MENÜ":"🧭 CLEANER MENU",
 "PATCH 2.8 „GEFÜHL\"":"PATCH 2.8 „FEEL\"",
 "🎯 AIM-LAB":"🎯 AIM LAB",
 "📊 STATISTIK":"📊 STATS",
@@ -3677,6 +3679,20 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "📨 Einladung von *":"📨 Invite from *",
 "Raum „*\" · 👥 Freunde öffnen zum Beitreten":"Room “*” · 👥 open Friends to join",
 "Chat öffnen":"Open chat",
+"EDITOR":"EDITOR",
+"🛠 EDITOR":"🛠 EDITOR",
+"WAS MÖCHTEST DU BAUEN?":"WHAT DO YOU WANT TO BUILD?",
+"🗺️ KARTEN":"🗺️ MAPS",
+"🏟 ARENEN":"🏟 ARENAS",
+"Große Karten mit Bombsites":"Large maps with bomb sites",
+"für Wettkampf & Deathmatch":"for competitive & deathmatch",
+"Kleine Arenen":"Small arenas",
+"für Gauntlet & 1v1":"for gauntlet & 1v1",
+"Karten öffnen":"Open maps",
+"Arenen öffnen":"Open arenas",
+"AIM-LAB":"AIM LAB",
+"Aim-Lab starten":"Start Aim Lab",
+"Training auf eigener Schießbahn · Gridshot, Flick, Präzision & Tracking":"Training on your own range · Gridshot, Flick, Precision & Tracking",
 "ALLE":"ALL",
 "Alle / Team umschalten":"Toggle all / team",
 "An Dein Team … (Enter = senden)":"To your team … (Enter = send)",
@@ -4559,6 +4575,17 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const dark = M(0x1e1e1e), metal = M(0x3c3f44), wood = M(0x6e4423), skin = M(0xd2a679), green = M(0x3f4a35), silver = M(0x9aa0a6), dark2 = M(0x121416);
             const B = (w, h, d, m, x, y, z, rx = 0) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.rotation.x = rx; g.add(b); return b; };
             const C = (r, l, m, x, y, z) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, l, 10), m); c.rotation.x = Math.PI / 2; c.position.set(x, y, z); g.add(c); return c; };
+            // Skin-UVs: ebene Projektion je Fläche in Metern → das Muster läuft durchgehend über die ganze Waffe (statt pro Teil neu)
+            const UVT = 0.16, uvFix = geo => { if (geo.index) geo = geo.toNonIndexed(); const p = geo.attributes.position, uv = new Float32Array(p.count * 2), a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+                for (let i = 0; i < p.count; i += 3) { a.fromBufferAttribute(p, i); b.fromBufferAttribute(p, i + 1); c.fromBufferAttribute(p, i + 2); const n = b.clone().sub(a).cross(c.clone().sub(a)), ax = Math.abs(n.x), ay = Math.abs(n.y), az = Math.abs(n.z);
+                    for (let k = 0; k < 3; k++) { const v = [a, b, c][k], [u, w] = ax >= ay && ax >= az ? [-v.z, v.y] : ay >= az ? [-v.z, v.x] : [v.x, v.y]; uv[(i + k) * 2] = u / UVT; uv[(i + k) * 2 + 1] = w / UVT; } }
+                geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); return geo; };
+            const PR = (pts, w, m, x = 0, y = 0, holes = null, bev = 0.004) => { // Seitenumriss → EIN extrudiertes Teil (Breite w, Kanten leicht abgerundet)
+                const sh = new THREE.Shape(); pts.forEach(([u, v], i) => i ? sh.lineTo(u, v) : sh.moveTo(u, v)); sh.closePath();
+                for (const hp of holes || []) { const pa = new THREE.Path(); hp.forEach(([u, v], i) => i ? pa.lineTo(u, v) : pa.moveTo(u, v)); pa.closePath(); sh.holes.push(pa); }
+                const d = Math.max(0.002, w - bev * 2), geo = new THREE.ExtrudeGeometry(sh, { depth: d, bevelEnabled: bev > 0, bevelThickness: bev, bevelSize: bev, bevelSegments: 2, curveSegments: 6 });
+                geo.translate(0, 0, -d / 2); geo.rotateY(Math.PI / 2); geo.translate(x, y, 0); geo.computeVertexNormals(); const mesh = new THREE.Mesh(uvFix(geo), m); g.add(mesh); return mesh; };
+            const N = o => { o.userData.ns = true; return o; }; // Kleinteil bleibt Metall (kein Skin)
             g.userData.hand = B(0.09, 0.09, 0.12, skin, 0, -0.1, 0.05);
             switch (key) {
                 case 'knife': {
@@ -4579,104 +4606,80 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                     B(0.03, 0.012, 0.02, metal, 0, -0.032, 0.14);
                     break;
                 }
+                // ── Schusswaffen: präziser Seitenumriss als EIN Teil (extrudiert) + wenige Anbauteile ──
+                // Profil-Koordinaten: [vorn (+) / hinten (−) in m, Höhe in m] · N() = Metall-Kleinteil ohne Skin (Visier, Lauf, Abzug …)
                 case 'usp': case 'glock': {
-                    const col = key === 'usp' ? metal : dark;
-                    B(0.05, 0.07, 0.26, col, 0, 0.02, -0.1);
-                    B(0.048, 0.045, 0.2, dark2, 0, -0.025, -0.07);
-                    B(0.045, 0.14, 0.07, dark, 0, -0.07, 0.03, 0.25);
-                    for (let i = 0; i < 4; i++) B(0.052, 0.04, 0.008, dark2, 0, 0.03, -0.005 + i * 0.016);
-                    B(0.01, 0.018, 0.012, dark2, 0, 0.065, -0.215);
-                    B(0.032, 0.014, 0.012, dark2, 0, 0.063, 0.015);
-                    B(0.012, 0.008, 0.07, dark2, 0, -0.05, -0.09);
-                    B(0.008, 0.028, 0.01, silver, 0, -0.032, -0.055);
-                    B(0.05, 0.02, 0.06, dark2, 0, -0.145, 0.055, 0.25);
-                    C(0.012, 0.1, dark, 0, 0.03, -0.26);
-                    g.userData.barrel = new THREE.Vector3(0, 0.03, -0.33); break;
+                    const usp = key === 'usp', slide = usp ? M(0x3a3d42) : M(0x26282b), frame = M(0x1f2124), fz = usp ? 0.2 : 0.175, sz = usp ? 0.215 : 0.19, sf = usp ? 0.228 : 0.198;
+                    PR([[-0.035, 0.012], [-0.035, 0.05], [-0.022, 0.058], [sz, 0.058], [sf, 0.05], [sf, 0.012]], 0.046, slide); // Schlitten
+                    PR([[-0.05, 0.012], [fz, 0.012], [fz, -0.01], [0.065, -0.012], [0.06, -0.05], [0.005, -0.052], [-0.005, -0.035], [-0.032, -0.158], [-0.085, -0.156], [-0.062, -0.02]], 0.042, frame, 0, 0, [[[0.05, -0.016], [0.05, -0.042], [0.014, -0.044], [0.008, -0.02]]]); // Rahmen + Griff + Abzugsbügel
+                    N(B(0.006, 0.024, 0.008, dark2, 0, -0.03, -0.032)); // Abzug
+                    for (let i = 0; i < 5; i++) N(B(0.048, 0.034, 0.003, dark2, 0, 0.034, 0.008 + i * 0.006)); // Griffrillen am Schlitten
+                    N(B(0.008, 0.012, 0.01, dark2, 0, 0.064, -sz + 0.005)); N(B(0.03, 0.012, 0.01, dark2, 0, 0.064, 0.025)); // Korn & Kimme
+                    N(B(0.044, 0.012, 0.05, dark2, 0, -0.16, 0.06)); // Magazinboden
+                    if (usp) { N(C(0.017, 0.13, dark2, 0, 0.032, -0.295)); N(C(0.019, 0.012, metal, 0, 0.032, -0.236)); g.userData.barrel = new THREE.Vector3(0, 0.032, -0.37); } // Schalldämpfer
+                    else { N(C(0.008, 0.01, dark2, 0, 0.032, -0.2)); g.userData.barrel = new THREE.Vector3(0, 0.032, -0.22); }
+                    break;
                 }
-                case 'deagle':
-                    B(0.06, 0.08, 0.32, silver, 0, 0.02, -0.12);
-                    B(0.045, 0.02, 0.3, dark2, 0, 0.07, -0.11);
-                    B(0.058, 0.05, 0.16, dark2, 0, -0.03, -0.06);
-                    B(0.05, 0.15, 0.08, dark, 0, -0.07, 0.03, 0.25);
-                    for (let i = 0; i < 3; i++) B(0.064, 0.045, 0.01, dark2, 0, 0.025, -0.01 + i * 0.022);
-                    B(0.012, 0.02, 0.014, dark2, 0, 0.09, -0.26);
-                    B(0.034, 0.016, 0.014, dark2, 0, 0.088, 0.02);
-                    B(0.013, 0.009, 0.08, dark2, 0, -0.062, -0.09);
-                    B(0.055, 0.02, 0.07, silver, 0, -0.15, 0.055, 0.25);
-                    g.userData.barrel = new THREE.Vector3(0, 0.04, -0.3); break;
-                case 'pump':
-                    B(0.06, 0.09, 0.55, dark, 0, 0, -0.18);
-                    C(0.016, 0.45, metal, 0, 0.035, -0.4);
-                    C(0.02, 0.35, dark2, 0, -0.01, -0.38);
-                    B(0.05, 0.06, 0.16, wood, 0, -0.05, -0.38);
-                    B(0.05, 0.13, 0.07, wood, 0, -0.09, 0.08, 0.3);
-                    B(0.055, 0.1, 0.28, wood, 0, 0, 0.26);
-                    B(0.012, 0.02, 0.012, dark2, 0, 0.065, -0.6);
-                    g.userData.barrel = new THREE.Vector3(0, 0.035, -0.65); break;
-                case 'mp5':
-                    B(0.07, 0.1, 0.42, dark, 0, 0, -0.15);
-                    B(0.065, 0.08, 0.18, dark2, 0, -0.015, -0.33);
-                    B(0.045, 0.15, 0.06, dark2, 0, -0.14, -0.1, 0.25);
-                    B(0.042, 0.13, 0.055, dark2, 0, -0.26, -0.155, 0.55);
-                    B(0.05, 0.14, 0.07, dark, 0, -0.1, 0.06, 0.3);
-                    B(0.04, 0.07, 0.25, metal, 0, 0.01, 0.22);
-                    B(0.045, 0.11, 0.03, dark, 0, 0.01, 0.36);
-                    B(0.012, 0.05, 0.012, dark2, 0, 0.075, -0.44);
-                    C(0.02, 0.03, dark2, 0, 0.07, -0.02);
-                    C(0.015, 0.2, metal, 0, 0.02, -0.45);
-                    g.userData.barrel = new THREE.Vector3(0, 0.02, -0.56); break;
-                case 'ak47':
-                    B(0.06, 0.1, 0.5, metal, 0, 0, -0.15);
-                    B(0.07, 0.08, 0.22, wood, 0, -0.01, -0.3);
-                    C(0.012, 0.26, metal, 0, 0.055, -0.33);
-                    B(0.05, 0.14, 0.08, dark2, 0, -0.13, -0.08, 0.35);
-                    B(0.048, 0.12, 0.075, dark2, 0, -0.23, -0.14, 0.7);
-                    B(0.05, 0.12, 0.07, wood, 0, -0.1, 0.08, 0.3);
-                    B(0.05, 0.09, 0.3, wood, 0, 0, 0.25);
-                    B(0.055, 0.11, 0.02, dark2, 0, -0.005, 0.4);
-                    B(0.012, 0.055, 0.014, dark2, 0, 0.07, -0.62);
-                    B(0.03, 0.02, 0.03, dark2, 0, 0.06, -0.12);
-                    B(0.024, 0.024, 0.05, dark2, 0, 0.03, -0.655);
-                    C(0.013, 0.28, metal, 0, 0.03, -0.52);
-                    g.userData.barrel = new THREE.Vector3(0, 0.03, -0.67); break;
-                case 'm4a1':
-                    B(0.06, 0.1, 0.5, dark, 0, 0, -0.15);
-                    B(0.03, 0.02, 0.34, dark2, 0, 0.065, -0.1);
-                    B(0.025, 0.035, 0.05, dark2, 0, 0.09, 0.02);
-                    B(0.014, 0.05, 0.016, dark2, 0, 0.09, -0.42);
-                    B(0.055, 0.075, 0.2, dark2, 0, 0, -0.35);
-                    B(0.05, 0.13, 0.07, metal, 0, -0.13, -0.06, 0.15);
-                    B(0.048, 0.1, 0.065, metal, 0, -0.22, -0.085, 0.3);
-                    B(0.05, 0.12, 0.07, dark, 0, -0.1, 0.08, 0.3);
-                    B(0.05, 0.08, 0.26, dark, 0, 0.01, 0.25);
-                    B(0.055, 0.1, 0.03, dark2, 0, 0.01, 0.39);
-                    C(0.013, 0.2, metal, 0, 0.03, -0.5);
-                    C(0.025, 0.22, dark, 0, 0.03, -0.7);
-                    g.userData.barrel = new THREE.Vector3(0, 0.03, -0.82); break;
-                case 'scout': { const sc = M(0x5a6470);
-                    B(0.05, 0.09, 0.5, sc, 0, 0, -0.12); B(0.05, 0.085, 0.26, sc, 0, -0.01, 0.24);
-                    C(0.024, 0.22, dark, 0, 0.085, -0.1); C(0.03, 0.02, dark2, 0, 0.085, -0.2); C(0.03, 0.02, dark2, 0, 0.085, 0);
-                    B(0.014, 0.035, 0.025, dark2, 0, 0.055, -0.15); B(0.014, 0.035, 0.025, dark2, 0, 0.055, -0.05);
-                    B(0.045, 0.06, 0.09, dark2, 0, -0.07, -0.04, 0.1); B(0.035, 0.13, 0.05, metal, 0, -0.11, 0, 0.1);
-                    C(0.011, 0.42, metal, 0, 0.02, -0.58); B(0.022, 0.022, 0.05, dark2, 0, 0.02, -0.8);
-                    g.userData.barrel = new THREE.Vector3(0, 0.02, -0.83); break; }
-                case 'awp':
-                    B(0.06, 0.11, 0.6, green, 0, 0, -0.15);
-                    B(0.06, 0.1, 0.3, green, 0, -0.01, 0.27);
-                    B(0.05, 0.03, 0.16, dark2, 0, 0.055, 0.28);
-                    C(0.03, 0.26, dark, 0, 0.1, -0.1);
-                    C(0.036, 0.025, dark2, 0, 0.1, -0.21);
-                    C(0.036, 0.025, dark2, 0, 0.1, 0.01);
-                    B(0.016, 0.045, 0.03, dark2, 0, 0.065, -0.16);
-                    B(0.016, 0.045, 0.03, dark2, 0, 0.065, -0.03);
-                    B(0.045, 0.016, 0.016, silver, 0.045, 0.045, 0.02);
-                    B(0.018, 0.018, 0.018, dark2, 0.075, 0.045, 0.02);
-                    B(0.05, 0.07, 0.1, dark2, 0, -0.08, -0.05, 0.1);
-                    B(0.04, 0.15, 0.06, metal, 0, -0.13, -0.02, 0.1);
-                    B(0.026, 0.026, 0.06, dark2, 0, 0.03, -0.93);
-                    C(0.012, 0.5, metal, 0, 0.03, -0.7);
-
-                    g.userData.barrel = new THREE.Vector3(0, 0.03, -0.96); break;
+                case 'deagle': {
+                    PR([[-0.045, 0.005], [-0.045, 0.06], [-0.03, 0.072], [0.295, 0.072], [0.305, 0.062], [0.305, 0.005]], 0.056, silver); // Schlitten/Lauf
+                    PR([[-0.05, 0.005], [0.25, 0.005], [0.25, -0.016], [0.075, -0.02], [0.07, -0.058], [0.01, -0.06], [0.0, -0.04], [-0.03, -0.17], [-0.09, -0.168], [-0.065, -0.02]], 0.05, dark, 0, 0, [[[0.06, -0.022], [0.06, -0.05], [0.016, -0.052], [0.012, -0.026]]]); // Rahmen + Griff
+                    N(B(0.012, 0.006, 0.28, dark2, 0, 0.076, -0.13)); for (let i = 0; i < 4; i++) N(B(0.058, 0.04, 0.004, dark2, 0, 0.04, 0.0 + i * 0.008)); N(B(0.006, 0.026, 0.008, dark2, 0, -0.032, -0.036));
+                    N(C(0.011, 0.01, dark2, 0, 0.04, -0.306)); g.userData.barrel = new THREE.Vector3(0, 0.04, -0.32); break;
+                }
+                case 'pump': {
+                    PR([[-0.08, -0.04], [-0.08, 0.045], [0.14, 0.045], [0.16, 0.03], [0.16, -0.04]], 0.055, dark); // Gehäuse
+                    PR([[-0.08, 0.035], [-0.08, -0.04], [-0.04, -0.05], [-0.06, -0.14], [-0.1, -0.14], [-0.15, -0.07], [-0.38, -0.1], [-0.4, -0.09], [-0.4, 0.025], [-0.2, 0.04]], 0.05, wood); // Schaft + Griff
+                    PR([[0.3, -0.045], [0.3, 0.02], [0.47, 0.02], [0.47, -0.045]], 0.062, wood, 0, 0, null, 0.008); // Pumpe
+                    N(C(0.016, 0.48, metal, 0, 0.03, -0.4)); N(C(0.018, 0.4, dark2, 0, -0.012, -0.36)); N(B(0.006, 0.01, 0.006, silver, 0, 0.05, -0.63)); N(B(0.008, 0.024, 0.008, dark2, 0, -0.06, -0.02));
+                    N(B(0.054, 0.1, 0.012, dark2, 0, -0.04, 0.4)); g.userData.barrel = new THREE.Vector3(0, 0.03, -0.65); break;
+                }
+                case 'mp5': {
+                    PR([[-0.07, -0.01], [-0.07, 0.05], [0.2, 0.05], [0.22, 0.045], [0.22, -0.01]], 0.055, dark); // Gehäuse
+                    PR([[0.2, -0.035], [0.2, 0.035], [0.38, 0.032], [0.39, 0.02], [0.39, -0.03], [0.37, -0.04]], 0.062, dark, 0, 0, null, 0.008); // Handschutz
+                    PR([[0.14, -0.01], [0.105, -0.01], [0.11, -0.08], [0.13, -0.16], [0.165, -0.155], [0.145, -0.08]], 0.034, dark2); // gebogenes Magazin
+                    PR([[-0.07, -0.01], [0.08, -0.01], [0.08, -0.03], [0.05, -0.035], [0.045, -0.06], [0.0, -0.062], [-0.012, -0.045], [-0.04, -0.16], [-0.095, -0.155], [-0.075, -0.02]], 0.05, dark, 0, 0, [[[0.035, -0.036], [0.035, -0.053], [0.006, -0.054], [0.0, -0.037]]]); // Griffstück
+                    N(C(0.012, 0.06, metal, 0, 0.02, -0.42)); N(C(0.02, 0.02, dark2, 0, 0.02, -0.395)); N(C(0.014, 0.02, dark2, 0, 0.065, 0.03)); N(B(0.01, 0.022, 0.01, dark2, 0, 0.065, -0.37));
+                    N(B(0.006, 0.006, 0.24, metal, 0.022, 0.02, 0.19)); N(B(0.006, 0.006, 0.24, metal, -0.022, 0.02, 0.19)); N(B(0.05, 0.1, 0.02, dark2, 0, -0.005, 0.31)); N(B(0.008, 0.024, 0.008, dark2, 0, -0.04, -0.02));
+                    g.userData.barrel = new THREE.Vector3(0, 0.02, -0.46); break;
+                }
+                case 'ak47': {
+                    PR([[-0.1, -0.025], [-0.1, 0.045], [-0.06, 0.05], [0.26, 0.05], [0.26, -0.025]], 0.052, metal); // Gehäuse
+                    PR([[0.26, -0.03], [0.26, 0.03], [0.46, 0.03], [0.47, 0.0], [0.46, -0.03]], 0.058, wood, 0, 0, null, 0.007); // Handschutz unten
+                    PR([[0.06, -0.025], [0.12, -0.025], [0.16, -0.1], [0.2, -0.18], [0.15, -0.2], [0.11, -0.12]], 0.04, dark); // Bananen-Magazin
+                    PR([[-0.1, 0.035], [-0.1, -0.02], [-0.2, -0.07], [-0.38, -0.1], [-0.38, 0.02], [-0.2, 0.035]], 0.046, wood); // Schaft
+                    PR([[0.26, 0.03], [0.26, 0.06], [0.43, 0.06], [0.45, 0.05], [0.45, 0.03]], 0.044, wood, 0, 0, null, 0.006); // Handschutz oben
+                    PR([[-0.02, -0.025], [0.02, -0.025], [-0.005, -0.13], [-0.05, -0.13]], 0.044, wood); // Pistolengriff
+                    N(PR([[0.07, -0.025], [0.07, -0.06], [0.02, -0.062], [0.015, -0.025]], 0.01, dark2, 0, 0, [[[0.062, -0.028], [0.062, -0.054], [0.026, -0.055], [0.022, -0.028]]], 0.002)); // Abzugsbügel
+                    N(C(0.011, 0.07, metal, 0, 0.045, -0.485)); N(C(0.011, 0.2, metal, 0, 0.015, -0.565)); N(B(0.008, 0.035, 0.008, dark2, 0, 0.045, -0.62)); N(C(0.014, 0.03, dark2, 0, 0.015, -0.655));
+                    N(B(0.03, 0.012, 0.03, dark2, 0, 0.058, -0.22)); N(B(0.046, 0.006, 0.39, dark2, 0, 0.053, -0.08)); N(B(0.008, 0.022, 0.008, dark2, 0, -0.04, -0.045)); N(B(0.048, 0.11, 0.012, dark2, 0, -0.04, 0.385));
+                    g.userData.barrel = new THREE.Vector3(0, 0.015, -0.67); break;
+                }
+                case 'm4a1': {
+                    PR([[-0.1, 0.0], [-0.1, 0.055], [0.2, 0.055], [0.2, 0.0]], 0.05, dark); // oberes Gehäuse
+                    PR([[0.2, -0.02], [0.2, 0.05], [0.45, 0.05], [0.45, -0.02]], 0.056, dark, 0, 0, null, 0.01); // Handschutz
+                    PR([[0.135, -0.07], [0.075, -0.07], [0.088, -0.2], [0.146, -0.2]], 0.038, metal); // Magazin
+                    PR([[-0.1, 0.0], [0.2, 0.0], [0.2, -0.02], [0.14, -0.02], [0.14, -0.07], [0.07, -0.07], [0.07, -0.03], [0.06, -0.03], [0.055, -0.055], [0.01, -0.058], [0.0, -0.035], [-0.1, -0.03]], 0.05, metal, 0, 0, [[[0.045, -0.033], [0.045, -0.049], [0.012, -0.051], [0.008, -0.035]]]); // unteres Gehäuse
+                    PR([[-0.2, 0.05], [-0.36, 0.05], [-0.37, -0.07], [-0.33, -0.08], [-0.27, 0.0], [-0.2, 0.0]], 0.045, dark); // Schaft
+                    PR([[0.0, -0.03], [-0.035, -0.03], [-0.075, -0.14], [-0.03, -0.145]], 0.042, dark); // Pistolengriff
+                    N(B(0.024, 0.01, 0.53, dark2, 0, 0.061, -0.17)); for (let i = 0; i < 12; i++) N(B(0.026, 0.004, 0.006, dark2, 0, 0.068, 0.07 - i * 0.04)); // Schiene
+                    N(C(0.016, 0.16, dark2, 0, 0.025, 0.18)); N(C(0.011, 0.05, metal, 0, 0.02, -0.475)); N(C(0.022, 0.2, dark2, 0, 0.02, -0.6)); N(C(0.024, 0.012, metal, 0, 0.02, -0.505)); N(B(0.008, 0.022, 0.008, dark2, 0, -0.04, -0.03));
+                    g.userData.barrel = new THREE.Vector3(0, 0.02, -0.72); break;
+                }
+                case 'scout': {
+                    PR([[0.38, -0.025], [0.38, 0.03], [0.0, 0.035], [-0.1, 0.03], [-0.4, 0.03], [-0.4, -0.1], [-0.34, -0.105], [-0.2, -0.045], [-0.1, -0.045], [-0.07, -0.13], [-0.025, -0.13], [0.0, -0.03]], 0.05, M(0x5a6470), 0, 0, [[[-0.065, -0.025], [-0.08, 0.012], [-0.18, 0.012], [-0.19, -0.03], [-0.11, -0.035]]]); // Schaft mit Daumenloch
+                    PR([[0.03, -0.03], [0.1, -0.03], [0.1, -0.07], [0.03, -0.07]], 0.036, dark); // Magazin
+                    N(C(0.011, 0.42, metal, 0, 0.015, -0.59)); N(C(0.016, 0.04, dark2, 0, 0.015, -0.81)); N(C(0.022, 0.2, dark, 0, 0.085, -0.02)); N(C(0.028, 0.035, dark2, 0, 0.085, -0.13)); N(C(0.026, 0.03, dark2, 0, 0.085, 0.09));
+                    N(B(0.016, 0.03, 0.02, dark2, 0, 0.055, -0.07)); N(B(0.016, 0.03, 0.02, dark2, 0, 0.055, 0.04)); N(B(0.04, 0.01, 0.01, silver, 0.035, 0.03, 0.03)); N(B(0.008, 0.022, 0.008, dark2, 0, -0.04, 0.05));
+                    g.userData.barrel = new THREE.Vector3(0, 0.015, -0.83); break;
+                }
+                case 'awp': {
+                    PR([[0.45, -0.03], [0.45, 0.035], [0.2, 0.045], [-0.05, 0.045], [-0.12, 0.04], [-0.3, 0.03], [-0.42, 0.035], [-0.42, -0.12], [-0.36, -0.13], [-0.22, -0.06], [-0.12, -0.06], [-0.08, -0.14], [-0.03, -0.14], [0.0, -0.035], [0.2, -0.035]], 0.062, green, 0, 0, [[[-0.07, -0.035], [-0.085, 0.015], [-0.19, 0.015], [-0.2, -0.04], [-0.12, -0.045]]]); // Schaft mit Daumenloch
+                    PR([[0.02, -0.035], [0.1, -0.035], [0.1, -0.09], [0.02, -0.09]], 0.04, dark); // Magazin
+                    N(C(0.014, 0.47, metal, 0, 0.01, -0.685)); N(C(0.02, 0.05, dark2, 0, 0.01, -0.945)); N(C(0.028, 0.24, dark, 0, 0.1, 0.0)); N(C(0.036, 0.05, dark2, 0, 0.1, -0.14)); N(C(0.034, 0.045, dark2, 0, 0.1, 0.135));
+                    N(B(0.018, 0.05, 0.025, dark2, 0, 0.065, -0.08)); N(B(0.018, 0.05, 0.025, dark2, 0, 0.065, 0.07)); N(B(0.045, 0.012, 0.012, silver, 0.045, 0.035, 0.03));
+                    { const kn = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 6), silver); kn.position.set(0.07, 0.035, 0.03); g.add(N(kn)); } // Kammerstängel-Kugel
+                    N(B(0.008, 0.022, 0.008, dark2, 0, -0.045, 0.05)); g.userData.barrel = new THREE.Vector3(0, 0.01, -0.97); break;
+                }
                 case 'he': { const b = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 10), M(0x3f4a35)); b.position.set(0, -0.02, -0.08); g.add(b); B(0.03, 0.025, 0.03, metal, 0, 0.035, -0.08); B(0.012, 0.03, 0.012, silver, 0.025, 0.045, -0.08); break; }
                 case 'smoke': { const b = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.13, 12), M(0x6a6f72)); b.position.set(0, -0.01, -0.08); g.add(b); B(0.03, 0.02, 0.03, metal, 0, 0.065, -0.08); B(0.012, 0.03, 0.012, silver, 0.025, 0.07, -0.08); break; }
                 case 'flash': { const b = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.12, 12), silver); b.position.set(0, -0.01, -0.08); g.add(b); B(0.028, 0.02, 0.028, dark2, 0, 0.06, -0.08); B(0.012, 0.03, 0.012, metal, 0.024, 0.065, -0.08); break; }
@@ -4698,7 +4701,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             g.visible = false; return g;
         }
         const vm = new THREE.Group(); camera.add(vm); const vmModels = {}; for (const k in W) { vmModels[k] = makeViewModel(k); vm.add(vmModels[k]); }
-        for (const k in vmModels) vmModels[k].traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });// ================= SKINS & CASES =================
+        for (const k in vmModels) vmModels[k].traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679 && !o.userData.ns) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });// ================= SKINS & CASES =================
         const SKINS = [
             { id: 'glock_candy', w: 'glock', n: 'Glock-18 | Candy Apple', c: 0xc23b22, r: 1 },
             { id: 'usp_royal', w: 'usp', n: 'USP .45 | Royal Blue', c: 0x2255cc, r: 1 },
@@ -4779,7 +4782,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 vmModels[k].traverse(o => {
                     if (!o.isMesh || o.userData.oc === undefined) return;
                     if (wrap) {
-                        if (!stickerTex[k]) stickerTex[k] = new THREE.TextureLoader().load(wrap);
+                        if (!stickerTex[k]) stickerTex[k] = wrapTex(wrap);
                         o.material.map = stickerTex[k]; o.material.emissiveMap = null; o.material.color.setHex(0xffffff); o.material.emissive.setHex(0x000000); o.material.needsUpdate = true;
                     } else skinMat(o, sk, i);
                     i++;
@@ -4789,6 +4792,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function rollSkin() { const r = Math.random(), rar = r < 0.02 ? 4 : r < 0.09 ? 3 : r < 0.32 ? 2 : 1; return rnd(SKINS.filter(s => s.r === rar && !s.noCase)); }
         store.stick = JSON.parse(localStorage.getItem('stick') || '{}');
         const stickerTex = {};
+        function wrapTex(u) { const t = new THREE.TextureLoader().load(u); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(0.3, 0.3); return t; } // ein Bild ≈ 0,5 m
         function setSticker(wkey, dataURL) {
             if (dataURL) store.stick[wkey] = dataURL; else delete store.stick[wkey];
             try { localStorage.setItem('stick', JSON.stringify(store.stick)); } catch (e) { alert('Speicher voll – Bild zu groß!'); }
@@ -4957,8 +4961,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (g.userData.hand) g.remove(g.userData.hand);
             g.visible = true; g.scale.setScalar(1.8);
             const sk = own ? skinOf(key) : (sid ? SKINS.find(s => s.id === sid) : null); let i = 0;
-            g.traverse(o => { if (o.isMesh) { o.castShadow = true; if (sk && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); skinMat(o, sk, i); i++; } } });
-            const st = own ? store.stick[key] : null; if (st) { if (!stickerTex[key]) stickerTex[key] = new THREE.TextureLoader().load(st); g.traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); o.material.map = stickerTex[key]; o.material.color.setHex(0xffffff); } }); } return g;
+            g.traverse(o => { if (o.isMesh) { o.castShadow = true; if (sk && !o.userData.ns && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); skinMat(o, sk, i); i++; } } });
+            const st = own ? store.stick[key] : null; if (st) { if (!stickerTex[key]) stickerTex[key] = wrapTex(st); g.traverse(o => { if (o.isMesh && !o.userData.ns && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); o.material.map = stickerTex[key]; o.material.color.setHex(0xffffff); } }); } return g;
         }
         function dropWeapon(def, x, z, ammo, res, sid) {
             if (!def || (def.slot !== 1 && def.slot !== 2)) return null;
@@ -5885,7 +5889,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function knifeNames() { for (const sk of SKINS) if (sk.w === 'knife' && !sk.km) sk.n = sk.n.replace(/^(Butterfly|Karambit)/, W.knife.name); }
         function setKnife(t) { // Messer wechseln: Viewmodel neu bauen, Namen anpassen
             if (!KNIVES[t]) return; localStorage.setItem('knifetype', t); W.knife.name = KNIVES[t]; knifeNames();
-            const old = vmModels.knife, g = makeViewModel('knife'); g.traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });
+            const old = vmModels.knife, g = makeViewModel('knife'); g.traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679 && !o.userData.ns) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });
             g.visible = old.visible; vm.remove(old); vm.add(g); vmModels.knife = g; applySkins(); if (started && player.weapons[player.slot]) updateVM();
         }
         function vmSkin(key, sid) {
@@ -6455,7 +6459,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 { go: () => { SHP.tab = 'sk'; showShop(true); }, sel: '#shopBox', t: '🪙 Shop', d: 'Mit <b>Coins</b> kaufst Du hier Skins direkt: Sieg +100, Niederlage +20, jeder Kill +10.<br>Aufgebaut wie das Inventar: Reiter für <b>offizielle Skins</b>, <b>Community-Skins</b> anderer Spieler und <b>Kleidung</b> – links die Waffe bzw. das Kleidungsteil, rechts das Angebot. Eigene Skins nimmst Du mit 🗑 wieder aus dem Shop.' },
                 { go: () => { if (ACC) { showSkinMaker(); const m = $('skMode'); if (m) { m.value = 'paint'; m.onchange(); } } else { SHP.tab = 'cm'; showShop(true); } }, sel: () => ACC ? '.invbox' : '#btnMkSkin', t: '🎨 Skin-Editor', d: 'Erstelle eigene Skins: Muster und Farben wählen – oder <b>selbst malen</b> mit Pinsel, Radierer, Pipette und Spiegeln.<br>Veröffentlichte Skins erscheinen für alle im Shop. Kauft jemand Deinen Skin, bekommst Du <b>50 % als Coins</b>.' + (ACC ? '' : '<br><i>Zum Erstellen brauchst Du einen Account.</i>') },
                 { go: () => showMenu(), sel: '#ctAcc', t: '⭐ Fortschritt & Account', d: 'Für alles im Spiel gibt es <b>XP</b> – steige im Level auf, verdiene Ränge bis zur Global Elite und schalte <b>Erfolge</b> frei.<br>Mit einem <b>Account</b> ist alles auf jedem Gerät da: Skins, Coins, Fortschritt, Einstellungen.' },
-                { go: () => showMenu(), sel: '[data-nav="maps"]', t: '🛠 Map- & Arena-Editor', d: 'Baue eigene <b>Karten</b> für Wettkampf & Deathmatch oder <b>Arenen</b> für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites – und spiele sie direkt, auch online.' },
+                { go: () => showMenu(), sel: '[data-nav="editor"]', t: '🛠 Map- & Arena-Editor', d: 'Baue eigene <b>Karten</b> für Wettkampf & Deathmatch oder <b>Arenen</b> für Gauntlet & 1v1: Wände, Kisten, Stufen, Stege, Spawns und Bombsites – und spiele sie direkt, auch online.' },
                 { go: () => nav('news'), sel: '#csnews', t: '📰 News', d: 'Hier stehen alle <b>Patchnotes</b>. Ein Klick auf eine Kachel öffnet sie im Vollbild.' },
                 { go: () => showMenu(), t: '🎉 Fertig!', d: 'Jetzt kennst Du alles.<br>Tipp: Fang mit einem <b>Wettkampf offline</b> an, um Dich einzuspielen.<br><br>Das Tutorial findest Du jederzeit unten auf dem Startbildschirm: <b>❓ Wie funktioniert alles?</b><br><b>Viel Spaß!</b>' }];
         }
@@ -6635,7 +6639,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const DEF_WS = location.host ? (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host : 'ws://localhost:8081'; 
         
 
-        const MODES = { comp: ['🏆', 'Wettkampf', 'Attacker gegen Defender · Bombe legen & entschärfen'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'], ex: ['🧭', 'Erkunden', 'Allein · Karten & Arenen in Ruhe ansehen · Map-Editor jederzeit über das Pausenmenü'] };
+        const MODES = { comp: ['🏆', 'Wettkampf', 'Attacker gegen Defender · Bombe legen & entschärfen'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'], ex: ['🧭', 'Erkunden', 'Allein · Karten & Arenen in Ruhe ansehen · Map-Editor jederzeit über das Pausenmenü'], al: ['🔴', 'Aim-Lab', 'Training auf eigener Schießbahn · Gridshot, Flick, Präzision & Tracking'] };
         const modeName = k => MODES[k] ? MODES[k][0] + ' ' + MODES[k][1] : '';
          function fetchRooms() {
  const el = $('roomlist'); if (!el) return;
@@ -6866,6 +6870,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             document.body.appendChild(d); const close = () => { d.remove(); removeEventListener('keydown', esc, true); }, esc = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
             d.querySelector('.nrback').onclick = close; addEventListener('keydown', esc, true); d.onclick = e => { if (e.target === d) close(); };
         }
+        function showEditorPick() { // EDITOR-Tab: Karten oder Arenen bauen
+            showOverlay(`<h1 style="font-size:34px">🛠 EDITOR<small>WAS MÖCHTEST DU BAUEN?</small></h1>
+ <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:10px 0">
+ <div class="mcard" id="edPickMap" style="min-width:250px;cursor:pointer"><h2>🗺️ KARTEN</h2><p>Große Karten mit Bombsites<br>für Wettkampf & Deathmatch</p><button>Karten öffnen</button></div>
+ <div class="mcard" id="edPickAr" style="min-width:250px;cursor:pointer"><h2>🏟 ARENEN</h2><p>Kleine Arenen<br>für Gauntlet & 1v1</p><button>Arenen öffnen</button></div></div>
+ <div><button id="edPickBack">Zurück</button></div>`);
+            $('edPickMap').onclick = showMapList; $('edPickAr').onclick = showArenaList; $('edPickBack').onclick = showMenu;
+        }
         function showMenu() {
             edFrom = 'play';
             $('hud').style.display = 'none'; setupMenuScene();
@@ -6885,8 +6897,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <a data-nav="store">CASES</a>
  <a data-nav="shop">SHOP</a>
  <a data-nav="news">NEWS</a>
- <a data-nav="maps">MAP-EDITOR</a>
- <a data-nav="arenas">ARENA-EDITOR</a>
+ <a data-nav="editor">EDITOR</a>
  </nav>
  <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}"><span class="lvchip" title="${rankOf(lvlOf(PRG.xp))}">Lv ${lvlOf(PRG.xp)}</span>${ACC ? `<b>Eingeloggt als <span style="color:var(--hl)">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
  </div>
@@ -6918,18 +6929,18 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <button id="btnDM">💀 Deathmatch starten</button>
  <button id="btnEx">🧭 Karte erkunden</button>
  <button id="btnExAr">🏟 Arena erkunden</button>
- <button id="btnAim">🎯 Aim-Lab</button>
+ <button id="btnAim">🔴 Aim-Lab starten</button>
  <button id="btnDuck" style="border-color:#ffd84a;color:#ffd84a">🦆 Entenjagd starten</button>
  <button id="btnDuckLb">🏆 Bestenliste</button>
  </span>
  <span id="barOn" style="display:none">
- <input id="srv" value="${DEF_WS}" placeholder="wss://…">
+ <input id="srv" value="${DEF_WS}" placeholder="wss://…" style="display:none">
  <input id="room" value="sienna" placeholder="Raum">
  <button id="mpCT">Beitreten: Defender</button>
  <button id="mpT">Beitreten: Attacker</button>
  </span>
  <span style="color:#394a5c">|</span>
- <button id="btnGSet" class="rulesbtn">🎮 REGELN</button><button id="btnSet">⌨️ Tasten</button>
+ <button id="btnGSet" class="rulesbtn">🎮 REGELN</button><button id="btnSet" style="display:none">⌨️ Tasten</button>
  </div>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
@@ -6949,6 +6960,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 AIM-LAB-RANGE</p>
  Das Aim-Lab hat eine <b>eigene Schießbahn</b> im Sienna-Stil – frei, ohne Kisten und Container. Die Ziele erscheinen nie mehr hinter Hindernissen.<br>
  Du stehst am Schützenstand mit Brüstung links und rechts – wie in der Valorant-Range.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔫 NEUE WAFFENMODELLE</p>
+ Alle Schusswaffen wurden <b>neu gebaut</b>: echte Umrisse statt Würfel-Stapel – USP-S mit Schalldämpfer, Glock, Desert Eagle, MP5, Pump, AK-47 mit Bananen-Magazin, M4A1-S mit Schiene, Scout & AWP mit Daumenloch-Schaft.<br>
+ <b>Skins liegen jetzt sauber</b> auf der ganzen Waffe – das Muster läuft durchgehend, statt auf jedem Teil neu anzufangen. Visier, Lauf & Schalldämpfer bleiben Metall.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧭 AUFGERÄUMTES MENÜ</p>
+ <b>Map- & Arena-Editor</b> sind jetzt ein Tab: <b>EDITOR</b>. <b>Aim-Lab</b> hat eine eigene Kategorie im Spielen-Menü.<br>
+ Pro Modus siehst Du nur noch die passenden Knöpfe; die Server-Adresse wird nicht mehr angezeigt. Tasten findest Du unter ⚙️.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💬 DISCORD</p>
  Neuer <b>Discord-Knopf</b> im Hauptmenü und nach jedem Match – mit Patchnotes, Mitspielersuche, Live-Server-Status und Bug-Meldungen.<br>
@@ -7573,7 +7592,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (nav === 'inv') { showInventory(); return; }
                 if (nav === 'store') { showCases(); return; }
                 if (nav === 'shop') { showShop(); return; }
-                if (nav === 'maps') { showMapList(); return; } if (nav === 'arenas') { showArenaList(); return; }
+                if (nav === 'maps') { showMapList(); return; } if (nav === 'arenas') { showArenaList(); return; } if (nav === 'editor') { showEditorPick(); return; }
                 setTab(nav);
             });
             $('ctAcc').onclick = showAccount;
@@ -7605,20 +7624,20 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             // Kategorie (Modus) + Offline/Online
             const PM = { cat: MODES[sessionStorage.getItem('playcat')] ? sessionStorage.getItem('playcat') : 'comp', on: sessionStorage.getItem('playmode') === '1' };
             const setMode = () => {
-                if (PM.cat === 'ex') PM.on = false; $('modeOn').style.display = PM.cat === 'ex' ? 'none' : ''; // Erkunden nur offline
+                const solo = PM.cat === 'ex' || PM.cat === 'al'; if (solo) PM.on = false; $('modeOn').style.display = solo ? 'none' : ''; // Erkunden & Aim-Lab nur offline
                 sessionStorage.setItem('playcat', PM.cat); sessionStorage.setItem('playmode', PM.on ? '1' : '0');
                 document.querySelectorAll('[data-cat]').forEach(b => b.classList.toggle('on', b.dataset.cat === PM.cat));
                 $('modeOff').classList.toggle('on', !PM.on); $('modeOn').classList.toggle('on', PM.on);
                 const arena = PM.cat === 'gl' || PM.cat === 'v1';
-                $('mapgrid').style.display = arena ? 'none' : 'flex';
+                $('mapgrid').style.display = arena || PM.cat === 'al' ? 'none' : 'flex';
                 $('glpanel').style.display = !PM.on && arena ? 'flex' : 'none';
                 $('glcSolo').style.display = PM.cat === 'gl' ? '' : 'none'; $('glcV1').style.display = PM.cat === 'v1' ? '' : 'none';
                 $('roomlist').style.display = PM.on ? 'flex' : 'none';
                 $('barOff').style.display = !PM.on && !arena ? 'inline-flex' : 'none';
-                $('btnCT').style.display = $('btnT').style.display = PM.cat === 'comp' ? '' : 'none'; $('btnDM').style.display = PM.cat === 'dm' ? '' : 'none'; $('btnEx').style.display = $('btnExAr').style.display = PM.cat === 'ex' ? '' : 'none'; $('btnDuck').style.display = $('btnDuckLb').style.display = PM.cat === 'duck' ? '' : 'none';
+                $('btnCT').style.display = $('btnT').style.display = PM.cat === 'comp' ? '' : 'none'; $('btnDM').style.display = PM.cat === 'dm' ? '' : 'none'; $('btnEx').style.display = $('btnExAr').style.display = PM.cat === 'ex' ? '' : 'none'; $('btnDuck').style.display = $('btnDuckLb').style.display = PM.cat === 'duck' ? '' : 'none'; $('btnAim').style.display = PM.cat === 'al' ? '' : 'none';
                 $('barOn').style.display = PM.on ? 'inline-flex' : 'none';
                 $('mpT').style.display = 'none'; $('mpCT').textContent = 'Lobby beitreten'; /* Team wird jetzt in der Lobby gewählt */
-                $('catdesc').textContent = MODES[PM.cat][2] + (PM.on ? ' · Online: Tritt einer Lobby bei – der Host startet dort.' : arena ? ' · Arena wird automatisch gewählt.' : ' · Wähle eine Karte.');
+                $('catdesc').textContent = MODES[PM.cat][2] + (PM.on ? ' · Online: Tritt einer Lobby bei – der Host startet dort.' : arena ? ' · Arena wird automatisch gewählt.' : PM.cat === 'al' ? '' : ' · Wähle eine Karte.');
                 if (PM.on) fetchRooms();
             };
             document.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { PM.cat = b.dataset.cat; setMode(); });
@@ -8825,7 +8844,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  ${IS_TOUCH || !isGl ? '' : `<div class="cspanel" id="gltpanel"><h3>⚔️ GAUNTLET-TEAMS</h3>${glAsgHTML()}</div>`}
  <div id="cschar"><b>${player.name}</b></div>
- <div id="csver">LOBBY | ${modeName(md)} | ${md === 'gl' || md === 'v1' ? 'Arenen' : MAPLABEL} | ${NET.srv}</div>
+ <div id="csver">LOBBY | ${modeName(md)} | ${md === 'gl' || md === 'v1' ? 'Arenen' : MAPLABEL}</div>
  </div>`, true);
             $('lobRules').onclick = () => { if (NET.host || NET.hostCfg) showGameSettings({ cfg: NET.host ? CFG : NET.hostCfg, ro: !NET.host, back: renderLobby }); };
             document.querySelectorAll('[data-lteam]').forEach(el => el.onclick = () => { const tm = el.dataset.lteam; if (tm === player.team) return; player.team = tm; netSend({ type: 'team', pid: NET.pid, team: tm }); renderLobby(); });
