@@ -2767,6 +2767,20 @@ html.dsV #csmenu .subnav b { color: rgba(236,232,225,.6); border-radius: 0; tran
 html.dsV body:not(.mob) #csmenu .subnav b { letter-spacing: .14em; font-weight: 600 }
 html.dsV #csmenu .subnav b:hover { color: #fff; background: none }
 html.dsV #csmenu #catnav b { border-bottom: 2px solid transparent }
+/* ── SPIELEN: Kachelwand „Modus wählen“ ── */
+#csplayview.qp > :not(#qpick) { display: none !important } #csplayview:not(.qp) > #qpick { display: none }
+#qpick { width: 100% } .qhead { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 2px 0 14px } .qhead span { flex: 0 1 180px; height: 1px; background: rgba(236,232,225,.45) } .qhead b { font: 700 26px Rajdhani; letter-spacing: 3px; color: #fff }
+.qgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px }
+.qtile { position: relative; width: 100%; height: 132px; min-height: 0; margin: 0; padding: 0; overflow: hidden; text-align: left; font: inherit; text-transform: none; border: 1px solid rgba(236,232,225,.22); border-radius: 3px; background: var(--qb); cursor: pointer; transition: transform .12s, box-shadow .12s, border-color .12s }
+.qtile.big { height: 176px } .qtile::before { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.72), rgba(0,0,0,0) 65%); }
+.qtile:hover, .qtile:focus-visible { border-color: var(--qc); box-shadow: inset 0 0 0 2px var(--qc); transform: translateY(-2px); outline: none }
+.qtile i { position: absolute; right: -8px; top: -18px; font-size: 118px; font-style: normal; line-height: 1; opacity: .28; transform: rotate(-10deg); transition: opacity .15s, transform .15s } .qtile:hover i { opacity: .45; transform: rotate(-4deg) scale(1.05) }
+.qtile b { position: absolute; z-index: 1; left: 14px; bottom: 28px; font: 700 24px Rajdhani; letter-spacing: 1px; color: #fff; text-transform: uppercase; text-shadow: 0 2px 6px #000 }
+.qtile small { position: absolute; z-index: 1; left: 14px; right: 14px; bottom: 10px; font-size: 11px; color: #cfd8e3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.qtile .qtag { position: absolute; z-index: 1; left: 10px; top: 10px; padding: 2px 8px; font: 700 11px Arial; letter-spacing: 1px; color: #111; background: var(--qc); border-radius: 2px }
+.qtile.big::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--qc) }
+#qback { display: flex; align-items: center; gap: 12px; margin: 0 0 6px } #qback button { margin: 0; padding: 4px 12px; font-size: 12px } #qback b { font: 700 20px Rajdhani; letter-spacing: 2px }
+@media (max-width: 700px) { .qgrid { grid-template-columns: repeat(2, 1fr); gap: 8px } .qtile, .qtile.big { height: 104px } .qtile b { font-size: 18px; bottom: 24px } .qtile i { font-size: 84px } .qhead b { font-size: 20px } }
 html.dsV #csmenu #catnav b.on { color: #fff; background: none; border-bottom-color: var(--hl) }
 html.dsV #csmenu .subnav:not(#catnav) b { border: 1px solid rgba(236,232,225,.25); margin: 0 3px }
 html.dsV #csmenu .subnav:not(#catnav) b.on { color: #fff; background: rgba(236,232,225,.16); border-color: rgba(236,232,225,.6) }
@@ -6770,6 +6784,9 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
         const MODES = { comp: ['🛠', 'Customs', 'Eigene Lobby & Regeln · Attacker gegen Defender · Bombe legen & entschärfen · ohne Ranked-Rating'], dm: ['💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills oder 10 Min'], gl: ['⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Draft, Perks & Fähigkeiten'], v1: ['🎯', '1v1', 'Aim-Duell auf Arenen · gleiche Waffe · Erster mit 5 Siegen'], duck: ['🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Enten jagen, Specials & Bestenliste'], ex: ['🧭', 'Erkunden', 'Allein · Karten & Arenen in Ruhe ansehen · Map-Editor jederzeit über das Pausenmenü'], al: ['🔴', 'Aim-Lab', 'Training auf eigener Schießbahn · Gridshot, Flick, Präzision & Tracking'] };
         const modeName = k => MODES[k] ? MODES[k][0] + ' ' + MODES[k][1] : '';
+        const QTILES = [['ur', '🎮', 'Unranked', '5v5 · Spielersuche · Bots füllen auf · ohne Rang', 'NEU', '#123d3a', '#1d6b5c', '#3ee6b4'], ['rk', '🏆', 'Ranked', '5v5 · 2v2 · 1v1 · Spielersuche mit Rang & Rating', 'BETA', '#3a1420', '#7a2433', '#ff4655'], ['comp', '🛠', 'Customs', 'Eigene Lobby & Regeln · offline oder online · Zuschauer', '', '#1c2b3d', '#2f4d6e', '#8ab4ff'],
+            ['dm', '💀', 'Deathmatch', 'Jeder gegen jeden · Respawn · 30 Kills', '', '#3a1d14', '#6b3320', '#ff8a4a'], ['gl', '⚔️', 'Gauntlet', 'Duo-Turnier auf Arenen · Perks & Fähigkeiten', '', '#2a1d3d', '#4d2f73', '#b48aff'], ['v1', '🎯', '1v1', 'Aim-Duell · gleiche Waffe · Erster mit 5', '', '#14303d', '#1f5470', '#7ec8e3'],
+            ['duck', '🦆', 'Entenjagd', 'Entspannt · 2 Minuten · Bestenliste', '', '#3a3414', '#6b5d1d', '#ffd84a'], ['ex', '🧭', 'Erkunden', 'Allein · Karten & Arenen ansehen', '', '#1d2b22', '#2f4a39', '#9fe08a'], ['al', '🔴', 'Aim-Lab', 'Training · Gridshot, Flick, Tracking', '', '#3d1414', '#6e1f1f', '#ff6b6b']];
          function fetchRooms() {
  const el = $('roomlist'); if (!el) return;
  el.innerHTML = '<div class="lobhead"><span>OFFENE LOBBYS</span><button onclick="fetchRooms()">↻ Aktualisieren</button></div><span style="color:#8fa3b8;font-size:12px">Suche Lobbys…</span>';
@@ -7026,8 +7043,6 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <nav id="cstabs">
  <a data-nav="inv">INVENTAR</a>
  <a data-nav="play">SPIELEN</a>
- <a data-nav="unranked">UNRANKED</a>
- <a data-nav="ranked">RANKED <sup class="betatag">BETA</sup></a>
  <a data-nav="shop">SHOP</a>
  <a data-nav="news">NEWS</a>
  <a data-nav="editor">EDITOR</a>
@@ -7040,7 +7055,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div style="font:700 50px Rajdhani;line-height:1;color:var(--text);text-transform:uppercase">Clu<span style="color:var(--acc)">tch</span></div>
  <div style="width:64px;height:3px;background:var(--acc);margin-top:10px"></div>
  </div> <div id="csplayview">
-<div class="subnav" id="catnav">${Object.keys(MODES).map(k => `<b data-cat="${k}">${MODES[k][0]} ${MODES[k][1].toUpperCase()}</b>`).join('')}</div><div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b></div><p id="catdesc" style="margin:2px 0 6px;font-size:12px;color:#8fa3b8"></p>  <div id="mapgrid">${mapCards}</div>
+<div id="qpick"><div class="qhead"><span></span><b>MODUS WÄHLEN</b><span></span></div><div class="qgrid">${QTILES.map(([k, ic, t, d, tag, c1, c2, c]) => `<button class="qtile${['ur', 'rk', 'comp'].includes(k) ? ' big' : ''}" data-q="${k}" style="--qb:linear-gradient(135deg,${c1},${c2});--qc:${c}"><i aria-hidden="true">${ic}</i>${tag ? `<span class="qtag">${tag}</span>` : ''}<b>${t}</b><small>${d}</small></button>`).join('')}</div></div>
+<div id="qback"><button id="qbackBtn">← ALLE MODI</button><b id="qtitle"></b></div><div class="subnav" id="catnav" style="display:none">${Object.keys(MODES).map(k => `<b data-cat="${k}">${MODES[k][0]} ${MODES[k][1].toUpperCase()}</b>`).join('')}</div><div class="subnav"><b id="modeOff" class="on">🤖 OFFLINE</b><b id="modeOn">🌐 ONLINE</b></div><p id="catdesc" style="margin:2px 0 6px;font-size:12px;color:#8fa3b8"></p>  <div id="mapgrid">${mapCards}</div>
  <div id="roomlist" style="display:none"></div>
  <div id="glpanel" style="display:none;gap:16px;justify-content:center;margin:14px 0;flex-wrap:wrap">
  <div class="mcard" id="glcSolo" style="min-width:270px">
@@ -7081,8 +7097,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="cspanel newscard"><h3>NEU · PATCH 3.3 „ZUSAMMEN"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧩 NEUE MODUSAUSWAHL</p>
+ Im Reiter <b>SPIELEN</b> wählst Du Deinen Modus jetzt über <b>Kacheln</b>: Unranked, Ranked, Customs, Deathmatch, Gauntlet, 1v1, Entenjagd, Erkunden & Aim-Lab – alles an einem Ort. Ranked & Unranked sind keine eigenen Reiter mehr. Mit <b>← ALLE MODI</b> geht es zurück zur Auswahl.<br><br>
+
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎮 NEU: UNRANKED</p>
- Neuer Reiter <b>UNRANKED</b> im Hauptmenü: 5v5 mit <b>Spielersuche wie im Ranked</b> – Suche starten, Match annehmen, Map wählen, los.<br>
+ Neue Kachel <b>UNRANKED</b> im SPIELEN-Reiter: 5v5 mit <b>Spielersuche wie im Ranked</b> – Suche starten, Match annehmen, Map wählen, los.<br>
  Kein Rang, kein Rating, kein Druck. Nach <b>15 Sekunden</b> füllen <b>Bots</b> freie Plätze auf, damit Du nie lange wartest – ihre Stärke richtet sich nach den Spielern im Match.<br>
  Ablehnen gibt hier <b>keine Suchsperre</b>. Dein Ranked-Rating bleibt komplett unberührt.<br><br>
 
@@ -7856,7 +7875,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (nav === 'store') { showCases(); return; } // (Cases liegen jetzt im SHOP-Reiter)
                 if (nav === 'shop') { showShop(); return; } if (nav === 'ranked') { showRanked('rk'); return; } if (nav === 'unranked') { showRanked('ur'); return; }
                 if (nav === 'maps') { showMapList(); return; } if (nav === 'arenas') { showArenaList(); return; } if (nav === 'editor') { showEditorPick(); return; }
-                setTab(nav);
+                setTab(nav); if (nav === 'play') qShow(true); // Klick auf SPIELEN → immer die Modus-Kacheln
             });
             $('ctAcc').onclick = showAccount;
             // Beim Betreten der Seite (einmal pro Sitzung): Hinweis zum Login, falls nicht eingeloggt
@@ -7907,6 +7926,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('modeOff').onclick = () => { PM.on = false; setMode(); };
             $('modeOn').onclick = () => { PM.on = true; setMode(); };
             setMode();
+            const qShow = on => { $('csplayview').classList.toggle('qp', on); if (on) sessionStorage.removeItem('playpick'); else { sessionStorage.setItem('playpick', '1'); $('qtitle').textContent = MODES[PM.cat][0] + ' ' + MODES[PM.cat][1].toUpperCase(); } };
+            qShow(!sessionStorage.getItem('playpick'));
+            document.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { const k = b.dataset.q; if (k === 'ur' || k === 'rk') { showRanked(k); return; } PM.cat = k; setMode(); qShow(false); });
+            $('qbackBtn').onclick = () => qShow(true);
             const backPlay = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
             $('btnGl').onclick = () => { const t = +$('glTeams').value; pickArenas(() => glStart(t), backPlay); }; $('btnV1').onclick = () => pickArenas(() => { GL.v1 = true; glStart(2); }, backPlay);
             $('pname').oninput = e => { const v = e.target.value.trim(); localStorage.setItem('pname', v); if ($('profName')) $('profName').textContent = v || 'Spieler'; if (!ACC) document.querySelector('#cschar b').textContent = v || 'Spieler'; };
@@ -9064,7 +9087,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rkbeta"${RK.mode === 'ur' ? ' style="display:none"' : ''}><span>🚧 Beta: Ratings können sich bis zum offiziellen Start noch ändern oder zurückgesetzt werden. Details in den NEWS.</span><button id="rkBug">🐞 Fehler melden</button></div>
  ${body}<p class="rksub" style="min-height:16px">${escH(RK.msg)}</p><div><button id="rkBack">Zurück</button></div>`);
             const on = (id, f) => { const el = $(id); if (el) el.onclick = f; };
-            on('rkBack', () => { if (RK.q) rkSend({ type: 'rkx' }); if (RK.found && !RK.found.ok) rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.q = RK.found = null; RK.open = false; showMenu(); });
+            on('rkBack', () => { if (RK.q) rkSend({ type: 'rkx' }); if (RK.found && !RK.found.ok) rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.q = RK.found = null; RK.open = false; sessionStorage.setItem('opentab', 'play'); showMenu(); });
             on('rkLogin', showAccount); on('rkBug', () => showBug(showRanked)); document.querySelectorAll('[data-brgo]').forEach(b => b.onclick = () => { RK.open = false; brStart(b.dataset.brgo); }); on('rkRe', () => { const b = $('rkRe'); b.disabled = true; b.textContent = '⏳ Verbinde …';
                 accApi('ranked', { tok: ACC.tok }).then(r => { if (r.ok && r.live) return rkGo(r.live); if (r.ok) RK.prof = r; RK.msg = '⚠ Das Match ist bereits beendet – Ergebnis siehe Historie.'; rkRender(); }).catch(() => rkGo(P.live)); }); on('rkX', () => { rkSend({ type: 'rkx' }); RK.q = null; rkRender(); });
             on('rkAcc', () => { RK.found.ok = true; rkSend({ type: 'rkacc', id: RK.found.id, ok: 1, map: RK.found.vote, ban: RK.found.ban }); rkRender(); });
