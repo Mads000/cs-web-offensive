@@ -2265,7 +2265,10 @@ body.imm::after { content: ''; position: fixed; inset: 0; pointer-events: none; 
 /* ── Entenjagd 2.0: Wellen-Ansage, Boss-Leiste, Waffenwahl ── */
 #dhBan{ position:absolute; top:24%; left:50%; transform:translateX(-50%); font:900 26px 'Arial Black', Impact, sans-serif; color:#ffd84a; text-shadow:0 2px 6px #000; white-space:nowrap; pointer-events:none; opacity:0; }
 #dhCb{ display:none; position:absolute; top:50%; left:calc(50% + 70px); transform:translateY(-50%); text-align:left; pointer-events:none; color:#fff; text-shadow:0 2px 4px #000; } #dhCb b{ display:block; font:900 34px 'Arial Black', Impact, sans-serif; color:#ffd84a; line-height:1; } #dhCb span{ font:bold 12px Arial; letter-spacing:1px; } #dhCb u{ display:block; width:70px; height:4px; background:rgba(0,0,0,.5); border-radius:2px; overflow:hidden; margin-top:3px; } #dhCb i{ display:block; height:100%; background:#ffd84a; } #dhCb em{ display:block; font:bold 13px Arial; font-style:normal; color:#ff9a3d; opacity:0; margin-top:2px; white-space:nowrap; } #dhCb.pulse b{ animation:dhCbP .45s ease-out; } #dhCb.pulse em{ animation:dhCbE 1.6s ease-out; } @keyframes dhCbP{ 0%{ transform:scale(1.7); color:#fff; } 100%{ transform:scale(1); } } @keyframes dhCbE{ 0%,70%{ opacity:1; } 100%{ opacity:0; } } #dhHud .dhwv{ font-size:13px; color:#9fe8ff; margin-left:4px; } .mob #dhCb{ left:calc(50% + 45px); } .mob #dhCb b{ font-size:24px; }
-#dhBan.on{ animation:dhBan 3s ease-out; } @keyframes dhBan{ 0%{ opacity:0; transform:translateX(-50%) scale(1.4); } 12%{ opacity:1; transform:translateX(-50%) scale(1); } 80%{ opacity:1; } 100%{ opacity:0; } }
+#dhBan.on{ animation:dhBan 3s ease-out; }
+#glBan{ position:absolute; top:22%; left:50%; transform:translateX(-50%); font:900 22px 'Arial Black', Impact, sans-serif; color:#ffd84a; text-shadow:0 2px 6px #000; white-space:nowrap; pointer-events:none; opacity:0; } #glBan.on{ animation:dhBan 3s ease-out; } .mob #glBan{ font-size:15px; top:18%; }
+#glspec{ display:none; position:absolute; bottom:120px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.15); border-radius:8px; padding:6px 12px; font:13px Arial; color:#ddd; text-align:center; pointer-events:auto; white-space:nowrap; z-index:6; } #glspec div{ margin:3px 0; } #glspec div:empty{ display:none; } #glspec button{ margin:0 3px; padding:3px 8px; font-size:12px; } .mob #glspec{ bottom:auto; top:64px; font-size:11px; white-space:normal; width:min(92vw,520px); box-sizing:border-box; }
+body.glcloak::after{ content:''; position:fixed; inset:0; pointer-events:none; box-shadow:inset 0 0 120px 30px rgba(120,150,255,.45); z-index:5; } @keyframes dhBan{ 0%{ opacity:0; transform:translateX(-50%) scale(1.4); } 12%{ opacity:1; transform:translateX(-50%) scale(1); } 80%{ opacity:1; } 100%{ opacity:0; } }
 #dhHud .dhboss{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:3px; font-size:15px; } #dhHud .dhboss i{ display:block; width:160px; height:9px; background:rgba(0,0,0,.5); border:1px solid #ffd84a; border-radius:5px; overflow:hidden; } #dhHud .dhboss b{ display:block; height:100%; background:linear-gradient(90deg,#ff7a3d,#ffd84a); }
 .dhpick{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:6px 0 8px; }
 .dhw{ width:190px; padding:14px 12px; background:rgba(20,30,40,.85); border:1px solid rgba(255,216,74,.4); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
@@ -4007,6 +4010,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
  <div class="stgrid">${card('K/D', v('deaths') ? (v('kills') / v('deaths')).toFixed(2) : v('kills') ? v('kills') + '.00' : '–', v('kills') + ' Kills · ' + v('deaths') + ' Tode')}${card('Trefferquote', pct(v('hits'), v('shots')), v('hits') + ' / ' + v('shots') + ' Schüsse')}${card('Headshot-Rate', pct(v('hs'), v('kills')), v('hs') + ' Headshots')}${card('Lieblingswaffe', top ? W[top[0]].name : '–', top ? top[1] + ' Kills' : 'Noch keine Daten')}${card('Siegquote', pct(v('wins') + v('glwins'), v('matches')), (v('wins') + v('glwins')) + ' Siege · ' + v('matches') + ' Matches')}${card('Bomben', v('plant') + ' / ' + v('defuse'), 'gelegt / entschärft')}</div>
  <div class="stsec">KILLS PRO WAFFE</div>
  <div style="width:min(520px,90vw);margin:0 auto;text-align:left">${wk.length ? wk.slice(0, 8).map(([k, n]) => `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:13px"><span style="width:110px">${W[k].name}</span><div class="profbar" style="flex:1;margin:0"><i style="width:${Math.round(n / mx * 100)}%"></i></div><b style="width:40px;text-align:right">${n}</b></div>`).join('') : '<p style="font-size:12px;color:#8fa3b8">Kills pro Waffe werden ab jetzt gezählt.</p>'}</div>
+ <div class="stsec">GAUNTLET</div>
+ <div class="profstats" style="justify-content:center"><span>⚔️ Turniersiege <b>${v('glwins')}</b></span><span>🤺 Duellsiege <b>${v('glDw')}</b></span><span>🎲 Richtige Tipps <b>${v('glBet')}</b></span><span>😈 Störaktionen <b>${v('glSab')}</b></span><span>Lieblingsfähigkeit <b>${(() => { const f = Object.keys(GL_ABIL).sort((a, b) => v('glAb_' + b) - v('glAb_' + a))[0]; return f && v('glAb_' + f) ? GL_ABIL[f].ico + ' ' + GL_ABIL[f].name : '–'; })()}</b></span></div>
  <div class="stsec">TRAINING & SPASS</div>
  <div class="profstats" style="justify-content:center">${Object.entries(AL_MODES).map(([k, m]) => `<span>${m[0]} ${m[1]} <b>${v('alB_' + k)}</b></span>`).join('')}<span>🎯 Aim-Lab-Genauigkeit <b>${pct(v('alHits'), v('alShots'))}</b></span><span>🦆 Enten <b>${v('ducks')}</b></span><span>🦆 Rekord <b>${v('dhBest')}</b></span></div>
  <div><button id="stProf">🏅 Profil</button><button id="stBack">Zurück</button></div>`);
@@ -5666,7 +5671,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             let best = null, bd = 1e9; const ex = b.x, ey = b.y + 1.6, ez = b.z;
             if (GL.on) { const bt = GL.teams.find(t => t.members.includes(b)); for (const dc of decoys) { if (dc.team === bt) continue; const dd = Math.hypot(dc.x - ex, dc.z - ez); if (dd < 40 && dd < bd && hasLOS(ex, ey, ez, dc.x, 1.4, dc.z)) { best = dc; bd = dd; } } }
             for (const e of ents) {
-                if (e === b || !e.alive) continue;
+                if (e === b || !e.alive || e.cloakT > 0) continue; if (GL.on && GL.ev === 'dark' && GL.phase === 'duel' && Math.hypot(e.x - ex, e.z - ez) > 16 && now - e.lastShotT > 1.2) continue;
                 if (GL.on) { const bt = GL.teams.find(t => t.members.includes(b)); if (!bt || bt.members.includes(e) || !GL.duel || !GL.duel.teams.flatMap(t => t.members).includes(e)) continue; }
                 else if (!foe(e, b)) continue; const dx = e.x - ex, dz = e.z - ez, d = Math.hypot(dx, dz); if (d > (BOT_LV ? 35 + 22 * BLF() : 55)) continue;
                 const heard = (now - e.lastShotT) < 1.2 && d < (BOT_LV ? 20 + 15 * BLF() : 35); if (!heard) { const dot = (dx * Math.sin(b.yaw) + dz * Math.cos(b.yaw)) / d; if (dot < (BOT_LV ? 0.2 - 0.5 * BLF() : -0.2)) continue; }
@@ -6306,7 +6311,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (e.code === 'KeyV' && !Object.values(BIND).includes('KeyV')) selectTac(); // Taktik in die Hand
             if (e.code === BIND.reload) startReload();
             if (e.code === BIND.lastw) selectSlot(player.lastSlot);
-            if (e.code === BIND.drop) dropCurrent(); if (e.code === BIND.abil) glUseAbility(); if (e.code === BIND.inspect && !(GL.on && e.code === BIND.abil)) inspectWeapon(); if (/^Digit[0-9]$/.test(e.code)) { const n = +e.code[5]; if (!buyOpen && [1, 2, 3, 4, 5].includes(n)) { if (n === 4 && player.slot === 4) cycleNade(); else selectSlot(n); } }
+            if (e.code === BIND.drop) dropCurrent(); if (e.code === BIND.abil) glUseAbility(); if (e.code === BIND.inspect && !(GL.on && e.code === BIND.abil)) inspectWeapon(); if (GL.on && glKey(e.code)) { } else if (/^Digit[0-9]$/.test(e.code)) { const n = +e.code[5]; if (!buyOpen && [1, 2, 3, 4, 5].includes(n)) { if (n === 4 && player.slot === 4) cycleNade(); else selectSlot(n); } }
         });
         addEventListener('keyup', e => { keys[e.code] = false; if (e.code === BIND.board) $('board').style.display = 'none'; }); addEventListener('mousedown', e => { if (GL.on && GL.phase !== 'duel') return; if (started && !paused && !gameEnded && NET.spec && e.button === 2) { specToggle(); return; } if (started && !paused && !gameEnded && !player.alive) { if (FC.on) { if (!locked) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) cycleSpec(); return; } if (!locked) { if (started && !paused && !buyOpen && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) { mouseDown = true; clickQueued = true; } if (e.button === 2) toggleScope(); }); addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; }); addEventListener('contextmenu', e => e.preventDefault());
         addEventListener('wheel', e => { if (!locked) return; const order = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); let i = order.indexOf(player.slot); i = (i + (e.deltaY > 0 ? 1 : -1) + order.length) % order.length; selectSlot(order[i]); });
@@ -7132,7 +7137,14 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="cspanel newscard"><h3>NEU · PATCH 3.3 „ZUSAMMEN"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🦆 ENTENJAGD 2.0</p>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚔️ GAUNTLET: DIE SHOW</p>
+ <b>Arena-Ereignisse</b>: Das Publikum wählt pro Duell 🥃 Glaskanone (halbe HP), ⚡ Turbo, 🔫 Pistolen-Duell oder 🌑 Nacht.<br>
+ <b>☠ Plötzlicher Tod</b>: In den letzten 15 Sekunden schrumpft eine Zone zur Arenamitte – draußen gibt es Schaden.<br>
+ <b>Zuschauen lohnt sich</b>: Tippe mit [1]/[2] auf den Sieger (richtig = +1 Reroll) und störe einmal pro Duell mit [3] 🌫 Rauch, [4] ✨ Blendgranate oder [5] 🩹 Heilpaket – landet dort, wo Du hinschaust.<br>
+ Neue Fähigkeiten: <b>💉 Stim-Spritze</b> und <b>👻 Tarnkappe</b>. Bots tippen, stören, stimmen über Ereignisse ab, nutzen die neuen Fähigkeiten und flüchten vor der Zone.<br>
+ Kürzere Pausen zwischen Duellen, Tabelle mit [Leertaste] überspringen. Neue <b>Gauntlet-Statistik</b> in Deinen Statistiken.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🦆 ENTENJAGD 3.0</p>
  <b>5 Wellen</b> mit Ansage (Aufwärmen → Flitzer & Robo → Geisterstunde → Schwarm & Spalter → CHAOS), dazu wie gehabt Goldrausch, Riesen-Ente und Finale ×2.<br>
  Neue Enten: <b>🤖 Robo-Ente</b> (gepanzert, 3 Treffer, 8 Pkt), <b>👻 Geister-Ente</b> (nur zeitweise sichtbar, 6 Pkt), <b>✂️ Spalt-Ente</b> (zerfällt in zwei Küken).<br>
  <b>Power-up-Kisten</b> abschießen: 💥 Sprengmunition, 🔫 Dauerfeuer (kein Nachladen), 🔗 Combo-Halter (längeres Combo-Fenster) – je 20 Sekunden.<br>
@@ -8544,7 +8556,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function glUseAbility() {
             const p = player, A = p.glA;
             if (!GL.on || GL.phase !== 'duel' || !p.alive || !A || !A.key || A.cd > 0) return;
-            const D = GL_ABIL[A.key]; A.cd = D.cd[A.lv - 1];
+            const D = GL_ABIL[A.key]; A.cd = D.cd[A.lv - 1]; glStat('glAb_' + A.key);
             if (NET.on) netSend({ type: 'glabil', pid: NET.pid, k: A.key, lv: A.lv, g: A.g, x: p.x, z: p.z, yaw: p.yaw });
             doAbility(p, A.key, A.lv, A.g);
         }
@@ -8569,6 +8581,13 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             } else if (key === 'hound') {
                 spawnHound(e, lv, lv >= 3 ? g : null, 0);
                 if (g === 'pack' && lv >= 3) spawnHound(e, lv, null, 0.5);
+            } else if (key === 'stim') { // Heilung nur beim Besitzer (Host für Bots), Effekt überall sichtbar
+                if (!e.remote) { e.health = Math.min(e.maxHP || 100, e.health + (lv >= 2 ? 50 : 35)); if (lv >= 3 && g === 'armor') e.armor = Math.min(100, (e.armor || 0) + 50); if (lv >= 3 && g === 'rush') { if (!(e.stimT > 0)) e.stimSm = e.spdMul || 1; e.spdMul = e.stimSm * 1.4; e.stimT = 4; } }
+                burst(e.x, 1.2, e.z, 0x7dff9a, 12, 3); sfx('reload', e.x, e.z);
+            } else if (key === 'cloak') { // Bots verlieren das Ziel; der getarnte Bot zieht sich kurz zurück statt sofort zu schießen
+                e.cloakT = lv >= 3 && g === 'long' ? 7 : lv >= 2 ? 4.5 : 3; e.cloakAt = now; if (lv >= 3 && g === 'heal' && !e.remote) e.health = Math.min(e.maxHP || 100, e.health + 40);
+                if (!e.isPlayer && !e.remote) { e.target = null; e.losT = e.cloakT * 0.7; }
+                burst(e.x, 1, e.z, 0x9fb4ff, 14, 3); sfx('flashbang', e.x, e.z);
             }
         }
 
@@ -8581,10 +8600,87 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             else if (A.key === 'decoy') use = !b.target && Math.random() < dt * 0.12;
             else if (A.key === 'turret') use = b.target ? td > 8 : Math.random() < dt * 0.08;
             else if (A.key === 'hound') use = !!b.target;
+            else if (A.key === 'stim') use = b.health < (b.maxHP || 100) * 0.5;
+            else if (A.key === 'cloak') use = !!b.target && (b.health < 60 || Math.random() < dt * 0.25);
             if (!use) return;
             A.cd = GL_ABIL[A.key].cd[A.lv - 1];
             doAbility(b, A.key, A.lv, A.g);
             if (NET.on && NET.host) netSend({ type: 'glabil', bot: bots.indexOf(b), k: A.key, lv: A.lv, g: A.g, yaw: b.yaw });
+        }
+        // ================= GAUNTLET: SHOW – Arena-Ereignisse, plötzlicher Tod, Tipps & Störaktionen des Publikums (Bots machen offline mit) =================
+        const GL_EV = { glass: ['🥃', 'GLASKANONE', 'alle nur halbe HP'], turbo: ['⚡', 'TURBO', '+30 % Tempo'], pistol: ['🔫', 'PISTOLEN-DUELL', 'nur Desert Eagle'], dark: ['🌑', 'NACHT', 'kurze Sicht'] };
+        const GL_SAB = { smoke: ['🌫', 'Rauch'], flash: ['✨', 'Blendgranate'], heal: ['🩹', 'Heilpaket'] }, GL_SD = 15; // plötzlicher Tod: letzte 15 s
+        function glBan(txt) { let el = $('glBan'); if (!el) { el = document.createElement('div'); el.id = 'glBan'; $('hud').appendChild(el); } el.textContent = txt; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
+        function glStat(k) { PRG.st[k] = (PRG.st[k] || 0) + 1; try { localStorage.setItem('prog', JSON.stringify(PRG)); } catch (e) { } }
+        const glBotSpecs = pair => glAliveTeams().filter(t => !pair.includes(t) && t !== GL.myTeam && t.members.every(m => !m.isPlayer && !m.remote)); // zuschauende Bot-Teams
+        function glPickEvent(specs) { // Zuschauer-Teams stimmen ab, ohne Zuschauer Zufall; 35 % ohne Ereignis, nicht im 1v1
+            if (GL.v1 || Math.random() < 0.35) return null; const ks = Object.keys(GL_EV), votes = {}; for (const t of specs) { const k = rnd(ks); votes[k] = (votes[k] || 0) + 1; }
+            return Object.keys(votes).sort((a, b) => votes[b] - votes[a])[0] || rnd(ks);
+        }
+        function glEvApply(m) { // Ereignis auf lokal gesteuerte Kämpfer anwenden
+            const ev = GL.ev; if (!ev || m.remote) return;
+            if (ev === 'glass') { m.maxHP = Math.round((m.maxHP || 100) / 2); m.health = m.maxHP; m.armor = 0; }
+            else if (ev === 'turbo') m.spdMul = (m.spdMul || 1) * 1.3;
+            else if (ev === 'pistol') { if (m.isPlayer) { m.weapons[1] = null; m.weapons[2] = mkWeapon(W.deagle); m.slot = 2; updateVM(); } else { m.weapon = W.deagle; m.ammo = W.deagle.mag; } }
+        }
+        function glDuelInit(mine) { // Duellstart (Host & Client)
+            GL.sd = null; GL.dT = 0; GL.bets = []; GL.botSab = []; if (GL.zone) GL.zone.visible = false;
+            GL.bet = !mine && GL.myTeam ? { pick: null } : null; GL.sab = !mine && GL.myTeam ? { used: false } : null;
+            if (GL.ev) glBan('🎲 Publikum wählt: ' + GL_EV[GL.ev][0] + ' ' + GL_EV[GL.ev][1] + ' – ' + GL_EV[GL.ev][2]);
+        }
+        function glBotShow(pair, specs) { // Bots tippen auf das stärkere Team (mit Zufall) und stören manchmal
+            const s = x => x.lives * 2 + x.wins + Math.random() * 3; for (const t of specs) GL.bets.push({ t, pick: s(pair[0]) >= s(pair[1]) ? pair[0] : pair[1] });
+            for (const t of shuffle(specs.slice()).slice(0, 2)) if (Math.random() < 0.7) GL.botSab.push({ t, at: 8 + Math.random() * 30 });
+        }
+        function glBetResolve(w) { // richtiger Tipp: Spieler +1 Reroll, Bot-Team +1 Bonus-Upgrade im nächsten Draft
+            for (const b of GL.bets || []) if (b.pick === w) b.t.glBonus = (b.t.glBonus || 0) + 1;
+            if (GL.bet && GL.bet.pick) { if (GL.bet.pick === w) { GL.rerolls = (GL.rerolls || 0) + 1; glStat('glBet'); glBan('🎲 Richtiger Tipp! +1 Reroll'); } else glBan('🎲 Tipp daneben'); }
+            GL.bet = null; GL.sab = null; GL.bets = [];
+        }
+        function glSabDo(k, x, z, by) { // nur Offline/Host: wirkt für beide Teams gleich
+            if (!GL_SAB[k] || GL.phase !== 'duel' || !GL.duel || !isFinite(x) || !isFinite(z)) return;
+            if (k === 'heal') { for (const t of GL.duel.teams) for (const m of t.members) if (m.alive && !m.remote) m.health = Math.min(m.maxHP || 100, m.health + 25); }
+            else { launchNade(k, x, 9, z, 0, -0.05, 0, { name: by, team: '', isPlayer: false }, 1, null); if (NET.on) netSend({ type: 'nade', k, x, y: 9, z, dx: 0, dy: -0.05, dz: 0, on: by, ot: '', lv: 1 }); }
+            if (NET.on) netSend({ type: 'glsabx', k, by }); glBan('😈 ' + by + ': ' + GL_SAB[k][0] + ' ' + GL_SAB[k][1] + '!');
+        }
+        function glSabMe(k) { // eigene Störaktion: landet dort, wo die Kamera hinschaut
+            if (!GL.sab || GL.sab.used || GL.dT < 4 || !GA.cur) return; GL.sab.used = true; glStat('glSab');
+            camera.getWorldDirection(_fwd); const c = camera.position, t = _fwd.y < -0.05 ? -c.y / _fwd.y : 15, A = GA.cur;
+            const x = clamp(c.x + _fwd.x * t, A.ox + 1, A.ox + A.C * S - 1), z = clamp(c.z + _fwd.z * t, 1, A.R * S - 1);
+            if (!NET.on || NET.host) glSabDo(k, x, z, player.name); else netSend({ type: 'glsab', k, x, z, by: player.name });
+        }
+        function glKey(code) { // [1]/[2] tippen, [3]-[5] stören, Leertaste: Tabelle überspringen
+            if (code === 'Space' && GL.phase === 'standings' && (!NET.on || NET.host)) { GL.t = 0; return true; }
+            if (GL.phase !== 'duel' || !GL.duel || !/^Digit[1-5]$/.test(code)) return false; const n = +code[5];
+            if (n <= 2 && GL.bet && !GL.bet.pick && GL.dT < 12) { GL.bet.pick = GL.duel.teams[n - 1]; sfx('reload'); return true; }
+            if (n >= 3 && GL.sab && !GL.sab.used) { glSabMe(['smoke', 'flash', 'heal'][n - 3]); return true; }
+            return !!(GL.bet || GL.sab);
+        }
+        function glSpecUI() {
+            let el = $('glspec'); if (!el) { el = document.createElement('div'); el.id = 'glspec'; $('hud').appendChild(el); el.onclick = e => { const b = e.target.closest('[data-glk]'); if (b) glKey(b.dataset.glk); }; }
+            const D = GL.duel, B = GL.bet, Sb = GL.sab; if (GL.phase !== 'duel' || !D || (!B && !Sb)) { el.style.display = 'none'; el._h = ''; return; } el.style.display = 'block';
+            const nb = i => GL.bets.filter(b => b.pick === D.teams[i]).length, tb = i => `<button data-glk="Digit${i + 1}">[${i + 1}] ${escH(D.teams[i].name)}${nb(i) ? ' · ' + nb(i) + '🤖' : ''}</button>`;
+            const bet = B ? (B.pick ? `🎲 Dein Tipp: <b>${escH(B.pick.name)}</b>` : GL.dT < 12 ? '🎲 TIPP: ' + tb(0) + tb(1) : '🎲 Tipps geschlossen') : '';
+            const sab = Sb ? (Sb.used ? '😈 Störaktion verbraucht' : GL.dT < 4 ? '😈 Störaktion gleich bereit…' : '😈 STÖREN (Blickziel): ' + Object.entries(GL_SAB).map(([k, [ic, n]], i) => `<button data-glk="Digit${i + 3}">[${i + 3}] ${ic} ${n}</button>`).join('')) : '';
+            const h = `<div>${bet}</div><div>${sab}</div>`; if (h !== el._h) { el._h = h; el.innerHTML = h; }
+        }
+        function glFxTick(dt) { // läuft bei Host & Client
+            const dark = GL.phase === 'duel' && GL.ev === 'dark';
+            if (dark && !GL.fog) { GL.fog = [scene.fog.near, scene.fog.far]; scene.fog.near = 4; scene.fog.far = 24; } else if (!dark && GL.fog) { scene.fog.near = GL.fog[0]; scene.fog.far = GL.fog[1]; GL.fog = null; }
+            for (const e of ents) { if (e.stimT > 0 && (e.stimT -= dt) <= 0) e.spdMul = e.stimSm || 1;
+                if (!(e.cloakT > 0)) continue; e.cloakT -= dt; if (e.lastShotT > e.cloakAt + 0.05 || !e.alive || GL.phase !== 'duel') e.cloakT = 0;
+                if (e.isPlayer) document.body.classList.toggle('glcloak', e.cloakT > 0); else if (e.mesh) e.mesh.visible = e.cloakT <= 0; }
+            if (GL.phase !== 'duel' || !GL.duel) { if (GL.zone) GL.zone.visible = false; glSpecUI(); return; }
+            GL.dT = (GL.dT || 0) + dt; const host = !NET.on || NET.host, fighters = GL.duel.teams.flatMap(t => t.members);
+            if (host) for (const s of GL.botSab || []) if (!s.done && GL.dT >= s.at) { s.done = 1; const f = fighters.filter(m => m.alive); if (f.length) { const v = rnd(f); glSabDo(Math.random() < 0.2 ? 'heal' : rnd(['smoke', 'flash']), v.x + (Math.random() - 0.5) * 4, v.z + (Math.random() - 0.5) * 4, s.t.name); } }
+            const A = GA.cur; if (GL.sd && A) { // Zone schrumpft zur Arenamitte, außerhalb 16 HP/s
+                GL.sd.t += dt; const zx = A.ox + A.C * S / 2, zz = A.R * S / 2, r = Math.max(2.5, Math.hypot(A.C * S, A.R * S) / 2 * (1 - GL.sd.t / GL_SD));
+                if (!GL.zone) { GL.zone = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 6, 48, 1, true), new THREE.MeshBasicMaterial({ color: 0xff3040, transparent: true, opacity: 0.22, side: THREE.DoubleSide, depthWrite: false })); scene.add(GL.zone); }
+                GL.zone.visible = true; GL.zone.position.set(zx, 3, zz); GL.zone.scale.set(r, 1, r);
+                GL.sdHit = (GL.sdHit || 0) - dt; if (GL.sdHit <= 0) { GL.sdHit = 0.5; for (const e of fighters) if (e.alive && !e.remote && (e.isPlayer || host) && Math.hypot(e.x - zx, e.z - zz) > r) applyDamage(e, 8, null, { name: 'Zone', key: 'zone' }, false); }
+                if (host) for (const b of fighters) if (b.alive && !b.isPlayer && !b.remote) { const dx = zx - b.x, dz = zz - b.z, l = Math.hypot(dx, dz); if (l > r - 1.5 && l > 0.1) collideMove(b, dx / l * 4.5 * dt, dz / l * 4.5 * dt); } // Bots flüchten in die Zone
+            }
+            glSpecUI();
         }
         // ================= GAUNTLET: MODUS =================
         const GL = { on: false, stage: 0, teams: [], pairs: [], duelIdx: 0, phase: 'off', t: 0, myTeam: null, duel: null };
@@ -8697,7 +8793,9 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             dash: { ico: '💨', name: 'Combat-Dash', cd: [12, 9, 7], desc: ['Schneller Satz in Blickrichtung', 'Kürzerer Cooldown', 'GLITCH-Variante freischalten'], variants: { blink: 'Blink (Teleport)', shock: 'Schockwelle (concusst Gegner)' } },
             decoy: { ico: '🪖', name: 'Decoy', cd: [22, 17, 13], desc: ['Täuschkörper läuft vorwärts, Bots beschießen ihn', 'Mehr HP, kürzerer Cooldown', 'GLITCH-Variante freischalten'], variants: { boom: 'Sprengfalle (explodiert)', twin: 'Zwilling (2 Decoys)' } },
             turret: { ico: '🗼', name: 'Wachturm', cd: [28, 22, 16], desc: ['Stationäres MG, feuert bei Sichtkontakt (10 s)', 'Mehr HP & Schaden', 'GLITCH-Variante freischalten'], variants: { rapid: 'Gatling (doppelte Feuerrate)', range: 'Weitblick (Reichweite 40 m)' } },
-            hound: { ico: '🐕', name: 'Spürhund', cd: [24, 19, 14], desc: ['Robo-Hund jagt den nächsten Gegner (Biss: 40 dmg)', 'Schneller & zäher', 'GLITCH-Variante freischalten'], variants: { bite: 'Alpha-Biss (70 dmg + Concuss)', pack: 'Rudel (2 Hunde)' } }
+            hound: { ico: '🐕', name: 'Spürhund', cd: [24, 19, 14], desc: ['Robo-Hund jagt den nächsten Gegner (Biss: 40 dmg)', 'Schneller & zäher', 'GLITCH-Variante freischalten'], variants: { bite: 'Alpha-Biss (70 dmg + Concuss)', pack: 'Rudel (2 Hunde)' } },
+            stim: { ico: '💉', name: 'Stim-Spritze', cd: [20, 16, 12], desc: ['Heilt sofort 35 HP', 'Heilt 50 HP, kürzerer Cooldown', 'GLITCH-Variante freischalten'], variants: { rush: 'Adrenalin (+40 % Tempo, 4 s)', armor: 'Panzerspritze (+50 Armor)' } },
+            cloak: { ico: '👻', name: 'Tarnkappe', cd: [24, 19, 15], desc: ['3 s unsichtbar (Schießen beendet die Tarnung)', '4,5 s unsichtbar, kürzerer Cooldown', 'GLITCH-Variante freischalten'], variants: { long: 'Phantom (7 s)', heal: 'Schattenheilung (+40 HP beim Tarnen)' } }
         };
         function glLevelUp(e, u) {
             if (u.kind === 'nade') { e.glN[u.key]++; if (e.glN[u.key] >= 3 && !e.glG[u.key]) e.glG[u.key] = rnd(Object.keys(GL_GLITCH[u.key])); }
@@ -8732,6 +8830,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             GL.nextAr = glPickArena(); glPrepArena(GL.nextAr);
             document.exitPointerLock();
             for (const t of glAliveTeams()) for (const m of t.members) if (!m.isPlayer && !m.remote) glBotDraft(m);
+            for (const t of glAliveTeams()) while (t.glBonus > 0) { t.glBonus--; const bm = t.members.filter(m => !m.isPlayer && !m.remote); if (bm.length) { const m = rnd(bm), o = glUtilOffers(m)[0]; if (o) glLevelUp(m, o); } }
             GL.humanReady = new Set();
             if (NET.on && NET.host) netSend({ type: 'glphase', ph: 'draft', stage: GL.stage, bye: GL.bye ? GL.bye.name : null, ar: GL.nextAr, arena: glArenaData(GL.nextAr) });
             GL.botReady = glAliveTeams().filter(t => t !== GL.myTeam).map(t => ({ team: t, at: 2 + Math.random() * 9 }));
@@ -8752,7 +8851,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         }
         function glDraftUI() {
             const wCards = GL.offW.map(k => { const d = W[k], rpm = Math.round(60 / d.rate); return `<div class="glw ${GL.pickW === k ? 'sel' : ''}" data-glw="${k}"><b>${d.name}</b><div class="cstats">${bar(d.dmg * (d.pellets || 1), 120)}${bar(rpm, 750)}${bar(d.mag, 30)}</div><span>${GL.pickW === k ? '✓ GEWÄHLT' : 'WAFFE'}</span></div>`; }).join('');
-            const UC = { he: '#ff7a5c', flash: '#ffd964', smoke: '#7ec8e3', molly: '#ff9b3d', armor: '#8ab4ff', speed: '#9fe08a', vamp: '#c86bff', hp: '#ff6b81', dash: '#7dffb0', decoy: '#ffc95c', turret: '#c2d64a', hound: '#ff8ab0' };
+            const UC = { he: '#ff7a5c', flash: '#ffd964', smoke: '#7ec8e3', molly: '#ff9b3d', armor: '#8ab4ff', speed: '#9fe08a', vamp: '#c86bff', hp: '#ff6b81', dash: '#7dffb0', decoy: '#ffc95c', turret: '#c2d64a', hound: '#ff8ab0', stim: '#7dff9a', cloak: '#9fb4ff' };
             const uCards = GL.offU.length ? GL.offU.map((u, i) => {
                 let ico, name, desc, tag;
                 if (u.kind === 'perk') { ico = GL_PERKS[u.key][0].split(' ')[0]; name = GL_PERKS[u.key][0].split(' ').slice(1).join(' '); desc = GL_PERKS[u.key][1]; tag = 'PERK'; }
@@ -8791,7 +8890,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (u) glLevelUp(player, u); for (const t of glAliveTeams()) for (const m of t.members) glApplyLoadout(m);
             $('overlay').style.display = 'none';
             renderer.domElement.requestPointerLock();
-            GL.phase = 'announce'; GL.t = 2.5;
+            GL.phase = 'announce'; GL.t = 1.5;
             msg('STAGE ' + GL.stage, (u && u.kind === 'nade' && player.glN[u.key] >= 3) ? '⚡ GLITCH gezogen: ' + GL_GLITCH[u.key][player.glG[u.key]] + '!' : '', 2.5);
 
         }
@@ -8812,7 +8911,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (!pair) { glStandings(); return; }
             const akey = GL.nextAr && ARENAS[GL.nextAr] ? GL.nextAr : glPickArena(); GL.nextAr = null; // beim ersten Duell: die Arena aus der Auswahlphase
             setArena(akey); buildArenaRadar(); clearDecoys(); clearNades(); if (player.glA) player.glA.cd = 0; const A = GA.cur;
-            GL.duel = { teams: pair, t: GL_TIME, over: false };
+            GL.duel = { teams: pair, t: GL_TIME, over: false }; const specs = glBotSpecs(pair); GL.ev = glPickEvent(specs);
             for (const e of ents) { if (!e.isPlayer) { e.alive = false; e.mesh.visible = false; e.target = null; e.path = []; e.goal = null; } }
             player.alive = false;
             pair.forEach((team, ti) => {
@@ -8828,11 +8927,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 });
             });
             if (GL.v1) { GL.v1n = (GL.v1n === undefined ? -1 : GL.v1n) + 1; for (const t of pair) for (const m of t.members) v1Round(m, t); }
-            const mine = pair.includes(GL.myTeam);
+            const mine = pair.includes(GL.myTeam); for (const t of pair) for (const m of t.members) glEvApply(m); glDuelInit(mine); glBotShow(pair, specs);
             GL.phase = 'duel'; G.state = 'live'; G.timer = GL_TIME; G.bomb.state = 'none'; if (GL.v1) v1Freeze();
             specTarget = null; stopFreecam();
             if (!mine) { startFreecam(); if (!locked) renderer.domElement.requestPointerLock(); }
-            if (NET.on && NET.host) netSend({ type: 'glduel', ar: akey, arena: glArenaData(akey), a: pair[0].id, b: pair[1].id, idx: GL.duelIdx, total: GL.pairs.length, w: null });
+            if (NET.on && NET.host) netSend({ type: 'glduel', ar: akey, arena: glArenaData(akey), a: pair[0].id, b: pair[1].id, idx: GL.duelIdx, total: GL.pairs.length, w: null, ev: GL.ev });
             if (GL.v1) msg('RUNDE ' + (GL.v1n + 1) + ' · KAUFPHASE', pair[0].name + ' ' + pair[0].wins + ' : ' + pair[1].wins + ' ' + pair[1].name, 3); else msg('DUELL ' + (GL.duelIdx + 1) + '/' + GL.pairs.length, pair[0].name + ' vs. ' + pair[1].name, 3);
             sfx('start');
         }
@@ -8846,7 +8945,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             winner.wins++; if (!GL.v1) loser.lives--;
             msg(winner.name + ' gewinnt!', GL.v1 ? winner.name + ': ' + winner.wins + ' / ' + V1_WIN + ' Siege' : loser.lives > 0 ? loser.name + ': noch ' + loser.lives + ' ❤' : loser.name + ' ist AUSGESCHIEDEN!', 3.5);
             sfx(GL.myTeam === winner ? 'win' : GL.myTeam === loser ? 'lose' : 'kill');
-            GL.phase = 'duelend'; GL.t = 3;
+            GL.phase = 'duelend'; GL.t = 2.2; glBetResolve(winner); if (winner === GL.myTeam && !GL.v1) glStat('glDw');
             if (NET.on && NET.host) netSend({ type: 'glend', w: winner.id, l: loser.id, lv: loser.lives });
         }
         function glStandRows() {
@@ -8857,10 +8956,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             }).join('');
         }
         function glStandings() {
-            GL.phase = 'standings'; GL.t = 5; setArena(null); stopFreecam(); $('dead').style.display = 'none';
+            GL.phase = 'standings'; GL.t = 4; setArena(null); stopFreecam(); $('dead').style.display = 'none';
             $('msg').textContent = ''; $('sub').textContent = ''; G.msgT = 0;
             if (NET.on && NET.host) netSend({ type: 'glstand', st: GL.teams.map(t => ({ id: t.id, lv: t.lives, w: t.wins })) });
-            showOverlay(`<h1>STAGE ${GL.stage}<small>ABGESCHLOSSEN</small></h1><div class="panel" style="min-width:380px;text-align:left"><div class="psub">STANDINGS</div>${glStandRows()}<div class="glnext">NÄCHSTE STAGE IN <b id="glcnt2">5</b> S</div></div>`);
+            showOverlay(`<h1>STAGE ${GL.stage}<small>ABGESCHLOSSEN</small></h1><div class="panel" style="min-width:380px;text-align:left"><div class="psub">STANDINGS</div>${glStandRows()}<div class="glnext">NÄCHSTE STAGE IN <b id="glcnt2">4</b> S</div>${!NET.on || NET.host ? '<button id="glSkip" style="margin-top:8px">Weiter ▶ [Leertaste]</button>' : ''}</div>`); if ($('glSkip')) $('glSkip').onclick = () => { GL.t = 0; };
         }
         function glGameOver(winner) {
             GL.phase = 'over'; gameEnded = true; document.exitPointerLock(); setArena(null); stopFreecam(); $('hud').style.display = 'none';
@@ -8882,6 +8981,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (!aAlive) { glEndDuel(tb); return; }
             if (!bAlive) { glEndDuel(ta); return; }
             G.timer -= glDT; GL.duel.t = G.timer;
+            if (!GL.sd && G.timer <= GL_SD) { GL.sd = { t: 0 }; glBan('☠ PLÖTZLICHER TOD – die Zone schrumpft!'); if (NET.on) netSend({ type: 'glsd' }); }
             if (G.timer <= 0) {
                 const hp = t => t.members.reduce((s, m) => s + (m.alive ? m.health : 0), 0);
                 glEndDuel(hp(ta) >= hp(tb) ? ta : tb);
@@ -8931,7 +9031,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             let ak = m.ar; if (m.arena && isArKey(m.arena.k)) { if (ARENAS[ak] && ARENAS[ak].rows.join() !== m.arena.g.join()) ak = 'puba_net' + Date.now().toString(36); regMap(ak, m.arena); if (!ARENAS[ak]) ak = Object.keys(ARENAS)[0]; }
             if (!ARENAS[ak]) ak = Object.keys(ARENAS)[0];
             setArena(ak); buildArenaRadar(); clearDecoys(); clearNades(); if (player.glA) player.glA.cd = 0; const A = GA.cur; const ta = GL.teams.find(t => t.id === m.a), tb = GL.teams.find(t => t.id === m.b);
-            GL.duel = { teams: [ta, tb], t: GL_TIME, over: false };
+            GL.duel = { teams: [ta, tb], t: GL_TIME, over: false }; GL.ev = m.ev || null;
             $('overlay').style.display = 'none'; stopFreecam(); specTarget = null; $('dead').style.display = 'none';
             player.alive = false;
             const mine = ta === GL.myTeam || tb === GL.myTeam;
@@ -8944,12 +9044,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 player.spdMul = 1 + 0.06 * (P.speed || 0);
                 player.x = sp.x; player.z = sp.z; player.y = 0; player.vx = player.vz = 0; player.vy = 0; player.pitch = 0;
                 player.yaw = Math.atan2((A.ox + A.C * S / 2) - player.x, (A.R * S / 2) - player.z) + Math.PI;
-                player.slot = player.weapons[1] ? 1 : 2; setScoped(false); updateVM();
+                player.slot = player.weapons[1] ? 1 : 2; setScoped(false); updateVM(); glEvApply(player);
                 renderer.domElement.requestPointerLock();
             } else { startFreecam(); }
             if (GL.v1) { GL.v1n = (GL.v1n === undefined ? -1 : GL.v1n) + 1; if (GL.myTeam && GL.myTeam.members.includes(player)) v1Round(player, GL.myTeam); }
             GL.phase = 'duel'; G.state = 'live'; G.timer = GL_TIME; G.bomb.state = 'none'; if (GL.v1) v1Freeze();
-            if (GL.v1) msg('RUNDE ' + (GL.v1n + 1) + ' · KAUFPHASE', ta.name + ' ' + ta.wins + ' : ' + tb.wins + ' ' + tb.name, 3); else msg('DUELL ' + (m.idx + 1) + '/' + m.total, ta.name + ' vs. ' + tb.name, 3); sfx('start');
+            if (GL.v1) msg('RUNDE ' + (GL.v1n + 1) + ' · KAUFPHASE', ta.name + ' ' + ta.wins + ' : ' + tb.wins + ' ' + tb.name, 3); else msg('DUELL ' + (m.idx + 1) + '/' + m.total, ta.name + ' vs. ' + tb.name, 3); sfx('start'); glDuelInit(mine);
         }
 
         // ================= MULTIPLAYER =================
@@ -9412,10 +9512,13 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 } break;
                 case 'glpick': if (NET.host && GL.on) { GL.humanReady.add(m.pid); GL.waitCache = ''; } break;
                 case 'glduel': if (!NET.host) glDuelClient(m); break;
+                case 'glsd': if (!NET.host && GL.on) { GL.sd = { t: 0 }; glBan('☠ PLÖTZLICHER TOD – die Zone schrumpft!'); } break;
+                case 'glsab': if (NET.host && GL.on) glSabDo(m.k, +m.x, +m.z, String(m.by || '?').replace(/[<>]/g, '').slice(0, 16)); break;
+                case 'glsabx': if (!NET.host && GL.on && GL_SAB[m.k]) { if (m.k === 'heal' && player.alive && GL.duel && GL.duel.teams.some(t => t.members.includes(player))) player.health = Math.min(player.maxHP || 100, player.health + 25); glBan('😈 ' + String(m.by || '?').slice(0, 16) + ': ' + GL_SAB[m.k][0] + ' ' + GL_SAB[m.k][1] + '!'); } break;
                 case 'glend': if (!NET.host && GL.duel) {
                     const wt = GL.teams.find(t => t.id === m.w), lt = GL.teams.find(t => t.id === m.l);
                     if (wt && lt) {
-                        wt.wins++; lt.lives = m.lv; GL.duel.over = true; GL.phase = 'duelend';
+                        wt.wins++; lt.lives = m.lv; GL.duel.over = true; GL.phase = 'duelend'; glBetResolve(wt); if (wt === GL.myTeam && !GL.v1) glStat('glDw');
                         msg(wt.name + ' gewinnt!', GL.v1 ? wt.name + ': ' + wt.wins + ' / ' + V1_WIN + ' Siege' : lt.lives > 0 ? lt.name + ': noch ' + lt.lives + ' ❤' : lt.name + ' ist AUSGESCHIEDEN!', 3.5);
                         sfx(GL.myTeam === wt ? 'win' : GL.myTeam === lt ? 'lose' : 'kill');
                     }
@@ -9588,7 +9691,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (IS_TOUCH) { const want = started && !gameEnded ? 'block' : 'none'; if ($('touch').style.display !== want) $('touch').style.display = want; $('touch').classList.toggle('dead', started && !gameEnded && !player.alive && !document.body.classList.contains('edit')); }
             if (started && (!paused || NET.on) && !gameEnded) { // online läuft das Spiel im Pausemenü weiter (nur eigene Eingaben ruhen)
                 if (paused) { for (const k in keys) keys[k] = false; mouseDown = false; clickQueued = false; }
-                if (AL.on) alTick(dt); if (DH.on) dhTick(dt); else if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); }
+                if (AL.on) alTick(dt); if (DH.on) dhTick(dt); else if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); glFxTick(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
                 updatePlayer(dt); if (IS_TOUCH && OPT.aim !== false) aimAssist(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
                 separate(); updateFX(dt); updateMates(); animChars(dt); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();

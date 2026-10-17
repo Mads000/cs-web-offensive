@@ -308,7 +308,7 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   ws.rk = L; return true;
  }
  function joined(L) { const c = connected(L); if (!L.started) for (const cl of roomOf(L).clients) tx(cl, { type: 'rkst', n: c.size, N: L.keys.length }); }
- const HOST_ONLY = new Set(['start', 'glstart', 'roster', 'round', 'end', 'over', 'snap', 'glphase', 'glduel', 'glend', 'glstand', 'glover', 'dhstart', 'dhend', 'dhs', 'dhev', 'dhbh', 'dhdie', 'dhhit']);
+ const HOST_ONLY = new Set(['start', 'glstart', 'roster', 'round', 'end', 'over', 'snap', 'glphase', 'glduel', 'glend', 'glstand', 'glover', 'glsd', 'glsabx', 'dhstart', 'dhend', 'dhs', 'dhev', 'dhbh', 'dhdie', 'dhhit']);
  // Nachricht im Ranked-Raum: false = verwerfen, String = (umgeschriebene) Nachricht weiterleiten
  function msg(ws, r, m, raw) {
   const L = ws.rk; if (!L || L.st !== 'live' || typeof m.type !== 'string') return raw;
