@@ -12,7 +12,7 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.
 const crypto = require('crypto');
 const PUBLISH_CODE = process.env.PUBLISH_CODE || 'baumeister42'; // Code zum Veröffentlichen von Community-Karten, Shop-Preisen & Ranked-Map-Pool – am besten als Umgebungsvariable PUBLISH_CODE setzen
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json'), LB_FILE = path.join(DATA_DIR, 'leaderboard.json'), SKIN_FILE = path.join(DATA_DIR, 'skins.json'), PRICE_FILE = path.join(DATA_DIR, 'prices.json'), RANKED_FILE = path.join(DATA_DIR, 'ranked.json');
-const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'botrk'];
+const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'lang', 'fit', 'fitown', 'botrk']; // muss zu SYNC_KEYS im Spiel passen (sonst gehen Outfit, gekaufte Kleidung & Sprache beim Abgleich verloren)
 const GIST_ID = process.env.GIST_ID, GIST_TOKEN = process.env.GIST_TOKEN, GIST_FILE = 'users.json';
 const GH = { Authorization: 'Bearer ' + GIST_TOKEN, Accept: 'application/vnd.github+json', 'User-Agent': 'cs-web-offensive' };
 let CSK = {}, PRICES = {}; // PRICES: { r: {Seltenheit: Preis}, s: {SkinId: Preis} } – vom Shop-Preiseditor // Community-Skins: id → { id, w, n, c, c2, c3, p, r, by, sold, t }
