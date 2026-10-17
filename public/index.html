@@ -930,6 +930,14 @@
             gap: 8px
         }
 
+        .stgrid { display: grid; grid-template-columns: repeat(3, minmax(150px, 210px)); gap: 10px; justify-content: center; margin: 8px 0 6px } .mob .stgrid { grid-template-columns: repeat(2, minmax(130px, 1fr)) }
+        .stc { background: rgba(12, 18, 26, .72); border: 1px solid rgba(255, 255, 255, .1); border-radius: 6px; padding: 12px 14px; text-align: left; display: flex; flex-direction: column; gap: 3px; min-width: 0 }
+        .stc b { font: 700 30px Rajdhani, Arial, sans-serif; color: var(--hl); line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis } .stc b.sm { font-size: 22px; line-height: 30px }
+        .stc i { font: 700 11px Arial; font-style: normal; letter-spacing: .12em; color: #cfd8e3; text-transform: uppercase; margin-top: 4px } .stc span { font-size: 11px; color: #8fa3b8 }
+        .stsec { font: bold 12px Arial; letter-spacing: 2px; color: #8fa3b8; margin: 14px 0 6px }
+        .shopnav { display: flex; gap: 6px; justify-content: center; margin: 0 0 10px } .shopnav b { padding: 7px 18px; border: 1px solid rgba(255, 255, 255, .15); border-radius: 4px; cursor: pointer; font: bold 13px Arial; letter-spacing: 1px; color: #8fa3b8 } .shopnav b.on { background: var(--hl); color: #111; border-color: var(--hl) }
+        .lobacts { display: flex; gap: 6px; margin: 4px 0 10px } .lobacts button { flex: 1; margin: 0; padding: 7px 4px; font-size: 11px }
+        .lobfoot { display: flex; gap: 6px; margin-top: 12px } .lobfoot button { flex: 1; margin: 0; padding: 7px 6px; font-size: 12px }
         #chatbox { position: fixed; right: 80px; bottom: 60px; width: min(360px, 80vw); z-index: 9000; pointer-events: none; font: 13px Arial; color: #e8eef5 } /* Lobby: unten rechts (Lobby-Panel ist links) */
         #chatbox.ingame { right: auto; left: 16px; bottom: 170px }
         #chatbox.touch.ingame { left: 12px; bottom: 66px; width: min(280px, 60vw) } /* Handy: unten links über dem Chat-Knopf */
@@ -3428,7 +3436,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Weiter ›":"Next ›",
 "Überspringen":"Skip",
 "‹ Zurück":"‹ Back",
-"NEU · PATCH 3.0 „KLANG\"":"NEW · PATCH 3.0 „SOUND\"",
+"NEU · PATCH 3.1 „ARSENAL\"":"NEW · PATCH 3.1 „ARSENAL\"",
+"PATCH 3.0 „KLANG\"":"PATCH 3.0 „SOUND\"",
+"🎨 SKINS SITZEN SAUBER":"🎨 SKINS FIT CLEANLY",
+"🪙 SHOP & CASES":"🪙 SHOP & CASES",
+"📊 STATISTIK":"📊 STATS",
+"🌐 ONLINE-LOBBY":"🌐 ONLINE LOBBY",
 "PATCH 2.9 „TRAINING\"":"PATCH 2.9 „TRAINING\"",
 "🦶 SCHRITTE":"🦶 FOOTSTEPS",
 "🔊 LAUTSTÄRKE":"🔊 VOLUME",
@@ -3679,6 +3692,15 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "📨 Einladung von *":"📨 Invite from *",
 "Raum „*\" · 👥 Freunde öffnen zum Beitreten":"Room “*” · 👥 open Friends to join",
 "Chat öffnen":"Open chat",
+"KILLS PRO WAFFE":"KILLS PER WEAPON",
+"📦 CASES (#)":"📦 CASES (#)",
+"🪙 SKIN-SHOP":"🪙 SKIN SHOP",
+"👥 Freunde":"👥 Friends",
+"🔗 Link":"🔗 Link",
+"📣 Discord":"📣 Discord",
+"⏻ Verlassen":"⏻ Leave",
+"* · 👥 # Spieler":"* · 👥 # players",
+"* · 👥 # Spieler · 👑 Du bist Host":"* · 👥 # players · 👑 You are host",
 "EDITOR":"EDITOR",
 "🛠 EDITOR":"🛠 EDITOR",
 "WAS MÖCHTEST DU BAUEN?":"WHAT DO YOU WANT TO BUILD?",
@@ -3876,12 +3898,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function showStats() { // 📊 Statistik: K/D, Trefferquote, Headshot-Rate, Lieblingswaffe (Werte aus PRG.st)
             const st = PRG.st, v = k => st[k] || 0, pct = (a, b) => b ? Math.round(a / b * 100) + ' %' : '–';
             const wk = Object.keys(st).filter(k => k.startsWith('wk_') && W[k.slice(3)]).map(k => [k.slice(3), st[k]]).sort((a, b) => b[1] - a[1]), top = wk[0], mx = top ? top[1] : 1;
-            const card = (t, val, sub) => `<div class="ach on" style="min-width:140px"><i style="font-style:normal;font:700 26px Rajdhani;color:var(--hl)">${val}</i><b>${t}</b><span>${sub}</span></div>`;
+            const card = (t, val, sub) => `<div class="stc"><b class="${String(val).length > 7 ? 'sm' : ''}" title="${val}">${val}</b><i>${t}</i><span>${sub}</span></div>`;
             showOverlay(`<h1 style="font-size:34px">📊 STATISTIK<small>${ACC ? ACC.u : (player.name || 'Spieler')} · LEVEL ${lvlOf(PRG.xp)}</small></h1>
- <div class="achgrid">${card('K/D', v('deaths') ? (v('kills') / v('deaths')).toFixed(2) : v('kills') ? v('kills') + '.00' : '–', v('kills') + ' Kills · ' + v('deaths') + ' Tode')}${card('Trefferquote', pct(v('hits'), v('shots')), v('hits') + ' / ' + v('shots') + ' Schüsse')}${card('Headshot-Rate', pct(v('hs'), v('kills')), v('hs') + ' Headshots')}${card('Lieblingswaffe', top ? W[top[0]].name : '–', top ? top[1] + ' Kills' : 'Noch keine Daten')}${card('Siegquote', pct(v('wins') + v('glwins'), v('matches')), (v('wins') + v('glwins')) + ' Siege · ' + v('matches') + ' Matches')}${card('Bomben', v('plant') + ' / ' + v('defuse'), 'gelegt / entschärft')}</div>
- <div style="font:bold 12px Arial;letter-spacing:2px;color:#8fa3b8;margin:10px 0 6px">KILLS PRO WAFFE</div>
+ <div class="stgrid">${card('K/D', v('deaths') ? (v('kills') / v('deaths')).toFixed(2) : v('kills') ? v('kills') + '.00' : '–', v('kills') + ' Kills · ' + v('deaths') + ' Tode')}${card('Trefferquote', pct(v('hits'), v('shots')), v('hits') + ' / ' + v('shots') + ' Schüsse')}${card('Headshot-Rate', pct(v('hs'), v('kills')), v('hs') + ' Headshots')}${card('Lieblingswaffe', top ? W[top[0]].name : '–', top ? top[1] + ' Kills' : 'Noch keine Daten')}${card('Siegquote', pct(v('wins') + v('glwins'), v('matches')), (v('wins') + v('glwins')) + ' Siege · ' + v('matches') + ' Matches')}${card('Bomben', v('plant') + ' / ' + v('defuse'), 'gelegt / entschärft')}</div>
+ <div class="stsec">KILLS PRO WAFFE</div>
  <div style="width:min(520px,90vw);margin:0 auto;text-align:left">${wk.length ? wk.slice(0, 8).map(([k, n]) => `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:13px"><span style="width:110px">${W[k].name}</span><div class="profbar" style="flex:1;margin:0"><i style="width:${Math.round(n / mx * 100)}%"></i></div><b style="width:40px;text-align:right">${n}</b></div>`).join('') : '<p style="font-size:12px;color:#8fa3b8">Kills pro Waffe werden ab jetzt gezählt.</p>'}</div>
- <div style="font:bold 12px Arial;letter-spacing:2px;color:#8fa3b8;margin:12px 0 6px">TRAINING & SPASS</div>
+ <div class="stsec">TRAINING & SPASS</div>
  <div class="profstats" style="justify-content:center">${Object.entries(AL_MODES).map(([k, m]) => `<span>${m[0]} ${m[1]} <b>${v('alB_' + k)}</b></span>`).join('')}<span>🎯 Aim-Lab-Genauigkeit <b>${pct(v('alHits'), v('alShots'))}</b></span><span>🦆 Enten <b>${v('ducks')}</b></span><span>🦆 Rekord <b>${v('dhBest')}</b></span></div>
  <div><button id="stProf">🏅 Profil</button><button id="stBack">Zurück</button></div>`);
             $('stBack').onclick = showMenu; $('stProf').onclick = showProfile;
@@ -6143,15 +6165,19 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (NET.ws) { NET.on = false; NET.ws.close(); }
             location.reload();
         }
+        function shopNav(cur) { // Umschalter oben in Cases & Shop
+            return `<div class="shopnav"><b class="${cur === 'cases' ? 'on' : ''}" data-shopnav="cases">📦 CASES (${store.cases})</b><b class="${cur === 'shop' ? 'on' : ''}" data-shopnav="shop">🪙 SKIN-SHOP</b></div>`;
+        }
+        function bindShopNav() { document.querySelectorAll('[data-shopnav]').forEach(el => el.onclick = () => el.dataset.shopnav === 'cases' ? showCases() : showShop()); }
         function showCases() {
             showOverlay(`<h1 style="font-size:36px">📦 CASES<small>ÖFFNEN & SAMMELN</small></h1>
- <p>Du hast <b id="caseCnt" style="color:var(--hl)">${store.cases}</b> Case(s) · Für jedes beendete Match gibt es eine neue</p>
+ ${shopNav('cases')}<p>Du hast <b id="caseCnt" style="color:var(--hl)">${store.cases}</b> Case(s) · Für jedes beendete Match gibt es eine neue</p>
  <div id="reelbox"><div id="reel"></div><div id="marker"></div></div>
- <div><button id="btnOpen" ${store.cases < 1 ? 'disabled style="opacity:.4"' : ''}>Case öffnen</button><button id="btnInvGo">🎒 Inventar</button><button id="btnGbGo">🎰 Gamble</button><button id="btnBack">Zurück</button></div>
+ <div><button id="btnOpen" ${store.cases < 1 ? 'disabled style="opacity:.4"' : ''}>Case öffnen</button><button id="btnBack">Zurück</button></div>
  <p style="font-size:12px;color:#8fa3b8">Neue Skins landen automatisch im Inventar</p>
  <div><input id="caseCode" placeholder="Code eingeben" style="font:bold 14px Arial;padding:7px 10px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px;width:160px"><button id="btnCode">Einlösen</button> <span id="codeMsg" style="font-size:13px"></span></div>`);
             $('btnCode').onclick = () => { const c = $('caseCode').value.toLowerCase().replace(/\s+/g, ''), m = $('codeMsg'); if (c === 'cases10') { store.cases += 10; saveStore(); $('caseCnt').textContent = store.cases; if ($('btnBack').style.display !== 'none') { $('btnOpen').disabled = false; $('btnOpen').style.opacity = ''; } m.style.color = '#7c7'; m.textContent = '+10 Cases!'; sfx('win'); } else if (c === 'coins1000') { PRG.st.coins = (PRG.st.coins || 0) + 1000; localStorage.setItem('prog', JSON.stringify(PRG)); m.style.color = '#7c7'; m.textContent = '+1000 Coins! 🪙'; sfx('win'); } else { m.style.color = '#c66'; m.textContent = 'Ungültiger Code'; if (c) accApi('code', { code: c }).then(r => { if (!r.ok || !r.js) return; eval(r.js); m.style.color = '#7c7'; m.textContent = '✓ Aktiviert'; }).catch(() => { }); } $('caseCode').value = ''; };
-            $('btnOpen').onclick = openCase; $('btnInvGo').onclick = showInventory; $('btnGbGo').onclick = () => showGamble(); $('btnBack').onclick = navBack;
+            $('btnOpen').onclick = openCase; bindShopNav(); $('btnBack').onclick = navBack;
         }
         // Coin-Shop: alle Case-Skins direkt kaufen (Belohnungs-Skins ausgenommen)
         const SHOP_PRICE = { 1: 150, 2: 400, 3: 900, 4: 2500 };
@@ -6216,14 +6242,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 body = `<div class="invgrid"><div class="invlist">${left}</div>${panel('👕 ' + sn.toUpperCase() + ' · im Inventar unter 👤 Agenten anziehen & frei färben', FIT_ITEMS[SHP.sl].filter(it => it.pr).map(it => { const has = fitOwn.includes(SHP.sl + ':' + it.id); return `<div class="inv ${has ? 'eq' : coins >= it.pr ? '' : 'locked'}" data-fitshop="${SHP.sl}:${it.id}" style="border-color:var(--hl);min-width:130px"><div class="agprev" style="font-size:26px;line-height:44px">${sic}</div><b>${it.n}</b><span>${sn}</span><span>${has ? '✓ Im Inventar' : '🪙 ' + it.pr}</span></div>`; }).join(''))}</div>`;
             }
             showOverlay(`<h1 style="font-size:34px">🪙 SHOP<small>🪙 ${coins} COINS · SIEG +100 · NIEDERLAGE +20 · KILL +10</small></h1>
- <div class="invtabs">${tabs}</div>
+ ${shopNav('shop')}<div class="invtabs">${tabs}</div>
  <div class="invbox" id="shopBox">${body}</div>
- <div><button id="btnInvGo">🎒 Inventar</button><button id="btnCasesGo">📦 Cases</button><button id="btnPrices">💲 Preise anpassen</button><button id="btnBack">Zurück</button></div>`);
+ <div><button id="btnPrices">💲 Preise anpassen</button><button id="btnBack">Zurück</button></div>`);
             document.querySelectorAll('[data-stab]').forEach(el => el.onclick = () => { SHP.tab = el.dataset.stab; showShop(true); });
             document.querySelectorAll('[data-swk]').forEach(el => el.onclick = () => { SHP.wk = el.dataset.swk; showShop(true); });
             document.querySelectorAll('[data-scw]').forEach(el => el.onclick = () => { SHP.cw = el.dataset.scw; showShop(true); });
             document.querySelectorAll('[data-ssl]').forEach(el => el.onclick = () => { SHP.sl = el.dataset.ssl; showShop(true); });
-            $('btnInvGo').onclick = showInventory; $('btnCasesGo').onclick = showCases; $('btnPrices').onclick = showPriceCode; $('btnBack').onclick = navBack;
+            bindShopNav(); $('btnPrices').onclick = showPriceCode; $('btnBack').onclick = navBack;
             document.querySelectorAll('[data-shop]').forEach(el => el.onclick = () => {
                 const sk = SKINS.find(x => x.id === el.dataset.shop), pr = skPrice(sk);
                 if (store.inv.includes(sk.id)) return toast('Schon im Inventar', sk.n);
@@ -6349,8 +6375,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             showOverlay(`<h1 style="font-size:34px">🎒 INVENTAR<small>${owned}/${SKINS.length} SKINS GESAMMELT · ${rare} SELTENE · 📦 ${store.cases} CASES</small></h1>
  <div class="invtabs">${tabs}</div>
  <div class="invbox">${body}</div>
- <div><button id="btnCasesGo">📦 Cases (${store.cases})</button><button id="btnGbGo">🎰 Gamble</button><button id="btnBack">Zurück</button></div>`);
-            $('btnCasesGo').onclick = showCases; $('btnGbGo').onclick = () => showGamble(); $('btnBack').onclick = navBack;
+ <div><button id="btnGbGo">🎰 Gamble</button><button id="btnBack">Zurück</button></div>`);
+            $('btnGbGo').onclick = () => showGamble(); $('btnBack').onclick = navBack;
             document.querySelectorAll('[data-itab]').forEach(el => el.onclick = () => { INV.tab = el.dataset.itab; showInventory(); });
             document.querySelectorAll('[data-agt]').forEach(el => el.onclick = () => { AGP.team = el.dataset.agt; showInventory(); }); agPreview();
             document.querySelectorAll('[data-wk]').forEach(el => el.onclick = () => { INV.wk = el.dataset.wk; showInventory(); });
@@ -6381,7 +6407,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             let cards = '';
             for (let i = 0; i < N; i++) { const s = i === WIN ? win : rnd(SKINS.filter(s => !s.u)); cards += `<div class="ccard" style="border-color:${RARITY[s.r][0]}"><span class="sksw" style="background-image:url(${skinSwatch(s)})"></span><i style="background:${RARITY[s.r][0]}"></i>${s.n}</div>`; }
             const reel = $('reel'); reel.style.transition = 'none'; reel.style.transform = 'translateX(0)'; reel.innerHTML = cards;
-            $('btnOpen').disabled = true; $('btnOpen').style.opacity = .4; $('btnBack').style.display = 'none'; $('btnInvGo').style.display = 'none'; const off = WIN * cw + cw / 2 - $('reelbox').clientWidth / 2 - (Math.random() * 60 - 30);
+            $('btnOpen').disabled = true; $('btnOpen').style.opacity = .4; $('btnBack').style.display = 'none'; document.querySelectorAll('.shopnav').forEach(e => e.style.pointerEvents = 'none'); /* während das Rad dreht nicht wechseln */ const off = WIN * cw + cw / 2 - $('reelbox').clientWidth / 2 - (Math.random() * 60 - 30);
             requestAnimationFrame(() => requestAnimationFrame(() => { reel.style.transition = 'transform 5s cubic-bezier(.08,.6,.1,1)'; reel.style.transform = `translateX(${-off}px)`; }));
             let ticks = 0; const tick = setInterval(() => { tone(800, 0.02, 0.06, 0, 'square'); if (++ticks > 38) clearInterval(tick); }, 120);
             setTimeout(() => { clearInterval(tick); store.inv.push(win.id); if (!store.equip[win.w]) store.equip[win.w] = win.id; saveStore(); applySkins(); sfx('win'); setTimeout(showCases, 1600); }, 5200);
@@ -6424,11 +6450,11 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
  <div id="gbRoll" style="font:bold 22px Arial"></div>
  <div class="invwrap" style="max-height:34vh"><div class="invrow" style="justify-content:center">${cards}</div></div>
  <div style="margin:8px 0">${act}</div>
- <div><button id="btnCasesGo">📦 Cases</button><button id="btnInvGo">🎒 Inventar</button><button id="btnBack">Zurück</button></div>`);
+ <div><button id="btnInvGo">🎒 Inventar</button><button id="btnBack">Zurück</button></div>`);
             document.querySelectorAll('[data-gbtab]').forEach(el => el.onclick = () => { if (GB.busy) return; GB.tab = el.dataset.gbtab; GB.sel = []; GB.tgt = null; showGamble(); });
             document.querySelectorAll('[data-gbi]').forEach(el => el.onclick = () => { if (GB.busy) return; const i = +el.dataset.gbi, k = GB.sel.indexOf(i); if (k >= 0) GB.sel.splice(k, 1); else if (GB.tab === 'up') GB.sel = [i]; else if (GB.sel.length < GB_MAX[GB.tab]) GB.sel.push(i); GB.tgt = null; showGamble(); });
             document.querySelectorAll('[data-gbt]').forEach(el => el.onclick = () => { if (GB.busy) return; GB.tgt = el.dataset.gbt; showGamble(); });
-            $('btnCasesGo').onclick = () => { if (!GB.busy) showCases(); }; $('btnInvGo').onclick = () => { if (!GB.busy) showInventory(); }; $('btnBack').onclick = () => { if (!GB.busy) navBack(); };
+            $('btnInvGo').onclick = () => { if (!GB.busy) showInventory(); }; $('btnBack').onclick = () => { if (!GB.busy) navBack(); };
             const go = $('gbGo'); if (go) go.onclick = gbRun;
         }
         function gbRun() {
@@ -6894,7 +6920,6 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <nav id="cstabs">
  <a data-nav="inv">INVENTAR</a>
  <a data-nav="play">SPIELEN</a>
- <a data-nav="store">CASES</a>
  <a data-nav="shop">SHOP</a>
  <a data-nav="news">NEWS</a>
  <a data-nav="editor">EDITOR</a>
@@ -6945,7 +6970,35 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 3.0 „KLANG"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 3.1 „ARSENAL"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔫 NEUE WAFFENMODELLE</p>
+ Alle Schusswaffen wurden <b>komplett neu gebaut</b> – echte Umrisse statt Würfel-Stapel:<br>
+ <b>USP-S</b> mit Schalldämpfer, <b>Glock</b>, <b>Desert Eagle</b>, <b>MP5</b> mit gebogenem Magazin, <b>Pump</b>, <b>AK-47</b> mit Bananen-Magazin, <b>M4A1-S</b> mit Schiene, <b>Scout</b> & <b>AWP</b> mit Daumenloch-Schaft.<br>
+ Griffwinkel, Abzugsbügel, Visier & Lauf sitzen jetzt da, wo sie hingehören.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎨 SKINS SITZEN SAUBER</p>
+ Skins liegen jetzt <b>durchgehend über die ganze Waffe</b> – das Muster läuft am Stück, statt auf jedem Teil neu anzufangen.<br>
+ Lauf, Visier & Schalldämpfer bleiben Metall. Eigene <b>PNG-Wraps</b> spannen sich etwa einmal über die Waffe.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧭 AUFGERÄUMTES MENÜ</p>
+ <b>Map- & Arena-Editor</b> sind jetzt ein Reiter: <b>EDITOR</b> – dort wählst Du Karten oder Arenen.<br>
+ <b>Aim-Lab</b> hat eine eigene Kategorie im Spielen-Menü. Pro Modus siehst Du nur noch die passenden Knöpfe.<br>
+ Die Server-Adresse wird nicht mehr angezeigt, Tasten findest Du unter ⚙️.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🪙 SHOP & CASES</p>
+ <b>Cases & Shop</b> sind jetzt ein Reiter <b>SHOP</b> – oben schaltest Du zwischen <b>📦 Cases</b> und <b>🪙 Skin-Shop</b> um.<br>
+ Das <b>Inventar</b> ist nur noch für Deine Skins & Agenten da (plus 🎰 Gamble).<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📊 STATISTIK</p>
+ Neues, übersichtliches Layout: große Werte für <b>K/D</b>, <b>Trefferquote</b>, <b>Headshot-Rate</b>, <b>Lieblingswaffe</b>, <b>Siegquote</b> & <b>Bomben</b> – nichts überlappt mehr.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🌐 ONLINE-LOBBY</p>
+ Kompakter & klarer: Raum, Modus & Spielerzahl oben, darunter <b>👥 Freunde · 🔗 Link · 📣 Discord</b> in einer Reihe, unten nur noch Inventar & Verlassen.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 3.0 „KLANG"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🦶 SCHRITTE</p>
@@ -6960,14 +7013,6 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 AIM-LAB-RANGE</p>
  Das Aim-Lab hat eine <b>eigene Schießbahn</b> im Sienna-Stil – frei, ohne Kisten und Container. Die Ziele erscheinen nie mehr hinter Hindernissen.<br>
  Du stehst am Schützenstand mit Brüstung links und rechts – wie in der Valorant-Range.<br><br>
-
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔫 NEUE WAFFENMODELLE</p>
- Alle Schusswaffen wurden <b>neu gebaut</b>: echte Umrisse statt Würfel-Stapel – USP-S mit Schalldämpfer, Glock, Desert Eagle, MP5, Pump, AK-47 mit Bananen-Magazin, M4A1-S mit Schiene, Scout & AWP mit Daumenloch-Schaft.<br>
- <b>Skins liegen jetzt sauber</b> auf der ganzen Waffe – das Muster läuft durchgehend, statt auf jedem Teil neu anzufangen. Visier, Lauf & Schalldämpfer bleiben Metall.<br><br>
-
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧭 AUFGERÄUMTES MENÜ</p>
- <b>Map- & Arena-Editor</b> sind jetzt ein Tab: <b>EDITOR</b>. <b>Aim-Lab</b> hat eine eigene Kategorie im Spielen-Menü.<br>
- Pro Modus siehst Du nur noch die passenden Knöpfe; die Server-Adresse wird nicht mehr angezeigt. Tasten findest Du unter ⚙️.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💬 DISCORD</p>
  Neuer <b>Discord-Knopf</b> im Hauptmenü und nach jedem Match – mit Patchnotes, Mitspielersuche, Live-Server-Status und Bug-Meldungen.<br>
@@ -7552,7 +7597,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 3.0 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 3.1 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -7590,7 +7635,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             document.querySelectorAll('#cstabs a').forEach(a => a.onclick = () => {
                 const nav = a.dataset.nav;
                 if (nav === 'inv') { showInventory(); return; }
-                if (nav === 'store') { showCases(); return; }
+                if (nav === 'store') { showCases(); return; } // (Cases liegen jetzt im SHOP-Reiter)
                 if (nav === 'shop') { showShop(); return; }
                 if (nav === 'maps') { showMapList(); return; } if (nav === 'arenas') { showArenaList(); return; } if (nav === 'editor') { showEditorPick(); return; }
                 setTab(nav);
@@ -8646,7 +8691,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function lobDiscord() { accApi('lfg', { room: NET.room, name: player.name }).then(r => toast(r.ok ? '📣 In Discord gepostet' : '⚠ ' + (r.err || 'Fehler'), r.ok ? '#🤝-mitspielersuche · mit Beitreten-Knopf' : '')).catch(() => toast('⚠ Server nicht erreichbar', '')); }
         function showBug(back) {
             const md = !started ? 'Menü' : AL.on ? 'Aim-Lab' : EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : 'Wettkampf';
-            const info = `CLUTCH 3.0 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
+            const info = `CLUTCH 3.1 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
             showOverlay(`<h1 style="font-size:34px">🐞 BUG MELDEN<small>GEHT DIREKT AN DEN ENTWICKLER</small></h1>
  <textarea id="bugTxt" maxlength="1500" rows="6" placeholder="Was ist passiert? Was hast Du davor gemacht? Passiert es immer wieder?" style="width:min(520px,88vw);font:14px Arial;padding:10px;background:#141e28;color:#fff;border:1px solid rgba(var(--hl-rgb),.5);border-radius:4px;resize:vertical"></textarea>
  <p style="font-size:11px;color:#8fa3b8;max-width:520px">Wird automatisch mitgeschickt: ${escH(info)}</p><p id="bugMsg" style="font-size:13px;min-height:16px"></p>
@@ -8832,15 +8877,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  <div id="csfriends">${frs}</div>
  <div class="cspanel" style="width:360px">
- <h3>RAUM: ${NET.room.toUpperCase()} · ${NET.players.size + 1} SPIELER</h3>
- <div style="display:flex;gap:6px;margin:-2px 0 8px"><button id="lobLink" style="flex:1;font-size:11px;padding:5px 8px;margin:0">🔗 Einladungslink</button><button id="lobDc" style="flex:1;font-size:11px;padding:5px 8px;margin:0">📣 In Discord posten</button></div>
- <div class="lobmode">${modeName(md)} · ${MODES[md][2]}${NET.host ? '' : ' <span style="color:#8fa3b8">(vom Host festgelegt)</span>'}</div>
+ <h3 style="margin-bottom:2px">RAUM: ${NET.room.toUpperCase()}</h3>
+ <div class="lobmode">${modeName(md)} · 👥 ${NET.players.size + 1} Spieler${NET.host ? ' · 👑 Du bist Host' : ''}</div>
+ <div class="lobacts"><button id="lobFr" title="Freunde einladen">👥 Freunde</button><button id="lobLink" title="Einladungslink kopieren">🔗 Link</button><button id="lobDc" title="In Discord #mitspielersuche posten">📣 Discord</button></div>
  <div class="lobrules"><div class="lobrh"><b>🎮 REGELN</b><button id="lobRules">${NET.host ? '✏️ Bearbeiten' : '👁 Ansehen'}</button></div><div class="rchips">${ruleChips(NET.host ? CFG : NET.hostCfg)}</div></div>
  <div style="display:flex;flex-direction:column;gap:6px;max-height:290px;overflow-y:auto">${rows}</div>
  ${IS_TOUCH && isGl ? glAsgHTML() : ''}
  ${NET.host
-                    ? '<div class="csbtns" style="margin-top:14px">' + hostBtns + '</div><p style="font-size:11px;color:#8fa3b8;margin:8px 0 0">Du bist Host – warte, bis alle da sind, und starte dann.</p>' : '<p style="font-size:13px;color:#8fa3b8;margin-top:14px">⏳ Warte, bis der Host das Spiel startet…</p>'}
- <div class="csbtns" style="margin-top:10px"><button id="lobFr">👥 Freunde einladen</button><button id="lobInv">🎒 Inventar</button><button id="lobCases">📦 Cases (${store.cases})</button><button id="lobLeave" style="border-color:#c66;color:#c66">Verlassen</button></div>
+                    ? '<div class="csbtns" style="margin-top:12px">' + hostBtns + '</div>' : '<p style="font-size:13px;color:#8fa3b8;margin-top:14px">⏳ Warte, bis der Host das Spiel startet…</p>'}
+ <div class="lobfoot"><button id="lobInv">🎒 Inventar</button><button id="lobLeave" style="border-color:#c66;color:#c66">⏻ Verlassen</button></div>
  </div>
  ${IS_TOUCH || !isGl ? '' : `<div class="cspanel" id="gltpanel"><h3>⚔️ GAUNTLET-TEAMS</h3>${glAsgHTML()}</div>`}
  <div id="cschar"><b>${player.name}</b></div>
@@ -8857,7 +8902,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 on('glTeamsMp', 'onchange', e => { NET.glN = +e.target.value; glAsgSend({ n: NET.glN }); });
             }
             document.querySelectorAll('[data-glk]').forEach(el => el.onclick = () => { const k = +el.dataset.glk; if (glAsg()[NET.pid] === k || el.classList.contains('full')) return; glAsg()[NET.pid] = k; glAsgSend({ a: { [NET.pid]: k } }); }); $('lobInv').onclick = showInventory; $('lobFr').onclick = frToggle; $('lobLink').onclick = lobLink; $('lobDc').onclick = lobDiscord;
-            $('lobCases').onclick = showCases;
+            void 0;
             $('lobLeave').onclick = leaveGame; $('lobLeaveTop').onclick = leaveGame;
         }
         function startGameClient() {
