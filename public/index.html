@@ -936,6 +936,9 @@
         .stc i { font: 700 11px Arial; font-style: normal; letter-spacing: .12em; color: #cfd8e3; text-transform: uppercase; margin-top: 4px } .stc span { font-size: 11px; color: #8fa3b8 }
         .stsec { font: bold 12px Arial; letter-spacing: 2px; color: #8fa3b8; margin: 14px 0 6px }
         .shopnav { display: flex; gap: 6px; justify-content: center; margin: 0 0 10px } .shopnav b { padding: 7px 18px; border: 1px solid rgba(255, 255, 255, .15); border-radius: 4px; cursor: pointer; font: bold 13px Arial; letter-spacing: 1px; color: #8fa3b8 } .shopnav b.on { background: var(--hl); color: #111; border-color: var(--hl) }
+        #lobwrap { position: absolute; left: 50%; top: 84px; transform: translateX(-50%); width: min(640px, calc(100vw - 150px)); max-height: calc(100vh - 170px); overflow-y: auto; display: flex; flex-direction: column; gap: 14px; zoom: var(--ui, 1) } /* Lobby mittig & breit, Gauntlet-Teams darunter */
+        #lobwrap .cspanel { position: static; zoom: 1; width: auto; max-width: none; max-height: none; overflow: visible; padding: 18px 24px } #lobwrap #gltpanel { width: auto; left: auto } #lobwrap .lobacts button { min-width: 0 }
+        .mob #lobwrap { top: 62px; width: calc(100vw - 24px); max-height: calc(100vh - 90px) }
         .lobacts { display: flex; gap: 6px; margin: 4px 0 10px } .lobacts button { flex: 1; margin: 0; padding: 7px 4px; font-size: 11px }
         .lobfoot { display: flex; gap: 6px; margin-top: 12px } .lobfoot button { flex: 1; margin: 0; padding: 7px 6px; font-size: 12px }
         #chatbox { position: fixed; right: 80px; bottom: 60px; width: min(360px, 80vw); z-index: 9000; pointer-events: none; font: 13px Arial; color: #e8eef5 } /* Lobby: unten rechts (Lobby-Panel ist links) */
@@ -8876,7 +8879,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="ctprof"><b>${player.name}</b><span>👤</span></div>
  </div>
  <div id="csfriends">${frs}</div>
- <div class="cspanel" style="width:360px">
+ <div id="lobwrap"><div class="cspanel" id="lobpanel">
  <h3 style="margin-bottom:2px">RAUM: ${NET.room.toUpperCase()}</h3>
  <div class="lobmode">${modeName(md)} · 👥 ${NET.players.size + 1} Spieler${NET.host ? ' · 👑 Du bist Host' : ''}</div>
  <div class="lobacts"><button id="lobFr" title="Freunde einladen">👥 Freunde</button><button id="lobLink" title="Einladungslink kopieren">🔗 Link</button><button id="lobDc" title="In Discord #mitspielersuche posten">📣 Discord</button></div>
@@ -8887,7 +8890,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     ? '<div class="csbtns" style="margin-top:12px">' + hostBtns + '</div>' : '<p style="font-size:13px;color:#8fa3b8;margin-top:14px">⏳ Warte, bis der Host das Spiel startet…</p>'}
  <div class="lobfoot"><button id="lobInv">🎒 Inventar</button><button id="lobLeave" style="border-color:#c66;color:#c66">⏻ Verlassen</button></div>
  </div>
- ${IS_TOUCH || !isGl ? '' : `<div class="cspanel" id="gltpanel"><h3>⚔️ GAUNTLET-TEAMS</h3>${glAsgHTML()}</div>`}
+ ${IS_TOUCH || !isGl ? '' : `<div class="cspanel" id="gltpanel"><h3>⚔️ GAUNTLET-TEAMS</h3>${glAsgHTML()}</div>`}</div>
  <div id="cschar"><b>${player.name}</b></div>
  <div id="csver">LOBBY | ${modeName(md)} | ${md === 'gl' || md === 'v1' ? 'Arenen' : MAPLABEL}</div>
  </div>`, true);
