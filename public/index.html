@@ -952,6 +952,23 @@
         #chatbox.open #chatmode { display: flex }
         #chatbox.open #chatlog { pointer-events: auto; max-height: 200px; overflow-y: auto }
         #chatbox.touch.ingame.open { bottom: auto; top: 60px } /* Handy: über der Bildschirmtastatur */
+        .betatag { font: 700 9px Arial; letter-spacing: .08em; color: #141a22; background: #ffd84a; padding: 1px 4px; border-radius: 3px; vertical-align: super }
+        /* Handy-Lobby: quer = Lobby links, Chat rechts als Spalte; hoch = Chat als Leiste unten. Kompaktere Knöpfe, Name unter der Lobby aus */
+        @media (orientation: landscape) {
+            .mob #lobwrap { left: 12px; transform: none; width: calc(62vw - 18px); max-height: calc(100vh - 70px) }
+            #chatbox.touch:not(.ingame) { left: auto; right: 10px; bottom: 6px; width: calc(38vw - 16px) }
+            #chatbox.touch:not(.ingame).open #chatlog { max-height: calc(100vh - 150px) }
+        }
+        @media (orientation: portrait) {
+            #chatbox.touch:not(.ingame) { left: 64px; right: 12px; bottom: 6px; width: auto }
+            #chatbox.touch:not(.ingame).open #chatlog { max-height: 58px }
+            .mob #lobwrap { max-height: calc(100vh - 62px - 120px) }
+        }
+        .mob #lobwrap ~ #cschar { display: none }
+        .mob #lobwrap .cspanel { padding: 10px 14px }
+        .mob #lobwrap h3 { font-size: 15px; margin-bottom: 0 }
+        .mob #lobwrap .lobacts button, .mob #lobwrap .lobrules button { padding: 5px 8px; font-size: 12px; min-height: 0 }
+        .mob #lobwrap .lobrules { padding: 6px 10px; margin: 6px 0 }
         #mfr { position: absolute; right: 0; top: 56px; bottom: 0; width: 58px; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 12px; background: rgba(8, 10, 14, .55); border-left: 1px solid rgba(255, 255, 255, .08); overflow-y: auto } /* Freunde-Leiste rechts wie in CS/Valorant */
         #mfr .fr { position: relative; flex: 0 0 auto; width: 42px; height: 42px; border-radius: 6px; background: #1d2733; border: 1px solid rgba(255, 255, 255, .12); display: flex; align-items: center; justify-content: center; font: bold 15px Arial; color: #8fa3b8; cursor: pointer }
         #mfr .fr.on { color: #fff; border-color: rgba(120, 220, 120, .6) } #mfr .fr .dot { position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; border-radius: 50%; background: #556; border: 2px solid #0b0f14 } #mfr .fr.on .dot { background: #4cd964 }
@@ -2691,7 +2708,7 @@ html.dsV #cstabs a:hover { color: #fff; background: none }
 html.dsV #cstabs a.on { color: #fff }
 html.dsV #cstabs a.on:after { left: 30%; right: 30%; bottom: 10px; height: 2px; background: var(--cream); box-shadow: none }
 html.dsV #cstabs a[data-nav="inv"] { order: 1 } html.dsV #cstabs a[data-nav="store"] { order: 2 } html.dsV #cstabs a[data-nav="shop"] { order: 3 }
-html.dsV #cstabs a[data-nav="play"] { order: 4 } html.dsV #cstabs a[data-nav="news"] { order: 5 } html.dsV #cstabs a[data-nav="maps"], html.dsV #cstabs a[data-nav="editor"] { order: 6 } html.dsV #cstabs a[data-nav="arenas"] { order: 7 }
+html.dsV #cstabs a[data-nav="play"] { order: 4 } html.dsV #cstabs a[data-nav="ranked"] { order: 4 } html.dsV #cstabs a[data-nav="news"] { order: 5 } html.dsV #cstabs a[data-nav="maps"], html.dsV #cstabs a[data-nav="editor"] { order: 6 } html.dsV #cstabs a[data-nav="arenas"] { order: 7 }
 /* SPIELEN: breiter Block mit roter Linie unten, ohne Trapez */
 html.dsV body:not(.mob) #cstabs a[data-nav="play"] { margin: 0 20px; padding: 17px 54px 16px; font-size: 18px; font-weight: 800; letter-spacing: .2em; color: var(--cream); background: linear-gradient(180deg, rgba(236,232,225,.04), rgba(236,232,225,.12)); border-left: 1px solid rgba(236,232,225,.14); border-right: 1px solid rgba(236,232,225,.14) }
 html.dsV body:not(.mob) #cstabs a[data-nav="play"]:hover, html.dsV body:not(.mob) #cstabs a[data-nav="play"].on { color: #fff; background: linear-gradient(180deg, rgba(var(--hl-rgb),.06), rgba(var(--hl-rgb),.24)) }
@@ -3439,7 +3456,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Weiter ›":"Next ›",
 "Überspringen":"Skip",
 "‹ Zurück":"‹ Back",
-"NEU · PATCH 3.1 „ARSENAL\"":"NEW · PATCH 3.1 „ARSENAL\"",
+"NEU · PATCH 3.2 „RANKED BETA\"":"NEW · PATCH 3.2 „RANKED BETA\"","PATCH 3.1 „ARSENAL\"":"PATCH 3.1 „ARSENAL\"",
 "PATCH 3.0 „KLANG\"":"PATCH 3.0 „SOUND\"",
 "🎨 SKINS SITZEN SAUBER":"🎨 SKINS FIT CLEANLY",
 "🪙 SHOP & CASES":"🪙 SHOP & CASES",
@@ -3830,7 +3847,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // =====================================================================
         //  ACCOUNT / CLOUD-SAVE (Server speichert in data/users.json, keine Datenbank)
         // =====================================================================
-        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'lang', 'fit', 'fitown'];
+        const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'lang', 'fit', 'fitown', 'botrk'];
         let ACC = null; try { ACC = JSON.parse(localStorage.getItem('cs_acc') || 'null'); } catch (e) { }
         let accT = null, accMute = false, accReady = !ACC; // accReady: erst nach dem Abgleich beim Start hochladen (sonst überschreibt ein altes Gerät neueren Stand)
         const accApi = (p, b) => fetch('/api/' + p, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json());
@@ -4152,10 +4169,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const CFG = Object.assign({}, CFG_DEF, JSON.parse(localStorage.getItem('gamecfg') || '{}'));
         const SKILL_VAL = [0.6, 0.85, 1.05], SKILL_LBL = ['Leicht', 'Normal', 'Schwer'];
         const BOT_SPEED = 5.2;
-        let BOT_SKILL, ROUND_TIME, FREEZE_TIME, BOMB_TIME, WIN_SCORE, MAX_ROUNDS;
-        function applyCfg() { BOT_SKILL = SKILL_VAL[CFG.skill]; ROUND_TIME = CFG.roundTime; FREEZE_TIME = CFG.freeze; BOMB_TIME = CFG.bombTime; MAX_ROUNDS = CFG.rounds; WIN_SCORE = Math.floor(CFG.rounds / 2) + 1; }
+        let BOT_SKILL, ROUND_TIME, FREEZE_TIME, BOMB_TIME, WIN_SCORE, MAX_ROUNDS, BOT_LV = 0;
+        // Bot-Stufe 1–10 → 0..1: Treffsicherheit 0,45–1,15 · Reaktion 0,75–1,25 s bis 0,17–0,31 s · Sicht 35–57 m · Hören 20–35 m · Sichtfeld · Granaten seltener/öfter
+        const BLF = () => (BOT_LV - 1) / 9;
+        function applyCfg() { BOT_SKILL = SKILL_VAL[CFG.skill]; BOT_LV = Math.max(0, Math.min(10, CFG.blv | 0)); if (BOT_LV) BOT_SKILL = 0.45 + 0.7 * BLF(); ROUND_TIME = CFG.roundTime; FREEZE_TIME = CFG.freeze; BOMB_TIME = CFG.bombTime; MAX_ROUNDS = CFG.rounds; WIN_SCORE = Math.floor(CFG.rounds / 2) + 1; }
         applyCfg();
-        function saveCfg() { localStorage.setItem('gamecfg', JSON.stringify(CFG)); applyCfg(); } const cell = (r, c) => (r < 0 || c < 0 || r >= ROWS || c >= COLS) ? '#' : (MAP[r][c] || '.');
+        function saveCfg() { localStorage.setItem('gamecfg', JSON.stringify(Object.assign({}, CFG, { blv: undefined }))); applyCfg(); } const cell = (r, c) => (r < 0 || c < 0 || r >= ROWS || c >= COLS) ? '#' : (MAP[r][c] || '.');
         const TILE_M = { barrel: [0x8a2b20, 0x2b4a6b, 0x3f5a2e].map(c => new THREE.MeshLambertMaterial({ color: c })), barrelGeo: new THREE.CylinderGeometry(0.42, 0.42, 1.3, 12), ring: new THREE.MeshLambertMaterial({ color: 0x2a2a2a }), ringGeo: new THREE.CylinderGeometry(0.43, 0.43, 0.06, 12), frame: new THREE.MeshLambertMaterial({ color: 0x5b3b1e }) }; // Material neuer Bauelemente
         // Sandsäcke (s), Fässer (b), Tür (D), Fenster (W) – für Karte und Arena. B: Box-Funktion (Mesh+Kollision), AL: Kollisionsliste, addM: Zusatz-Mesh, wallM: Wandmaterial, sandM: Sandsack-Material
         function tileExtras(ch, r, c, x, z, cellF, B, AL, addM, wallM, sandM) {
@@ -5526,7 +5545,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             for (const e of ents) { if (!e.alive || e.remote) continue; const d = Math.hypot(e.x - G.bomb.x, e.z - G.bomb.z); if (d < 16) applyDamage(e, 400 * (1 - d / 16), null, null, false); }
         }
         function gameOver() {
-            if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); $('hud').style.display = 'none'; store.cases++; saveStore(); xpEvent('match', { won: DM.on ? dmRank()[0] === player : G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT'] }); if (DM.on) { dmReport(); return; } const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
+            if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); $('hud').style.display = 'none'; store.cases++; saveStore(); xpEvent('match', { won: DM.on ? dmRank()[0] === player : G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT'] }); if (DM.on) { dmReport(); return; } const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; if (BR.on) setTimeout(() => brEnd(won), 0); const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
             showOverlay(`<h1 style="color:${won ? 'var(--acc)' : '#8da0b5'}">${won ? 'SIEG' : 'NIEDERLAGE'}<small>SPIEL BEENDET</small></h1>
 <div class="panel" style="min-width:320px;text-align:left">
 <div class="psub">MATCH-REPORT · ${MAPLABEL.toUpperCase()}</div>
@@ -5559,8 +5578,8 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             for (const e of ents) {
                 if (e === b || !e.alive) continue;
                 if (GL.on) { const bt = GL.teams.find(t => t.members.includes(b)); if (!bt || bt.members.includes(e) || !GL.duel || !GL.duel.teams.flatMap(t => t.members).includes(e)) continue; }
-                else if (!foe(e, b)) continue; const dx = e.x - ex, dz = e.z - ez, d = Math.hypot(dx, dz); if (d > 55) continue;
-                const heard = (now - e.lastShotT) < 1.2 && d < 35; if (!heard) { const dot = (dx * Math.sin(b.yaw) + dz * Math.cos(b.yaw)) / d; if (dot < -0.2) continue; }
+                else if (!foe(e, b)) continue; const dx = e.x - ex, dz = e.z - ez, d = Math.hypot(dx, dz); if (d > (BOT_LV ? 35 + 22 * BLF() : 55)) continue;
+                const heard = (now - e.lastShotT) < 1.2 && d < (BOT_LV ? 20 + 15 * BLF() : 35); if (!heard) { const dot = (dx * Math.sin(b.yaw) + dz * Math.cos(b.yaw)) / d; if (dot < (BOT_LV ? 0.2 - 0.5 * BLF() : -0.2)) continue; }
                 const eyeY = e.isPlayer ? e.y + e.eyeH : e.y + 1.6;
                 if (hasLOS(ex, ey, ez, e.x, eyeY, e.z)) { if (!DM.on && b.team === player.team) G.spotted.set(e, now); if (d < bd) { best = e; bd = d; } }
             }
@@ -5598,7 +5617,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (b.rushT > 0 && (b.rushT -= dt) <= 0) b.spdMul = 1; if (b.ultK && (b.ult || 0) >= ULT_MAX && G.state === 'live' && !GL.on && !DM.on) botUlt(b); // Bot-Ultimate
             b.nadeT -= dt;
             if (b.nadeT > 0 || !b.nades.length || G.state !== 'live') return;
-            b.nadeT = 1.5 + Math.random() * 2.5;
+            b.nadeT = (1.5 + Math.random() * 2.5) * (BOT_LV ? 1.8 - 0.9 * BLF() : 1);
             const t = b.target;
             if (t) {
                 const d = Math.hypot(t.x - b.x, t.z - b.z);
@@ -5685,7 +5704,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (G.state === 'freeze') { b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; return; }
             b.moving = false; b.wantMove = false; const ox = b.x, oz = b.z;
             if (b.blindT > 0) { b.blindT -= dt; b.target = null; b.yaw += Math.sin(now * 3 + b.id) * dt * 2; b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; return; }
-            b.losT -= dt; if (b.losT <= 0) { b.losT = 0.22 + Math.random() * 0.1; const t = findEnemy(b); if (t !== b.target) { b.target = t; if (t) b.reaction = 0.3 + Math.random() * 0.5; } }
+            b.losT -= dt; if (b.losT <= 0) { b.losT = 0.22 + Math.random() * 0.1; const t = findEnemy(b); if (t !== b.target) { b.target = t; if (t) b.reaction = BOT_LV ? 0.75 - 0.58 * BLF() + Math.random() * (0.5 - 0.36 * BLF()) : 0.3 + Math.random() * 0.5; } }
             if (b.target && !b.target.alive) b.target = null;
             if (b.reloadT > 0) { b.reloadT -= dt; if (b.reloadT <= 0) b.ammo = b.weapon.mag; }
             botNades(b, dt); glBotAbility(b, dt); if (b.target) {
@@ -6937,6 +6956,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <nav id="cstabs">
  <a data-nav="inv">INVENTAR</a>
  <a data-nav="play">SPIELEN</a>
+ <a data-nav="ranked">RANKED <sup class="betatag">BETA</sup></a>
  <a data-nav="shop">SHOP</a>
  <a data-nav="news">NEWS</a>
  <a data-nav="editor">EDITOR</a>
@@ -6987,7 +7007,68 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 3.1 „ARSENAL"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 3.2 „RANKED BETA"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏆 RANKED IST DA – ALS BETA</p>
+ Neuer Reiter <b>RANKED</b> im Hauptmenü mit drei Online-Modi, jeder mit <b>eigenem Rating</b>: <b>5v5 Wettkampf</b>, <b>2v2 Wettkampf</b> und <b>1v1 Duell</b>.<br>
+ Du brauchst einen <b>Account</b> – Rating, Rang & Match-Historie werden auf dem Server gespeichert und gerechnet.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎖️ 10 RÄNGE</p>
+ <b>Recruit</b> · <b>Contender I–II</b> · <b>Challenger I–II</b> · <b>Elite I–II</b> · <b>Master I–II</b> · <b>CLUTCH Elite</b> (ab 1500).<br>
+ Alle starten bei <b>1000 Rating</b> (Challenger II). Die ersten <b>5 Matches pro Modus sind Placements</b> – so lange ist Dein Rang „vorläufig“.<br>
+ Der Balken zeigt, wie viel bis zum nächsten Rang fehlt und ab wann Du absteigst. Nach jedem Match siehst Du Punkte, Aufstieg oder Abstieg direkt im Endbildschirm.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📈 SO ZÄHLT DAS RATING</p>
+ Es zählt nur <b>Sieg oder Niederlage</b> – nicht Kills, ADR oder wie hoch Du gewinnst.<br>
+ Gewinnst Du gegen Stärkere, gibt es mehr Punkte; verlierst Du gegen Schwächere, verlierst Du mehr. Bei gleich starken Teams sind es am Anfang ±20.<br>
+ Neue Spieler bewegen sich schnell (K 40), mit mehr Matches wird Dein Rating stabiler (bis K 16).<br>
+ <b>K/D & ADR</b> stehen in Deiner Historie – nur als Statistik, sie ändern Dein Rating nicht.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔍 SUCHE, ANNEHMEN & MAPS</p>
+ Suche starten → <b>Match gefunden</b> → <b>20 Sekunden</b> zum Annehmen.<br>
+ Map-Wahl beim Annehmen: <b>1× klicken = Stimme ✔</b>, <b>2× = Bann ✖</b>. Stimmen minus Banns – die beste Map gewinnt, bei Gleichstand entscheidet der Zufall.<br>
+ Gespielt wird nur auf den <b>5 offiziellen Maps</b> (keine Community-Maps). Im 1v1 wechseln die offiziellen Arenen von Duell zu Duell.<br>
+ Gegner haben ein <b>ähnliches Rating</b>. Je länger Du suchst, desto größer wird der Suchbereich – Du siehst ihn während der Suche.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🤖 BOTS FÜLLEN AUF</p>
+ Findet <b>2v2 oder 5v5</b> nach <b>30 Sekunden</b> nicht genug Spieler, füllen <b>Bots</b> die freien Plätze auf.<br>
+ Sie sind so stark wie der <b>Durchschnitt der Lobby</b>, zählen für die Teamstärke mit, bekommen aber <b>selbst kein Rating</b>.<br>
+ <b>1v1</b> ist immer Mensch gegen Mensch.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧠 BOTS WERDEN BESSER</p>
+ Neu: <b>10 Bot-Stufen</b> passend zu den 10 Rängen. Mit jeder Stufe steigen <b>Treffsicherheit</b>, <b>Reaktion</b>, <b>Sichtweite</b>, <b>Gehör</b> & <b>Granaten-Einsatz</b> – ohne übermenschlich schnelle Reaktionen.<br>
+ Normale Spiele mit <b>Leicht / Normal / Schwer</b> bleiben genau wie bisher.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎮 BOT-RANG (OFFLINE)</p>
+ Im Ranked-Reiter: <b>5v5 gegen Bots</b> oder <b>1v1 gegen Bot</b> – mit eigenem <b>Bot-Rang</b>. Je besser Du wirst, desto stärker werden die Bots.<br>
+ Der Bot-Rang ist <b>getrennt vom Online-Rang</b> (Offline-Spiele kann der Server nicht prüfen) und wird mit Deinem Account gespeichert. Funktioniert auch ohne Internet.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏅 BESTENLISTE & SAISONS</p>
+ Pro Modus gibt es eine <b>Bestenliste</b> – Du erscheinst dort nach Deinen Placements.<br>
+ Eine Saison dauert <b>3 Monate</b> (Saison 2 startet am 1. Februar 2027). Beim Wechsel rückt Dein Rating zur Hälfte Richtung 1000, danach folgen <b>2 Placement-Matches</b>. Frühere Saisons bleiben in Deinem Ranked-Profil sichtbar.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚠️ FAIR PLAY – DARAUF MUSST DU ACHTEN</p>
+ <b>Match ablehnen oder verpassen:</b> das 1. Mal ohne Folgen, danach <b>Suchsperre 1 → 2 → 5 Min</b> (nie länger als 5 Min; zählt 30 Min lang).<br>
+ <b>1v1 verlassen:</b> vor Ende des ersten Duells = Abbruch ohne Wertung, danach = <b>Niederlage</b>. Im 1v1 gibt es keinen Wiedereinstieg – auch ein Verbindungsabbruch zählt als Verlassen.<br>
+ <b>2v2 / 5v5:</b> Verbindung weg? Im Ranked-Reiter auf <b>↩ Wieder verbinden</b>. Ist ein ganzes Team 90 Sekunden weg, <b>verliert es</b> (vor Ende der 1. Runde: Abbruch ohne Wertung).<br>
+ <b>Bot-Rang:</b> Spiel verlassen = Niederlage.<br>
+ <b>Teams, Regeln & Map</b> legt der Server fest. Matches mit veränderten Regeln, falscher Bot-Anzahl oder unmöglichem Spielverlauf werden <b>ungültig</b> – ohne Ratingänderung.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🚧 DAS IST NOCH BETA</p>
+ Ratings können sich bis zum offiziellen Start <b>noch ändern oder zurückgesetzt</b> werden.<br>
+ Ein <b>Server-Neustart</b> (z. B. bei Updates) bricht laufende Ranked-Matches ab – ohne Wertung.<br>
+ <b>Noch nicht dabei:</b> gemeinsam mit Freunden suchen (Gruppen), Rang-Symbole, englische Texte im Ranked-Menü, Ping & Regionen.<br>
+ <b>5v5 mit 10 echten Spielern</b> ist noch kaum getestet – 2v2 & 1v1 laufen stabil.<br>
+ Die <b>Bot-Stufen</b> sind eine erste Einstellung – sag uns, ob sie zu leicht oder zu schwer sind.<br>
+ Fehler gefunden? Im Ranked-Reiter auf <b>🐞 Fehler melden</b>.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔧 FIXES</p>
+ Mitspieler schauen online wieder in die <b>richtige Richtung</b> – ihre Blickrichtung wurde vorher nicht übernommen.<br>
+ <b>Online-Lobby am Handy:</b> quer Lobby links & Chat rechts, hochkant Chat unten – nichts überlappt mehr.
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 3.1 „ARSENAL"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔫 NEUE WAFFENMODELLE</p>
@@ -7619,7 +7700,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 3.1 | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 3.2 BETA | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
                 const g = el.querySelector('canvas').getContext('2d');
@@ -7658,7 +7739,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const nav = a.dataset.nav;
                 if (nav === 'inv') { showInventory(); return; }
                 if (nav === 'store') { showCases(); return; } // (Cases liegen jetzt im SHOP-Reiter)
-                if (nav === 'shop') { showShop(); return; }
+                if (nav === 'shop') { showShop(); return; } if (nav === 'ranked') { showRanked(); return; }
                 if (nav === 'maps') { showMapList(); return; } if (nav === 'arenas') { showArenaList(); return; } if (nav === 'editor') { showEditorPick(); return; }
                 setTab(nav);
             });
@@ -8416,7 +8497,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const pick = (up.length && Math.random() < 0.6) ? rnd(up) : offs[0];
             if (pick) glLevelUp(m, pick);
         }
-        const glPickArena = () => { const pool = Object.keys(ARENAS).filter(k => !AOFF.includes(k)); return rnd(pool.length ? pool : Object.keys(ARENAS)); }; // nur angehakte Arenen
+        const glPickArena = () => { const pool = Object.keys(ARENAS).filter(k => RK.cur || BR.on ? !isArKey(k) : !AOFF.includes(k)); /* Ranked & Bot-Rang: nur offizielle Arenen */ return rnd(pool.length ? pool : Object.keys(ARENAS)); }; // nur angehakte Arenen
         const glArenaData = k => CMAP_INFO[k] ? Object.assign({ k, g: ARENAS[k].rows }, CMAP_INFO[k]) : null;
         // Arena des nächsten Duells schon während der Auswahl zeigen: Spieler steht an seinem Spawn (eingefroren bis Duellstart)
         function glPrepArena(akey) {
@@ -8564,7 +8645,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function glGameOver(winner) {
             GL.phase = 'over'; gameEnded = true; document.exitPointerLock(); setArena(null); stopFreecam(); $('hud').style.display = 'none';
             if (NET.on && NET.host) netSend({ type: 'glover', w: winner ? winner.id : null }); const won = winner === GL.myTeam;
-            store.cases += won ? 2 : 1; saveStore(); xpEvent('glmatch', { won });
+            store.cases += won ? 2 : 1; saveStore(); xpEvent('glmatch', { won }); if (BR.on) setTimeout(() => brEnd(won), 0);
             showOverlay(`<h1 style="color:${won ? 'var(--acc)' : '#8da0b5'}">${won ? '🏆 SIEG' : GL.v1 ? '1V1 VORBEI' : 'GAUNTLET VORBEI'}<small>${winner ? winner.name + ' gewinnt das Turnier' : ''}</small></h1>
  <div class="panel" style="min-width:320px;text-align:left">
  <div class="psub">${GL.v1 ? '1V1-REPORT' : 'GAUNTLET-REPORT'}</div>
@@ -8713,7 +8794,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function lobDiscord() { accApi('lfg', { room: NET.room, name: player.name }).then(r => toast(r.ok ? '📣 In Discord gepostet' : '⚠ ' + (r.err || 'Fehler'), r.ok ? '#🤝-mitspielersuche · mit Beitreten-Knopf' : '')).catch(() => toast('⚠ Server nicht erreichbar', '')); }
         function showBug(back) {
             const md = !started ? 'Menü' : AL.on ? 'Aim-Lab' : EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : 'Wettkampf';
-            const info = `CLUTCH 3.1 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
+            const info = `CLUTCH 3.2 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
             showOverlay(`<h1 style="font-size:34px">🐞 BUG MELDEN<small>GEHT DIREKT AN DEN ENTWICKLER</small></h1>
  <textarea id="bugTxt" maxlength="1500" rows="6" placeholder="Was ist passiert? Was hast Du davor gemacht? Passiert es immer wieder?" style="width:min(520px,88vw);font:14px Arial;padding:10px;background:#141e28;color:#fff;border:1px solid rgba(var(--hl-rgb),.5);border-radius:4px;resize:vertical"></textarea>
  <p style="font-size:11px;color:#8fa3b8;max-width:520px">Wird automatisch mitgeschickt: ${escH(info)}</p><p id="bugMsg" style="font-size:13px;min-height:16px"></p>
@@ -8739,6 +8820,145 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             el.querySelectorAll('[data-fj]').forEach(b => b.onclick = () => { const f = FR.list.find(x => x.n === b.dataset.fj); if (f && f.room) frJoin(f.room, DEF_WS, f.mode); });
             el.querySelectorAll('[data-ij]').forEach(b => b.onclick = () => { const i = FR.inv[+b.dataset.ij]; if (i) frJoin(i.room, i.srv, i.mode); });
             el.querySelectorAll('[data-ix]').forEach(b => b.onclick = () => { FR.inv.splice(+b.dataset.ix, 1); frBadge(); frRender(); });
+        }
+        // ================= 🏆 RANKED – Rang, Warteschlange, Annehmen & Map-Voting (Server rechnet & speichert alles) =================
+        const RK = { ws: null, q: null, found: null, prof: null, open: false, mode: 'comp', msg: '', cur: null, all: false, st: null, go: 0, ban: 0, view: 'hist', lb: {} };
+        const RK_MN = { comp: '5v5', duo: '2v2', v1: '1v1' }, RK_TI = { comp: '🏆 WETTKAMPF 5V5', duo: '👥 WETTKAMPF 2V2', v1: '🎯 1V1 DUELL' }, mmss = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+        function rkConn(then) {
+            if (RK.ws && RK.ws.readyState === 1) { then(); return; }
+            try { RK.ws = new WebSocket(DEF_WS); } catch (e) { RK.msg = '⚠ Server nicht erreichbar'; rkRender(); return; }
+            RK.ws.onopen = then; RK.ws.onerror = () => { RK.msg = '⚠ Server nicht erreichbar'; rkRender(); };
+            RK.ws.onclose = () => { RK.ws = null; if (RK.q || RK.found) { RK.q = RK.found = null; RK.msg = '⚠ Verbindung getrennt – Suche beendet'; rkRender(); } };
+            RK.ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } rkMsg(m); };
+        }
+        const rkSend = o => { if (RK.ws && RK.ws.readyState === 1) RK.ws.send(JSON.stringify(o)); };
+        function rkMsg(m) {
+            if (m.type === 'rkq') { RK.q = m; RK.found = null; RK.msg = ''; }
+            else if (m.type === 'rkoff') { RK.q = RK.found = null; RK.msg = m.why ? '⚠ ' + m.why : ''; if (m.ban) RK.ban = m.ban; if (m.live && RK.prof) RK.prof.live = m; }
+            else if (m.type === 'rkback') { RK.found = null; RK.msg = m.why; }
+            else if (m.type === 'rkfound') { RK.q = null; RK.found = Object.assign(m, { t0: Date.now(), ok: false, vote: null, ban: null, a: 0 }); sfx('start'); }
+            else if (m.type === 'rkacc') { if (RK.found) RK.found.a = m.a; }
+            else if (m.type === 'rkgo') { rkGo(m); return; }
+            rkRender();
+        }
+        function rkGo(m) { // wie der Freundes-Beitritt: Seite neu laden → startMP im Ranked-Raum (Team & Map vom Server)
+            sessionStorage.setItem('rk', JSON.stringify(m)); sessionStorage.setItem('playcat', m.mode === 'v1' ? 'v1' : 'comp'); /* 2v2 & 5v5 = Wettkampf */ sessionStorage.setItem('playmode', '1');
+            if (m.map && MAPS[m.map]) localStorage.setItem('map', m.map);
+            sessionStorage.setItem('mpjoin', JSON.stringify({ srv: DEF_WS, room: m.room, team: m.team, name: ACC.u.slice(0, 14) }));
+            if (RK.ws) { RK.ws.onclose = null; RK.ws.close(); } location.reload();
+        }
+        function showRanked() {
+            RK.open = true; RK.msg = ''; rkRender(); if (!ACC) return;
+            accApi('ranked', { tok: ACC.tok }).then(r => { if (r.ok) { RK.prof = r; RK.ban = r.ban || 0; } else RK.msg = '⚠ ' + (r.err || 'Fehler'); rkRender(); }).catch(() => { RK.msg = '⚠ Server nicht erreichbar'; rkRender(); });
+        }
+        function rkCard(md) {
+            const p = RK.prof.m[md], rk = p.rank, nx = RK.prof.ranks[rk.i + 1], busy = RK.q || RK.found || RK.prof.live || RK.ban > Date.now();
+            return `<div class="panel rkcard${RK.mode === md ? ' on' : ''}" data-rkm="${md}"><div class="psub">${RK_TI[md]}</div>
+ <div class="rkrank">${p.placed ? rk.name : 'VORLÄUFIG · ' + rk.name}</div><div class="rkr">${p.r}<small> RATING</small></div>
+ <div class="rkbar"><i style="width:${Math.round((p.placed ? rk.prog : p.pl / p.pq) * 100)}%"></i></div>
+ <div class="rksub">${!p.placed ? `Placement ${p.pl}/${p.pq} – danach wird Dein Rang sichtbar` : nx ? `Noch ${nx[0] - p.r} bis ${nx[1]}` : 'Höchster Rang erreicht'}${p.placed && rk.lo !== null ? ' · Abstieg unter ' + rk.lo : ''}</div>
+ <div class="rkst"><span>✔ ${p.w}</span><span>✖ ${p.l}</span>${p.d ? `<span>= ${p.d}</span>` : ''}<span>Peak ${p.peak}</span><span>K ${p.k}</span>${p.ab ? `<span title="Verbindungsabbrüche – nur Statistik">⚡ ${p.ab}</span>` : ""}</div>
+ <button data-rkq="${md}"${busy ? ' disabled' : ''}>🔍 ${RK_MN[md]} SUCHEN</button></div>`;
+        }
+        function rkRender() {
+            if (!RK.open) return; const P = RK.prof, F = RK.found;
+            let body = '';
+            if (!ACC) body = '<div class="rkcards"><div class="panel"><p>Online-Ranked braucht einen Account – Rating & Historie werden auf dem Server gespeichert.</p><button id="rkLogin">👤 Login / Registrieren</button></div>' + brCard() + '</div>';
+            else if (!P) body = '<p class="rksub">Lade Ranked-Daten…</p><div class="rkcards">' + brCard() + '</div>';
+            else {
+                const hist = P.m[RK.mode].hist.map(h => { const c = h.st !== 'rated' ? 'x' : h.res === 1 ? 'w' : h.res === 0 ? 'l' : 'd';
+                    return `<div class="rkh ${c}"><b>${{ x: h.st === 'invalid' ? 'UNGÜLTIG' : 'ABGEBROCHEN', w: 'SIEG', l: 'NIEDERLAGE', d: 'UNENTSCHIEDEN' }[c]}</b><span>${h.sc ? h.sc.join(' : ') : '–'}</span><span>${h.map ? escH(MAP_NAMES[h.map] || h.map) : 'Arenen'}</span><span>vs ${escH(h.opp.join(', '))}</span><span class="rkd">${h.st === 'rated' ? (h.d >= 0 ? '+' : '') + h.d : '±0'}</span>${h.ps && h.ps.k !== undefined ? `<small>K/D ${h.ps.k}/${h.ps.d} · ADR ${h.ps.adr}${h.ps.left ? ' · verlassen' : ''}</small>` : ''}${h.why ? `<small>${escH(h.why)}</small>` : ''}</div>`; }).join('') || '<p class="rksub">Noch keine Ranked-Matches in diesem Modus.</p>';
+                let st = '';
+                if (P.live) st = `<div class="rkbox"><b>⚠ Du bist noch in einem laufenden Ranked-Match (${RK_MN[P.live.mode]})</b><button id="rkRe">↩ Wieder verbinden</button></div>`;
+                else if (F) st = `<div class="rkbox found"><b>✅ MATCH GEFUNDEN · ${RK_MN[F.mode]}${F.bots ? ' · ' + (F.n) + ' Spieler + ' + F.bots + ' Bots (Stufe ' + F.blv + ')' : ''} · <span id="rkFT">${F.sec}</span> s</b>
+ ${F.maps && !F.ok ? '<div class="rkmaps">' + F.maps.map(k => `<button data-rkv="${k}" class="${F.vote === k ? 'on' : F.ban === k ? 'ban' : ''}">${F.vote === k ? '✔ ' : F.ban === k ? '✖ ' : ''}${escH(MAP_NAMES[k] || k)}</button>`).join('') + '</div><span class="rksub">Optional · 1× klicken = Stimme ✔, 2× = Bann ✖ · Stimmen minus Banns, höchste Map gewinnt, Gleichstand = Zufall</span>' : ''}
+ ${F.ok ? `<span class="rksub">Angenommen – warte auf die anderen (${F.a}/${F.n})…</span>` : '<div><button id="rkAcc" style="border-color:#9fe08a;color:#9fe08a">✔ ANNEHMEN</button><button id="rkDec" style="border-color:#c66;color:#c66">✖ Ablehnen</button></div>'}</div>`;
+                else if (RK.ban > Date.now()) st = `<div class="rkbox"><b>⛔ Suchsperre · <span id="rkBan">${mmss((RK.ban - Date.now()) / 1000)}</span></b><span class="rksub">Wegen wiederholtem Ablehnen/Verpassen gefundener Matches (max. 5 Min)</span></div>`;
+                else if (RK.q) st = `<div class="rkbox"><b>🔍 Suche ${RK_MN[RK.q.mode]} · <span id="rkT">${mmss((Date.now() - RK.q.t) / 1000)}</span></b><span class="rksub">${RK.q.n} in der Warteschlange · Ratingfenster ±${RK.q.win}${RK.q.mode !== 'v1' ? ' · nach 30 s füllen Bots auf' : ''}</span><button id="rkX">✖ Suche abbrechen</button></div>`;
+                const past = P.past.length ? '<div class="psub" style="margin-top:12px">FRÜHERE SAISONS</div>' + P.past.slice().reverse().map(s => `<div class="rkh x"><b>S${s.s} · ${RK_MN[s.mode]}</b><span>${s.rank ? escH(s.rank) : 'ohne Rang'}</span><span>${s.r}</span><span>Peak ${s.peak}</span><span>${s.w}–${s.l}</span></div>`).join('') : '';
+                const L = RK.lb[RK.mode], lb = !L ? '<p class="rksub">Lade Bestenliste…</p>' : (L.top.map((x, i) => `<div class="rkh lb${ACC && x.n === ACC.u ? ' w' : ''}"><b>#${i + 1}</b><span>${escH(x.n)}</span><span>${escH(x.rank)}</span><span class="rkd">${x.r}</span><span>${x.w}–${x.l}</span></div>`).join('') || '<p class="rksub">Noch niemand platziert – sei der Erste!</p>') + (L.me ? `<p class="rksub">Dein Platz: #${L.me.pos} von ${L.total}</p>` : '<p class="rksub">Du erscheinst nach Deinen Placement-Matches.</p>');
+                body = `<div class="rkcards">${rkCard('comp')}${rkCard('duo')}${rkCard('v1')}</div>${st}
+ <div class="rkcards" style="margin-top:12px">${brCard()}</div>
+ <div class="panel rklist"><div class="subnav" style="margin-bottom:6px"><b data-rkview="hist" class="${RK.view === 'hist' ? 'on' : ''}">LETZTE MATCHES · ${RK_MN[RK.mode]}</b><b data-rkview="lb" class="${RK.view === 'lb' ? 'on' : ''}">🏅 BESTENLISTE · ${RK_MN[RK.mode]}</b></div>${RK.view === 'lb' ? lb : hist + past}</div>`;
+            }
+            showOverlay(`<style>.rkbeta{max-width:640px;margin:0 auto 10px;padding:7px 12px;border:1px dashed #ffd84a;border-radius:6px;color:#ffd84a;font-size:12px;display:flex;gap:10px;align-items:center;justify-content:space-between}.rkbeta button{margin:0;padding:4px 10px;font-size:12px;min-height:0}.rkcards{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}.rkcards>.panel{position:relative}.rkcard{min-width:260px;cursor:pointer;opacity:.8}.rkcard.on{opacity:1;border-color:var(--acc)}.rkrank{font:700 26px Rajdhani;color:var(--acc);text-transform:uppercase}.rkr{font:700 20px Rajdhani}.rkr small,.rksub{font-size:12px;color:var(--mut)}.rkbar{height:6px;background:rgba(255,255,255,.1);border-radius:3px;margin:8px 0 4px;overflow:hidden}.rkbar i{display:block;height:100%;background:var(--acc)}.rkst{display:flex;gap:10px;font-size:12px;margin:8px 0;color:#cfd8e3}.rkbox{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px auto;padding:10px 16px;border:1px solid var(--line);border-radius:6px;max-width:640px}.rkbox.found{border-color:#9fe08a}.rkmaps{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.rkmaps button.on{border-color:#9fe08a;color:#9fe08a}.rkmaps button.ban{border-color:#c66;color:#c66;text-decoration:line-through}.rklist{max-width:640px;margin:0 auto;text-align:left;max-height:34vh;overflow-y:auto}.rkh{display:grid;grid-template-columns:110px 54px 1fr 1.4fr 70px;gap:8px;font-size:12px;padding:5px 6px;border-left:3px solid #556;margin:3px 0;align-items:center}.rkh.w{border-color:#9fe08a}.rkh.l{border-color:#ff6b6b}.rkh.d{border-color:#ffd84a}.rkh .rkd{text-align:right;font-weight:700}.rkh small{grid-column:1/-1;color:var(--mut);font-size:11px}.rkh.lb{grid-template-columns:44px 1fr 1fr 60px 60px}.rkcard{min-width:230px}.rkh.w .rkd{color:#9fe08a}.rkh.l .rkd{color:#ff6b6b}.mob .rkh{grid-template-columns:90px 44px 1fr 60px}.mob .rkh span:nth-child(4){display:none}</style>
+ <h1 style="font-size:34px">🏆 RANKED <span style="color:#ffd84a">BETA</span><small>${P ? 'SAISON ' + P.season + ' · ' : ''}5V5 · 2V2 · 1V1 · GETRENNTE RATINGS</small></h1>
+ <div class="rkbeta"><span>🚧 Beta: Ratings können sich bis zum offiziellen Start noch ändern oder zurückgesetzt werden. Details in den NEWS.</span><button id="rkBug">🐞 Fehler melden</button></div>
+ ${body}<p class="rksub" style="min-height:16px">${escH(RK.msg)}</p><div><button id="rkBack">Zurück</button></div>`);
+            const on = (id, f) => { const el = $(id); if (el) el.onclick = f; };
+            on('rkBack', () => { if (RK.q) rkSend({ type: 'rkx' }); if (RK.found && !RK.found.ok) rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.q = RK.found = null; RK.open = false; showMenu(); });
+            on('rkLogin', showAccount); on('rkBug', () => showBug(showRanked)); document.querySelectorAll('[data-brgo]').forEach(b => b.onclick = () => { RK.open = false; brStart(b.dataset.brgo); }); on('rkRe', () => rkGo(P.live)); on('rkX', () => { rkSend({ type: 'rkx' }); RK.q = null; rkRender(); });
+            on('rkAcc', () => { RK.found.ok = true; rkSend({ type: 'rkacc', id: RK.found.id, ok: 1, map: RK.found.vote, ban: RK.found.ban }); rkRender(); });
+            on('rkDec', () => { rkSend({ type: 'rkacc', id: RK.found.id, ok: 0 }); RK.found = null; rkRender(); });
+            document.querySelectorAll('[data-rkv]').forEach(b => b.onclick = () => { const F = RK.found, k = b.dataset.rkv; // neutral → Stimme → Bann → neutral (je eine)
+                if (F.vote === k) { F.vote = null; F.ban = k; } else if (F.ban === k) F.ban = null; else F.vote = k; rkRender(); });
+            const rkLb = () => { if (RK.view !== 'lb' || RK.lb[RK.mode] || RK.lbP === RK.mode) return; RK.lbP = RK.mode; accApi('rklb', { tok: ACC && ACC.tok, mode: RK.mode }).then(r => { RK.lbP = null; if (r.ok) { RK.lb[r.mode] = r; rkRender(); } }).catch(() => { RK.lbP = null; }); };
+            document.querySelectorAll('[data-rkm]').forEach(c => c.onclick = () => { if (RK.mode !== c.dataset.rkm) { RK.mode = c.dataset.rkm; rkRender(); } });
+            document.querySelectorAll('[data-rkview]').forEach(b => b.onclick = () => { RK.view = b.dataset.rkview; if (RK.view === 'lb') RK.lb = {}; rkRender(); }); rkLb();
+            document.querySelectorAll('[data-rkq]').forEach(b => b.onclick = e => { e.stopPropagation(); RK.mode = b.dataset.rkq; RK.msg = ''; rkConn(() => rkSend({ type: 'rkq', tok: ACC.tok, mode: RK.mode })); });
+        }
+        setInterval(() => { if (!RK.open) return; const t = $('rkT'); if (t && RK.q) t.textContent = mmss((Date.now() - RK.q.t) / 1000); const f = $('rkFT'); if (f && RK.found) f.textContent = Math.max(0, Math.ceil(RK.found.sec - (Date.now() - RK.found.t0) / 1000));
+            const bn = $('rkBan'); if (bn) { if (RK.ban > Date.now()) bn.textContent = mmss((RK.ban - Date.now()) / 1000); else { RK.ban = 0; rkRender(); } } }, 500);
+        // ================= 🤖 BOT-RANG – offline gegen Bots, getrennt vom Online-Rang; Bots werden mit dem Rang stärker =================
+        // Läuft im Browser (auch ohne Server) → nicht fälschungssicher, deshalb bewusst ein eigener Rang. Ränge/K wie auf dem Server (ranked.js).
+        const BR_RANKS = [[-Infinity, 'Recruit'], [650, 'Contender I'], [750, 'Contender II'], [850, 'Challenger I'], [950, 'Challenger II'], [1050, 'Elite I'], [1150, 'Elite II'], [1250, 'Master I'], [1350, 'Master II'], [1500, 'CLUTCH Elite']];
+        const BR_RULES = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, money: 800, bots: 1, teamSize: 5, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
+        const BR = { on: null, done: false };
+        const brRankI = r => { let i = 0; while (i + 1 < BR_RANKS.length && r >= BR_RANKS[i + 1][0]) i++; return i; };
+        const brK = (n, placing) => placing || n <= 0 ? 40 : n < 10 ? 40 - 1.6 * n : n < 50 ? 24 - 0.2 * (n - 10) : 16; // wie Server: 40 → 24 (10) → 16 (50), linear
+        const brBotR = lv => lv <= 1 ? 600 : lv >= 10 ? 1550 : BR_RANKS[lv - 1][0] + 50; // Rating der Bot-Stufe (Mitte des Rangs)
+        function brGet() { let b = null; try { b = JSON.parse(localStorage.getItem('botrk') || 'null'); } catch (e) { } return Object.assign({ r: 1000, n: 0, pl: 0, w: 0, l: 0, h: [] }, b || {}); }
+        const brSave = b => localStorage.setItem('botrk', JSON.stringify(b)); // über SYNC_KEYS automatisch im Account
+        function brApply(b, S, why) { // Elo gegen die Bot-Stufe; S = 1 Sieg / 0 Niederlage
+            const p = b.pend, lv = p ? p.lv : brRankI(b.r) + 1, E = 1 / (1 + Math.pow(10, (brBotR(lv) - b.r) / 400)), d = Math.round(brK(b.n, b.pl < 5) * (S - E)), i0 = brRankI(b.r);
+            b.r = Math.max(0, b.r + d); b.n++; b.pl++; if (S) b.w++; else b.l++; b.h.unshift({ t: Date.now(), m: p ? p.mode : 'comp', S, d, r: b.r, lv, why: why || '' }); b.h.length = Math.min(b.h.length, 10); delete b.pend; brSave(b);
+            return { d, r: b.r, lv, up: brRankI(b.r) - i0 };
+        }
+        function brStart(mode) { // Seite neu laden → sauberer Start mit festen Regeln auf einer offiziellen Map
+            const b = brGet(); if (b.pend) brApply(b, 0, 'verlassen');
+            sessionStorage.setItem('brgo', mode); if (mode === 'comp') localStorage.setItem('map', ['de_dusty', 'de_bazaar', 'de_frost', 'de_moisty', 'de_foundry'][Math.floor(Math.random() * 5)]);
+            location.reload();
+        }
+        function brBoot() { // beim Laden: offenes Bot-Match ohne Ende = Niederlage (verlassen), angefordertes Match starten
+            const b = brGet(), go = sessionStorage.getItem('brgo'); sessionStorage.removeItem('brgo');
+            if (b.pend && !go) { const o = brApply(b, 0, 'verlassen'); toast('🤖 Bot-Rang: Match verlassen', 'Gewertet als Niederlage · ' + o.d + ' → ' + o.r); }
+            if (go !== 'comp' && go !== 'v1') return;
+            const lv = brRankI(b.r) + 1; b.pend = { mode: go, lv, t: Date.now() }; brSave(b);
+            BR.on = { mode: go, lv }; Object.assign(CFG, BR_RULES, { blv: lv }); applyCfg(); remeshAll();
+            setTimeout(() => { if (go === 'v1') { GL.v1 = true; glStart(2); } else startGame(Math.random() < 0.5 ? 'CT' : 'T'); toast('🤖 Bot-Rang · Stufe ' + lv, BR_RANKS[lv - 1][1] + '-Bots'); }, 400);
+        }
+        function brEnd(won) {
+            if (!BR.on || BR.done) return; BR.done = true; const b = brGet();
+            const ok = Object.keys(BR_RULES).every(k => CFG[k] === BR_RULES[k]) && CFG.blv === BR.on.lv; // Regeln im Spiel geändert → keine Wertung
+            if (!ok || !b.pend) { delete b.pend; brSave(b); return; }
+            const o = brApply(b, won ? 1 : 0), nb = brGet(), pn = document.querySelector('#overlay .panel'), rk = nb.pl < 5 ? 'Placement ' + nb.pl + '/5' : (o.up ? (o.up > 0 ? '⬆ AUFSTIEG: ' : '⬇ ABSTIEG: ') : '') + BR_RANKS[brRankI(nb.r)][1];
+            const html = `<div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">🤖 BOT-RANG</span><b style="color:${o.d > 0 ? '#9fe08a' : '#ff6b6b'}">${won ? 'SIEG' : 'NIEDERLAGE'} · ${o.d >= 0 ? '+' : ''}${o.d} → ${o.r}</b></div><div class="row" style="justify-content:space-between"><span style="color:var(--mut)">RANG · BOTS STUFE ${o.lv}</span><b style="color:var(--acc)">${escH(rk)}</b></div>`;
+            if (pn) pn.insertAdjacentHTML('beforeend', html); else toast('🤖 Bot-Rang', (o.d >= 0 ? '+' : '') + o.d + ' → ' + o.r);
+        }
+        function brCard() {
+            const b = brGet(), i = brRankI(b.r), placed = b.pl >= 5, nx = BR_RANKS[i + 1], lo = BR_RANKS[i][0], prog = placed ? (nx ? (b.r - (lo === -Infinity ? 0 : lo)) / (nx[0] - (lo === -Infinity ? 0 : lo)) : 1) : b.pl / 5;
+            const hist = b.h.slice(0, 5).map(h => `<div class="rkh ${h.S ? 'w' : 'l'}"><b>${h.S ? 'SIEG' : 'NIEDERLAGE'}</b><span>${h.m === 'v1' ? '1v1' : '5v5'}</span><span>Stufe ${h.lv}${h.why ? ' · ' + escH(h.why) : ''}</span><span></span><span class="rkd">${h.d >= 0 ? '+' : ''}${h.d}</span></div>`).join('');
+            return `<div class="panel rkcard on" style="cursor:default"><div class="psub">🤖 BOT-RANG · OFFLINE</div><div class="rkrank">${placed ? BR_RANKS[i][1] : 'VORLÄUFIG · ' + BR_RANKS[i][1]}</div><div class="rkr">${b.r}<small> RATING · BOTS STUFE ${i + 1}/10</small></div>
+ <div class="rkbar"><i style="width:${Math.round(Math.max(0, Math.min(1, prog)) * 100)}%"></i></div><div class="rksub">${placed ? (nx ? 'Noch ' + (nx[0] - b.r) + ' bis ' + nx[1] : 'Höchster Rang') : 'Placement ' + b.pl + '/5'} · getrennt vom Online-Rang · Verlassen = Niederlage</div>
+ <div class="rkst"><span>✔ ${b.w}</span><span>✖ ${b.l}</span></div><div><button data-brgo="comp">🤖 5V5 GEGEN BOTS</button><button data-brgo="v1">🎯 1V1 GEGEN BOT</button></div>${hist}</div>`;
+        }
+        // Ranked-Lobby: Teams/Regeln fest, Host startet automatisch, sobald alle Match-Spieler verbunden sind
+        const rkReady = () => RK.cur && NET.host && NET.inLobby && !started && RK.all && NET.players.size + 1 >= RK.cur.n;
+        function rkTryStart() {
+            if (!rkReady() || RK.go) return;
+            RK.go = setTimeout(() => { RK.go = 0; if (!rkReady()) return;
+                if (RK.cur.mode === 'v1') { GL.v1 = true; glStartMP(2); }
+                else { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: 0 }); startGame(player.team); } }, 1500);
+        }
+        const rkLobbyInfo = () => `<p style="font-size:13px;color:var(--acc);margin-top:14px">🏆 RANKED BETA ${RK_MN[RK.cur.mode]}${RK.cur.map ? ' · ' + escH(MAP_NAMES[RK.cur.map] || RK.cur.map) : ''} · ${RK.st ? RK.st.n : 1}/${RK.cur.n} Spieler verbunden${RK.cur.rules && RK.cur.rules.blv ? ' · + ' + (RK.cur.nb[0] + RK.cur.nb[1]) + ' Bots (Stufe ' + RK.cur.rules.blv + ', zählen nicht als Spieler)' : ''}<br><span style="color:#8fa3b8">Teams & Regeln vom Server · Start automatisch, sobald alle da sind</span></p>`;
+        function rkDone(m) { // Ergebnis vom Server (genau eine Wertung pro Match)
+            if (!gameEnded && !m.later) { m.later = 1; setTimeout(() => rkDone(m), 800); return; } // Endstand-Nachricht des Hosts kommt kurz danach → Endbildschirm abwarten
+            sessionStorage.removeItem('rk');
+            const res = m.st === 'rated' ? `${m.res === 1 ? 'SIEG' : m.res === 0 ? 'NIEDERLAGE' : 'UNENTSCHIEDEN'} · ${m.d >= 0 ? '+' : ''}${m.d} → ${m.r}` : (m.st === 'invalid' ? 'UNGÜLTIG' : 'ABGEBROCHEN') + ' · keine Ratingänderung', me = m.me;
+            const rank = !me ? '' : !me.placed ? `Placement ${me.pl}/${me.pq}` : m.prev && m.prev !== me.rank.name ? `${m.d > 0 ? '⬆ AUFSTIEG' : '⬇ ABSTIEG'}: ${m.prev} → ${me.rank.name}` : me.rank.name;
+            const pn = gameEnded && document.querySelector('#overlay .panel');
+            if (pn && !$('rkRes')) pn.insertAdjacentHTML('beforeend', `<div id="rkRes" class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">🏆 RANKED</span><b style="color:${m.d > 0 ? '#9fe08a' : m.d < 0 ? '#ff6b6b' : 'var(--text)'}">${escH(res)}</b></div>${rank ? `<div class="row" style="justify-content:space-between"><span style="color:var(--mut)">RANG</span><b style="color:var(--acc)">${escH(rank)}</b></div>` : ''}${m.why ? `<div class="row" style="font-size:11px;color:var(--mut)">${escH(m.why)}</div>` : ''}`);
+            else toast('🏆 Ranked: ' + res, m.why || rank);
         }
         function netSend(o) { if (NET.ws && NET.ws.readyState === 1) NET.ws.send(JSON.stringify(o)); }
         function addRemote(pid, name, team, ag, hat) {
@@ -8773,7 +8993,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'dhend': if (!NET.host && DH.on) dhEnd(m.sc); break;
                 case 'team': { const rp = NET.players.get(m.pid); if (rp && (m.team === 'CT' || m.team === 'T')) { rp.team = m.team; if (rp.mesh) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, rp.ag, false, rp.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } if (NET.inLobby) renderLobby(); } break; }
                 case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
-                case 'hello': addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w: DH.w }); }
+                case 'rkst': RK.st = m; RK.all = m.n >= m.N; if (NET.inLobby) renderLobby(); break;
+                case 'rkdeny': sessionStorage.removeItem('rk'); alert('Ranked: ' + m.why); leaveGame(); break;
+                case 'rkdone': rkDone(m); break;
+                case 'hello': addRemote(m.pid, m.name, m.team, m.ag, m.hat); rkTryStart(); if (NET.host) netSend({ type: 'lcfg', cfg: CFG }); if (NET.host && DH.on && !DH.ended) { DH.sc[m.pid] = DH.sc[m.pid] || 0; netSend({ type: 'dhstart', map: MAPNAME, cmap: mapNet(), cfg: CFG, w: DH.w }); }
                     netSend({ type: 'hello2', to: m.pid, pid: NET.pid, name: player.name, team: player.team, ag: myLook(), hat: duckHat() || 0 });
                     if (NET.host && started) { netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); netSend({ type: 'roster', bots: bots.map(b => ({ n: b.name, t: b.team, a: b.ag })) }); netSend({ type: 'round', rd: G.round, site: G.site, to: m.pid }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); } if (NET.host && NET.inLobby) { netSend({ type: 'glasg', a: glAsg(), n: NET.glN || 4 }); netSend({ type: 'lmode', mode: NET.mode }); } if (NET.inLobby) renderLobby(); break; case 'ag': { const rp = NET.players.get(m.pid); if (rp) { rp.ag = m.ag; rp.hat = m.hat; } if (rp && !rp.robo) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, m.ag, false, m.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } break; } case 'lmode': if (!NET.host && MODES[m.mode]) { NET.mode = m.mode; if (NET.inLobby) renderLobby(); } break; case 'glasg': Object.assign(glAsg(), m.a || {}); if (m.n) NET.glN = m.n; if (NET.inLobby) renderLobby(); break; case 'hello2': if (m.to === NET.pid) { addRemote(m.pid, m.name, m.team, m.ag, m.hat); if (NET.inLobby) renderLobby(); } break;
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
@@ -8905,7 +9128,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="lobrules"><div class="lobrh"><b>🎮 REGELN</b><button id="lobRules">${NET.host ? '✏️ Bearbeiten' : '👁 Ansehen'}</button></div><div class="rchips">${ruleChips(NET.host ? CFG : NET.hostCfg)}</div></div>
  <div style="display:flex;flex-direction:column;gap:6px;max-height:290px;overflow-y:auto">${rows}</div>
  ${IS_TOUCH && isGl ? glAsgHTML() : ''}
- ${NET.host
+ ${RK.cur ? rkLobbyInfo() : NET.host
                     ? '<div class="csbtns" style="margin-top:12px">' + hostBtns + '</div>' : '<p style="font-size:13px;color:#8fa3b8;margin-top:14px">⏳ Warte, bis der Host das Spiel startet…</p>'}
  <div class="lobfoot"><button id="lobInv">🎒 Inventar</button><button id="lobLeave" style="border-color:#c66;color:#c66">⏻ Verlassen</button></div>
  </div>
@@ -8913,8 +9136,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div id="cschar"><b>${player.name}</b></div>
  <div id="csver">LOBBY | ${modeName(md)} | ${md === 'gl' || md === 'v1' ? 'Arenen' : MAPLABEL}</div>
  </div>`, true);
-            $('lobRules').onclick = () => { if (NET.host || NET.hostCfg) showGameSettings({ cfg: NET.host ? CFG : NET.hostCfg, ro: !NET.host, back: renderLobby }); };
-            document.querySelectorAll('[data-lteam]').forEach(el => el.onclick = () => { const tm = el.dataset.lteam; if (tm === player.team) return; player.team = tm; netSend({ type: 'team', pid: NET.pid, team: tm }); renderLobby(); });
+            $('lobRules').onclick = () => { if (NET.host || NET.hostCfg) showGameSettings({ cfg: NET.host ? CFG : NET.hostCfg, ro: !NET.host || !!RK.cur, back: renderLobby }); };
+            document.querySelectorAll('[data-lteam]').forEach(el => el.onclick = () => { const tm = el.dataset.lteam; if (tm === player.team || RK.cur) return; player.team = tm; netSend({ type: 'team', pid: NET.pid, team: tm }); renderLobby(); });
             if (NET.host) {
                 const on = (id, ev, f) => { const el = $(id); if (el) el[ev] = f; };
                 on('btnStart', 'onclick', () => { NET.inLobby = false; netSend({ type: 'start', map: MAPNAME, cmap: mapNet(), cfg: CFG, dm: DM.on ? 1 : 0 }); startGame(player.team); });
@@ -8925,7 +9148,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             }
             document.querySelectorAll('[data-glk]').forEach(el => el.onclick = () => { const k = +el.dataset.glk; if (glAsg()[NET.pid] === k || el.classList.contains('full')) return; glAsg()[NET.pid] = k; glAsgSend({ a: { [NET.pid]: k } }); }); $('lobInv').onclick = showInventory; $('lobFr').onclick = frToggle; $('lobLink').onclick = lobLink; $('lobDc').onclick = lobDiscord;
             void 0;
-            $('lobLeave').onclick = leaveGame; $('lobLeaveTop').onclick = leaveGame;
+            $('lobLeave').onclick = leaveGame; $('lobLeaveTop').onclick = leaveGame; rkTryStart();
         }
         function startGameClient() {
             player.weapons[2] = mkWeapon(player.team === 'T' ? W.glock : W.usp); updateVM();
@@ -8979,7 +9202,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const k = Math.min(1, dt * 12);
             for (const rp of NET.players.values()) {
                 if (!rp.alive) { rp.mesh.position.set(rp.x, 0.3, rp.z); continue; }
-                const ox = rp.x, oz = rp.z; rp.x += (rp.tx - rp.x) * k; rp.y += (rp.ty - rp.y) * k; rp.z += (rp.tz - rp.z) * k; { const dd = Math.hypot(rp.x - ox, rp.z - oz), sp = dd / Math.max(0.001, now - (rp._nt || now)); rp._nt = now; if (sp > 4) { rp._sd = (rp._sd || 0) + dd; if (rp._sd > 2.3) { rp._sd = 0; sfx('step', rp.x, rp.z); } } } // Schritte von Mitspielern/Gegnern online rp.yaw = lerpAngle(rp.yaw, rp.tyaw, k);
+                const ox = rp.x, oz = rp.z; rp.x += (rp.tx - rp.x) * k; rp.y += (rp.ty - rp.y) * k; rp.z += (rp.tz - rp.z) * k; { const dd = Math.hypot(rp.x - ox, rp.z - oz), sp = dd / Math.max(0.001, now - (rp._nt || now)); rp._nt = now; if (sp > 4) { rp._sd = (rp._sd || 0) + dd; if (rp._sd > 2.3) { rp._sd = 0; sfx('step', rp.x, rp.z); } } } rp.yaw = lerpAngle(rp.yaw, rp.tyaw, k); // Schritte von Mitspielern/Gegnern online; Blickrichtung weich übernehmen (stand versehentlich im Kommentar)
                 rp.mesh.position.set(rp.x, rp.y, rp.z); rp.mesh.rotation.y = rp.yaw + Math.PI; /* Kamera-Blick → Modell-Vorderseite (um 180° gedreht) */
             }
         }
@@ -9021,7 +9244,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (G.state !== 'menu') { const md = EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : 'Competitive', mp = EX.ar ? (CMAP_INFO[EX.ar] ? CMAP_INFO[EX.ar].n : MAP_NAMES[EX.ar] || EX.ar) : GL.on || DH.on ? '' : MAPLABEL;
                     a = { d: md + (mp ? ' · ' + mp : '') + (NET.on ? ' · Online' : ''), s: EX.on || DH.on || GL.on ? '' : DM.on ? (player.kills || 0) + ' Kills' : 'Runde ' + G.round + ' · ' + G.score[player.team] + ':' + G.score[player.team === 'T' ? 'CT' : 'T'] }; }
                 const k = JSON.stringify(a); if (k !== rpLast) { rpLast = k; window.cswoApp.presence(a); } }; rpTick(); setInterval(rpTick, 5000); }
-        showMenu(); { const xq = sessionStorage.getItem('explore'); sessionStorage.removeItem('exret'); if (xq) { sessionStorage.removeItem('explore'); setTimeout(() => exStart(xq.startsWith('ar:') ? xq.slice(3) : null), 300); } } if (window.cswoApp && window.cswoApp.offline) toast('📴 Offline-Modus', 'Kein Internet – Spiele gegen Bots gehen, Online & Account nicht. F5 = erneut verbinden');
+        showMenu(); if (!sessionStorage.getItem('mpjoin')) brBoot(); { const xq = sessionStorage.getItem('explore'); sessionStorage.removeItem('exret'); if (xq) { sessionStorage.removeItem('explore'); setTimeout(() => exStart(xq.startsWith('ar:') ? xq.slice(3) : null), 300); } } if (window.cswoApp && window.cswoApp.offline) toast('📴 Offline-Modus', 'Kein Internet – Spiele gegen Bots gehen, Online & Account nicht. F5 = erneut verbinden');
         // Ladebildschirm ausblenden, sobald das Menü steht
         { const ld = $('loader'); if (ld) { ld.classList.add('done'); setTimeout(() => ld.remove(), 600); } }
         // App-Gefühl: kein Browser-Rechtsklickmenü (außer in Eingabefeldern), kein Pinch-Zoom (iOS)
@@ -9033,6 +9256,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         addEventListener('appinstalled', () => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; toast('📲 Installiert!', 'CLUTCH ist jetzt als App auf Deinem Gerät.'); });
         { const q = new URLSearchParams(location.search), jq = q.get('join'); if (jq) { history.replaceState(null, '', location.pathname); frJoin(jq.slice(0, 30), DEF_WS, q.get('mode')); } } // Beitreten-Link (?join=Raum&mode=…) aus Discord oder vom Freund
         const mj = sessionStorage.getItem('mpjoin');
+        try { const c = JSON.parse(sessionStorage.getItem('rk') || 'null'), j = mj && JSON.parse(mj); if (c && j && c.room === j.room) { RK.cur = c; Object.assign(CFG, c.rules); applyCfg(); } } catch (e) { } if (!RK.cur) sessionStorage.removeItem('rk'); // Ranked-Match: Server-Regeln, nicht gespeichert
         if (mj) { sessionStorage.removeItem('mpjoin'); try { const j = JSON.parse(mj); $('pname').value = j.name; $('srv').value = j.srv; $('room').value = j.room; startMP(j.team); } catch (e) { } }
         loop();
         window.closeBuy = closeBuy; window.startTutorial = startTutorial; // nur was die HTML-Buttons brauchen

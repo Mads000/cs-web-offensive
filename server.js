@@ -11,28 +11,30 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.
 // sonst lokal in data/users.json. Render löscht die Festplatte bei jedem Deploy/Neustart, daher der Gist.
 const crypto = require('crypto');
 const PUBLISH_CODE = 'baumeister42'; // Code zum Veröffentlichen von Community-Karten – hier ändern
-const DATA_DIR = path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json'), LB_FILE = path.join(DATA_DIR, 'leaderboard.json'), SKIN_FILE = path.join(DATA_DIR, 'skins.json'), PRICE_FILE = path.join(DATA_DIR, 'prices.json');
-const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype'];
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data'), USERS_FILE = path.join(DATA_DIR, 'users.json'), PUB_FILE = path.join(DATA_DIR, 'maps.json'), LB_FILE = path.join(DATA_DIR, 'leaderboard.json'), SKIN_FILE = path.join(DATA_DIR, 'skins.json'), PRICE_FILE = path.join(DATA_DIR, 'prices.json'), RANKED_FILE = path.join(DATA_DIR, 'ranked.json');
+const SYNC_KEYS = ['agent', 'bonus20', 'btnlayout', 'cases', 'cs_binds', 'cs_opts', 'custommaps', 'equip', 'gamecfg', 'inv', 'map', 'pname', 'stick', 'customarenas', 'arenaoff', 'prog', 'duckhat', 'knifetype', 'botrk'];
 const GIST_ID = process.env.GIST_ID, GIST_TOKEN = process.env.GIST_TOKEN, GIST_FILE = 'users.json';
 const GH = { Authorization: 'Bearer ' + GIST_TOKEN, Accept: 'application/vnd.github+json', 'User-Agent': 'cs-web-offensive' };
 let CSK = {}, PRICES = {}; // PRICES: { r: {Seltenheit: Preis}, s: {SkinId: Preis} } – vom Shop-Preiseditor // Community-Skins: id → { id, w, n, c, c2, c3, p, r, by, sold, t }
+const RK = {}; // Ranked: Ratings, Saison, Match-Historie (eigene Datei → eine atomare Speicherung pro Match)
 let USERS = {}, PUB = {}, LB = { all: [], day: '', today: [] }, loaded = false, saveT = null, writing = false, again = false;
 async function loadUsers() {
- if (!GIST_ID || !GIST_TOKEN) { try { USERS = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { } try { PUB = JSON.parse(fs.readFileSync(PUB_FILE, 'utf8')); } catch { } try { LB = JSON.parse(fs.readFileSync(LB_FILE, 'utf8')); } catch { } try { CSK = JSON.parse(fs.readFileSync(SKIN_FILE, 'utf8')); } catch { } try { PRICES = JSON.parse(fs.readFileSync(PRICE_FILE, 'utf8')); } catch { } loaded = true; console.log('Accounts: lokale Datei (' + Object.keys(USERS).length + ')'); return; }
+ if (!GIST_ID || !GIST_TOKEN) { try { USERS = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { } try { PUB = JSON.parse(fs.readFileSync(PUB_FILE, 'utf8')); } catch { } try { LB = JSON.parse(fs.readFileSync(LB_FILE, 'utf8')); } catch { } try { CSK = JSON.parse(fs.readFileSync(SKIN_FILE, 'utf8')); } catch { } try { PRICES = JSON.parse(fs.readFileSync(PRICE_FILE, 'utf8')); } catch { } try { Object.assign(RK, JSON.parse(fs.readFileSync(RANKED_FILE, 'utf8'))); } catch { } rk.init(); loaded = true; console.log('Accounts: lokale Datei (' + Object.keys(USERS).length + ')'); return; }
  try {
  const r = await fetch('https://api.github.com/gists/' + GIST_ID, { headers: GH }); if (!r.ok) throw new Error('HTTP ' + r.status);
  const files = (await r.json()).files, read = async f => !f ? '{}' : f.truncated ? await (await fetch(f.raw_url, { headers: GH })).text() : f.content;
- USERS = JSON.parse(await read(files[GIST_FILE]) || '{}'); PUB = JSON.parse(await read(files['maps.json']) || '{}'); LB = Object.assign({ all: [], day: '', today: [] }, JSON.parse(await read(files['leaderboard.json']) || '{}')); CSK = JSON.parse(await read(files['skins.json']) || '{}'); PRICES = JSON.parse(await read(files['prices.json']) || '{}'); loaded = true; console.log('Accounts: Gist geladen (' + Object.keys(USERS).length + ')');
+ USERS = JSON.parse(await read(files[GIST_FILE]) || '{}'); PUB = JSON.parse(await read(files['maps.json']) || '{}'); LB = Object.assign({ all: [], day: '', today: [] }, JSON.parse(await read(files['leaderboard.json']) || '{}')); CSK = JSON.parse(await read(files['skins.json']) || '{}'); PRICES = JSON.parse(await read(files['prices.json']) || '{}'); Object.assign(RK, JSON.parse(await read(files['ranked.json']) || '{}')); rk.init(); loaded = true; console.log('Accounts: Gist geladen (' + Object.keys(USERS).length + ')');
  } catch (e) { console.error('Gist laden fehlgeschlagen (' + e.message + ') – neuer Versuch in 10 s'); setTimeout(loadUsers, 10000); } // nie mit leerem Stand überschreiben
 }
 async function writeUsers() {
  if (!loaded) return; if (writing) { again = true; return; } writing = true;
  try {
- if (GIST_ID && GIST_TOKEN) { const r = await fetch('https://api.github.com/gists/' + GIST_ID, { method: 'PATCH', headers: GH, body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(USERS) }, 'maps.json': { content: JSON.stringify(PUB) }, 'leaderboard.json': { content: JSON.stringify(LB) }, 'skins.json': { content: JSON.stringify(CSK) }, 'prices.json': { content: JSON.stringify(PRICES) } } }) }); if (!r.ok) throw new Error('HTTP ' + r.status); }
- else { fs.mkdirSync(DATA_DIR, { recursive: true }); const tmp = USERS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(USERS)); fs.renameSync(tmp, USERS_FILE); fs.writeFileSync(PUB_FILE, JSON.stringify(PUB)); fs.writeFileSync(LB_FILE, JSON.stringify(LB)); fs.writeFileSync(SKIN_FILE, JSON.stringify(CSK)); fs.writeFileSync(PRICE_FILE, JSON.stringify(PRICES)); }
+ if (GIST_ID && GIST_TOKEN) { const r = await fetch('https://api.github.com/gists/' + GIST_ID, { method: 'PATCH', headers: GH, body: JSON.stringify({ files: { [GIST_FILE]: { content: JSON.stringify(USERS) }, 'maps.json': { content: JSON.stringify(PUB) }, 'leaderboard.json': { content: JSON.stringify(LB) }, 'skins.json': { content: JSON.stringify(CSK) }, 'prices.json': { content: JSON.stringify(PRICES) }, 'ranked.json': { content: JSON.stringify(RK) } } }) }); if (!r.ok) throw new Error('HTTP ' + r.status); }
+ else { fs.mkdirSync(DATA_DIR, { recursive: true }); const tmp = USERS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(USERS)); fs.renameSync(tmp, USERS_FILE); fs.writeFileSync(PUB_FILE, JSON.stringify(PUB)); fs.writeFileSync(LB_FILE, JSON.stringify(LB)); fs.writeFileSync(SKIN_FILE, JSON.stringify(CSK)); fs.writeFileSync(PRICE_FILE, JSON.stringify(PRICES)); fs.writeFileSync(RANKED_FILE + '.tmp', JSON.stringify(RK)); fs.renameSync(RANKED_FILE + '.tmp', RANKED_FILE); }
  } catch (e) { console.error('Accounts speichern fehlgeschlagen: ' + e.message); again = true; }
  writing = false; if (again) { again = false; persist(); }
 }
+const rooms = new Map(), rk = require('./ranked').createRanked({ RK, persist: () => persist(), rooms, auth: tok => byTok(tok) });
 function persist() { clearTimeout(saveT); saveT = setTimeout(writeUsers, GIST_ID ? 3000 : 500); } // Gist: Änderungen 3 s sammeln (schont das GitHub-Limit)
 loadUsers();
 // Render beendet den Server mit SIGTERM (Deploy/Ruhemodus) → offene Änderungen vorher noch speichern
@@ -88,6 +90,9 @@ function api(p, b, ip) {
  return { err: 1 };
  }
  // ── Community-Skins: Liste für alle ──
+ // ── Ranked: Profil, Rang, Historie (Warteschlange läuft über WebSocket) ──
+ if (p === '/api/ranked') { const u = byTok(b.tok); if (!u) return { err: 'Bitte neu einloggen.', relog: 1 }; return Object.assign({ ok: 1 }, rk.profile(u)); }
+ if (p === '/api/rklb') { const u = byTok(b.tok); return Object.assign({ ok: 1 }, rk.board(String(b.mode || ''), u ? u.name.toLowerCase() : null)); } // Ranked-Bestenliste
  if (p === '/api/skins') return { ok: 1, skins: Object.values(CSK), prices: PRICES };
  // ── Shop-Preise: mit Code prüfen (check) oder für alle speichern ──
  if (p === '/api/setprices') {
@@ -208,37 +213,41 @@ const server = http.createServer((req, res) => {
 });
 
 const wss = new WebSocketServer({ server });
-const rooms = new Map();
+setInterval(() => rk.tick(), 1000).unref();
 wss.on('connection', ws => {
  ws.on('message', raw => {
- let m; try { m = JSON.parse(raw) } catch { return }
+ let m; try { m = JSON.parse(raw) } catch { return } if (!m || typeof m !== 'object') return;
+ if (typeof m.type === 'string' && m.type.startsWith('rk')) { rk.queueMsg(ws, m); return; } // Ranked-Warteschlange; rk*-Nachrichten nie weiterleiten
  if (m.type === 'rooms') {
- const list = [...rooms.entries()].map(([name, r]) => ({ name, n: r.clients.length, st: r.started ? 1 : 0, mode: r.mode || null })).filter(r => r.n > 0);
+ const list = [...rooms.entries()].filter(([name]) => !name.startsWith('rk_')).map(([name, r]) => ({ name, n: r.clients.length, st: r.started ? 1 : 0, mode: r.mode || null })).filter(r => r.n > 0);
  ws.send(JSON.stringify({ type: 'rooms', rooms: list }));
  return;
  }
  if (m.type === 'join') {
  ws.room = m.room; ws.pid = m.pid; const au = byTok(m.acc); if (au) ws.acc = au.name.toLowerCase(); // Account → Freunde sehen, in welchem Raum man ist
+ if (!rk.join(ws, m.room)) { ws.room = null; return; } // Ranked-Raum: nur Spieler des Matches
  if (!rooms.has(m.room)) rooms.set(m.room, { clients: [], hostPid: null });
  const r = rooms.get(m.room);
  const isHost = r.clients.length === 0;
  if (isHost) r.hostPid = m.pid;
  ws.send(JSON.stringify({ type: 'joined', host: isHost }));
- r.clients.push(ws);
+ r.clients.push(ws); rk.joined(ws);
   } else if (ws.room) {
  const r = rooms.get(ws.room);
  if (m.type === 'chat') { if (typeof m.t !== 'string' || !m.t.trim() || m.t.length > 160) return; const n = Date.now(); ws.chatT = (ws.chatT || []).filter(x => n - x < 5000); if (ws.chatT.length >= 5) return; ws.chatT.push(n); } // Chat: max. 160 Zeichen, 5 Nachrichten / 5 s
  if (r && (m.type === 'start' || m.type === 'glstart')) r.started = true;
  if (r && m.type === 'lmode') r.mode = m.mode;
+ let out = raw.toString(); if (ws.rk && r) { out = rk.msg(ws, r, m, out); if (out === false) return; } // Ranked: Server zählt mit & prüft
  for (const c of (r ? r.clients : []))
- if (c !== ws && c.readyState === 1) c.send(raw.toString());
+ if (c !== ws && c.readyState === 1) c.send(out);
  }
  });
  ws.on('close', () => {
- if (!ws.room) return;
+ rk.wsClose(ws); if (!ws.room) return;
  const r = rooms.get(ws.room); if (!r) return;
  const i = r.clients.indexOf(ws); if (i >= 0) r.clients.splice(i, 1);
  for (const c of r.clients) if (c.readyState === 1) c.send(JSON.stringify({ type: 'leave', pid: ws.pid }));
+ rk.leave(ws);
  if (r.clients.length === 0) { rooms.delete(ws.room); return; }
  if (ws.pid === r.hostPid) {
  const next = r.clients[0];
