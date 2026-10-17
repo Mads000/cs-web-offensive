@@ -5037,7 +5037,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 e.mate.material = mateMat(col); const mt = e.alive && isMate(e); e.mate.visible = mt; mateXray(e, col, mt); }
         }
         // Mitspieler durch Wände: Silhouette nur dort, wo eine Wand davor ist (GreaterDepth) + Name unter der Figur
-        const MXR_MAT = {}, mxrMat = col => MXR_MAT[col] || (MXR_MAT[col] = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.5, depthWrite: false, depthFunc: THREE.GreaterDepth }));
+        const MXR_MAT = {}, mxrMat = col => MXR_MAT[col] || (MXR_MAT[col] = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.5, depthWrite: false, depthFunc: THREE.GreaterDepth, stencilWrite: true, stencilRef: 1, stencilFunc: THREE.NotEqualStencilFunc, stencilFail: THREE.KeepStencilOp, stencilZFail: THREE.KeepStencilOp, stencilZPass: THREE.KeepStencilOp }));
         function nameMat(name, col) { const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d'); g.font = 'bold 30px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 6; g.strokeStyle = 'rgba(0,0,0,.85)'; g.strokeText(name, 128, 32); g.fillStyle = col; g.fillText(name, 128, 32);
             return new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, depthWrite: false, transparent: true }); }
         function mateXray(e, col, on) {
@@ -5045,7 +5045,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (on && (e.xrMesh !== e.mesh || e.xrCol !== col)) { // (neu) aufbauen: Kopie jedes Körperteils als Kind, folgt so jeder Animation
                 if (e.xr) for (const m of e.xr) m.parent && m.parent.remove(m); e.xr = []; e.xrMesh = e.mesh; e.xrCol = col; const parts = [];
                 e.mesh.traverse(o => { if (o.isMesh && !o.userData.isOut) parts.push(o); });
-                for (const o of parts) { const x = new THREE.Mesh(o.geometry, mxrMat(col)); x.userData.isOut = 1; x.raycast = () => {}; x.renderOrder = 998; o.add(x); e.xr.push(x); }
+                for (const o of parts) { const om = o.material; if (om && !om.stencilWrite) Object.assign(om, { stencilWrite: true, stencilRef: 1, stencilFunc: THREE.AlwaysStencilFunc, stencilZPass: THREE.ReplaceStencilOp }); // sichtbare Teile markieren → dort keine Silhouette (nur hinter Wänden)
+                    const x = new THREE.Mesh(o.geometry, mxrMat(col)); x.userData.isOut = 1; x.raycast = () => {}; x.renderOrder = 998; o.add(x); e.xr.push(x); }
                 if (e.ntag) e.ntag.parent && e.ntag.parent.remove(e.ntag); e.ntag = null;
             }
             if (on && (!e.ntag || e.ntName !== e.name)) { if (e.ntag) e.ntag.parent && e.ntag.parent.remove(e.ntag); e.ntag = new THREE.Sprite(nameMat(String(e.name || ''), col)); e.ntag.scale.set(1.4, 0.35, 1); e.ntag.position.set(0, -0.15, 0); e.ntag.renderOrder = 999; e.ntName = e.name; e.mesh.add(e.ntag); }
