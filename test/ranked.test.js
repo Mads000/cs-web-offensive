@@ -291,6 +291,22 @@ test('Unranked: eigene Schlange, Bots nach 15 s nach Spielerstärke, Ranked-Rati
  assert.strictEqual(S.rk.board('comp').total, 0); CFG.team.ur = 5;
 });
 
+test('Matchmaking DM/Gauntlet/1v1: ohne Rang, Bots nach 10 s, 1v1 nur Menschen, Gauntlet nur Duo-Gruppen', () => {
+ const S = setupP(3), a = fakeWs(), b = fakeWs(), c = fakeWs(); [a, b, c].forEach((w, i) => S.rk.queueMsg(w, { type: 'rkhi', tok: 't' + i }));
+ S.rk.queueMsg(a, { type: 'rkq', tok: 't0', mode: 'qdm' }); S.rk.tick(T); assert.ok(!a.last('rkfound'), 'erst nach 10 s');
+ T += 11000; S.rk.tick(T); const f = a.last('rkfound'); assert.strictEqual(f.mode, 'qdm'); assert.ok(f.maps.length, 'Map-Voting'); S.rk.queueMsg(a, { type: 'rkacc', id: f.id, ok: 1 });
+ const go = a.last('rkgo'); assert.strictEqual(go.rules.bots, 1); const w = enter(S, go, 0);
+ send(S, w, { type: 'start', dm: 1 }); T += 5000; send(S, w, { type: 'over', sc: {} });
+ assert.strictEqual(S.RK.mt[go.id].st, 'done'); assert.strictEqual(S.RK.p.p0.m.comp.r, 1000); assert.ok(!S.rk._.BY.has('p0'));
+ S.rk.queueMsg(b, { type: 'rkq', tok: 't1', mode: 'qv1' }); T += 60000; S.rk.tick(T); assert.ok(!b.last('rkfound'), '1v1 ohne Bots');
+ S.rk.queueMsg(c, { type: 'rkq', tok: 't2', mode: 'qv1' }); S.rk.tick(T); assert.strictEqual(b.last('rkfound').mode, 'qv1');
+ S.rk.queueMsg(b, { type: 'rkacc', id: b.last('rkfound').id, ok: 0 }); assert.ok(!S.rk._.BAN.get('p1'), 'keine Suchsperre');
+ S.rk.queueMsg(c, { type: 'rkx' }); S.rk.queueMsg(a, { type: 'rkpinv', n: 'P1' }); S.rk.queueMsg(b, { type: 'rkpjoin', id: b.last('rkpinv').inv[0].id }); S.rk.queueMsg(a, { type: 'rkpinv', n: 'P2' }); S.rk.queueMsg(c, { type: 'rkpjoin', id: c.last('rkpinv').inv[0].id });
+ S.rk.queueMsg(a, { type: 'rkq', tok: 't0', mode: 'qgl' }); assert.match(a.last('rkoff').why, /max\. 2/);
+ S.rk.queueMsg(a, { type: 'rkpkick', n: 'p2' }); S.rk.queueMsg(a, { type: 'rkq', tok: 't0', mode: 'qgl' }); T += 11000; S.rk.tick(T);
+ const fg = a.last('rkfound'); [a, b].forEach(x => S.rk.queueMsg(x, { type: 'rkacc', id: fg.id, ok: 1 })); assert.deepStrictEqual(a.last('rkgo').duo, [['P0', 'P1']]);
+});
+
 // ── Echter Server: Registrieren, Warteschlange per WebSocket, Raum-Zugang ──
 test('Server-Integration (HTTP + WebSocket)', { timeout: 20000 }, async () => {
  Date.now = realNow;

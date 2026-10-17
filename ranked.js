@@ -10,8 +10,9 @@ const CFG = {
  kSmooth: true, // true: linear zwischen den Stützpunkten (keine Sprünge bei 10/50), false: Stufen
  season: +process.env.RANKED_SEASON || 1, softReset: 0.5, // neue Saison: R = start + (R - start) × 0.5
  seasonStart: process.env.RANKED_SEASON_START || '2026-11-01', seasonMonths: 3, // ab Start alle 3 Monate automatisch neue Saison
- team: { comp: +process.env.RANKED_TEAM || 5, duo: 2, v1: 1, ur: 5 }, // Spieler pro Team (5v5, 2v2, 1v1, Unranked 5v5)
- ur: { fillSec: 15 }, // Unranked: Spielersuche wie Ranked, Bots füllen schon nach 15 s auf; versteckte Spielstärke nur für Matchmaking & Bot-Stufe, keine Suchsperre
+ team: { comp: +process.env.RANKED_TEAM || 5, duo: 2, v1: 1, ur: 5, qdm: 5, qgl: 4, qv1: 1 }, // Spieler pro Team (5v5, 2v2, 1v1, Unranked 5v5)
+ ur: { fillSec: 15 },
+ quick: { fillSec: 10 }, // Matchmaking Deathmatch (bis 10) / Gauntlet (bis 8, Duos) / 1v1: ohne Rang, Bots füllen nach 10 s auf (1v1: nur Menschen) // Unranked: Spielersuche wie Ranked, Bots füllen schon nach 15 s auf; versteckte Spielstärke nur für Matchmaking & Bot-Stufe, keine Suchsperre
  dodge: { windowMin: 30, ban: [0, 60, 120, 300] }, // Ablehnen/Verpassen in 30 Min: 1. frei, 2. 1 Min, 3. 2 Min, ab 4. 5 Min Suchsperre (nie länger)
  hitCap: 150, // ADR-Statistik: max. Schaden pro gemeldetem Treffer
  fillSec: 30, // 2v2/5v5: nach 30 s Wartezeit freie Plätze mit Bots auffüllen (Bot-Stärke = Lobby-Durchschnitt, Bots bekommen kein Rating)
@@ -26,7 +27,7 @@ const CFG = {
  keepMatches: 3000, hist: 20,
  party: { max: 5, invMin: 5, offSec: 120, tradeMs: 5000 } // Gruppe: max. Größe, Einladung gültig (Min), getrennte Mitglieder fliegen nach 120 s raus (nicht während eines Matches), Trade-Fenster für KAST
 };
-const MODES = ['comp', 'duo', 'v1'], QMODES = [...MODES, 'ur'], TEAMMODE = md => md !== 'v1'; // comp & duo = Wettkampf (Bombe), v1 = Arena-Duell; ur = Unranked (eigene Schlange, kein Rang)
+const MODES = ['comp', 'duo', 'v1'], QMODES = [...MODES, 'ur', 'qdm', 'qgl', 'qv1'], TEAMMODE = md => md !== 'v1' && md !== 'qv1' && md !== 'qgl', QUICK = md => /^q(dm|gl|v1)$/.test(md), VOTE = md => TEAMMODE(md); // QUICK = Matchmaking ohne Rang & ohne Ergebnisprüfung; VOTE = Map-Voting // comp & duo = Wettkampf (Bombe), v1 = Arena-Duell; ur = Unranked (eigene Schlange, kein Rang)
 function seasonNow(now = Date.now()) { const s = new Date(CFG.seasonStart + 'T00:00:00Z'), d = new Date(now); if (isNaN(s) || d < s) return CFG.season; return Math.max(CFG.season, 1 + Math.floor(((d.getUTCFullYear() - s.getUTCFullYear()) * 12 + d.getUTCMonth() - s.getUTCMonth()) / CFG.seasonMonths)); }
 
 // ── Mathe ──
@@ -225,21 +226,21 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
    const P = party(key), mem = P && P.mem.length > 1 ? P.mem : [key];
    if (P && P.mem.length > 1) { // Gruppe: nur der Leiter sucht, alle müssen verbunden & frei sein, Größe muss zum Modus passen
     if (P.lead !== key) return tx(ws, { type: 'rkoff', why: 'Nur der Gruppenleiter (' + P.nm[P.lead] + ') kann die Suche starten.' }), true;
-    if (mem.length > CFG.team[mode]) return tx(ws, { type: 'rkoff', why: 'Gruppe zu groß für ' + ({ comp: '5v5', duo: '2v2', v1: '1v1', ur: 'Unranked' })[mode] + ' (max. ' + CFG.team[mode] + ').' }), true;
+    const cap = mode === 'qgl' ? 2 : CFG.team[mode]; if (mem.length > cap) return tx(ws, { type: 'rkoff', why: 'Gruppe zu groß für ' + ({ comp: '5v5', duo: '2v2', v1: '1v1', ur: 'Unranked', qdm: 'Deathmatch', qgl: 'Gauntlet (Duos)', qv1: '1v1' })[mode] + ' (max. ' + cap + ').' }), true;
     for (const k of mem) { if (k === key) continue; const c = CON.get(k), n = P.nm[k];
      if (!c || c.readyState !== 1) return tx(ws, { type: 'rkoff', why: n + ' ist nicht im Ranked-Menü verbunden.' }), true;
      if (BAN.get(k) > now) return tx(ws, { type: 'rkoff', why: n + ' hat gerade eine Suchsperre.' }), true;
      if (BY.has(k)) return tx(ws, { type: 'rkoff', why: n + ' ist noch in einem Ranked-Match.' }), true; }
    }
    const t0 = q && q.mode === mode ? q.t : now;
-   for (const k of mem) { const nm = k === key ? u.name : P.nm[k], M = mode === 'ur' ? urRec(k, nm) : rec(k, nm).m[mode]; Q.set(k, { key: k, name: nm, ws: k === key ? ws : CON.get(k), mode, t: t0, r: M.r, prov: mode !== 'ur' && M.pl < M.pq, pt: mem.length > 1 ? P.id : undefined, pn: mem.length }); }
+   for (const k of mem) { const nm = k === key ? u.name : P.nm[k], M = mode === 'ur' || QUICK(mode) ? urRec(k, nm) : rec(k, nm).m[mode]; Q.set(k, { key: k, name: nm, ws: k === key ? ws : CON.get(k), mode, t: t0, r: M.r, prov: MODES.includes(mode) && M.pl < M.pq, pt: mem.length > 1 ? P.id : undefined, pn: mem.length }); }
    for (const k of mem) status(Q.get(k), now); if (P) pSend(P); return true;
   }
   if (m.type === 'rkx') { const q = ws.rkKey && Q.get(ws.rkKey); if (q && q.ws === ws) dequeue(q, q.pt ? (q.name + ' hat die Suche abgebrochen.') : ''); else tx(ws, { type: 'rkoff', why: '' }); return true; }
   if (m.type === 'rkacc') {
    const L = LIVE.get(m.id), key = ws.rkKey; if (!L || L.st !== 'accept' || !key || !L.keys.includes(key)) return true;
    if (!m.ok) { L.dec.add(key); cancelAccept(L); return true; }
-   L.acc.add(key); if (TEAMMODE(L.mode)) { if (L.maps.includes(m.map)) L.votes[key] = m.map; if (L.maps.includes(m.ban) && m.ban !== m.map) L.bans[key] = m.ban; }
+   L.acc.add(key); if (VOTE(L.mode)) { if (L.maps.includes(m.map)) L.votes[key] = m.map; if (L.maps.includes(m.ban) && m.ban !== m.map) L.bans[key] = m.ban; }
    for (const k of L.keys) tx(L.qws[k], { type: 'rkacc', a: L.acc.size, n: L.keys.length });
    if (L.acc.size === L.keys.length) go(L); return true;
   }
@@ -254,14 +255,14 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   const sec = CFG.dodge.ban[Math.min(t.length, CFG.dodge.ban.length) - 1]; if (sec) BAN.set(key, now + sec * 1000); return sec;
  }
  function cancelAccept(L) { // jemand lehnt ab / Zeit abgelaufen → Annehmende zurück in die Schlange (Wartezeit bleibt), Rest raus
-  if (L.st !== 'accept') return; L.st = 'cancel'; LIVE.delete(L.id); const now = Date.now(), ban = {}; if (L.mode !== 'ur') for (const k of L.dec) ban[k] = dodge(k, now); // Unranked: keine Suchsperre
-  for (const k of L.keys) { BY.delete(k); const e = L.q[k], pdec = e.pt && L.keys.some(j => L.q[j].pt === e.pt && L.dec.has(j)); if (L.acc.has(k) && !L.dec.has(k) && !pdec && e.ws.readyState === 1) { Q.set(k, e); tx(e.ws, { type: 'rkback', why: 'Ein Spieler hat nicht angenommen – Suche läuft weiter.' }); status(e, Date.now()); } else tx(e.ws, Object.assign({ type: 'rkoff', why: (pdec && !L.dec.has(k) ? 'Ein Gruppenmitglied hat nicht angenommen.' : 'Match nicht angenommen.') + (ban[k] ? ' Suchsperre: ' + ban[k] / 60 + ' Min.' : L.dec.has(k) && L.mode !== 'ur' ? ' Beim nächsten Ablehnen gibt es eine kurze Suchsperre.' : '') }, ban[k] ? { ban: now + ban[k] * 1000 } : {})); }
+  if (L.st !== 'accept') return; L.st = 'cancel'; LIVE.delete(L.id); const now = Date.now(), ban = {}; if (MODES.includes(L.mode)) for (const k of L.dec) ban[k] = dodge(k, now); // Unranked: keine Suchsperre
+  for (const k of L.keys) { BY.delete(k); const e = L.q[k], pdec = e.pt && L.keys.some(j => L.q[j].pt === e.pt && L.dec.has(j)); if (L.acc.has(k) && !L.dec.has(k) && !pdec && e.ws.readyState === 1) { Q.set(k, e); tx(e.ws, { type: 'rkback', why: 'Ein Spieler hat nicht angenommen – Suche läuft weiter.' }); status(e, Date.now()); } else tx(e.ws, Object.assign({ type: 'rkoff', why: (pdec && !L.dec.has(k) ? 'Ein Gruppenmitglied hat nicht angenommen.' : 'Match nicht angenommen.') + (ban[k] ? ' Suchsperre: ' + ban[k] / 60 + ' Min.' : L.dec.has(k) && MODES.includes(L.mode) ? ' Beim nächsten Ablehnen gibt es eine kurze Suchsperre.' : '') }, ban[k] ? { ban: now + ban[k] * 1000 } : {})); }
  }
  function tick(now = Date.now()) {
   for (const md of QMODES) {
    const list = [...Q.values()].filter(q => q.mode === md && q.ws.readyState === 1);
    for (const [A, B] of pickMatches(list, CFG.team[md], now)) create(md, A, B, now);
-   if (TEAMMODE(md)) for (const [A, B] of fillMatches([...Q.values()].filter(q => q.mode === md && q.ws.readyState === 1), CFG.team[md], now, md === 'ur' ? CFG.ur.fillSec : CFG.fillSec)) create(md, A, B, now);
+   if (md === 'qdm' || md === 'qgl' || TEAMMODE(md)) for (const [A, B] of fillMatches([...Q.values()].filter(q => q.mode === md && q.ws.readyState === 1), CFG.team[md], now, QUICK(md) ? CFG.quick.fillSec : md === 'ur' ? CFG.ur.fillSec : CFG.fillSec)) create(md, A, B, now);
   }
   if (Math.floor(now / 1000) % 2 === 0) for (const q of Q.values()) status(q, now);
   if (seasonNow(now) > RK.season) newSeason(seasonNow(now));
@@ -269,21 +270,23 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   for (const L of [...LIVE.values()]) {
    if (L.st === 'accept' && now - L.t > CFG.acceptSec * 1000) { for (const k of L.keys) if (!L.acc.has(k)) L.dec.add(k); cancelAccept(L); continue; }
    if (L.st !== 'live') continue;
+   if (QUICK(L.mode) && L.started) { if (connected(L).size) L.gone[0] = 0; else if (!L.gone[0]) L.gone[0] = now; else if (now - L.gone[0] > CFG.abandonSec * 1000) end(L, 'aborted', 'Alle haben das Match verlassen'); continue; } // Matchmaking: erst Schluss, wenn alle weg sind
    if (!L.started && now - L.t > CFG.joinSec * 1000) { end(L, 'aborted', 'Nicht alle Spieler sind beigetreten (' + L.keys.filter(k => !connected(L).has(k)).map(k => L.q[k].name).join(', ') + ')'); continue; }
    if (L.started) { const c = connected(L); for (const t of [0, 1]) { if (!L.tm[t].length) continue; if (L.tm[t].some(k => c.has(k))) L.gone[t] = 0; else if (!L.gone[t]) L.gone[t] = now; else if (now - L.gone[t] > CFG.abandonSec * 1000) { quit(L, t, 'Team ' + (t + 1) + ' hat das Match vollständig verlassen'); break; } } }
   }
  }
  function create(md, A, B, now) {
   const id = now.toString(36) + '-' + crypto.randomBytes(4).toString('hex'), keys = [...A, ...B].map(p => p.key), size = CFG.team[md], nb = [size - A.length, size - B.length];
-  const botR = nb[0] + nb[1] ? Math.round(avg([...A, ...B].map(p => p.r))) : null, blv = botR === null ? 0 : rankOf(botR).i + 1;
-  const rules = nb[0] + nb[1] ? Object.assign({}, CFG.rules, { bots: 1, teamSize: size, blv }) : CFG.rules;
+  if (QUICK(md)) { nb[0] = nb[1] = 0; } const fill = md === 'qdm' || md === 'qgl' ? 1 : 0; // Matchmaking: Bot-Zahl regelt das Spiel selbst (DM füllt auf 5 je Seite, Gauntlet füllt Teams)
+  const botR = nb[0] + nb[1] || fill ? Math.round(avg([...A, ...B].map(p => p.r))) : null, blv = botR === null ? 0 : rankOf(botR).i + 1;
+  const rules = nb[0] + nb[1] || fill ? Object.assign({}, CFG.rules, { bots: 1, teamSize: CFG.team[md === 'qgl' ? 'comp' : md] || 5, blv }) : CFG.rules;
   const L = { id, mode: md, st: 'accept', tm: [A.map(p => p.key), B.map(p => p.key)], keys, nb, botR, rules, q: {}, qws: {}, acc: new Set(), dec: new Set(), votes: {}, bans: {}, t: now, maps: pool() };
-  for (const p of [...A, ...B]) { Q.delete(p.key); BY.set(p.key, id); L.q[p.key] = p; L.qws[p.key] = p.ws; tx(p.ws, { type: 'rkfound', id, mode: md, maps: TEAMMODE(md) ? L.maps : null, names: TEAMMODE(md) ? Object.fromEntries(L.maps.filter(k => mapData(k)).map(k => [k, mapData(k).n])) : null, sec: CFG.acceptSec, n: keys.length, bots: nb[0] + nb[1], blv }); }
+  for (const p of [...A, ...B]) { Q.delete(p.key); BY.set(p.key, id); L.q[p.key] = p; L.qws[p.key] = p.ws; tx(p.ws, { type: 'rkfound', id, mode: md, maps: VOTE(md) ? L.maps : null, names: VOTE(md) ? Object.fromEntries(L.maps.filter(k => mapData(k)).map(k => [k, mapData(k).n])) : null, sec: CFG.acceptSec, n: keys.length, bots: nb[0] + nb[1], blv }); }
   LIVE.set(id, L);
  }
  function go(L) { // alle haben angenommen → Map: Punkte = Stimmen − Banns, höchste Punktzahl gewinnt, Gleichstand (auch ohne Stimmen) = Zufall
   let map = null;
-  if (TEAMMODE(L.mode)) { const sc = Object.fromEntries(L.maps.map(m => [m, 0])); for (const v of Object.values(L.votes)) sc[v]++; for (const b of Object.values(L.bans)) sc[b]--; const top = Math.max(...Object.values(sc)), best = L.maps.filter(m => sc[m] === top); map = best[crypto.randomInt(best.length)]; }
+  if (VOTE(L.mode)) { const sc = Object.fromEntries(L.maps.map(m => [m, 0])); for (const v of Object.values(L.votes)) sc[v]++; for (const b of Object.values(L.bans)) sc[b]--; const top = Math.max(...Object.values(sc)), best = L.maps.filter(m => sc[m] === top); map = best[crypto.randomInt(best.length)]; }
   const cd = map && mapData(map); // offizielle Community-Map: Kartendaten (Stand bei Matchbeginn) vom Server an alle, der Host muss genau diese spielen
   if (cd) { L.cmap = { k: map, n: cd.n, th: cd.th, col: cd.col, tod: cd.tod, em: cd.em, emc: cd.emc, g: cd.g }; L.cg = cd.g.join(); }
   Object.assign(L, { st: 'live', t: Date.now(), room: 'rk_' + L.id, map, started: false, sc: [0, 0], lastEv: 0, gone: [0, 0], gt: null, last: {}, dmg: {}, side: ['CT', 'T'], ks: Object.fromEntries(L.keys.map(k => [k, { k: 0, d: 0, a: 0, hs: 0, kast: 0, rd: 0 }])), rd: newRd(), bt: {}, kf: false });
@@ -292,7 +295,7 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   persist();
   for (const k of L.keys) tx(L.qws[k], goMsg(L, k));
  }
- function goMsg(L, key) { return { type: 'rkgo', id: L.id, mode: L.mode, room: L.room, map: L.map, cmap: L.cmap, team: L.side[L.tm[0].includes(key) ? 0 : 1], n: L.keys.length, nb: L.nb, rules: L.rules }; }
+ function goMsg(L, key) { return { type: 'rkgo', id: L.id, mode: L.mode, room: L.room, map: L.map, cmap: L.cmap, team: L.side[L.tm[0].includes(key) ? 0 : 1], n: L.keys.length, nb: L.nb, rules: L.rules, duo: L.mode === 'qgl' ? Object.values(L.keys.reduce((g, k) => { const pt = L.q[k].pt; if (pt) (g[pt] = g[pt] || []).push(L.q[k].name); return g; }, {})).filter(d => d.length === 2) : undefined }; } // Gauntlet: Gruppen als Duo in ein Team
  const newRd = () => ({ died: new Map(), kl: new Set(), as: new Set(), tr: new Set(), dg: new Map() }); // pro Runde: Tode (Opfer → { by, t }), Kills, Assists, Trades, wer wem Schaden gemacht hat
  const roomOf = L => rooms.get(L.room);
  const connected = L => new Set(((roomOf(L) || {}).clients || []).filter(c => c.readyState === 1 && c.acc).map(c => c.acc));
@@ -309,6 +312,10 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
  // Nachricht im Ranked-Raum: false = verwerfen, String = (umgeschriebene) Nachricht weiterleiten
  function msg(ws, r, m, raw) {
   const L = ws.rk; if (!L || L.st !== 'live' || typeof m.type !== 'string') return raw;
+  if (QUICK(L.mode)) { // ohne Rang: keine Ergebnisprüfung, nur Host darf steuern; Ende = Match vorbei
+   if (m.type === 'team' || m.type.startsWith('dh') || (HOST_ONLY.has(m.type) && ws.pid !== r.hostPid)) return false;
+   if (m.type === 'start' || m.type === 'glstart') L.started = true; if ((m.type === 'over' || m.type === 'glover') && L.started) { L.sc = [0, 0]; end(L, 'done', null); } return raw;
+  }
   const host = ws.pid === r.hostPid, now = Date.now();
   if (m.type === 'team' || m.type.startsWith('dh')) return false;
   if (HOST_ONLY.has(m.type) && !host) return false;
@@ -391,9 +398,9 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   if (st === 'rated') {
    for (const k of L.keys) { const s = ks(k); if (!s) continue; const p = rec(k), A = (p.agg = p.agg || {})[L.mode] = (p.agg || {})[L.mode] || { n: 0, rd: 0, k: 0, d: 0, a: 0, hs: 0, dmg: 0, kast: 0, krd: 0 }; // Summen fürs Profil (genau einmal, da end() nur einmal läuft)
     A.n++; A.rd += rounds; A.k += s.k; A.d += s.d; A.a += s.a; A.hs += s.hs; A.dmg += (L.dmg || {})[k] || 0; if (TEAMMODE(L.mode)) { A.kast += s.kast; A.krd += s.rd; } }
-  } else if (L.started) for (const k of L.keys) { const M = UR ? urRec(k) : rec(k).m[L.mode]; if (mt.stats[k].left) M.ab++; M.h.unshift(L.id); M.h.length = Math.min(M.h.length, CFG.hist); } // Abbruch/ungültig: in der Historie sichtbar, Rating unverändert
+  } else if (L.started && !QUICK(L.mode)) for (const k of L.keys) { const M = UR ? urRec(k) : rec(k).m[L.mode]; if (mt.stats[k].left) M.ab++; M.h.unshift(L.id); M.h.length = Math.min(M.h.length, CFG.hist); } // Abbruch/ungültig: in der Historie sichtbar, Rating unverändert
   persist();
-  const r = roomOf(L), sb = sbView(mt); for (const cl of (r ? r.clients : [])) if (cl.acc) tx(cl, Object.assign({ type: 'rkdone' }, matchView(mt, cl.acc), { me: RK.p[cl.acc] && !UR ? view(RK.p[cl.acc].m[L.mode]) : null, prev: mt.ch && mt.ch[cl.acc] ? rankOf(mt.ch[cl.acc][0]).name : null, sb, side: mt.tm[0].includes(cl.acc) ? 0 : 1 }));
+  const r = roomOf(L), sb = sbView(mt); for (const cl of (r ? r.clients : [])) if (cl.acc) tx(cl, Object.assign({ type: 'rkdone' }, matchView(mt, cl.acc), { me: RK.p[cl.acc] && MODES.includes(L.mode) ? view(RK.p[cl.acc].m[L.mode]) : null, prev: mt.ch && mt.ch[cl.acc] ? rankOf(mt.ch[cl.acc][0]).name : null, sb, side: mt.tm[0].includes(cl.acc) ? 0 : 1 }));
  }
  function sbView(mt) { // Endbildschirm: nur vom Server geprüfte Werte; fehlt etwas → null (Anzeige „–“)
   const st = mt.stats || {}, nv = v => v === undefined ? null : v;
@@ -410,4 +417,4 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
  return { init, queueMsg, wsClose, tick, join, joined: ws => ws.rk && joined(ws.rk), msg, leave, profile, pub, pinv: invsFor, board, newSeason, _: { Q, LIVE, BY, BAN, PT, end } };
 }
 
-module.exports = { CFG, MODES, QMODES, seasonNow, fillMatches, units, split, expected, kFactor, rankOf, rateTeams, balance, pickMatches, softReset, winOf, createRanked };
+module.exports = { CFG, MODES, QMODES, QUICK, seasonNow, fillMatches, units, split, expected, kFactor, rankOf, rateTeams, balance, pickMatches, softReset, winOf, createRanked };
