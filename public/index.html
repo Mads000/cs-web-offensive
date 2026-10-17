@@ -2264,6 +2264,7 @@ body.imm::after { content: ''; position: fixed; inset: 0; pointer-events: none; 
 .mob #overlay.oldui .mebtns button{ font-size:14px; padding:9px 6px } .mob #overlay.oldui #meTools button{ font-size:14px; padding:8px }
 /* ── Entenjagd 2.0: Wellen-Ansage, Boss-Leiste, Waffenwahl ── */
 #dhBan{ position:absolute; top:24%; left:50%; transform:translateX(-50%); font:900 26px 'Arial Black', Impact, sans-serif; color:#ffd84a; text-shadow:0 2px 6px #000; white-space:nowrap; pointer-events:none; opacity:0; }
+#dhCb{ display:none; position:absolute; top:50%; left:calc(50% + 70px); transform:translateY(-50%); text-align:left; pointer-events:none; color:#fff; text-shadow:0 2px 4px #000; } #dhCb b{ display:block; font:900 34px 'Arial Black', Impact, sans-serif; color:#ffd84a; line-height:1; } #dhCb span{ font:bold 12px Arial; letter-spacing:1px; } #dhCb u{ display:block; width:70px; height:4px; background:rgba(0,0,0,.5); border-radius:2px; overflow:hidden; margin-top:3px; } #dhCb i{ display:block; height:100%; background:#ffd84a; } #dhCb em{ display:block; font:bold 13px Arial; font-style:normal; color:#ff9a3d; opacity:0; margin-top:2px; white-space:nowrap; } #dhCb.pulse b{ animation:dhCbP .45s ease-out; } #dhCb.pulse em{ animation:dhCbE 1.6s ease-out; } @keyframes dhCbP{ 0%{ transform:scale(1.7); color:#fff; } 100%{ transform:scale(1); } } @keyframes dhCbE{ 0%,70%{ opacity:1; } 100%{ opacity:0; } } #dhHud .dhwv{ font-size:13px; color:#9fe8ff; margin-left:4px; } .mob #dhCb{ left:calc(50% + 45px); } .mob #dhCb b{ font-size:24px; }
 #dhBan.on{ animation:dhBan 3s ease-out; } @keyframes dhBan{ 0%{ opacity:0; transform:translateX(-50%) scale(1.4); } 12%{ opacity:1; transform:translateX(-50%) scale(1); } 80%{ opacity:1; } 100%{ opacity:0; } }
 #dhHud .dhboss{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:3px; font-size:15px; } #dhHud .dhboss i{ display:block; width:160px; height:9px; background:rgba(0,0,0,.5); border:1px solid #ffd84a; border-radius:5px; overflow:hidden; } #dhHud .dhboss b{ display:block; height:100%; background:linear-gradient(90deg,#ff7a3d,#ffd84a); }
 .dhpick{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:6px 0 8px; }
@@ -5398,7 +5399,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function hasLOS(ax, ay, az, bx, by, bz) {
             for (const s of smokeBlock) { if (s.vox) { const L = Math.hypot(bx - ax, bz - az), st = Math.ceil(L / (SV * 0.5)); for (let i = 1; i < st; i++) { const t = i / st; if (s.vox.get(Math.floor((ax + (bx - ax) * t) / SV) + ',' + Math.floor((az + (bz - az) * t) / SV)) === 0) return false; } continue; } const dx = bx - ax, dz = bz - az, L2 = dx * dx + dz * dz || 1; let t = ((s.x - ax) * dx + (s.z - az) * dz) / L2; t = clamp(t, 0, 1); if (Math.hypot(ax + dx * t - s.x, az + dz * t - s.z) < s.r) return false; }
             _o.set(ax, ay, az); _d.set(bx - ax, by - ay, bz - az); const L = _d.length(); _d.normalize(); _ray.set(_o, _d); _ray.far = L; return _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false).length === 0;
-        } function castShot(spread) { camera.getWorldDirection(_fwd); _right.crossVectors(_fwd, camera.up).normalize(); _up.crossVectors(_right, _fwd).normalize(); const a = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * spread; _d.copy(_fwd).addScaledVector(_right, Math.cos(a) * rr).addScaledVector(_up, Math.sin(a) * rr).normalize(); _ray.set(camera.position, _d); _ray.far = 250; const objs = (GA.cur ? GA.cur.meshes : mapMeshes).slice(); if (AL.on) for (const t of AL.targets) objs.push(t.mesh); if (DH.on) { for (const d of DH.ducks) if (d.alive) objs.push(...d.hit); return _ray.intersectObjects(objs, false)[0] || null; } for (const b of bots) if (b.alive) objs.push(...b.hit); for (const rp of NET.players.values()) if (rp.alive) objs.push(...rp.hit); for (const dc of decoys) objs.push(...dc.hit); return _ray.intersectObjects(objs, false)[0] || null; }
+        } function castShot(spread) { camera.getWorldDirection(_fwd); _right.crossVectors(_fwd, camera.up).normalize(); _up.crossVectors(_right, _fwd).normalize(); const a = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * spread; _d.copy(_fwd).addScaledVector(_right, Math.cos(a) * rr).addScaledVector(_up, Math.sin(a) * rr).normalize(); _ray.set(camera.position, _d); _ray.far = 250; const objs = (GA.cur ? GA.cur.meshes : mapMeshes).slice(); if (AL.on) for (const t of AL.targets) objs.push(t.mesh); if (DH.on) { for (const d of DH.ducks) if (d.alive && d.mesh.visible) objs.push(...d.hit); return _ray.intersectObjects(objs, false)[0] || null; } for (const b of bots) if (b.alive) objs.push(...b.hit); for (const rp of NET.players.values()) if (rp.alive) objs.push(...rp.hit); for (const dc of decoys) objs.push(...dc.hit); return _ray.intersectObjects(objs, false)[0] || null; }
         const decals = [], decalGeo = new THREE.PlaneGeometry(0.18, 0.18), decalMat = new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
         function addDecal(p, n) { const m = new THREE.Mesh(decalGeo, decalMat); m.position.copy(p).addScaledVector(n, 0.012); m.lookAt(p.clone().add(n)); scene.add(m); decals.push(m); if (decals.length > 90) scene.remove(decals.shift()); }
         const parts = [], partGeo = new THREE.BoxGeometry(0.06, 0.06, 0.06);
@@ -7131,6 +7132,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="cspanel newscard"><h3>NEU · PATCH 3.3 „ZUSAMMEN"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🦆 ENTENJAGD 2.0</p>
+ <b>5 Wellen</b> mit Ansage (Aufwärmen → Flitzer & Robo → Geisterstunde → Schwarm & Spalter → CHAOS), dazu wie gehabt Goldrausch, Riesen-Ente und Finale ×2.<br>
+ Neue Enten: <b>🤖 Robo-Ente</b> (gepanzert, 3 Treffer, 8 Pkt), <b>👻 Geister-Ente</b> (nur zeitweise sichtbar, 6 Pkt), <b>✂️ Spalt-Ente</b> (zerfällt in zwei Küken).<br>
+ <b>Power-up-Kisten</b> abschießen: 💥 Sprengmunition, 🔫 Dauerfeuer (kein Nachladen), 🔗 Combo-Halter (längeres Combo-Fenster) – je 20 Sekunden.<br>
+ <b>Combo-Anzeige</b> neben dem Fadenkreuz mit Zeitbalken, Multiplikator und Ansage alle 5 Treffer. Am Ende siehst Du Deine beste Combo.<br><br>
+
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧩 NEUE MODUSAUSWAHL</p>
  Im Reiter <b>SPIELEN</b> wählst Du Deinen Modus jetzt über <b>Kacheln</b>: Unranked, Ranked, Customs, Deathmatch, Gauntlet, 1v1, Entenjagd, Erkunden & Aim-Lab – alles an einem Ort. Ranked & Unranked sind keine eigenen Reiter mehr und sehen aus wie die anderen Modi – Ranked mit Unterleiste 5V5 · 2V2 · 1V1 · BOT-RANG, links Rang & Suche, rechts Deine Gruppe, darunter Matches & Bestenliste. Mit <b>← ALLE MODI</b> geht es zurück zur Auswahl.<br><br>
 
@@ -8004,20 +8011,34 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             i: { n: 'Eis-Ente', pts: 2, col: 0x9fe8ff, speed: 3, fly: 0.3, w: 4, ic: '❄️', sp: 'ice' },
             k: { n: 'Lockvogel', pts: -5, col: 0xd03030, speed: 3, fly: 0, w: 6, ic: '🚫', decoy: 1 },
             c: { n: 'Küken', pts: 2, col: 0xffe066, speed: 2.6, fly: 0, w: 0, chick: 1 },            // nur in Familien
-            B: { n: 'Riesen-Ente', pts: 50, col: 0xffd84a, speed: 1.4, fly: 0, w: 0, ic: '👑', boss: 1 } // einmal pro Runde
+            B: { n: 'Riesen-Ente', pts: 50, col: 0xffd84a, speed: 1.4, fly: 0, w: 0, ic: '👑', boss: 1 }, // einmal pro Runde
+            o: { n: 'Robo-Ente', pts: 8, col: 0x8a96a8, speed: 3.2, fly: 0.2, w: 0, ic: '🤖', hp: 3, robo: 1 },   // gepanzert: 3 Treffer (Kopf = 2)
+            h: { n: 'Geister-Ente', pts: 6, col: 0xe8f0ff, speed: 2.8, fly: 0.5, w: 0, ic: '👻', ghost: 1 },     // nur zeitweise sichtbar
+            s: { n: 'Spalt-Ente', pts: 3, col: 0xff8fc8, speed: 2.6, fly: 0.2, w: 0, ic: '✂️', split: 1 },      // zerfällt in 2 Küken
+            P: { n: 'Power-up', pts: 0, speed: 1.6, fly: 1, w: 0, pw: 1 }                                          // schwebende Kiste, look = Power-up
         };
+        const DH_WAVES = [ // ab Restzeit: Name, Spawn-Takt, Max-Zusatz, Zusatzgewichte je Entenart (w:0-Arten kommen nur über Wellen)
+            { at: 120, n: 'Aufwärmen', sp: 0.45, mx: -4, add: {} },
+            { at: 100, n: 'Flitzer & Robo-Enten', sp: 0.32, mx: 0, add: { f: 14, o: 7 } },
+            { at: 78, n: 'Geisterstunde', sp: 0.32, mx: 0, add: { o: 5, h: 9 } },
+            { at: 53, n: 'Schwarm & Spalter', sp: 0.25, mx: 4, add: { h: 7, s: 9, o: 5 } },
+            { at: 30, n: 'CHAOS', sp: 0.2, mx: 6, add: { o: 8, h: 8, s: 8, b: 5, r: 5, k: 6 } }
+        ];
+        const DH_PW = [['ex', '💥', 'Sprengmunition', 0xff7a30], ['rf', '🔫', 'Dauerfeuer', 0x46e07a], ['cl', '🔗', 'Combo-Halter', 0x3fa9ff]], DH_PWT = 20; // Kiste abschießen → 20 s Effekt für den Schützen
+        const dhWin = by => DH.pw[by] && DH.pw[by].k === 'cl' ? 6 : 2.5; // Combo-Zeitfenster
         const DH_WEAPONS = { ak47: ['🔫', 'AK-47', 'Allrounder · Deagle als Zweitwaffe'], pump: ['💥', 'Schrotflinte', 'Breite Streuung – stark gegen Schwärme'], awp: ['🔭', 'AWP', 'Nur Kopftreffer zählen – dafür ×2 Punkte'] };
         const DH_LOOKS = [[0xffd84a, 0xffd84a, 0xf5c93a], [0x8a6a4a, 0x1f6b3a, 0x6b7f9a], [0xf3f3ef, 0xf3f3ef, 0xe2e2dc]]; // Badeente, Stockente, Hausente
-        const DH = { on: false, w: 'ak47', ducks: [], t: 0, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, fin: 0, rush: 0, ev: {}, fams: {}, me: { n: 0, gold: 0, sp: 0 }, ended: false };
+        const DH = { on: false, w: 'ak47', ducks: [], t: 0, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, fin: 0, rush: 0, ev: {}, fams: {}, me: { n: 0, gold: 0, sp: 0, cb: 0 }, ended: false, wave: 0, pw: {}, pwT: 16, myc: { n: 0, t: 0 } };
         const dhMe = () => NET.on ? NET.pid : 'me';
         const DH_ICON = {}; function dhIcon(e) { if (DH_ICON[e]) return DH_ICON[e]; const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); g.font = '46px serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(e, 32, 36); return DH_ICON[e] = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthWrite: false, transparent: true }); }
         function dhMesh(d) { // kleine Ente aus Boxen, Flügel schlagen, Specials mit Symbol darüber; Küken klein, Boss riesig
             const T = DH_TYPES[d.t], L = T.col ? [T.col, T.col, T.col] : DH_LOOKS[d.look || 0], g = new THREE.Group();
-            const M = (c, em) => new THREE.MeshLambertMaterial({ color: c, emissive: em || (T.gold ? 0x5a3c00 : 0) }), orange = M(0xf2a227);
+            if (T.pw) { const P = DH_PW[d.look] || DH_PW[0], box = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), new THREE.MeshLambertMaterial({ color: P[3], emissive: P[3], emissiveIntensity: 0.45 })); box.userData.part = 'body'; box.userData.ent = d; g.add(box); const ic = new THREE.Sprite(dhIcon(P[1])); ic.scale.set(0.8, 0.8, 1); ic.position.set(0, 0.85, 0); g.add(ic); scene.add(g); d.mesh = g; d.hit = [box]; d.wl = d.wr = new THREE.Object3D(); return; }
+            const M = (c, em) => new THREE.MeshLambertMaterial({ color: c, emissive: em || (T.gold ? 0x5a3c00 : 0), transparent: !!T.ghost, opacity: T.ghost ? 0.5 : 1 }), orange = M(0xf2a227);
             const mk = (w, h, dd, m, x, y, z, part) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, dd), m); b.position.set(x, y, z); b.castShadow = !!part; g.add(b); if (part) { b.userData.part = part; b.userData.ent = d; } return b; };
             const body = mk(0.55, 0.42, 0.75, M(L[0]), 0, 0.42, 0, 'body'), head = mk(0.34, 0.32, 0.34, M(L[1]), 0, 0.82, 0.3, 'head');
             mk(0.2, 0.08, 0.2, orange, 0, 0.78, 0.53); mk(0.25, 0.18, 0.2, M(L[0]), 0, 0.55, -0.42);
-            const eye = new THREE.MeshBasicMaterial({ color: 0x111111 }); mk(0.05, 0.06, 0.02, eye, -0.1, 0.88, 0.47); mk(0.05, 0.06, 0.02, eye, 0.1, 0.88, 0.47);
+            const eye = new THREE.MeshBasicMaterial({ color: T.robo ? 0xff2020 : 0x111111 }); if (T.robo) { mk(0.04, 0.24, 0.04, M(0x555b66), 0, 1.08, 0.3); mk(0.08, 0.08, 0.08, eye, 0, 1.22, 0.3); } mk(0.05, 0.06, 0.02, eye, -0.1, 0.88, 0.47); mk(0.05, 0.06, 0.02, eye, 0.1, 0.88, 0.47);
             const wl = mk(0.08, 0.28, 0.5, M(L[2]), -0.31, 0.47, -0.02), wr = mk(0.08, 0.28, 0.5, M(L[2]), 0.31, 0.47, -0.02);
             mk(0.06, 0.2, 0.06, orange, -0.12, 0.1, 0); mk(0.06, 0.2, 0.06, orange, 0.12, 0.1, 0);
             if (T.boss) mk(0.3, 0.16, 0.3, M(0xffc400, 0x5a3c00), 0, 1.06, 0.3); // Krone
@@ -8025,11 +8046,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             g.scale.setScalar(T.boss ? 2.6 : T.chick ? 0.55 : 1);
             scene.add(g); d.mesh = g; d.hit = [body, head]; d.wl = wl; d.wr = wr;
         }
-        function dhPickType() { let x = Math.random() * Object.values(DH_TYPES).reduce((a, t) => a + t.w, 0); for (const k in DH_TYPES) { x -= DH_TYPES[k].w; if (x <= 0) return k; } return 'n'; }
+        function dhPickType() { const add = (DH_WAVES[DH.wave - 1] || DH_WAVES[0]).add, wt = k => DH_TYPES[k].w + (add[k] || 0); let x = Math.random() * Object.keys(DH_TYPES).reduce((a, k) => a + wt(k), 0); for (const k in DH_TYPES) { x -= wt(k); if (x <= 0) return k; } return 'n'; }
         function dhNew(t, x, z, o = {}) { // nur Offline/Host
             const T = DH_TYPES[t], fly = o.fly !== undefined ? o.fly : Math.random() < T.fly, a = Math.random() * Math.PI * 2;
             const d = Object.assign({ dh: 1, id: ++DH.id, t, look: Math.random() * 3 | 0, x, z, y: fly ? 6 + Math.random() * 3 : 0, fly, alive: true, r: T.boss ? 1.0 : T.chick ? 0.25 : 0.35, life: T.boss ? 45 : 12 + Math.random() * 6, yaw: a, vx: Math.sin(a), vz: Math.cos(a), ph: Math.random() * 6, tx: x, tz: z, retarget: 0, flee: 0 }, o);
-            dhMesh(d); DH.ducks.push(d); return d;
+            if (T.hp && !d.maxhp) d.maxhp = d.hp = T.hp; dhMesh(d); DH.ducks.push(d); return d;
         }
         function dhSpawn() {
             const c = rnd(openCells), x = cx(c.c), z = cx(c.r);
@@ -8062,15 +8083,17 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (!d.lead && d.flee <= 0 && Math.hypot(d.x - ox, d.z - oz) < spd * dt * 0.3) d.retarget = 0; // gegen Wand → neues Ziel
             d.y = groundAt(d); d.yaw = lerpAngle(d.yaw, Math.atan2(dx, dz), Math.min(1, dt * 8));
         }
-        function dhPose(d) { d.mesh.position.set(d.x, d.y, d.z); d.mesh.rotation.set(0, d.yaw, d.fly ? 0 : Math.sin(d.ph) * 0.12); const f = d.fly ? Math.sin(d.ph) * 0.9 : Math.sin(d.ph) * 0.15; d.wl.rotation.z = f; d.wr.rotation.z = -f; }
-        function dhScare(x, z) { for (const o of DH.ducks) { if (!o.alive || DH_TYPES[o.t].boss) continue; const dx = o.x - x, dz = o.z - z, l = Math.hypot(dx, dz); if (l < 7 && l > 0.01) { o.flee = 1.6; o.fx = dx / l; o.fz = dz / l; o.lead = null; } } }
+        function dhPose(d) { const T = DH_TYPES[d.t]; if (T.ghost && d.alive) d.mesh.visible = ((performance.now() / 1000 + d.id * 0.73) % 2.6) < 1.5; if (T.pw) { d.mesh.position.set(d.x, d.y + Math.sin(performance.now() / 300) * 0.2, d.z); d.mesh.rotation.set(0, performance.now() / 450, 0); return; } d.mesh.position.set(d.x, d.y, d.z); d.mesh.rotation.set(0, d.yaw, d.fly ? 0 : Math.sin(d.ph) * 0.12); const f = d.fly ? Math.sin(d.ph) * 0.9 : Math.sin(d.ph) * 0.15; d.wl.rotation.z = f; d.wr.rotation.z = -f; }
+        function dhScare(x, z) { for (const o of DH.ducks) { if (!o.alive || DH_TYPES[o.t].boss || DH_TYPES[o.t].pw) continue; const dx = o.x - x, dz = o.z - z, l = Math.hypot(dx, dz); if (l < 7 && l > 0.01) { o.flee = 1.6; o.fx = dx / l; o.fz = dz / l; o.lead = null; } } }
         // Treffer (nur Offline/Host): Punkte, Combo, Spezialeffekte, Boss-Lebenspunkte, Familienbonus
-        function dhKill(d, by, head) {
+        function dhKill(d, by, head, chain) {
             if (!d.alive) return; const T = DH_TYPES[d.t];
-            if (DH.w === 'awp' && !head && !T.boss) return; // AWP-Modus: nur Kopftreffer zählen
+            if (T.pw) { const P = DH_PW[d.look] || DH_PW[0]; DH.pw[by] = { k: P[0], t: DH_PWT }; dhRemove(d, true); if (NET.on) netSend({ type: 'dhdie', id: d.id, by, pts: 0, t: d.t, l: d.look, x: d.x, y: d.y, z: d.z, m: 1, n: 0 }); dhCredit(by, d.t, 0, 1, 0, d.look); return; } // Power-up einsammeln
+            if (DH.w === 'awp' && !head && !T.boss && !chain) return; // AWP-Modus: nur Kopftreffer zählen
             const now2 = performance.now() / 1000, cb = DH.combo[by] || (DH.combo[by] = { n: 0, t: 0 });
-            if (T.decoy) cb.n = 0; else { cb.n = now2 - cb.t < 2.5 ? cb.n + 1 : 1; cb.t = now2; }
+            if (T.decoy) cb.n = 0; else { cb.n = now2 - cb.t < dhWin(by) ? cb.n + 1 : 1; cb.t = now2; }
             const mult = T.decoy ? 1 : Math.min(4, 1 + Math.floor((cb.n - 1) / 5)) * (DH.frz[by] > 0 ? 2 : 1) * (DH.fin ? 2 : 1) * (DH.w === 'awp' ? 2 : 1);
+            if (T.hp && !T.boss) { d.hp -= head ? 2 : 1; if (d.hp > 0) { burst(d.x, d.y + 0.5, d.z, 0xffb040, 8, 3); if (NET.on) netSend({ type: 'dhbh', by, n: cb.n, r: 1 }); dhBossHit(by, cb.n, 1); return; } } // Robo-Ente: Panzer
             if (T.boss) { // Riesen-Ente: jeder Treffer +1, der letzte bringt den großen Bonus
                 d.hp -= head ? 2 : 1;
                 if (d.hp > 0) { DH.sc[by] = (DH.sc[by] || 0) + 1; burst(d.x, d.y + 2, d.z, 0xffffff, 4, 2); if (NET.on) netSend({ type: 'dhbh', by, n: cb.n }); dhBossHit(by, cb.n); return; }
@@ -8079,16 +8102,21 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (d.fam && DH.fams[d.fam]) { const F = DH.fams[d.fam]; F.by[by] = (F.by[by] || 0) + 1; if (--F.left === 0) { if (F.by[by] === 4) pts += 10; delete DH.fams[d.fam]; } }
             DH.sc[by] = Math.max(0, (DH.sc[by] || 0) + pts); dhRemove(d, true); dhScare(d.x, d.z);
             if (T.sp === 'time') DH.t += 6; if (T.sp === 'ice') DH.ice = 6; if (T.sp === 'frenzy') DH.frz[by] = 8;
-            if (T.sp === 'bomb') { burst(d.x, d.y + 0.5, d.z, 0xff8a30, 26, 6); sfx('explosion', d.x, d.z); for (const o of DH.ducks.slice()) if (o.alive && !DH_TYPES[o.t].decoy && !DH_TYPES[o.t].boss && Math.hypot(o.x - d.x, o.z - d.z) < 7) dhKill(o, by, true); }
+            if (T.sp === 'bomb') { burst(d.x, d.y + 0.5, d.z, 0xff8a30, 26, 6); sfx('explosion', d.x, d.z); for (const o of DH.ducks.slice()) if (o.alive && !DH_TYPES[o.t].decoy && !DH_TYPES[o.t].boss && !DH_TYPES[o.t].pw && Math.hypot(o.x - d.x, o.z - d.z) < 7) dhKill(o, by, true, 1); }
+            if (T.robo) burst(d.x, d.y + 0.5, d.z, 0xffb040, 18, 5); // Robo zerspringt in Funken
+            if (T.split) for (const sx of [-1, 1]) dhNew('c', d.x + sx * 0.6, d.z, { fly: false, life: 10, flee: 1.4, fx: sx, fz: 0 }); // Spalt-Ente → 2 Küken
+            if (!chain && !T.decoy && DH.pw[by] && DH.pw[by].k === 'ex') { burst(d.x, d.y + 0.5, d.z, 0xff7a30, 14, 4); for (const o of DH.ducks.slice()) if (o.alive && !DH_TYPES[o.t].decoy && !DH_TYPES[o.t].boss && !DH_TYPES[o.t].pw && Math.hypot(o.x - d.x, o.z - d.z) < 3.5) dhKill(o, by, true, 1); } // Sprengmunition
             if (T.boss) { for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; dhNew('n', d.x + Math.sin(a) * 2, d.z + Math.cos(a) * 2, { fly: i % 2 === 0 }); } dhAnnounce('👑 Riesen-Ente besiegt!'); }
             if (NET.on) netSend({ type: 'dhdie', id: d.id, by, pts, t: d.t, x: d.x, y: d.y, z: d.z, m: mult, n: cb.n });
             dhCredit(by, d.t, pts, mult, cb.n);
         }
-        function dhBossHit(by, n) { if (by !== dhMe()) return; hitT = 0.12; hitHS = false; quack(0.6 + Math.min(0.5, n * 0.03)); dhPop('+1 👑', '#ffd84a'); }
+        function dhBossHit(by, n, robo) { if (by !== dhMe()) return; hitT = 0.12; hitHS = false; if (robo) { if (AC) tone(1500, 0.05, 0.16, 0, 'square', 900); dhPop('🤖 Panzer getroffen!', '#c8d2e0'); return; } quack(0.6 + Math.min(0.5, n * 0.03)); dhPop('+1 👑', '#ffd84a'); }
         // Rückmeldung für den Schützen (eigene Statistik, Belohnungen, Anzeige) – Quaken wird mit jeder Combo höher
-        function dhCredit(by, t, pts, mult, n) {
+        function dhCredit(by, t, pts, mult, n, look) {
             if (by !== dhMe()) return; const T = DH_TYPES[t];
-            if (T.decoy) { sfx('empty'); dhPop(pts + ' Lockvogel!', '#ff6b6b'); return; }
+            if (T.pw) { const P = DH_PW[look] || DH_PW[0]; DH.pw[by] = { k: P[0], t: DH_PWT }; if (AC) { tone(660, 0.1, 0.2, 0, 'triangle', 990); setTimeout(() => AC && tone(990, 0.15, 0.2, 0, 'triangle', 1320), 100); } dhPop(P[1] + ' ' + P[2].toUpperCase() + '!', '#' + P[3].toString(16).padStart(6, '0')); return; }
+            if (T.decoy) { sfx('empty'); dhPop(pts + ' Lockvogel!', '#ff6b6b'); if (DH.myc.n >= 3) dhCombo('💔 Combo weg'); DH.myc.n = 0; return; }
+            DH.myc.n = n || 1; DH.myc.t = performance.now() / 1000; DH.me.cb = Math.max(DH.me.cb, DH.myc.n); if (DH.myc.n >= 5 && DH.myc.n % 5 === 0) { dhCombo('🔥 ' + DH.myc.n + 'er COMBO!'); if (AC) tone(880, 0.15, 0.2, 0, 'triangle', 1320 + DH.myc.n * 10); }
             DH.me.n++; if (T.gold) DH.me.gold++; if (T.sp) DH.me.sp++; quack((T.gold ? 1.3 : T.sp ? 0.85 : T.chick ? 1.5 : T.boss ? 0.55 : 1) * (1 + Math.min(0.7, ((n || 1) - 1) * 0.04))); hitT = 0.12; hitHS = false;
             dhPop('+' + pts + (mult > 1 ? ' ×' + mult : '') + (T.boss ? ' 👑 BOSS' : T.sp ? ' ' + T.ic + ' ' + T.n : T.gold ? ' ⭐ GOLD' : T.chick ? ' 🐤' : ''), T.gold || T.boss ? '#ffd040' : T.sp ? '#9fe8ff' : '#fff');
             xpEvent('duck', { gold: T.gold });
@@ -8096,59 +8124,65 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function dhShot(d, head) { // eigener Treffer
             if (!d.alive) return;
             if (!NET.on || NET.host) { dhKill(d, dhMe(), head); return; }
-            if (DH.w === 'awp' && !head && !DH_TYPES[d.t].boss) return;
-            netSend({ type: 'dhhit', id: d.id, hs: head ? 1 : 0, pid: NET.pid }); if (!DH_TYPES[d.t].boss) { d.alive = false; d.mesh.visible = false; burst(d.x, d.y + 0.5, d.z, 0xffffff, 10, 3); }
+            if (DH.w === 'awp' && !head && !DH_TYPES[d.t].boss && !DH_TYPES[d.t].pw) return;
+            netSend({ type: 'dhhit', id: d.id, hs: head ? 1 : 0, pid: NET.pid }); if (!DH_TYPES[d.t].boss && !DH_TYPES[d.t].hp) { d.alive = false; d.mesh.visible = false; burst(d.x, d.y + 0.5, d.z, 0xffffff, 10, 3); }
         }
+        function dhCombo(txt) { const el = $('dhCb'); if (!el) return; el.querySelector('em').textContent = txt; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
         function dhPop(txt, col) { const el = $('dhPop'); if (!el) return; el.textContent = txt; el.style.color = col; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
         function dhHudUpdate() {
-            const el = $('dhHud'); if (!el) return; const me = DH.sc[dhMe()] || 0, cb = DH.combo[dhMe()], mult = cb && performance.now() / 1000 - cb.t < 2.5 ? Math.min(4, 1 + Math.floor((cb.n - 1) / 5)) : 1;
+            const el = $('dhHud'); if (!el) return; const me = DH.sc[dhMe()] || 0, cb = DH.myc, left = cb.n ? dhWin(dhMe()) - (performance.now() / 1000 - cb.t) : 0, mult = left > 0 ? Math.min(4, 1 + Math.floor((cb.n - 1) / 5)) : 1, mp = DH.pw[dhMe()], P = mp && mp.t > 0 && DH_PW.find(x => x[0] === mp.k);
+            const cbe = $('dhCb'); if (cbe) { const on = left > 0 && cb.n >= 2; cbe.style.display = on ? 'block' : 'none'; if (on) { const t = cbe.querySelector('b'); if (t.textContent !== String(cb.n)) t.textContent = cb.n; cbe.querySelector('span').textContent = 'COMBO' + (mult > 1 ? ' ×' + mult : ''); cbe.querySelector('i').style.width = Math.round(left / dhWin(dhMe()) * 100) + '%'; } }
             const names = { me: player.name }; names[NET.pid] = player.name; for (const rp of NET.players.values()) names[rp.pid] = rp.name;
             const list = NET.on ? Object.entries(DH.sc).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([p, s], i) => `<div${p === dhMe() ? ' class="me"' : ''}>${i + 1}. ${(names[p] || '?').replace(/</g, '')} <b>${s}</b></div>`).join('') : '';
             const boss = DH.ducks.find(d => DH_TYPES[d.t].boss && d.alive), hp = boss ? Math.max(0, boss.hp / boss.maxhp) : 0;
-            el.innerHTML = `<div class="dhs">🦆 <b>${me}</b> Pkt${mult > 1 ? ` <span class="dhx">×${mult}</span>` : ''}${DH.frz[dhMe()] > 0 ? ' <span class="dhx">🔥×2</span>' : ''}${DH.fin ? ' <span class="dhx">⏱×2</span>' : ''}${DH.ice > 0 ? ' <span class="dhi">❄️</span>' : ''}</div>${boss ? `<div class="dhboss">👑 <i><b style="width:${Math.round(hp * 100)}%"></b></i></div>` : ''}${list ? `<div class="dhl">${list}</div>` : ''}`;
+            el.innerHTML = `<div class="dhs">🦆 <b>${me}</b> Pkt${mult > 1 ? ` <span class="dhx">×${mult}</span>` : ''}${DH.frz[dhMe()] > 0 ? ' <span class="dhx">🔥×2</span>' : ''}${DH.fin ? ' <span class="dhx">⏱×2</span>' : ''}${DH.ice > 0 ? ' <span class="dhi">❄️</span>' : ''}${P ? ` <span class="dhx" style="background:#${P[3].toString(16).padStart(6, '0')}">${P[1]} ${Math.ceil(mp.t)}s</span>` : ''}${DH.wave ? ` <span class="dhwv">🌊 ${DH.wave}/${DH_WAVES.length}</span>` : ''}</div>${boss ? `<div class="dhboss">👑 <i><b style="width:${Math.round(hp * 100)}%"></b></i></div>` : ''}${list ? `<div class="dhl">${list}</div>` : ''}`;
         }
         // Waffenwahl vor dem Start (offline und für den Host)
         function dhPick(go, back) {
             showOverlay(`<h1 style="color:#ffd84a">🦆 ENTENJAGD<small>WÄHLE DEINE WAFFE</small></h1>
  <div class="dhpick">${Object.entries(DH_WEAPONS).map(([k, [ic, n, d]]) => `<div class="dhw" data-dhw="${k}"><i>${ic}</i><b>${n}</b><span>${d}</span><em>Rekord: ${PRG.st['dhB_' + k] || 0}</em></div>`).join('')}</div>
- <p style="font-size:12px;color:#8fa3b8">Jede Waffe hat ihre eigene Bestenliste · Wellen: ⭐ Goldrausch, 👑 Riesen-Ente, 🦆 Schwarm, ⏱ Finale ×2</p>
+ <p style="font-size:12px;color:#8fa3b8">Jede Waffe hat ihre eigene Bestenliste · 5 Wellen mit ⭐ Goldrausch, 👑 Riesen-Ente, 🦆 Schwarm, ⏱ Finale ×2 · 🤖 Robo, 👻 Geister & ✂️ Spalt-Enten · Kisten abschießen: 💥 🔫 🔗</p>
  <div><button id="dhPickBack">Zurück</button></div>`);
             document.querySelectorAll('[data-dhw]').forEach(el => el.onclick = () => go(el.dataset.dhw)); $('dhPickBack').onclick = back;
         }
         function dhStart(w) {
             remeshAll(); initAudio(); const nm = ($('pname') && $('pname').value || '').trim(); if (nm) player.name = nm.slice(0, 14);
-            for (const d of DH.ducks) scene.remove(d.mesh); Object.assign(DH, { on: true, w: DH_WEAPONS[w] ? w : 'ak47', ducks: [], t: DH_TIME, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, fin: 0, rush: 0, ev: {}, fams: {}, me: { n: 0, gold: 0, sp: 0 }, ended: false });
+            for (const d of DH.ducks) scene.remove(d.mesh); Object.assign(DH, { on: true, w: DH_WEAPONS[w] ? w : 'ak47', ducks: [], t: DH_TIME, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, fin: 0, rush: 0, ev: {}, fams: {}, me: { n: 0, gold: 0, sp: 0, cb: 0 }, ended: false, wave: 0, pw: {}, pwT: 16, myc: { n: 0, t: 0 } });
             DH.sc[dhMe()] = 0; for (const rp of NET.players.values()) DH.sc[rp.pid] = 0;
             player.team = 'CT'; player.alive = true; player.health = 100; player.weapons[1] = mkWeapon(W[DH.w]); player.weapons[2] = mkWeapon(W.deagle); player.weapons[4] = player.weapons[5] = null; player.slot = 1; updateVM();
             const c = rnd(spawnCells.CT.length ? spawnCells.CT : openCells); player.x = cx(c.c); player.z = cx(c.r); player.y = 0; player.vx = player.vz = player.vy = 0;
             ents = [player, ...NET.players.values()]; G.state = 'live'; G.timer = DH_TIME; G.bomb = { state: 'none', x: 0, z: 0, t: 0, carrier: null };
             started = true; gameEnded = false; $('overlay').style.display = 'none'; $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
-            document.body.classList.add('dh'); if (!$('dhHud')) { const h = document.createElement('div'); h.id = 'dhHud'; $('top').appendChild(h); for (const id of ['dhPop', 'dhBan']) { const p = document.createElement('div'); p.id = id; $('hud').appendChild(p); } }
+            document.body.classList.add('dh'); if (!$('dhHud')) { const h = document.createElement('div'); h.id = 'dhHud'; $('top').appendChild(h); for (const id of ['dhPop', 'dhBan']) { const p = document.createElement('div'); p.id = id; $('hud').appendChild(p); } const c = document.createElement('div'); c.id = 'dhCb'; c.innerHTML = '<b>0</b><span>COMBO</span><u><i></i></u><em></em>'; $('hud').appendChild(c); }
             renderer.domElement.requestPointerLock(); msg('', '🦆 Entenjagd · ' + DH_WEAPONS[DH.w][1] + ' · ⭐ Gold = 10 · 🚫 rote Lockvögel meiden!', 4);
             if (!NET.on || NET.host) for (let i = 0; i < 14; i++) dhSpawn();
         }
         function dhEvents(dt) { // Wellen nach Restzeit (Host)
             DH.rush = Math.max(0, DH.rush - dt); const e = DH.ev, t = DH.t;
+            while (DH.wave < DH_WAVES.length && t <= DH_WAVES[DH.wave].at) { DH.wave++; dhAnnounce('🌊 WELLE ' + DH.wave + '/' + DH_WAVES.length + ' · ' + DH_WAVES[DH.wave - 1].n); if (DH.wave > 1) DH.pwT = Math.min(DH.pwT, 1.5); }
+            for (const k in DH.pw) DH.pw[k].t = Math.max(0, DH.pw[k].t - dt);
+            DH.pwT -= dt; if (DH.pwT <= 0 && DH.ducks.filter(d => d.t === 'P').length < 2) { DH.pwT = 13 + Math.random() * 6; const c = rnd(openCells); dhNew('P', cx(c.c), cx(c.r), { fly: true, look: Math.random() * DH_PW.length | 0, life: 11 }); }
             if (t <= 95 && !e.g1) { e.g1 = 1; DH.rush = 8; dhAnnounce('⭐ GOLDRAUSCH! 8 Sekunden nur goldene Enten'); }
             if (t <= 75 && !e.boss) { e.boss = 1; const c = rnd(openCells), b = dhNew('B', cx(c.c), cx(c.r), { fly: false }); b.maxhp = b.hp = 30 + 12 * NET.players.size; dhAnnounce('👑 Eine RIESEN-ENTE ist aufgetaucht!'); }
             if (t <= 50 && !e.swarm) { e.swarm = 1; for (let i = 0; i < 15; i++) { const c = rnd(openCells); dhNew('n', cx(c.c), cx(c.r), { fly: true }); } dhAnnounce('🦆 SCHWARM im Anflug!'); }
             if (t <= 15 && !e.fin) { e.fin = 1; DH.fin = 1; dhAnnounce('⏱ FINALE! Doppelte Punkte'); }
         }
         function dhTick(dt) {
-            for (const s of [1, 2]) { const w = player.weapons[s]; if (w) w.res = 999; } // unendlich Reserve
+            for (const s of [1, 2]) { const w = player.weapons[s]; if (w) { w.res = 999; if (DH.pw[dhMe()] && DH.pw[dhMe()].k === 'rf' && DH.pw[dhMe()].t > 0) { w.ammo = w.def.mag; w.reloading = false; } } } // unendlich Reserve; Dauerfeuer: kein Nachladen
+            if (NET.on && !NET.host) for (const k in DH.pw) DH.pw[k].t = Math.max(0, DH.pw[k].t - dt);
             const host = !NET.on || NET.host;
             if (host) {
                 DH.t -= dt; DH.ice = Math.max(0, DH.ice - dt); for (const k in DH.frz) DH.frz[k] = Math.max(0, DH.frz[k] - dt); dhEvents(dt);
-                const max = 16 + 4 * NET.players.size + (DH.rush > 0 ? 8 : 0); DH.spawnT -= dt; if (DH.spawnT <= 0 && DH.ducks.length < max) { dhSpawn(); DH.spawnT = DH.rush > 0 ? 0.2 : 0.3; }
+                const WV = DH_WAVES[DH.wave - 1] || DH_WAVES[0], max = 16 + 4 * NET.players.size + WV.mx + (DH.rush > 0 ? 8 : 0); DH.spawnT -= dt; if (DH.spawnT <= 0 && DH.ducks.length < max) { dhSpawn(); DH.spawnT = DH.rush > 0 ? 0.2 : WV.sp; }
                 for (const d of DH.ducks.slice()) { d.life -= dt; if (d.life <= 0) { dhRemove(d, false); continue; } dhMove(d, dt); }
-                if (NET.on) { DH.sendT -= dt; if (DH.sendT <= 0) { DH.sendT = 0.1; netSend({ type: 'dhs', t: DH.t, ice: DH.ice, frz: DH.frz, fin: DH.fin, sc: DH.sc, d: DH.ducks.map(d => [d.id, d.t, d.look, +d.x.toFixed(2), +d.y.toFixed(2), +d.z.toFixed(2), +d.yaw.toFixed(2), d.fly ? 1 : 0, d.maxhp ? +(d.hp / d.maxhp).toFixed(2) : 0]) }); } }
+                if (NET.on) { DH.sendT -= dt; if (DH.sendT <= 0) { DH.sendT = 0.1; netSend({ type: 'dhs', t: DH.t, ice: DH.ice, frz: DH.frz, fin: DH.fin, sc: DH.sc, wv: DH.wave, pw: DH.pw, d: DH.ducks.map(d => [d.id, d.t, d.look, +d.x.toFixed(2), +d.y.toFixed(2), +d.z.toFixed(2), +d.yaw.toFixed(2), d.fly ? 1 : 0, d.maxhp ? +(d.hp / d.maxhp).toFixed(2) : 0]) }); } }
                 if (DH.t <= 0) { if (NET.on) netSend({ type: 'dhend', sc: DH.sc }); dhEnd(); return; }
             } else for (const d of DH.ducks) { d.x += (d.nx - d.x) * Math.min(1, dt * 12); d.y += (d.ny - d.y) * Math.min(1, dt * 12); d.z += (d.nz - d.z) * Math.min(1, dt * 12); d.ph += dt * (d.fly ? 14 : 8); }
             for (const d of DH.ducks) dhPose(d);
             G.timer = Math.max(0, DH.t); dhHudUpdate();
         }
         function dhSnap(m) { // Client: Enten-Zustand vom Host übernehmen
-            DH.t = m.t; DH.ice = m.ice; DH.frz = m.frz || {}; DH.fin = m.fin || 0; DH.sc = m.sc || {}; const seen = new Set();
+            DH.t = m.t; DH.ice = m.ice; DH.frz = m.frz || {}; DH.fin = m.fin || 0; DH.sc = m.sc || {}; DH.wave = m.wv || 0; DH.pw = m.pw || {}; const seen = new Set();
             for (const [id, t, look, x, y, z, yaw, fly, hp] of m.d) { seen.add(id); let d = DH.ducks.find(o => o.id === id); if (!d) { d = { dh: 1, id, t, look, x, y, z, nx: x, ny: y, nz: z, yaw, fly: !!fly, alive: true, ph: 0 }; dhMesh(d); DH.ducks.push(d); } d.nx = x; d.ny = y; d.nz = z; d.yaw = yaw; if (hp) { d.maxhp = 1; d.hp = hp; } }
             for (const d of DH.ducks.slice()) if (!seen.has(d.id)) dhRemove(d, false);
         }
@@ -8161,7 +8195,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const table = NET.on ? `<div class="dhres">${Object.entries(DH.sc).sort((a, b) => b[1] - a[1]).map(([p, s], i) => `<div${p === dhMe() ? ' class="me"' : ''}>${['🥇', '🥈', '🥉'][i] || (i + 1) + '.'} ${(names[p] || '?').replace(/</g, '')} <b>${s}</b></div>`).join('')}</div>` : '';
             showOverlay(`<h1 style="color:#ffd84a">🦆 ENTENJAGD VORBEI<small>${DH_WEAPONS[DH.w][0]} ${DH_WEAPONS[DH.w][1].toUpperCase()} · ${newBest ? '🎉 NEUER REKORD!' : 'REKORD: ' + best + ' PUNKTE'}</small></h1>
  <div class="dhbig">${me}<span>Punkte</span></div>
- <div class="profstats" style="justify-content:center;margin:6px 0 10px"><span>Enten <b>${DH.me.n}</b></span><span>Gold <b>${DH.me.gold}</b></span><span>Specials <b>${DH.me.sp}</b></span><span>Gesamt <b>${PRG.st.ducks || 0}</b> 🦆</span></div>
+ <div class="profstats" style="justify-content:center;margin:6px 0 10px"><span>Enten <b>${DH.me.n}</b></span><span>Gold <b>${DH.me.gold}</b></span><span>Specials <b>${DH.me.sp}</b></span><span>Beste Combo <b>${DH.me.cb}</b></span><span>Gesamt <b>${PRG.st.ducks || 0}</b> 🦆</span></div>
  ${table}<div id="dhLb" class="dhlb">Bestenliste wird geladen…</div>
  <div><button id="dhAgain" ${NET.on ? 'style="display:none"' : ''}>🔁 Nochmal</button><button id="dhMenu">Zum Menü</button></div>`);
             $('dhAgain').onclick = () => { const w = DH.w; DH.on = false; dhStart(w); }; $('dhMenu').onclick = leaveGame;
@@ -9306,11 +9340,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     netSend({ type: 'hello', pid: NET.pid, name: player.name, team: NET.spec ? 'SPEC' : player.team, ag: myLook(), hat: duckHat() || 0 }); break;
                 case 'dhstart': if (!NET.host) { if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; } if (m.cfg) Object.assign(CFG, m.cfg); NET.inLobby = false; if (!DH.on || DH.ended) dhStart(m.w); } break;
                 case 'dhev': if (!NET.host) { const el = $('dhBan'); if (el) { el.textContent = m.txt; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); } sfx('start'); } break;
-                case 'dhbh': if (!NET.host) dhBossHit(m.by, m.n); break;
+                case 'dhbh': if (!NET.host) dhBossHit(m.by, m.n, m.r); break;
                 case 'chat': if (typeof m.t === 'string' && (!m.tm || (m.tm === player.team && chatTeamOk()))) chatAdd(m.n, m.t, false, !!m.tm); break; // Team-Nachrichten nur fürs eigene Team
                 case 'dhs': if (!NET.host && DH.on && !DH.ended) dhSnap(m); break;
                 case 'dhhit': if (NET.host && DH.on && !DH.ended) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhKill(d, m.pid, !!m.hs); } break;
-                case 'dhdie': if (!NET.host && DH.on) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhRemove(d, true); else burst(m.x, m.y + 0.5, m.z, 0xffffff, 10, 3); if (m.t === 'b') burst(m.x, m.y + 0.5, m.z, 0xff8a30, 26, 6); dhCredit(m.by, m.t, m.pts, m.m, m.n); } break;
+                case 'dhdie': if (!NET.host && DH.on) { const d = DH.ducks.find(o => o.id === m.id); if (d) dhRemove(d, true); else burst(m.x, m.y + 0.5, m.z, 0xffffff, 10, 3); if (m.t === 'b') burst(m.x, m.y + 0.5, m.z, 0xff8a30, 26, 6); dhCredit(m.by, m.t, m.pts, m.m, m.n, m.l); } break;
                 case 'dhend': if (!NET.host && DH.on) dhEnd(m.sc); break;
                 case 'team': { const rp = NET.players.get(m.pid); if (rp && m.team === 'SPEC') { rp.team = 'SPEC'; rp.spec = true; rp.alive = false; rp.mesh.visible = false; if (NET.inLobby) renderLobby(); break; } if (rp && rp.spec && (m.team === 'CT' || m.team === 'T')) { rp.spec = false; rp.alive = true; } if (rp && (m.team === 'CT' || m.team === 'T')) { rp.team = m.team; if (rp.mesh) { scene.remove(rp.mesh); const mm = makeBotMesh(rp.team, rp.ag, false, rp.hat); rp.mesh = mm.group; rp.hit = mm.hit; rp.flash = mm.flash; mm.hit.forEach(x => x.userData.ent = rp); } if (NET.inLobby) renderLobby(); } break; }
                 case 'lcfg': if (!NET.host && m.cfg) { NET.hostCfg = m.cfg; if (NET.inLobby && $('lobRules')) renderLobby(); } break;
