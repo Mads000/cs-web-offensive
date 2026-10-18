@@ -322,6 +322,7 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   if (m.type === 'hello' || m.type === 'hello2') { m.team = L.side[L.tm[0].includes(ws.acc) ? 0 : 1]; return JSON.stringify(m); }
   if (m.type === 'st') { L.last[ws.acc] = { al: !!m.al, h: +m.h || 0, k: m.k | 0, dd: m.d | 0 }; return raw; }
   if (m.type === 'dmg' && L.started) { const to = (r.clients.find(c => c.pid === m.to) || {}).acc; if (to && L.tm[0].includes(to) !== L.tm[0].includes(ws.acc)) { L.dmg[ws.acc] = (L.dmg[ws.acc] || 0) + Math.max(0, Math.min(CFG.hitCap, +m.d || 0)); if (!L.rd.dg.has(to)) L.rd.dg.set(to, new Set()); L.rd.dg.get(to).add(ws.acc); } return raw; } // nur Statistik (ADR, Assists)
+  if ((m.type === 'hdmg' || (m.type === 'botdmg' && m.from === ws.pid)) && L.started) { L.dmg[ws.acc] = (L.dmg[ws.acc] || 0) + Math.max(0, Math.min(CFG.hitCap, +m.d || 0)); return m.type === 'hdmg' ? false : raw; } // Schaden an Bots fürs ADR (hdmg: Host, nur an den Server)
   if (m.type === 'kf' && L.started) { kfStat(L, r, ws, m, host, now); return raw; } // Kill-Meldung: nur Statistik (K/D/A, HS, KAST) – fließt NICHT ins Rating
   const bad = why => { end(L, 'invalid', why); return raw; };
   if (TEAMMODE(L.mode)) {

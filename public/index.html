@@ -1009,6 +1009,19 @@
         .eotm table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 620px } .eotm th { font-size: 11px; color: var(--mut); text-align: right; padding: 3px 8px; font-weight: 400 } .eotm th:first-child, .eotm td:first-child { text-align: left } .eotm td { text-align: right; padding: 4px 8px; border-top: 1px solid rgba(255, 255, 255, .06); white-space: nowrap } .eotm td small { color: var(--mut) } .eotm .up, .eoc .up { color: #9fe08a } .eotm .dn, .eoc .dn { color: #ff6b6b }
         .eopp { background: none; border: 1px solid transparent; margin: 0; padding: 2px 4px; min-height: 0; display: inline-flex; align-items: center; gap: 6px; color: inherit; font: inherit; text-align: left; border-radius: 4px } .eopp:hover, .eopp:focus-visible { border-color: rgba(var(--hl-rgb), .6) }
         .eov1 { display: flex; gap: 10px; align-items: stretch; justify-content: center; flex-wrap: wrap } .eoc { flex: 1 1 220px; max-width: 340px; border: 1px solid rgba(255, 255, 255, .12); border-radius: 8px; padding: 10px; text-align: center; background: rgba(8, 11, 15, .5) } .eoc.w { border-color: #9fe08a } .eoc.l { border-color: #a04a4a } .eoc .eopp { flex-direction: column } .eosc { font: 700 34px Rajdhani } .eoc .ppst { justify-content: center } .eovs { align-self: center; font: 700 18px Rajdhani; color: var(--mut) }
+        .eoscore { text-align: center; margin: 4px 0 } .eoscore b { font: 700 26px Rajdhani; letter-spacing: 2px } .eores { margin-left: 12px; font: 900 26px Rajdhani; letter-spacing: 5px } .eores.w { color: #4fe08a; text-shadow: 0 0 14px rgba(79, 224, 138, .55) } .eores.l { color: #ff6b6b } .eores.d { color: #ffd84a }
+        .eotabs { display: flex; justify-content: center; gap: 6px; margin: 4px 0 6px } .eotabs button { margin: 0; padding: 4px 16px; min-height: 0; font-size: 12px; opacity: .55 } .eotabs button.on { opacity: 1; border-color: var(--hl) }
+        .eopage[hidden] { display: none } .eopage.gl .eoban { color: #9fe08a } .eorew { text-align: center; margin: 4px 0; font: 600 13px Arial; color: var(--mut) } .eorew b { color: var(--acc); margin-left: 6px }
+        .eoban { display: flex; justify-content: space-between; padding: 2px 6px; font: 700 13px Rajdhani; letter-spacing: 1px; color: #8ab4ff } .eopage.t .eoban { color: #ffb076 }
+        .eocards { display: flex; gap: 12px; justify-content: center; overflow-x: auto; padding: 14px 4px 10px; -webkit-overflow-scrolling: touch }
+        .eocard { position: relative; flex: 0 0 148px; border: 2px solid var(--c); border-radius: 8px; background: linear-gradient(180deg, rgba(24, 30, 40, .94), rgba(8, 11, 15, .94)); padding: 8px 6px 8px 40px; text-align: center }
+        .eocard.me { box-shadow: 0 0 16px var(--c) } .eocard.bot { --c: #3a4250; padding-left: 6px; display: flex; flex-direction: column; justify-content: center; opacity: .8 } .eobot { font-size: 34px }
+        .eorib { position: absolute; left: -2px; top: -10px; width: 36px; padding: 6px 0 12px; background: var(--c); clip-path: polygon(0 0, 100% 5px, 100% 100%, 50% calc(100% - 8px), 0 100%); display: flex; flex-direction: column; align-items: center; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .45) }
+        .eorib b { font: 700 14px Rajdhani; line-height: 1.05; white-space: nowrap } .eorib small { font-size: 7px; letter-spacing: .5px; opacity: .85; margin-bottom: 5px } .eorib .na { color: #fff }
+        .eoav { display: flex; justify-content: center; width: 100%; margin: 2px 0 6px; padding: 0; border: 0 }
+        .eonm { font: 700 15px Rajdhani; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-top: 1px solid rgba(255, 255, 255, .1); padding-top: 5px }
+        .eoaw { font-size: 11px; margin-top: 2px; line-height: 1.3 } .eoaw i { display: block; color: #fff } .eoaw small { display: block; color: var(--mut); font-size: 10px } .eort { font-size: 12px; margin-top: 4px }
+        .mob .eocard { flex-basis: 126px } .mob .eoscore b, .mob .eores { font-size: 20px }
         #csfriends .fr {
             width: 44px;
             height: 44px;
@@ -2176,6 +2189,9 @@
 /* ── Customs-Zuschauer: Freecam-Stick & Umschalt-Knopf, Namensschilder, Teamleiste ── */
 #tSpecM{ display:none; left:50%; bottom:max(24px, env(safe-area-inset-bottom)); width:64px; height:64px; font-size:26px; transform:translateX(-50%) scale(var(--tbs,1)); }
 body.specmode #touch.dead #tSpecM{ display:flex; } body.specmode #touch.dead #tstick{ display:block; }
+#tFcUp, #tFcDn{ display:none; right:max(24px, env(safe-area-inset-right)); width:60px; height:60px; font-size:26px; } #tFcUp{ bottom:150px; } #tFcDn{ bottom:72px; }
+body.fcam #touch.dead #tFcUp, body.fcam #touch.dead #tFcDn{ display:flex; } body.fcam #touch.dead #tstick{ display:block; } body.fcam #touch.dead #tSpecL, body.fcam #touch.dead #tSpecR{ display:none; }
+body.fcam #cross, body.fcam #hpwrap, body.fcam #money, body.fcam #ammo{ display:none !important; } /* Freecam: keine eigenen Leben/Geld/Munition */
 body.specmode #cross, body.specmode #hpwrap, body.specmode #money, body.specmode #ammo{ display:none !important; }
 #spectags{ position:fixed; inset:0; pointer-events:none; z-index:20; overflow:hidden; } #spectags .stag{ position:absolute; left:0; top:0; padding:2px 7px; border-radius:3px; font:700 12px Arial; color:#fff; white-space:nowrap; text-shadow:0 1px 2px #000; } .stag.ct{ background:rgba(60,110,220,.82); border-bottom:2px solid #8ab4ff; } .stag.t{ background:rgba(210,110,30,.85); border-bottom:2px solid #ffb076; }
 #spechud{ position:fixed; top:8px; left:50%; transform:translateX(-50%); z-index:21; pointer-events:none; width:min(760px, calc(100vw - 32px)); font:12px Arial; color:#e8eef5; text-align:center; }
@@ -2231,7 +2247,7 @@ body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy 
 #buy .bult { display: flex; gap: 8px; align-items: stretch; padding: 10px 14px 4px } #buy .bult > span { writing-mode: vertical-rl; transform: rotate(180deg); font: 600 11px 'Barlow Condensed', sans-serif; letter-spacing: .25em; opacity: .6; align-self: center } #buy .bult .card { flex: 1; min-height: 0; padding: 8px 10px } #buy .bult .card b { font-size: 13px }
 body.imm::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 4; box-shadow: inset 0 0 140px rgba(79,216,255,.32) } /* Bollwerk aktiv */
 #ult { flex-wrap: wrap; justify-content: center; max-width: 120px } #ult b { flex-basis: 100%; text-align: center; font: 600 10px 'Barlow Condensed', sans-serif; letter-spacing: .25em; text-transform: uppercase; opacity: .6; margin-top: 2px } #ult.rdy b { opacity: 1; color: #ffd24f }
-#ult i { width: 8px; height: 8px; transform: rotate(45deg); border: 1.5px solid rgba(236,232,225,.55) } #ult i.f { background: var(--hl, #e8c98a); border-color: var(--hl, #e8c98a) } #ult.rdy i { background: #ffd24f; border-color: #ffd24f; box-shadow: 0 0 8px #ffd24f }
+#ult i { width: 8px; height: 8px; transform: rotate(45deg); border: 1.5px solid rgba(236,232,225,.55) } #ult i.f { background: var(--hl, #e8c98a); border-color: var(--hl, #e8c98a) } #ult.rdy i { background: #ffd24f; border-color: #ffd24f; box-shadow: 0 0 8px #ffd24f } #ult.arm i { box-shadow: 0 0 10px #fff; border-color: #fff }
 #fpsBox{ position:fixed; right:8px; top:6px; z-index:99995; font:bold 12px monospace; background:rgba(0,0,0,.55); padding:2px 8px; border-radius:4px; pointer-events:none; }
 /* Gauntlet-Auswahl: leicht transparent wie die anderen Menüs, Arena dahinter sichtbar */
 .gldraft{ background:rgba(16,23,32,.72) !important; -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); }
@@ -2267,7 +2283,7 @@ body.imm::after { content: ''; position: fixed; inset: 0; pointer-events: none; 
 #dhCb{ display:none; position:absolute; top:50%; left:calc(50% + 70px); transform:translateY(-50%); text-align:left; pointer-events:none; color:#fff; text-shadow:0 2px 4px #000; } #dhCb b{ display:block; font:900 34px 'Arial Black', Impact, sans-serif; color:#ffd84a; line-height:1; } #dhCb span{ font:bold 12px Arial; letter-spacing:1px; } #dhCb u{ display:block; width:70px; height:4px; background:rgba(0,0,0,.5); border-radius:2px; overflow:hidden; margin-top:3px; } #dhCb i{ display:block; height:100%; background:#ffd84a; } #dhCb em{ display:block; font:bold 13px Arial; font-style:normal; color:#ff9a3d; opacity:0; margin-top:2px; white-space:nowrap; } #dhCb.pulse b{ animation:dhCbP .45s ease-out; } #dhCb.pulse em{ animation:dhCbE 1.6s ease-out; } @keyframes dhCbP{ 0%{ transform:scale(1.7); color:#fff; } 100%{ transform:scale(1); } } @keyframes dhCbE{ 0%,70%{ opacity:1; } 100%{ opacity:0; } } #dhHud .dhwv{ font-size:13px; color:#9fe8ff; margin-left:4px; } .mob #dhCb{ left:calc(50% + 45px); } .mob #dhCb b{ font-size:24px; }
 #dhBan.on{ animation:dhBan 3s ease-out; }
 #glBan{ position:absolute; top:22%; left:50%; transform:translateX(-50%); font:900 22px 'Arial Black', Impact, sans-serif; color:#ffd84a; text-shadow:0 2px 6px #000; white-space:nowrap; pointer-events:none; opacity:0; } #glBan.on{ animation:dhBan 3s ease-out; } .mob #glBan{ font-size:15px; top:18%; }
-#glspec{ display:none; position:absolute; bottom:120px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.15); border-radius:8px; padding:6px 12px; font:13px Arial; color:#ddd; text-align:center; pointer-events:auto; white-space:nowrap; z-index:6; } #glspec div{ margin:3px 0; } #glspec div:empty{ display:none; } #glspec button{ margin:0 3px; padding:3px 8px; font-size:12px; } .mob #glspec{ bottom:auto; top:64px; font-size:11px; white-space:normal; width:min(92vw,520px); box-sizing:border-box; }
+#glspec{ display:none; position:absolute; bottom:28px; left:50%; transform:translateX(-50%); background:rgba(8,11,15,.72); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:4px 8px; font:12px Arial; color:#cfd8e3; pointer-events:auto; z-index:6; max-width:calc(100vw - 260px); } #glspec div{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:4px; margin:2px 0; } #glspec div:empty{ display:none; } #glspec button{ margin:0; padding:2px 8px; min-height:0; font-size:11px; border-radius:4px; } .mob #glspec{ bottom:max(10px, env(safe-area-inset-bottom)); font-size:10px; max-width:calc(100vw - 200px); } .mob #glspec button{ font-size:10px; padding:2px 6px; }
 body.glcloak::after{ content:''; position:fixed; inset:0; pointer-events:none; box-shadow:inset 0 0 120px 30px rgba(120,150,255,.45); z-index:5; } @keyframes dhBan{ 0%{ opacity:0; transform:translateX(-50%) scale(1.4); } 12%{ opacity:1; transform:translateX(-50%) scale(1); } 80%{ opacity:1; } 100%{ opacity:0; } }
 #dhHud .dhboss{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:3px; font-size:15px; } #dhHud .dhboss i{ display:block; width:160px; height:9px; background:rgba(0,0,0,.5); border:1px solid #ffd84a; border-radius:5px; overflow:hidden; } #dhHud .dhboss b{ display:block; height:100%; background:linear-gradient(90deg,#ff7a3d,#ffd84a); }
 .dhpick{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:6px 0 8px; }
@@ -2703,7 +2719,7 @@ html.dsV #bl .sbar { order: 2; height: 3px; border: 0; background: rgba(236,232,
 html.dsV body:not(.mob) #bl .sbar { width: 120px }
 html.dsV .sbar i { background: var(--cream) }
 html.dsV #arbar { background: var(--hl) }
-html.dsV body:not(.mob) #abil { bottom: 104px }
+html.dsV body:not(.mob) #abil { bottom: 104px } .mob #abil { pointer-events: auto }
 html.dsV body:not(.mob) #br { right: 26px; bottom: 18px }
 html.dsV #wname { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; opacity: .7 }
 html.dsV #ammo { font-weight: 600 }
@@ -5118,7 +5134,29 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Zu viele Anfragen.":"Too many requests.",
 "Zu viele Meldungen – bitte kurz warten.":"Too many reports – please wait a moment.",
 "Zu viele Versuche – bitte kurz warten.":"Too many attempts – please wait a moment.",
-"✓ Einladung an * gesendet":"✓ Invite sent to *"}; // Deutsch → Englisch · # = beliebige Zahl
+"✓ Einladung an * gesendet":"✓ Invite sent to *",
+"Schadensmaschine":"Damage Machine",
+"Kopfjäger":"Headhunter",
+"Immer dabei":"Always Involved",
+"Überlebenskünstler":"Survivor",
+"Mitspieler":"Teammate",
+"DEIN TEAM":"YOUR TEAM",
+"GEGNER":"ENEMY",
+"# Tode":"# deaths",
+"# % HS":"# % HS",
+"😈 STÖREN:":"😈 SABOTAGE:",
+"UNENTSCHIEDEN":"DRAW",
+"verlassen":"left",
+"# Bots":"# bots",
+"DEFENDER · DEIN TEAM":"DEFENDER · YOUR TEAM",
+"ATTACKER · DEIN TEAM":"ATTACKER · YOUR TEAM",
+"Runter":"Down",
+"antippen = Waffe aufheben oder fallen lassen, gedrückt halten = Bombe entschärfen ·":"tap = pick up or drop weapon, hold = defuse the bomb ·",
+"= Waffe inspizieren.":"= inspect weapon.",
+": Rauten doppelt antippen.":": double-tap the diamonds.",
+"Rauten doppelt antippen.":"double-tap the diamonds.",
+"Doppeltipp auf die Rauten.":"double-tapping the diamonds.",
+"Fähigkeits-Symbol antippen":"tap the ability icon"}; // Deutsch → Englisch · # = beliebige Zahl
             const NUM = /\d+(?:[.,]\d+)?/g, TPL = new Map(), WILD = [], OT = new WeakMap(), OA = new WeakMap(); // * = beliebiger Text (wird selbst übersetzt)
             for (const k in D) if (k.includes('*')) WILD.push([new RegExp('^' + k.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '(.+?)').replace(/#/g, '(\\d+(?:[.,]\\d+)?)') + '$'), D[k], k.match(/[*#]/g)]); else if (k.includes('#')) TPL.set(k, D[k]);
             const core = t => { if (D[t] !== undefined) return D[t]; if (/\d/.test(t)) { const v = TPL.get(t.replace(NUM, '#')); if (v !== undefined) { const n = t.match(NUM); let i = 0; return v.replace(/#/g, () => n[i++] || ''); } }
@@ -5199,15 +5237,17 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             <div class="tb" id="tJump">⤒</div>
             <div class="tb" id="tCrouch">⤓</div>
             <div class="tb" id="tReload">↻</div>
-            <div class="tb" id="tUse">E</div>
+            <div class="tb" id="tUse" title="Aufheben · Fallenlassen · Entschärfen"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12"/><path d="M11 11.5v-2a1.5 1.5 0 0 1 3 0V12"/><path d="M14 10.5a1.5 1.5 0 0 1 3 0V12"/><path d="M17 11.5a1.5 1.5 0 0 1 3 0V16a6 6 0 0 1-6 6h-2a6 6 0 0 1-5.2-3L4.3 14.6a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg></div>
             <div class="tb" id="tScope">⊕</div>
-            <div class="tb" id="tAbil">F</div>
+            <div class="tb" id="tAbil" title="Waffe inspizieren"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></div>
             <div class="tb" id="tNext">⇄</div>
             <div class="tb" id="tBuy">$</div>
             <div class="tb" id="tBoard">☰</div>
             <div class="tb spec" id="tSpecL">◀</div>
             <div class="tb spec" id="tSpecR">▶</div>
             <div class="tb spec" id="tSpecM" title="Freecam / Ego">🎥</div>
+            <div class="tb spec" id="tFcUp" title="Hoch">⤒</div>
+            <div class="tb spec" id="tFcDn" title="Runter">⤓</div>
         </div>
         <div id="buy" class="panel"></div>
         <div id="board" class="panel"></div>
@@ -5926,6 +5966,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         //  AUDIO (synthetisiert)
         // =====================================================================
         let AC = null, noiseBuf = null, OUT = null;
+        const audUnlock = () => { try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { } if (!AC) initAudio(); if (AC && AC.state !== 'running') AC.resume().catch(() => { }); }; // Handy: Audio startet nur nach Berührung → bei jeder Eingabe wieder anwerfen
+        for (const ev of ['touchstart', 'touchend', 'pointerdown', 'keydown']) addEventListener(ev, audUnlock, { capture: true, passive: true });
+        document.addEventListener('visibilitychange', () => { if (!document.hidden && AC && AC.state !== 'running') AC.resume().catch(() => { }); });
         function initAudio() { if (AC) return; AC = new (window.AudioContext || window.webkitAudioContext)(); noiseBuf = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++)d[i] = Math.random() * 2 - 1;
             OUT = AC.createGain(); const comp = AC.createDynamicsCompressor(); comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.2; OUT.connect(comp); comp.connect(AC.destination);
             if (!IS_TOUCH && OPT.gfx > 0) { const len = AC.sampleRate * 1.3 | 0, ir = AC.createBuffer(2, len, AC.sampleRate); for (let ch = 0; ch < 2; ch++) { const d2 = ir.getChannelData(ch); for (let i = 0; i < len; i++) d2[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.4); } const cv = AC.createConvolver(); cv.buffer = ir; const rg = AC.createGain(); rg.gain.value = THEME === THEMES.de_foundry || THEME === THEMES.de_moisty ? 0.22 : 0.14; OUT.connect(cv); cv.connect(rg); rg.connect(comp); }
@@ -6746,11 +6789,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (e.immune && w && (w.key === 'he' || /Granate|Cluster|Molotov|Giftwolke|Sprengfalle/.test(w.name || ''))) return; // Bollwerk
             if (CFG.hsOnly && !hs && w && (w.slot === 1 || w.slot === 2)) return; // Spaß-Modus: nur Headshots zählen
             if (e.armor > 0 && !(hs && !e.helmet)) { const a = Math.min(e.armor, dmg * 0.5); e.armor -= a; dmg -= a; }
-            dmg = Math.round(dmg); e.health -= dmg; e.tagT = now + (hs ? 0.5 : 0.35); // Tagging: Treffer bremsen kurz ab
+            dmg = Math.round(dmg); const real = Math.min(dmg, Math.max(0, e.health)); if (att && att !== e && att.x !== undefined) { att.dmgD = (att.dmgD || 0) + real; (e.dmgBy || (e.dmgBy = new Set())).add(att); } /* Endbildschirm: ADR & Assists */ if (att === player && !e.isPlayer && !e.remote && RK.cur && NET.on && NET.host) netSend({ type: 'hdmg', d: real }); e.health -= dmg; // Ranked: Schaden an Bots fürs ADR e.tagT = now + (hs ? 0.5 : 0.35); // Tagging: Treffer bremsen kurz ab
             if (e.isPlayer) { dmgFlash = 1; sfx('hurt'); shake = Math.max(shake, Math.min(0.22, 0.04 + dmg / 300)); if (att && att !== e && att.x !== undefined) dmgDir(att); } else bleed(e, hs);
             if (att && att.isPlayer && att !== e) { hitT = 0.12; hitHS = !!hs; sfx(hs ? 'hs' : 'hit'); } if (e.health <= 0) { e.health = 0; kill(e, att, w, hs); }
         }
         function kill(e, att, w, hs) {
+            if (att && att !== e && hs) att.hsK = (att.hsK || 0) + 1; if (e.dmgBy) { for (const o of e.dmgBy) if (o !== att && o !== e) o.ast = (o.ast || 0) + 1; e.dmgBy = null; } // Endbildschirm: HS & Assists
             if (e.isPlayer) { roundKills = 0; if (!EX.on) { PRG.st.deaths = (PRG.st.deaths || 0) + 1; localStorage.setItem('prog', JSON.stringify(PRG)); } } e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
             if (DM.on || (GL.on && GL.v1)) { /* Deathmatch & 1v1: keine Waffen-Drops */ } else if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
             else if (!e.remote && e.weapon && e.weapon.slot === 1) { const dd = dropWeapon(e.weapon, e.x, e.z, e.weapon.mag, 0, null); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } }
@@ -6957,14 +7001,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function gameOver() {
             if (NET.on && NET.host) netSend({ type: 'over', sc: G.score }); gameEnded = true; G.state = 'over'; document.exitPointerLock(); $('hud').style.display = 'none'; if (NET.spec) specClear(); else { store.cases++; saveStore(); } if (!NET.spec) xpEvent('match', { won: DM.on ? dmRank()[0] === player : G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT'] }); if (DM.on) { dmReport(); return; } const won = G.score[player.team] > G.score[player.team === 'CT' ? 'T' : 'CT']; if (BR.on) setTimeout(() => brEnd(won), 0); const kd = (player.kills / Math.max(1, player.deaths)).toFixed(2);
             showOverlay(`<h1 style="color:${won ? 'var(--acc)' : '#8da0b5'}">${NET.spec ? '👁 ' + (G.score.CT > G.score.T ? 'DEFENDER GEWINNEN' : G.score.T > G.score.CT ? 'ATTACKER GEWINNEN' : 'UNENTSCHIEDEN') : won ? 'SIEG' : 'NIEDERLAGE'}<small>SPIEL BEENDET</small></h1>
-<div class="panel" style="min-width:320px;text-align:left">
+${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
 <div class="psub">MATCH-REPORT · ${MAPLABEL.toUpperCase()}</div>
 <div style="font:700 34px Rajdhani;text-align:center;margin-bottom:10px"><span class="ct">${G.score.CT}</span> <span style="color:var(--mut)">:</span> <span class="t">${G.score.T}</span></div>
 <div class="row" style="justify-content:space-between"><span style="color:var(--mut)">KILLS</span><b>${player.kills}</b></div>
 <div class="row" style="justify-content:space-between"><span style="color:var(--mut)">TODE</span><b>${player.deaths}</b></div>
 <div class="row" style="justify-content:space-between"><span style="color:var(--mut)">K/D</span><b style="color:${kd >= 1 ? '#9fe08a' : '#ff6b6b'}">${kd}</b></div>
 <div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div>
-</div><div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button><a class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" style="margin-top:16px">💬 Komm auf unseren Discord</a></div>`);
+</div>` : rkBoard(eoCustoms(), player.team === 'T' ? 1 : 0) + (NET.spec ? '' : '<div class="eorew">BELOHNUNG <b>📦 +1 CASE</b></div>')}<div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button><a class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" style="margin-top:16px">💬 Komm auf unseren Discord</a></div>`);
         }
         function updateRound(dt) {
             if (DM.on && G.state === 'live') { G.timer -= dt; for (const b of bots) dmDeadTick(b, dt); if (G.timer <= 0 || ents.some(e => e.kills >= DM.limit)) { gameOver(); return; } if (G.msgT > 0) { G.msgT -= dt; if (G.msgT <= 0) { $('msg').textContent = ''; $('sub').textContent = ''; } } return; }
@@ -7099,12 +7143,12 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         const FC = { on: false, x: 0, y: 0, z: 0, yaw: 0, pitch: 0 };
         function startFreecam() {
             const A = GA.cur; if (!A) return;
-            FC.on = true; specTarget = null;
+            FC.on = true; specTarget = null; document.body.classList.add('fcam');
             FC.x = A.ox + A.C * S / 2; FC.z = -4; FC.y = 10;
             FC.yaw = Math.PI; FC.pitch = -0.55;
             const el = $('specname'); if (el) el.textContent = '🚁 Freecam';
         }
-        function stopFreecam() { FC.on = false; }
+        function stopFreecam() { FC.on = false; document.body.classList.remove('fcam'); keys[BIND.jump] = keys[BIND.crouch] = false; }
         function updateFreecam(dt) {
             const spd = (down('crouch') && down('jump') ? 0 : 1) * 14 * dt;
             const f = (down('fwd') ? 1 : 0) - (down('back') ? 1 : 0) + TOUCH.f;
@@ -7251,14 +7295,16 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             addEventListener('touchend', tEnd); addEventListener('touchcancel', tEnd);
  const hold = (id, on, off) => { const el = $(id); el.addEventListener('touchstart', e => { if (EDITB.on) return; e.preventDefault(); e.stopPropagation(); on(); }, { passive: false }); if (off) { el.addEventListener('touchend', e => { if (EDITB.on) return; e.preventDefault(); off(); }); el.addEventListener('touchcancel', off); } };            hold('tFire', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false);
             hold('tFire2', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false); hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
-            hold('tUse', () => keys[BIND.use] = true, () => keys[BIND.use] = false);
+            let useT = 0; hold('tUse', () => { keys[BIND.use] = true; useT = performance.now(); }, () => { // ✋ halten: entschärfen · tippen: aufheben, sonst Waffe fallen lassen
+                const p = player, tap = keys[BIND.use] && performance.now() - useT < 300, nb = G.bomb.state === 'planted' && p.team === 'CT' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2; keys[BIND.use] = false; if (tap && !nb && started && !gameEnded && p.alive) dropCurrent(); });
             hold('tCrouch', () => keys[BIND.crouch] = !keys[BIND.crouch]);
             hold('tReload', () => startReload());
             hold('tScope', () => toggleScope());
-            hold('tAbil', () => glUseAbility());
+            hold('tAbil', () => inspectWeapon()); // 🔍 Waffe inspizieren (Fähigkeit & Taktik: Symbol antippen)
+            $('abil').addEventListener('touchstart', e => { if (EDITB.on) return; e.preventDefault(); e.stopPropagation(); glUseAbility(); }, { passive: false }); // Gauntlet-Fähigkeit per Antippen
             hold('tNext', () => { const o = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); if (o.length) { const n = o[(o.indexOf(player.slot) + 1) % o.length]; n === 4 && player.slot === 4 ? cycleNade() : selectSlot(n); } });
             hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
-            hold('tSpecL', () => { if (!player.alive && !FC.on) cycleSpec(-1); }); hold('tSpecR', () => { if (!player.alive && !FC.on) cycleSpec(1); }); hold('tSpecM', () => { if (NET.spec) specToggle(); });
+            hold('tSpecL', () => { if (!player.alive && !FC.on) cycleSpec(-1); }); hold('tSpecR', () => { if (!player.alive && !FC.on) cycleSpec(1); }); hold('tSpecM', () => { if (NET.spec) specToggle(); }); hold('tFcUp', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false); hold('tFcDn', () => keys[BIND.crouch] = true, () => keys[BIND.crouch] = false); // Freecam hoch/runter
             hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
             // Doppeltipp auf die Tab-Ansicht → Pause-Menü (wie Esc am PC)
             let boardTap = 0; $('board').addEventListener('touchend', e => { const t = performance.now(); if (t - boardTap < 350) { e.preventDefault(); boardTap = 0; $('board').style.display = 'none'; mobPause(); } else boardTap = t; });
@@ -7486,7 +7532,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             setT('hp', hpv); setT('ar', Math.ceil(p.armor));
             $('hpbar').style.width = Math.min(100, hpv / hpm * 100) + '%';
             $('arbar').style.width = Math.min(100, p.armor) + '%';
-            $('hpwrap').classList.toggle('low', p.alive && hpv < 30); setT('money', `$ ${p.money}`); setT('wname', !w ? '' : (GL.on && w.def.nade) ? `${w.def.name} Lv.${player.glN[w.def.key] || 1}${player.glG && player.glG[w.def.key] ? ' ⚡' + GL_GLITCH[w.def.key][player.glG[w.def.key]] : ''}` : (skinOf(w.def.key) ? skinOf(w.def.key).n : w.def.name)); { let ue = $('ult'); if (!ue) { ue = document.createElement('div'); ue.id = 'ult'; ue.title = 'Ultimate: Team-Scan (X)'; ue.onclick = useUlt; ue.addEventListener('touchstart', e => { e.stopPropagation(); useUlt(); }, { passive: true }); $('hud').appendChild(ue); } // Ultimate-Anzeige
+            $('hpwrap').classList.toggle('low', p.alive && hpv < 30); setT('money', `$ ${p.money}`); setT('wname', !w ? '' : (GL.on && w.def.nade) ? `${w.def.name} Lv.${player.glN[w.def.key] || 1}${player.glG && player.glG[w.def.key] ? ' ⚡' + GL_GLITCH[w.def.key][player.glG[w.def.key]] : ''}` : (skinOf(w.def.key) ? skinOf(w.def.key).n : w.def.name)); { let ue = $('ult'); if (!ue) { ue = document.createElement('div'); ue.id = 'ult'; ue.title = 'Ultimate: Team-Scan (X)'; ue.onclick = () => { if (!IS_TOUCH) useUlt(); }; ue.addEventListener('touchstart', e => { e.stopPropagation(); e.preventDefault(); const t = performance.now(); if (t - (ue.tapT || 0) < 400) { ue.tapT = 0; ue.classList.remove('arm'); useUlt(); } else { ue.tapT = t; ue.classList.add('arm'); setTimeout(() => ue.classList.remove('arm'), 400); } }, { passive: false }); /* Handy: Doppeltipp löst aus */ $('hud').appendChild(ue); } // Ultimate-Anzeige
                 ue.style.visibility = buyOpen ? 'hidden' : '';
                 for (const e of ents) { if (e === p || !e.mesh) continue; if (!e.mesh.userData.outl) enemyOutline(e.mesh); const on = OPT.outOn !== false && e.alive && (GL.on ? !(GL.myTeam && GL.myTeam.members.includes(e)) : foe(e, p)); if (e.mesh.userData.outOn !== on) { e.mesh.userData.outOn = on; for (const o of e.mesh.userData.outl) o.visible = on; } } for (const d of decoys) { if (d.name !== 'Decoy' || !d.mesh) continue; if (!d.mesh.userData.outl) enemyOutline(d.mesh); const on = OPT.outOn !== false && d.alive && !(GL.myTeam && d.team === GL.myTeam); if (d.mesh.userData.outOn !== on) { d.mesh.userData.outOn = on; for (const o of d.mesh.userData.outl) o.visible = on; } } // Gegner-Umrandung (auch Gauntlet-Klone) document.body.classList.toggle('imm', !!p.immune && p.alive);
                 if (STK.on) { if (!p.alive || G.state !== 'live') STK.on = false; else { camera.getWorldDirection(_fwd); _ray.set(camera.position, _fwd); _ray.far = 90; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; STK.x = h ? h.point.x : p.x + _fwd.x * 40; STK.z = h ? h.point.z : p.z + _fwd.z * 40; stkRing.position.set(STK.x, 0.08, STK.z); } } stkRing.visible = STK.on; const us = (GL.on || DH.on || EX.on || buyOpen) ? 'x' : (p.ult || 0) + ultK(); if (ue.dataset.sig !== us) { ue.dataset.sig = us; ue.style.display = us === 'x' ? 'none' : ''; const u = p.ult || 0; ue.className = u >= ULT_MAX ? 'rdy' : ''; ue.innerHTML = Array.from({ length: ULT_MAX }, (_, i) => `<i class="${i < u ? 'f' : ''}"></i>`).join('') + `<b>${ULTS[ultK()][0]}</b>`; ue.title = 'Ultimate: ' + ULTS[ultK()][0] + ' (X)'; } } updAbar();
@@ -7947,13 +7993,13 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
                 { go: () => showMenu(), sel: '#mfr', t: '👥 Freunde & Gruppen', d: 'Fahre mit der Maus über die <b>Freundesleiste</b> – sie klappt auf und zeigt ganze Namen und Knöpfe: <b>in die Gruppe einladen</b>, in die Lobby holen oder das <b>Profil ansehen</b>.<br>In einer <b>Gruppe</b> sucht Ihr zusammen – Ihr landet immer im selben Team. Der Gruppenleiter startet die Suche.' },
                 { go: () => showMenu(), sel: '#ctAcc', t: '🪪 Profil & Profilbild', d: 'Klick auf einen Namen öffnet das <b>Profil</b>: Rang, Statistiken und letzte Matches.<br>Dein <b>Profilbild</b> wählst Du aus den Vorlagen oder lädst ein eigenes Bild hoch.<br>Abzeichen: 🗺️ <b>Map-Creator</b> (eigene Karte im offiziellen Pool) und 🎨 <b>Skin-Creator</b> (viel mit eigenen Skins verdient).' },
                 { t: '👁 Zuschauen in Customs', d: 'In Online-Customs können bis zu <b>2 Leute zuschauen</b> – auch der Host. Wähle in der Lobby den Platz <b>Zuschauer</b>.<br>Frei herumfliegen wie im Gauntlet oder mit ' + (IS_TOUCH ? 'dem Kamera-Button' : '<b class="tk">F</b>') + ' in die <b>Sicht eines Spielers</b> wechseln (Klick = nächster Spieler). Die Teams sind farbig markiert.' },
-                { t: '⚔️ Gauntlet – die Show', d: 'Duo-Turnier mit <b>Draft</b>: Waffe und Upgrade wählen – Granaten, Perks oder Fähigkeiten (' + (IS_TOUCH ? 'Fähigkeits-Button' : k('abil')) + '), z. B. 💉 Stim-Spritze oder 👻 Tarnkappe.<br>Vor vielen Duellen wählt das Publikum ein <b>Ereignis</b> (Glaskanone, Turbo, Pistolen, Nacht). In den letzten 15 s schrumpft die Zone – <b>☠ plötzlicher Tod</b>.<br>Beim Zuschauen: ' + (IS_TOUCH ? 'Knöpfe antippen' : '<b class="tk">1</b>/<b class="tk">2</b> tippen auf den Sieger (+1 Reroll), <b class="tk">3</b>–<b class="tk">5</b> stören') + ' – einmal pro Duell Rauch, Blendgranate oder Heilpaket.' },
+                { t: '⚔️ Gauntlet – die Show', d: 'Duo-Turnier mit <b>Draft</b>: Waffe und Upgrade wählen – Granaten, Perks oder Fähigkeiten (' + (IS_TOUCH ? 'Fähigkeits-Symbol antippen' : k('abil')) + '), z. B. 💉 Stim-Spritze oder 👻 Tarnkappe.<br>Vor vielen Duellen wählt das Publikum ein <b>Ereignis</b> (Glaskanone, Turbo, Pistolen, Nacht). In den letzten 15 s schrumpft die Zone – <b>☠ plötzlicher Tod</b>.<br>Beim Zuschauen: ' + (IS_TOUCH ? 'Knöpfe antippen' : '<b class="tk">1</b>/<b class="tk">2</b> tippen auf den Sieger (+1 Reroll), <b class="tk">3</b>–<b class="tk">5</b> stören') + ' – einmal pro Duell Rauch, Blendgranate oder Heilpaket.' },
                 { t: '🦆 Entenjagd', d: '2 Minuten, <b>5 Wellen</b> bis zum CHAOS. Jede Ente bringt Punkte – Gold, Riesen-Ente, 🤖 Robo-Ente (3 Treffer), 👻 Geister-Ente und mehr. 🚫 Rote Lockvögel kosten Punkte.<br>Schieß <b>leuchtende Kisten</b> ab: 💥 Sprengmunition, 🔫 Dauerfeuer, 🔗 Combo-Halter. Die <b>Combo</b> neben dem Fadenkreuz erhöht den Multiplikator.' },
                 IS_TOUCH
-                    ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br><b>Taktik</b>: Icon unter den Ult-Rauten antippen, dann Feuerknopf = werfen · <b>Ultimate</b>: Rauten antippen.<br>Mitspieler siehst Du als farbige Silhouette durch Wände, mit Namen darunter.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
+                    ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br><b>✋</b> antippen = Waffe aufheben oder fallen lassen, gedrückt halten = Bombe entschärfen · <b>🔍</b> = Waffe inspizieren.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br><b>Taktik</b>: Icon unter den Ult-Rauten antippen, dann Feuerknopf = werfen · <b>Ultimate</b>: Rauten doppelt antippen.<br>Mitspieler siehst Du als farbige Silhouette durch Wände, mit Namen darunter.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
                     : { t: '⌨️ Steuerung', d: 'Laufen ' + ['fwd', 'left', 'back', 'right'].map(k).join(' ') + ' · Umsehen mit der Maus · Schießen <b class="tk">Linksklick</b> · Zielfernrohr <b class="tk">Rechtsklick</b><br>Springen ' + k('jump') + ' · Ducken ' + k('crouch') + ' · Leise gehen ' + k('walk') + '<br>Nachladen ' + k('reload') + ' · Benutzen/Entschärfen ' + k('use') + ' · Waffe fallen lassen ' + k('drop') + '<br>Letzte Waffe ' + k('lastw') + ' · Waffe inspizieren ' + k('inspect') + ' · Waffen <b class="tk">1–5</b> · Scoreboard ' + k('board') + '<br>Deine <b>Mitspieler</b> siehst Du als farbige Silhouette durch Wände, mit Namen darunter.<br>Alle Tasten kannst Du in den ⚙️ Einstellungen ändern.' },
                 { t: '💰 Kaufen', d: 'Zu Rundenbeginn öffnet sich im Spiel das <b>Kaufmenü</b> (' + (IS_TOUCH ? 'Button 🛒' : k('buy')) + '). Mit Deinem Geld kaufst Du Waffen, Rüstung, Granaten und das Entschärfer-Kit.<br>' + (IS_TOUCH ? '' : '<b>Rechtsklick</b> verkauft, was Du in dieser Runde gekauft hast.<br>') + 'Geld gibt es für Kills und Rundenausgänge – wer gewinnt, bekommt mehr.' },
-                { t: '⚡ Ultimate & Taktik', d: 'Im Kaufmenü wählst Du Deine <b>Ultimate</b> (eine von fünf) und kaufst eine <b>Taktik</b> – Recon-Pfeil, Cluster oder Kälteschaum, eine pro Runde.<br>Die gekaufte Taktik erscheint als <b>Icon unter den Ult-Rauten</b>: ' + (IS_TOUCH ? 'antippen und mit dem Feuerknopf werfen.' : '<b class="tk">V</b> nimmt sie in die Hand, <b class="tk">Linksklick</b> wirft.') + '<br>Die Ultimate lädt sich über Kills, Bombe legen und entschärfen auf – auslösen mit ' + (IS_TOUCH ? 'Antippen der Rauten.' : '<b class="tk">X</b>.') + '<br><b>Spike-Checkpoint</b>: Wer 50 % entschärft hat, macht beim nächsten Versuch ab 50 % weiter.' },
+                { t: '⚡ Ultimate & Taktik', d: 'Im Kaufmenü wählst Du Deine <b>Ultimate</b> (eine von fünf) und kaufst eine <b>Taktik</b> – Recon-Pfeil, Cluster oder Kälteschaum, eine pro Runde.<br>Die gekaufte Taktik erscheint als <b>Icon unter den Ult-Rauten</b>: ' + (IS_TOUCH ? 'antippen und mit dem Feuerknopf werfen.' : '<b class="tk">V</b> nimmt sie in die Hand, <b class="tk">Linksklick</b> wirft.') + '<br>Die Ultimate lädt sich über Kills, Bombe legen und entschärfen auf – auslösen mit ' + (IS_TOUCH ? 'Doppeltipp auf die Rauten.' : '<b class="tk">X</b>.') + '<br><b>Spike-Checkpoint</b>: Wer 50 % entschärft hat, macht beim nächsten Versuch ab 50 % weiter.' },
                 { go: () => { INV.tab = 'sk'; INV.wk = null; showInventory(); }, sel: '.invgrid', t: '🎒 Inventar – Skins', d: 'Links siehst Du alle Waffen mit dem aktuell ausgerüsteten Skin, rechts alle Skins der gewählten Waffe.<br>Klick auf einen Skin = <b>ausrüsten</b>. Mit 🔒 markierte Skins fehlen Dir noch.' },
                 { go: () => { INV.tab = 'sk'; INV.wk = 'knife'; showInventory(); }, sel: '.invpanel h5', t: '🔪 Dein Messer', d: 'Beim Messer wählst Du hier das <b>Modell</b>: <b>Butterfly</b> oder <b>Karambit</b>. Alle Messer-Skins passen auf beide.' },
                 { go: () => { INV.tab = 'ag'; showInventory(); }, sel: '.invbox', t: '👤 Dein Agent', d: 'Wähle Dein <b>Spielermodell</b>: Standard, <b>Eigener Agent</b> oder eine Ente.<br>Für den eigenen Agenten stellst Du <b>Hautton, Frisur und Haarfarbe</b> gratis ein und ziehst ihm <b>Kleidung</b> an – Kopf, Oberteil, Hose, Schuhe. Gekaufte Teile färbst Du frei ein.<br>Die <b>Team-Armbinde</b> zeigt immer, zu welchem Team Du gehörst. Mitspieler sehen Deinen Look.' },
@@ -10014,7 +10060,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const D = GL.duel, B = GL.bet, Sb = GL.sab; if (GL.phase !== 'duel' || !D || (!B && !Sb)) { el.style.display = 'none'; el._h = ''; return; } el.style.display = 'block';
             const nb = i => GL.bets.filter(b => b.pick === D.teams[i]).length, tb = i => `<button data-glk="Digit${i + 1}">[${i + 1}] ${escH(D.teams[i].name)}${nb(i) ? ' · ' + nb(i) + '🤖' : ''}</button>`;
             const bet = B ? (B.pick ? `🎲 Dein Tipp: <b>${escH(B.pick.name)}</b>` : GL.dT < 12 ? '🎲 TIPP: ' + tb(0) + tb(1) : '🎲 Tipps geschlossen') : '';
-            const sab = Sb ? (Sb.used ? '😈 Störaktion verbraucht' : GL.dT < 4 ? '😈 Störaktion gleich bereit…' : '😈 STÖREN (Blickziel): ' + Object.entries(GL_SAB).map(([k, [ic, n]], i) => `<button data-glk="Digit${i + 3}">[${i + 3}] ${ic} ${n}</button>`).join('')) : '';
+            const sab = Sb ? (Sb.used ? '😈 Störaktion verbraucht' : GL.dT < 4 ? '😈 Störaktion gleich bereit…' : '😈 STÖREN: ' + Object.entries(GL_SAB).map(([k, [ic, n]], i) => `<button data-glk="Digit${i + 3}">[${i + 3}] ${ic} ${n}</button>`).join('')) : '';
             const h = `<div>${bet}</div><div>${sab}</div>`; if (h !== el._h) { el._h = h; el.innerHTML = h; }
         }
         function glFxTick(dt) { // läuft bei Host & Client
@@ -10264,7 +10310,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (!pair) { glStandings(); return; }
             const akey = GL.nextAr && ARENAS[GL.nextAr] ? GL.nextAr : glPickArena(); GL.nextAr = null; // beim ersten Duell: die Arena aus der Auswahlphase
             setArena(akey); buildArenaRadar(); clearDecoys(); clearNades(); if (player.glA) player.glA.cd = 0; const A = GA.cur;
-            GL.duel = { teams: pair, t: GL_TIME, over: false }; const specs = glBotSpecs(pair); GL.ev = glPickEvent(specs);
+            GL.duel = { teams: pair, t: GL_TIME, over: false }; for (const t of pair) for (const m of t.members) m.rds = (m.rds || 0) + 1; /* gespielte Duelle (ADR) */ const specs = glBotSpecs(pair); GL.ev = glPickEvent(specs);
             for (const e of ents) { if (!e.isPlayer) { e.alive = false; e.mesh.visible = false; e.target = null; e.path = []; e.goal = null; } }
             player.alive = false;
             pair.forEach((team, ti) => {
@@ -10325,7 +10371,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="row" style="justify-content:space-between"><span style="color:var(--mut)">KILLS</span><b>${player.kills}</b></div>
  <div class="row" style="justify-content:space-between"><span style="color:var(--mut)">${GL.v1 ? 'SIEGE' : 'TEAM-SIEGE'}</span><b>${GL.myTeam.wins}</b></div>
  <div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +${won ? 2 : 1} CASE${won ? 'S' : ''}</b></div>
- </div><button onclick="location.reload()" style="margin-top:16px">Zurück zum Menü</button>`);
+ </div>${rkBoard(eoGl(winner), Math.max(0, GL.teams.indexOf(GL.myTeam)))}<button onclick="location.reload()" style="margin-top:16px">Zurück zum Menü</button>`);
         }
         function glCheckDuel() {
             if (GL.phase !== 'duel' || GL.duel.over) return;
@@ -10384,7 +10430,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             let ak = m.ar; if (m.arena && isArKey(m.arena.k)) { if (ARENAS[ak] && ARENAS[ak].rows.join() !== m.arena.g.join()) ak = 'puba_net' + Date.now().toString(36); regMap(ak, m.arena); if (!ARENAS[ak]) ak = Object.keys(ARENAS)[0]; }
             if (!ARENAS[ak]) ak = Object.keys(ARENAS)[0];
             setArena(ak); buildArenaRadar(); clearDecoys(); clearNades(); if (player.glA) player.glA.cd = 0; const A = GA.cur; const ta = GL.teams.find(t => t.id === m.a), tb = GL.teams.find(t => t.id === m.b);
-            GL.duel = { teams: [ta, tb], t: GL_TIME, over: false }; GL.ev = m.ev || null;
+            GL.duel = { teams: [ta, tb], t: GL_TIME, over: false }; for (const t of [ta, tb]) for (const m of t.members) m.rds = (m.rds || 0) + 1; GL.ev = m.ev || null;
             $('overlay').style.display = 'none'; stopFreecam(); specTarget = null; $('dead').style.display = 'none';
             player.alive = false;
             const mine = ta === GL.myTeam || tb === GL.myTeam;
@@ -10747,18 +10793,31 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             if (pn && !$('rkRes')) pn.insertAdjacentHTML('beforeend', `<div id="rkRes" class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">${m.mode === 'ur' ? '🎮 UNRANKED' : '🏆 RANKED'}</span><b style="color:${m.d > 0 ? '#9fe08a' : m.d < 0 ? '#ff6b6b' : 'var(--text)'}">${escH(res)}</b></div>${rank ? `<div class="row" style="justify-content:space-between"><span style="color:var(--mut)">RANG</span><b style="color:var(--acc)">${escH(rank)}</b></div>` : ''}${m.why ? `<div class="row" style="font-size:11px;color:var(--mut)">${escH(m.why)}</div>` : ''}`);
             else toast('🏆 Ranked: ' + res, m.why || rank);
         }
+        // Endbildschirm für lokale Matches (Customs, Gauntlet, 1v1): gleiche Karten wie im Ranked, Werte vom eigenen Spiel gezählt
+        const eoRow = (e, side, rds) => ({ n: e.name, av: e.isPlayer ? myAv() : e.av, bd: e.isPlayer ? '' : e.bd, side, k: e.kills || 0, d: e.deaths || 0, a: e.ast || 0, hs: e.hsK || 0, adr: Math.round((e.dmgD || 0) / Math.max(1, rds)), kast: null, ch: null, me: !!e.isPlayer });
+        function eoCustoms() { const rds = G.score.CT + G.score.T; return { st: 'local', ml: 'Customs', map: MAPNAME, sc: [G.score.CT, G.score.T], res: G.score.CT > G.score.T ? 1 : G.score.T > G.score.CT ? 0 : 0.5, nb: [0, 0], rows: ents.filter(e => e.name && !e.spec && !e.decoy).map(e => eoRow(e, e.team === 'T' ? 1 : 0, rds)) }; }
+        function eoGl(winner) { const v1 = GL.v1 && GL.teams.length === 2, T = GL.teams; return { st: 'local', ml: GL.v1 ? '1v1' : 'Gauntlet', mode: v1 ? 'v1' : 'gl', map: GL.lastAr || MAPNAME, sc: T.map(t => t.wins), win: T.indexOf(winner), teams: v1 ? undefined : T.map(t => ({ n: t.name })), rows: T.flatMap((t, i) => t.members.map(m => eoRow(m, i, m.rds || 1))) }; }
         function rkBoard(sb, side) { // Endbildschirm Ranked: nur vom Server bestätigte Werte, Fehlendes als „–“; Rating nur bei gewerteten Matches
             const na = '<span class="na" title="nicht verfügbar">–</span>', v = x => x === null || x === undefined ? na : x, rated = sb.st === 'rated';
             const kd = p => p.k === null || p.d === null ? na : (p.k / Math.max(1, p.d)).toFixed(2), hs = p => p.hs === null || p.k === null || !p.k ? na : Math.round(p.hs / p.k * 100) + ' %';
             const rt = p => !rated || p.ch === null ? na : `<b class="${p.ch > 0 ? 'up' : p.ch < 0 ? 'dn' : ''}">${p.ch >= 0 ? '+' : ''}${p.ch}</b> <small>${p.r}${p.rank ? ' · ' + escH(p.rank) : ''}</small>`;
             const who = (p, big) => `<button class="eopp" data-pp="${escH(p.n)}" title="Profil von ${escH(p.n)}">${avH(p.n, p.av, big ? 48 : 24)}<span>${escH(p.n)}${bdH(p.bd)}${p.left ? ' <small class="na">verlassen</small>' : ''}</span></button>`;
-            const won = s => sb.res === null ? null : sb.res === 0.5 ? 'd' : (sb.res === 1) === (s === 0) ? 'w' : 'l', WL = { w: 'SIEG', l: 'NIEDERLAGE', d: 'UNENTSCHIEDEN' };
-            const head = `<div class="eohd"><b>${escH(mapLbl(sb.map))}</b><span>${RK_MN[sb.mode] || ''} · Dauer ${sb.dur ? mmss(sb.dur) : '–'}${!rated ? ' · ohne Wertung' : sb.mode === 'ur' ? ' · kein Rating' : ''}</span></div>`;
-            if (sb.mode === 'v1') return `<div class="eosb" id="eosb">${head}<div class="eov1">${[side, 1 - side].map(s => { const p = sb.rows.find(x => x.side === s); return !p ? '' : `<div class="eoc ${won(s) || ''}">${who(p, 1)}<div class="eosc">${sb.sc ? sb.sc[s] : '–'}</div><div>${won(s) ? WL[won(s)] : ''}</div><div class="ppst"><span>K <b>${v(p.k)}</b></span><span>D <b>${v(p.d)}</b></span><span>K/D <b>${kd(p)}</b></span><span>HS <b>${hs(p)}</b></span><span>ADR <b>${v(p.adr)}</b></span></div><div>${rt(p)}</div></div>`; }).join('<div class="eovs">VS</div>')}</div></div>`;
-            const team = s => { const w = won(s); return `<div class="eotm ${s ? 't' : 'ct'}${s === side ? ' me' : ''}"><div class="eoth"><b>${s ? 'ATTACKER' : 'DEFENDER'}${s === side ? ' · DEIN TEAM' : ''}</b><span>${sb.sc ? sb.sc[s] : '–'}${w ? ' · ' + WL[w] : ''}</span></div>
- <div class="eotw"><table><tr><th>Spieler</th><th>K</th><th>D</th><th>A</th><th>K/D</th><th>ADR</th><th>KAST</th><th>HS</th>${sb.mode === 'ur' ? '' : '<th>Rating</th>'}</tr>${sb.rows.filter(x => x.side === s).map(p => `<tr><td>${who(p)}</td><td>${v(p.k)}</td><td>${v(p.d)}</td><td>${v(p.a)}</td><td>${kd(p)}</td><td>${v(p.adr)}</td><td>${p.kast === null ? na : p.kast + ' %'}</td><td>${hs(p)}</td>${sb.mode === 'ur' ? '' : `<td>${rt(p)}</td>`}</tr>`).join('')}${sb.nb[s] ? `<tr><td class="na">🤖 ${sb.nb[s]} Bot${sb.nb[s] > 1 ? 's' : ''}</td><td colspan="${sb.mode === 'ur' ? 7 : 8}" class="na">keine Statistik · kein Rating</td></tr>` : ''}</table></div></div>`; };
-            return `<div class="eosb" id="eosb">${head}${team(side)}${team(1 - side)}</div>`;
+            const won = s => sb.win !== undefined ? (sb.win === null || sb.win < 0 ? null : s === sb.win ? 'w' : 'l') : sb.res === null ? null : sb.res === 0.5 ? 'd' : (sb.res === 1) === (s === 0) ? 'w' : 'l', WL = { w: 'SIEG', l: 'NIEDERLAGE', d: 'UNENTSCHIEDEN' };
+            const head = `<div class="eohd"><b>${escH(mapLbl(sb.map))}</b><span>${sb.ml || RK_MN[sb.mode] || ''}${sb.st === 'local' ? '' : ' · Dauer ' + (sb.dur ? mmss(sb.dur) : '–')}${sb.st === 'local' ? '' : !rated ? ' · ohne Wertung' : sb.mode === 'ur' ? ' · kein Rating' : ''}</span></div>`;
+            if (sb.mode === 'v1') return `<div class="eosb" id="eosb">${head}<div class="eov1">${[side, 1 - side].map(s => { const p = sb.rows.find(x => x.side === s); return !p ? '' : `<div class="eoc ${won(s) || ''}">${who(p, 1)}<div class="eosc">${sb.sc ? sb.sc[s] : '–'}</div><div>${won(s) ? WL[won(s)] : ''}</div><div class="ppst"><span>K <b>${v(p.k)}</b></span><span>D <b>${v(p.d)}</b></span><span>K/D <b>${kd(p)}</b></span><span>HS <b>${hs(p)}</b></span><span>ADR <b>${v(p.adr)}</b></span></div>${sb.st === 'local' ? '' : `<div>${rt(p)}</div>`}</div>`; }).join('<div class="eovs">VS</div>')}</div></div>`;
+            // Teams als Spielerkarten (wie CS2): Band mit ADR, K-D-A, HS · Profilbild · Name · Auszeichnung · Rating; Reiter wechseln zwischen den Teams
+            const AW = {}, award = (f, t, sub) => { let b = null, bv = 0; for (const p of sb.rows) { const x = f(p); if (x !== null && x !== undefined && x > bv && !AW[p.n]) { bv = x; b = p; } } if (b) AW[b.n] = [t, sub(b)]; };
+            award(p => p.k, 'Top-Fragger', p => p.k + ' Kills'); award(p => p.adr, 'Schadensmaschine', p => 'ADR ' + p.adr); award(p => p.k >= 3 && p.hs !== null ? p.hs / p.k : null, 'Kopfjäger', p => hs(p) + ' HS');
+            award(p => p.a, 'Teamplayer', p => p.a + ' Assists'); award(p => p.kast, 'Immer dabei', p => 'KAST ' + p.kast + ' %'); award(p => p.d === null ? null : 99 - p.d, 'Überlebenskünstler', p => p.d + ' Tode');
+            const COL = ['#e8873a', '#c23fb0', '#2bb39a', '#cdb83a', '#5aa6e0'], me = p => p.me || (ACC && p.n === ACC.u);
+            const card = (p, i) => { const aw = AW[p.n] || ['Mitspieler', '']; return `<div class="eocard${me(p) ? ' me' : ''}" style="--c:${COL[i % COL.length]}"><div class="eorib"><b>${v(p.adr)}</b><small>ADR</small><b>${v(p.k)}-${v(p.d)}-${v(p.a)}</b><small>K-D-A</small><b>${hs(p)}</b><small>HS</small></div><button class="eopp eoav" data-pp="${escH(p.n)}" title="Profil von ${escH(p.n)}">${avH(p.n, p.av, 60)}</button><div class="eonm">${escH(p.n)}${bdH(p.bd)}</div><div class="eoaw"><i>${aw[0]}</i><small>${aw[1]}</small>${p.left ? '<small class="na">verlassen</small>' : ''}</div>${sb.mode === 'ur' || sb.st === 'local' ? '' : `<div class="eort">${rt(p)}</div>`}</div>`; };
+            const TN = s => sb.teams ? escH(sb.teams[s].n) : s ? 'ATTACKER' : 'DEFENDER', order = sb.teams ? [side, ...sb.teams.map((_, i) => i).filter(i => i !== side)] : [side, 1 - side];
+            const page = (s, i) => { const w = won(s), nb = (sb.nb || [])[s]; return `<div class="eopage ${sb.teams ? 'gl' : s ? 't' : 'ct'}" data-p="${i}"${i ? ' hidden' : ''}><div class="eoban"><span>${TN(s)}${s === side ? ' · DEIN TEAM' : ''}</span><b>${sb.sc ? sb.sc[s] : '–'}${w ? ' · ' + WL[w] : ''}</b></div><div class="eocards">${sb.rows.filter(x => x.side === s).map(card).join('')}${nb ? `<div class="eocard bot"><div class="eobot">🤖</div><div class="eonm">${nb} Bot${nb > 1 ? 's' : ''}</div><div class="eoaw"><small>keine Statistik · kein Rating</small></div></div>` : ''}</div></div>`; };
+            const mw = won(side), tabs = sb.teams ? order.map((t, i) => `<button data-eotab="${i}"${i ? '' : ' class="on"'}>${TN(t)}${t === side ? ' (DU)' : ''}</button>`).join('') : '<button data-eotab="0" class="on">DEIN TEAM</button><button data-eotab="1">GEGNER</button>';
+            const top = `<div class="eoscore"><b>${sb.sc && !sb.teams ? sb.sc[side] + ' – ' + sb.sc[1 - side] : ''}</b>${mw ? `<span class="eores ${mw}">${WL[mw]}</span>` : ''}</div><div class="eotabs">${tabs}</div>`;
+            return `<div class="eosb" id="eosb" data-tab="0">${head}${top}${order.map(page).join('')}</div>`;
         }
+        addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-eotab]'), w = b && b.closest('.eosb'); if (!w) return; w.dataset.tab = b.dataset.eotab; w.querySelectorAll('[data-eotab]').forEach(x => x.classList.toggle('on', x === b)); w.querySelectorAll('.eopage').forEach(p => p.hidden = p.dataset.p !== b.dataset.eotab); }); // Endbildschirm: Team wechseln
         function netSend(o) { if (NET.ws && NET.ws.readyState === 1) NET.ws.send(JSON.stringify(o)); }
         function addRemote(pid, name, team, ag, hat) {
             if (pid === NET.pid || NET.players.has(pid)) return;

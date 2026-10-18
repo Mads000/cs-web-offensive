@@ -161,11 +161,12 @@ test('2v2: eigener Modus & Rating, Map-Bann, Team verlässt → Niederlage', () 
  send(S, host, { type: 'start', map: r.go[0].map, cfg: CFG.rules });
  const mine = ws.filter((w, i) => r.go[i].team === ht), opp = ws.filter((w, i) => r.go[i].team !== ht);
  send(S, mine[1], { type: 'dmg', to: opp[0].pid, d: 999 }); // Treffer → ADR-Statistik (gedeckelt)
+ send(S, host, { type: 'hdmg', d: 60 }); send(S, opp[0], { type: 'botdmg', id: 3, from: opp[1].pid, d: 50 }); // Schaden an Bots zählt (fremde pid nicht)
  T += 9000; send(S, host, { type: 'end', w: ht }); // 1:0
  opp.forEach(w => drop(S, w)); S.rk.tick(T); T += (CFG.abandonSec + 1) * 1000; S.rk.tick(T);
  const mt = S.RK.mt[r.go[0].id]; assert.strictEqual(mt.st, 'rated'); assert.strictEqual(mt.mode, 'duo');
  for (const k of mt.tm[ht === 'CT' ? 0 : 1]) assert.ok(S.RK.p[k].m.duo.r > 1000);
- assert.strictEqual(S.RK.p.p0.m.comp.r, 1000); assert.strictEqual(mt.stats[mine[1].acc].adr, CFG.hitCap);
+ assert.strictEqual(S.RK.p.p0.m.comp.r, 1000); assert.strictEqual(mt.stats[mine[1].acc].adr, CFG.hitCap); assert.strictEqual(mt.stats[host.acc].adr, 60); assert.strictEqual(mt.stats[opp[0].acc].adr, 0);
  // Map-Bann: alle bannen de_frost und stimmen für nichts → nie de_frost
  for (let i = 0; i < 20; i++) { const S2 = setup(4), qs = [0, 1, 2, 3].map(j => { const q = fakeWs(); S2.rk.queueMsg(q, { type: 'rkq', tok: 't' + j, mode: 'duo' }); return q; }); S2.rk.tick(T); const id = qs[0].last('rkfound').id; qs.forEach(q => S2.rk.queueMsg(q, { type: 'rkacc', id, ok: 1, ban: 'de_frost' })); assert.notStrictEqual(qs[0].last('rkgo').map, 'de_frost'); }
 });
