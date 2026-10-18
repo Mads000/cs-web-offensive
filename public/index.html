@@ -2655,6 +2655,7 @@ body.mob .mapc.custom::after{ font-size:8px; top:5px; left:5px; }
 /* Alle Panels & Scroll-Container ausdrücklich freigeben */
 .mob #overlay, .mob #overlay *{ touch-action:pan-y; }
 .mob #buy, .mob #board, .mob .invwrap, .mob #csnews, .mob .cspanel, .mob #csplayview{ touch-action:pan-y; }
+.mob #mapgrid, .mob #mapgrid *, .mob .rkmaps, .mob .rkmaps *, .mob .eocards, .mob .eocards *{ touch-action:pan-x pan-y !important; } /* Kartenreihen seitlich wischbar */
 
 .mob .invwrap{ max-height:46vh; }
 .mob #reelbox{ width:94vw; }
