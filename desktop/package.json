@@ -1,7 +1,7 @@
 {
   "name": "cswo-desktop",
   "productName": "CLUTCH",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "CLUTCH – Taktik-Shooter (Desktop-App)",
   "main": "main.js",
   "author": "Mads",

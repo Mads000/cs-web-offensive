@@ -69,11 +69,12 @@ function createWindow() {
   });
   win.webContents.on('did-finish-load', () => { if (!offline && win.webContents.getURL().startsWith(GAME_URL)) cacheLatest(); });
   win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
-  // F11 ohne Wirkung (immer Vollbild), F5 / Strg+R = neu laden (versucht dabei wieder online zu gehen); Konsolen-Tastenkürzel blockiert
+  // F11 ohne Wirkung (immer Vollbild), F5 = neu laden (versucht dabei wieder online zu gehen); Strg+R/W/Q/N/T blockiert (Strg = Ducken im Spiel!); Konsolen-Tastenkürzel blockiert
   win.webContents.on('before-input-event', (e, inp) => {
     if (inp.type !== 'keyDown') return; const k = inp.key.toLowerCase();
     if (inp.key === 'F11') e.preventDefault();
-    else if (inp.key === 'F5' || (inp.control && k === 'r')) { e.preventDefault(); loadOnline(); }
+    else if (inp.key === 'F5') { e.preventDefault(); loadOnline(); }
+    else if (inp.control && 'rwqnt'.includes(k)) e.preventDefault(); // Ducken + Nachladen/Laufen darf nie neu laden oder schließen
     else if (inp.key === 'F12' || (inp.control && inp.shift && 'ijc'.includes(k))) e.preventDefault();
   });
   win.loadURL(waitPage('Verbinde mit dem Server …')).then(loadOnline).catch(loadOnline);

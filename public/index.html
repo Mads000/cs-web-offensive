@@ -2179,7 +2179,7 @@
 .mob #tNext{ right:42px; bottom:224px; }
 .mob #tUse{ right:188px; bottom:58px; width:56px; height:56px; font-size:20px; }
 .mob #tScope{ right:148px; bottom:4px; }
-.mob #tAbil{ right:244px; bottom:16px; width:56px; height:56px; font-size:20px; }
+.mob #tAbil{ right:244px; bottom:16px; width:56px; height:56px; font-size:20px; } #tPing{ right:250px; bottom:84px; width:46px; height:46px; }
 
 /* ── Oben rechts: ☰ links neben $ ── */
 .mob #tBuy{ right:max(14px, env(safe-area-inset-right)); top:10px; width:42px; height:42px; }
@@ -2245,6 +2245,11 @@ body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy 
 #wlist .wl { display: flex; align-items: center; gap: 8px; font: 600 13px 'Barlow Condensed', sans-serif; letter-spacing: .14em; text-transform: uppercase; opacity: .4; padding: 2px 10px 2px 0; border-right: 2px solid transparent }
 #wlist .wl.on { opacity: 1; border-right-color: var(--hl) } #wlist .wl i { font-style: normal; font-size: 10px; opacity: .6 } #wlist .nd { display: flex; gap: 6px } #wlist .nd .wl { padding-right: 6px; font-size: 11px }
 #kban { position: fixed; left: 50%; top: 63%; transform: translateX(-50%); pointer-events: none; z-index: 6; text-align: center; opacity: 0 } #kban.on { animation: kban 1.5s ease-out forwards }
+#rban { position: fixed; left: 50%; top: 13%; transform: translateX(-50%); z-index: 7; pointer-events: none; text-align: center; opacity: 0; --ac: #ff7a5c } #rban.mine { --ac: var(--hl, #e8c98a) }
+#rban b { display: block; font: 900 54px Rajdhani, sans-serif; letter-spacing: .32em; padding-left: .32em; color: #fff; text-shadow: 0 0 22px var(--ac), 0 3px 0 rgba(0,0,0,.45) }
+#rban span { display: inline-block; margin-top: 2px; padding: 3px 16px; font: 700 15px Rajdhani, sans-serif; letter-spacing: .14em; color: #111; background: var(--ac); clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%) }
+#rban.aw-ace b { font-size: 68px } #rban.on { animation: rban 3.2s ease-out forwards } @keyframes rban { 0% { opacity: 0; transform: translateX(-50%) scale(1.5) } 10% { opacity: 1; transform: translateX(-50%) scale(1) } 82% { opacity: 1 } 100% { opacity: 0; transform: translateX(-50%) translateY(-10px) } }
+.mob #rban { top: 16% } .mob #rban b { font-size: 34px } .mob #rban.aw-ace b { font-size: 42px } .mob #rban span { font-size: 12px }
 @keyframes kban { 0% { opacity: 0; transform: translateX(-50%) scale(1.5) } 12% { opacity: 1; transform: translateX(-50%) scale(1) } 75% { opacity: 1; transform: translateX(-50%) } 100% { opacity: 0; transform: translateX(-50%) translateY(-12px) } }
 #kban .kb-em { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px } #kban .kb-em i { width: 13px; height: 13px; transform: rotate(45deg); border: 3px solid var(--hl, #e8c98a); background: rgba(0,0,0,.35) }
 #kban b { font: 700 15px 'Barlow Condensed', sans-serif; letter-spacing: .32em; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.9) }
@@ -2568,9 +2573,6 @@ body.mob .mapc.custom::after{ font-size:8px; top:5px; left:5px; }
         }
 
         .mob .pv {
-            width: 18px;
-            height: 22px;
-            font-size: 10px;
             border-top-width: 2px;
         }
 
@@ -2752,6 +2754,8 @@ html.dsV body:not(.mob) #aliveL, html.dsV body:not(.mob) #aliveR { top: 10px; pa
 html.dsV body:not(.mob) #aliveL { background: linear-gradient(270deg, rgba(110,150,200,.42), rgba(15,25,35,.0)) }
 html.dsV body:not(.mob) #aliveR { background: linear-gradient(90deg, rgba(220,140,90,.42), rgba(15,25,35,.0)) }
 html.dsV .pv { border-radius: 0; background: rgba(15,25,35,.65) }
+.pv { width: auto; height: auto; padding: 0; flex-direction: column; border-top: 2px solid; background: none !important } .pv .avi { border-radius: 0; box-shadow: 0 1px 4px rgba(0,0,0,.5) } .pv u { display: block; height: 3px; background: rgba(0,0,0,.6) } .pv u i { display: block; height: 100% } .pv.dd { opacity: .35; filter: grayscale(1) } .pv.me .avi { outline: 1px solid rgba(255,255,255,.85); outline-offset: -1px }
+.mob .pv .avi { width: 22px !important; height: 22px !important; font-size: 11px !important }
 /* Kaufmenü: Spalten mit Kopfleiste, große Kacheln, gekauft = Akzent */
 html.dsV #buy { background: rgba(15,25,35,.55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(236,232,225,.12); border-top: 1px solid rgba(236,232,225,.12); box-shadow: 0 10px 40px rgba(0,0,0,.5) }
 html.dsV .bhead, html.dsV .bfoot { border-color: rgba(236,232,225,.1) }
@@ -4800,7 +4804,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "🦆 ENTENJAGD 2.0":"🦆 DUCK HUNT 2.0",
 "NEU · PATCH 3.4 „DIE SHOW\"":"NEW · PATCH 3.4 “THE SHOW”",
 "PATCH 3.3 „ZUSAMMEN\"":"PATCH 3.3 “TOGETHER”",
-"CLUTCH 3.4 BETA | * | 📦 * Cases | 🪙 * Coins":"CLUTCH 3.4 BETA | * | 📦 * cases | 🪙 * coins",
+"CLUTCH 3.5 BETA | * | 📦 * Cases | 🪙 * Coins":"CLUTCH 3.4 BETA | * | 📦 * cases | 🪙 * coins",
 "(Challenger II). Die ersten":"(Challenger II). The first",
 "(DU)":"(YOU)",
 "(Strg+Z / Strg+Y) ·":"(Ctrl+Z / Ctrl+Y) ·",
@@ -5167,7 +5171,48 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "# · SIEG":"# · VICTORY",
 "# · NIEDERLAGE":"# · DEFEAT",
 "# · UNENTSCHIEDEN":"# · DRAW",
-"Tode":"Deaths"}; // Deutsch → Englisch · # = beliebige Zahl
+"Tode":"Deaths",
+"Pingen (Markierung fürs Team)":"Ping (marker for your team)",
+"Mausrad: Bombe auswählen":"Mouse wheel: select bomb",
+"⇄: Bombe auswählen":"⇄: select bomb",
+"· Pingen":"· Ping",
+"Pingen":"Ping",
+"= Pingen: markiert die Stelle unter dem Fadenkreuz fürs Team (Gegner rot).":"= Ping: marks the spot under your crosshair for your team (enemies in red).",
+"Gewonnen mit billigerer Ausrüstung":"Won with cheaper gear",
+"Ohne Verluste gewonnen":"Won without losses",
+"🏆 NEUER ENDBILDSCHIRM":"🏆 NEW END SCREEN",
+"Nach jedem Match – Ranked, Unranked, Customs, Gauntlet und 1v1 – siehst Du jetzt Spielerkarten mit Profilbild, Kills, Toden, Assists, ADR und HS.":"After every match – Ranked, Unranked, Customs, Gauntlet and 1v1 – you now see player cards with profile picture, kills, deaths, assists, ADR and HS.",
+"Reiter für jedes Team, ★ MVP für den besten Spieler und Auszeichnungen wie Top-Fragger, Kopfjäger oder Teamplayer.":"Tabs for every team, ★ MVP for the best player and awards like Top Fragger, Headhunter or Teamplayer.",
+"Wer das ganze Gegnerteam allein ausschaltet, bekommt oben ein großes ACE – für alle sichtbar.":"Take out the whole enemy team alone and a big ACE appears at the top – visible to everyone.",
+"Am Rundenende gibt es CLUTCH (allein gegen mehrere gewonnen), THRIFTY (mit billigerer Ausrüstung gewonnen) und FLAWLESS (ohne Verluste gewonnen).":"At the end of a round there is CLUTCH (won alone against several), THRIFTY (won with cheaper gear) and FLAWLESS (won without losses).",
+"Neue Kill-Sounds: Jeder Kill in einer Runde klingt eine Stufe höher.":"New kill sounds: every kill in a round sounds one step higher.",
+"📍 PINGEN":"📍 PINGING",
+"Taste 5 markiert die Stelle unter dem Fadenkreuz für Dein Team – Gegner im Visier werden rot markiert, auch durch Wände sichtbar.":"Key 5 marks the spot under your crosshair for your team – enemies in your sights are marked red, visible through walls.",
+"Am Handy gibt es dafür den neuen 📍-Knopf. Die Bombe wählst Du jetzt mit dem Mausrad bzw. ⇄.":"On phones there is the new 📍 button. You now select the bomb with the mouse wheel or ⇄.",
+"AK-47: Kopftreffer sind jetzt immer tödlich – auch mit Helm.":"AK-47: headshots are now always lethal – even with a helmet.",
+"Profilbilder mit Lebensbalken oben in der Teamleiste.":"Profile pictures with health bars in the team bar at the top.",
+"Mitspieler-Silhouetten erscheinen nur noch hinter Wänden.":"Teammate silhouettes now only appear behind walls.",
+"Neue Knöpfe: ✋ hebt Waffen auf, lässt sie fallen und entschärft (halten), 🔍 inspiziert die Waffe.":"New buttons: ✋ picks up and drops weapons and defuses (hold), 🔍 inspects your weapon.",
+"Fähigkeiten und Taktiken per Antippen des Symbols, die Ultimate per Doppeltipp.":"Abilities and tactics by tapping their icon, the ultimate by double-tapping.",
+"Zuschauen: Freecam mit Stick und Hoch/Runter-Knöpfen, aufgeräumte Leiste im Gauntlet.":"Spectating: freecam with stick and up/down buttons, tidy bar in Gauntlet.",
+"Das CLUTCH-Logo steht jetzt auch auf dem Startbildschirm.":"The CLUTCH logo now also shows on the start screen.",
+"🌐 ENGLISCH":"🌐 ENGLISH",
+"Das ganze Spiel ist jetzt auf Englisch übersetzt – inklusive Tutorial und Patchnotes – und Englisch ist die neue Standardsprache. Umschalten oben mit DE/EN.":"The whole game is now translated into English – including tutorial and patch notes – and English is the new default language. Switch at the top with DE/EN.",
+"💻 PC-APP 1.2.4":"💻 PC APP 1.2.4",
+"Die App startet immer im Vollbild – auch im Menü.":"The app always starts full screen – in the menu too.",
+"Strg+R und Strg+W sind gesperrt: Ducken und Nachladen lädt die App nicht mehr neu.":"Ctrl+R and Ctrl+W are blocked: crouching and reloading no longer reloads the app.",
+"🐞 BUG-TICKETS":"🐞 BUG TICKETS",
+"Bug-Meldungen aus dem Spiel landen jetzt im Discord als eigenes Ticket – mit eigenem Chat und Status.":"Bug reports from the game now land in Discord as their own ticket – with their own chat and status.",
+"🔧 BUGFIXES":"🔧 BUG FIXES",
+"ADR war im Ranked und Unranked oft 0 – Schaden an Bots zählt jetzt mit.":"ADR was often 0 in Ranked and Unranked – damage to bots now counts.",
+"Eigene Agenten und gekaufte Kleidung gingen beim Account-Abgleich verloren – jetzt werden sie gespeichert.":"Custom agents and bought clothing were lost during account sync – they are now saved.",
+"Kein Ton am Handy, wenn ein Match ohne Antippen startete – behoben.":"No sound on phones when a match started without a tap – fixed.",
+"Die Kartenauswahl war abgeschnitten und ließ sich nicht seitlich scrollen – behoben (auch am Handy).":"The map selection was cut off and could not be scrolled sideways – fixed (on phones too).",
+"Der F-Knopf am Handy tat außerhalb des Gauntlets nichts – jetzt inspiziert er die Waffe.":"The F button on phones did nothing outside Gauntlet – it now inspects your weapon.",
+"Mitspieler hatten eine farbige Schicht, wenn sie direkt vor Dir standen – behoben.":"Teammates had a colored layer when standing right in front of you – fixed.",
+"Standard-Mauszeiger von Windows statt eigenem Zeiger.":"Standard Windows mouse cursor instead of a custom one.",
+"NEU · PATCH 3.5 „SHOWTIME\"":"NEW · PATCH 3.5 “SHOWTIME”",
+"PATCH 3.4 „DIE SHOW\"":"PATCH 3.4 “THE SHOW”"}; // Deutsch → Englisch · # = beliebige Zahl
             const NUM = /\d+(?:[.,]\d+)?/g, TPL = new Map(), WILD = [], OT = new WeakMap(), OA = new WeakMap(); // * = beliebiger Text (wird selbst übersetzt)
             for (const k in D) if (k.includes('*')) WILD.push([new RegExp('^' + k.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '(.+?)').replace(/#/g, '(\\d+(?:[.,]\\d+)?)') + '$'), D[k], k.match(/[*#]/g)]); else if (k.includes('#')) TPL.set(k, D[k]);
             const core = t => { if (D[t] !== undefined) return D[t]; if (/\d/.test(t)) { const v = TPL.get(t.replace(NUM, '#')); if (v !== undefined) { const n = t.match(NUM); let i = 0; return v.replace(/#/g, () => n[i++] || ''); } }
@@ -5250,6 +5295,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             <div class="tb" id="tReload">↻</div>
             <div class="tb" id="tUse" title="Aufheben · Fallenlassen · Entschärfen"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12"/><path d="M11 11.5v-2a1.5 1.5 0 0 1 3 0V12"/><path d="M14 10.5a1.5 1.5 0 0 1 3 0V12"/><path d="M17 11.5a1.5 1.5 0 0 1 3 0V16a6 6 0 0 1-6 6h-2a6 6 0 0 1-5.2-3L4.3 14.6a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg></div>
             <div class="tb" id="tScope">⊕</div>
+            <div class="tb" id="tPing" title="Pingen"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
             <div class="tb" id="tAbil" title="Waffe inspizieren"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></div>
             <div class="tb" id="tNext">⇄</div>
             <div class="tb" id="tBuy">$</div>
@@ -6805,6 +6851,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (att && att.isPlayer && att !== e) { hitT = 0.12; hitHS = !!hs; sfx(hs ? 'hs' : 'hit'); } if (e.health <= 0) { e.health = 0; kill(e, att, w, hs); }
         }
         function kill(e, att, w, hs) {
+            if (att && att !== e && att.name && att.team && att.team !== e.team) awKill(att.name, att.team); // Ace-Zählung
             if (att && att !== e && hs) att.hsK = (att.hsK || 0) + 1; if (e.dmgBy) { for (const o of e.dmgBy) if (o !== att && o !== e) o.ast = (o.ast || 0) + 1; e.dmgBy = null; } // Endbildschirm: HS & Assists
             if (e.isPlayer) { roundKills = 0; if (!EX.on) { PRG.st.deaths = (PRG.st.deaths || 0) + 1; localStorage.setItem('prog', JSON.stringify(PRG)); } } e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
             if (DM.on || (GL.on && GL.v1)) { /* Deathmatch & 1v1: keine Waffen-Drops */ } else if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
@@ -6830,7 +6877,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const ey = b.y + (b.crouch ? 1.05 : 1.5), ty = t.isPlayer ? t.y + t.eyeH - 0.4 : t.y + (t.crouch ? 0.75 : 1.0);
             let chance = w.acc * BOT_SKILL * Math.max(0.25, 1 - d / 70); if (t.speed > 3 || t.moving) chance *= 0.75; if (t.crouch) chance *= 0.7; if (b.crouch) chance *= 1.2;
             let end;
-            if (Math.random() < chance) { const hs = Math.random() < 0.12, dmg = w.key === 'awp' ? 9999 : w.dmg * (w.pellets ? 4 : 1) * (hs ? (w.pellets ? 1.5 : 3.5) : 1) * Math.max(w.pellets ? 0.15 : 0.6, 1 - d * (w.pellets ? 0.03 : 0.004)); if (t.decoy) t.hp -= dmg; else if (t.remote) (hs || !CFG.hsOnly) && netSend({ type: 'botdmg2', to: t.pid, d: Math.round(dmg), bn: b.name, bt: b.team, w: w.name, hs }); else applyDamage(t, dmg, b, w, hs); end = new THREE.Vector3(t.x, hs ? ty + 0.5 : ty, t.z); } else { const miss = 0.6 + Math.random() * 1.5; end = new THREE.Vector3(t.x + (Math.random() - 0.5) * miss * 2, ty + (Math.random() - 0.5) * miss, t.z + (Math.random() - 0.5) * miss * 2); const o = new THREE.Vector3(b.x, ey, b.z); const dir = end.clone().sub(o); const L = dir.length(); dir.normalize(); _ray.set(o, dir); _ray.far = L + 30; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; if (h) { end = h.point; addDecal(h.point, h.face.normal); burst(h.point.x, h.point.y, h.point.z, 0xd8c8a0, 3, 2); } else end = o.clone().add(dir.multiplyScalar(L + 30)); }
+            if (Math.random() < chance) { const hs = Math.random() < 0.12, dmg = w.key === 'awp' || (hs && w.key === 'ak47') ? 9999 : w.dmg * (w.pellets ? 4 : 1) * (hs ? (w.pellets ? 1.5 : 3.5) : 1) * Math.max(w.pellets ? 0.15 : 0.6, 1 - d * (w.pellets ? 0.03 : 0.004)); if (t.decoy) t.hp -= dmg; else if (t.remote) (hs || !CFG.hsOnly) && netSend({ type: 'botdmg2', to: t.pid, d: Math.round(dmg), bn: b.name, bt: b.team, w: w.name, hs }); else applyDamage(t, dmg, b, w, hs); end = new THREE.Vector3(t.x, hs ? ty + 0.5 : ty, t.z); } else { const miss = 0.6 + Math.random() * 1.5; end = new THREE.Vector3(t.x + (Math.random() - 0.5) * miss * 2, ty + (Math.random() - 0.5) * miss, t.z + (Math.random() - 0.5) * miss * 2); const o = new THREE.Vector3(b.x, ey, b.z); const dir = end.clone().sub(o); const L = dir.length(); dir.normalize(); _ray.set(o, dir); _ray.far = L + 30; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; if (h) { end = h.point; addDecal(h.point, h.face.normal); burst(h.point.x, h.point.y, h.point.z, 0xd8c8a0, 3, 2); } else end = o.clone().add(dir.multiplyScalar(L + 30)); }
             tracer(b.x + Math.sin(b.yaw) * 0.5, ey, b.z + Math.cos(b.yaw) * 0.5, end);
         }
 
@@ -6976,8 +7023,25 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             b.immune = false; if (b.rushT > 0) { b.rushT = 0; b.spdMul = 1; } // Ultimate-Effekte enden mit der Runde
             b.ammo = b.weapon.mag;
         }
+        // 🏅 Runden-Auszeichnungen (Host/Offline entscheidet, alle sehen sie oben): ACE sofort, am Rundenende CLUTCH > THRIFTY > FLAWLESS
+        const AW_OK = () => !GL.on && !DM.on && !DH.on && !EX.on && !(NET.on && !NET.host);
+        function awKill(name, team) { if (!AW_OK() || !name || G.state !== 'live') return; const R = G.aw || (G.aw = { k: {}, done: {} }), n = (R.k[name] = (R.k[name] || 0) + 1), foes = ents.filter(e => (e.team === 'CT' || e.team === 'T') && e.team !== team && !e.spec).length;
+            if (foes >= 3 && n === foes && !R.done[name]) { R.done[name] = 1; roundAward('ACE', name, team); } }
+        function awClutch(aT, aCT) { const R = G.aw || (G.aw = { k: {}, done: {} }); for (const [tm, mine, foe] of [['T', aT, aCT], ['CT', aCT, aT]]) if (mine === 1 && foe >= 2 && !R['cl' + tm]) { const e = ents.find(x => x.alive && x.team === tm); if (e) R['cl' + tm] = { n: e.name, vs: foe }; } }
+        const eqVal = e => e.remote ? NaN : (e.isPlayer ? [1, 2].reduce((s, k) => s + (e.weapons[k] ? e.weapons[k].def.price || 0 : 0), 0) : (e.weapon ? e.weapon.price || 0 : 0)) + (e.armor > 0 ? 650 : 0) + (e.helmet ? 350 : 0);
+        function awRoundEnd(winner) { if (!AW_OK()) return; const R = G.aw || {}, loser = winner === 'CT' ? 'T' : 'CT', team = ents.filter(e => e.team === winner && !e.spec), cl = R['cl' + winner], V = G.eqv || {}; let a = null;
+            if (cl) a = ['CLUTCH', '1v' + cl.vs + ' · ' + cl.n];
+            else if (isFinite(V[winner]) && isFinite(V[loser]) && V[loser] > 0 && V[winner] < V[loser] * 0.6) a = ['THRIFTY', 'Gewonnen mit billigerer Ausrüstung'];
+            else if (team.length >= 2 && team.every(e => e.alive)) a = ['FLAWLESS', 'Ohne Verluste gewonnen'];
+            if (a) setTimeout(() => roundAward(a[0], a[1], winner), 900); }
+        function roundAward(t, sub, team) { showAward(t, sub, team); if (NET.on && NET.host) netSend({ type: 'raw', t, s: sub, tm: team }); }
+        function showAward(t, sub, team) { if (!['ACE', 'CLUTCH', 'THRIFTY', 'FLAWLESS'].includes(t)) return; let el = $('rban'); if (!el) { el = document.createElement('div'); el.id = 'rban'; $('hud').appendChild(el); }
+            el.className = 'aw-' + t.toLowerCase() + (team === player.team ? ' mine' : ''); el.innerHTML = `<b>${t}</b><span>${escH(String(sub).slice(0, 60))}</span>`; void el.offsetWidth; el.classList.add('on'); awardSfx(t); }
+        function awardSfx(t) { if (!AC) return; const seq = { ACE: [523.25, 659.25, 783.99, 1046.5, 1318.5], CLUTCH: [392, 523.25, 783.99], THRIFTY: [1318.5, 1567.98, 2093], FLAWLESS: [659.25, 830.61, 987.77, 1318.5] }[t];
+            seq.forEach((fq, i) => later(() => tone(fq, t === 'THRIFTY' ? 0.09 : 0.22, 0.09, 0, t === 'CLUTCH' ? 'sawtooth' : 'triangle', fq * (t === 'CLUTCH' ? 1.02 : 1)), i * (t === 'THRIFTY' ? 70 : 95)));
+            later(() => { for (const fq of seq.slice(-3)) tone(fq, 0.8, 0.05, 0, 'sine'); }, seq.length * 95); }
         function startRound() {
-            roundKills = 0;
+            roundKills = 0; G.aw = null; G.eqv = null;
             clearDrops(); clearNades(); clearBlood(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear();
             const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } funLoadout(p); p.weapons[5] = null; p.alive = true; p.health = 100;
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.rk = 0; p.rushT = 0; p.immune = false; STK.on = false; p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); funLoadout(b); }
@@ -6993,11 +7057,11 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             if (G.state !== 'live') return; G.state = 'end'; G.t = 5; G.score[winner]++; if (winner === player.team && !NET.spec) xpEvent('round'); const loser = winner === 'CT' ? 'T' : 'CT'; G.loss[winner] = 0; G.loss[loser] = Math.min(4, G.loss[loser] + 1);
             const winBonus = reason.includes('explodiert') ? 3500 : 3250, loseBonus = 1400 + 500 * (G.loss[loser] - 1);
             for (const e of ents) { e.money = Math.min(16000, e.money + (e.team === winner ? winBonus : loseBonus)); if (e.team === 'T' && G.bomb.state !== 'carried' && G.bomb.state !== 'dropped') e.money = Math.min(16000, e.money + 300); }
-            msg(winner === 'CT' ? 'Defender gewinnen' : 'Attacker gewinnen', reason, 5); sfx(player.team === winner ? 'win' : 'lose'); hideProgress(); closeBuy();
+            msg(winner === 'CT' ? 'Defender gewinnen' : 'Attacker gewinnen', reason, 5); awRoundEnd(winner); sfx(player.team === winner ? 'win' : 'lose'); hideProgress(); closeBuy();
             if (NET.on && NET.host) netSend({ type: 'end', w: winner, rs: reason });
         }
         function nextRound() { if (G.score.CT >= WIN_SCORE || G.score.T >= WIN_SCORE || G.round >= MAX_ROUNDS) gameOver(); else { G.round++; startRound(); } }
-        function checkRoundEnd() { if (GL.on || DM.on || DH.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; if (aCT === 0) endRound('T', 'Alle Defender eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Attacker eliminiert'); }
+        function checkRoundEnd() { if (GL.on || DM.on || DH.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; awClutch(aT, aCT); if (aCT === 0) endRound('T', 'Alle Defender eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Attacker eliminiert'); }
         function plantBomb(e) {
             if (G.state !== 'live') return; G.bomb.state = 'planted'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.t = BOMB_TIME; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); bombMesh.rotation.set(0, 0, 0); e.plantT = 0; e.money = Math.min(16000, e.money + 300);
             if (e.isPlayer) { ultAdd(1); e.weapons[5] = null; e.slot = e.weapons[1] ? 1 : 2; e.switchT = 1; updateVM(); } else botUltAdd(e);
@@ -7024,7 +7088,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         function updateRound(dt) {
             if (DM.on && G.state === 'live') { G.timer -= dt; for (const b of bots) dmDeadTick(b, dt); if (G.timer <= 0 || ents.some(e => e.kills >= DM.limit)) { gameOver(); return; } if (G.msgT > 0) { G.msgT -= dt; if (G.msgT <= 0) { $('msg').textContent = ''; $('sub').textContent = ''; } } return; }
             spawnBar.visible = G.state === 'freeze' && barrierOn();
-            if (G.state === 'freeze') { G.t -= dt; if (G.t <= 0) G.state = 'live'; }
+            if (G.state === 'freeze') { G.t -= dt; if (G.t <= 0) { G.state = 'live'; G.eqv = { CT: 0, T: 0 }; for (const e of ents) if (e.alive && (e.team === 'CT' || e.team === 'T')) G.eqv[e.team] += eqVal(e); } } // Ausrüstungswert für THRIFTY
             else if (G.state === 'live') {
                 if (G.bomb.state === 'planted') { G.bomb.t -= dt; G.beepT -= dt; bombRing.position.set(G.bomb.x, 0.05, G.bomb.z); bombRing.material.opacity = Math.max(0.12, bombRing.material.opacity - dt * 1.2); if (G.beepT <= 0) { sfx('beep', G.bomb.x, G.bomb.z); bombRing.material.opacity = 0.6; if (G.bomb.t < 10) tone(700 + (1 - G.bomb.t / 10) * 900, 0.07, 0.06, 0, 'triangle'); G.beepT = 0.15 + (G.bomb.t / BOMB_TIME) * 0.85; bombLed.material.color.setHex(0xff2020); setTimeout(() => bombLed.material.color.setHex(0x400000), 90); } if (G.bomb.t <= 0) explode(); }
                 else { G.timer -= dt; if (G.timer <= 0) endRound('CT', 'Zeit abgelaufen'); }
@@ -7227,7 +7291,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         // =====================================================================
         //  SPIELER
         // =====================================================================
-        const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF', walk: 'ShiftLeft', inspect: 'KeyF' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)', walk: 'Langsam gehen (leise)', inspect: 'Waffe inspizieren' };
+        const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF', walk: 'ShiftLeft', inspect: 'KeyF', ping: 'Digit5' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)', walk: 'Langsam gehen (leise)', inspect: 'Waffe inspizieren', ping: 'Pingen (Markierung fürs Team)' };
         const BIND = Object.assign({}, BIND_DEF, JSON.parse(localStorage.getItem('cs_binds') || '{}'));
         const OPT = Object.assign({ mzoom: 1.1, outCol: '#ff3b4a', outOn: true, tsens: 1.8, sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 75, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
         const OUT_MAT = new THREE.MeshBasicMaterial({ color: OPT.outCol, side: THREE.BackSide }); // Gegner-Umrandung: leicht größere Rückseiten-Hülle je Körperteil (nur sichtbar, wo der Gegner sichtbar ist)
@@ -7271,7 +7335,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             document.body.classList.add('mob');
              // ── Button-Layout-Editor ──
  const EDITB = { on: false, drag: null };
- const BTN_IDS = ['tstick', 'tFire', 'tFire2', 'tJump', 'tCrouch', 'tReload', 'tUse', 'tScope', 'tAbil', 'tNext', 'tBuy', 'tBoard'];
+ const BTN_IDS = ['tstick', 'tFire', 'tFire2', 'tJump', 'tCrouch', 'tReload', 'tUse', 'tScope', 'tAbil', 'tPing', 'tNext', 'tBuy', 'tBoard'];
  function applyBtnLayout() { const L = JSON.parse(localStorage.getItem('btnlayout') || '{}'); for (const id of BTN_IDS) { const p = L[id], el = $(id); if (!p || !el) continue; el.style.left = clamp(p.x, 0, innerWidth - 50) + 'px'; el.style.top = clamp(p.y, 0, innerHeight - 50) + 'px'; el.style.right = 'auto'; el.style.bottom = 'auto'; } } function saveBtnLayout() { const L = {}; for (const id of BTN_IDS) { const el = $(id); if (el.style.left) L[id] = { x: parseInt(el.style.left) || 0, y: parseInt(el.style.top) || 0 }; } localStorage.setItem('btnlayout', JSON.stringify(L)); } window.btnEditStart = () => { EDITB.on = true; document.body.classList.add('edit'); $('overlay').style.display = 'none'; $('touch').style.display = 'block'; };
  function btnEditEnd() { EDITB.on = false; saveBtnLayout(); document.body.classList.remove('edit'); if (!started) { $('touch').style.display = 'none'; showSettings(); } } $('editDone').addEventListener('touchstart', e => { e.preventDefault(); btnEditEnd(); }, { passive: false });
  $('editReset').addEventListener('touchstart', e => { e.preventDefault(); localStorage.removeItem('btnlayout'); for (const id of BTN_IDS) { const el = $(id); el.style.left = el.style.top = el.style.right = el.style.bottom = ''; } }, { passive: false });
@@ -7311,7 +7375,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             hold('tCrouch', () => keys[BIND.crouch] = !keys[BIND.crouch]);
             hold('tReload', () => startReload());
             hold('tScope', () => toggleScope());
-            hold('tAbil', () => inspectWeapon()); // 🔍 Waffe inspizieren (Fähigkeit & Taktik: Symbol antippen)
+            hold('tAbil', () => inspectWeapon()); hold('tPing', () => doPing()); // 🔍 Waffe inspizieren (Fähigkeit & Taktik: Symbol antippen)
             $('abil').addEventListener('touchstart', e => { if (EDITB.on) return; e.preventDefault(); e.stopPropagation(); glUseAbility(); }, { passive: false }); // Gauntlet-Fähigkeit per Antippen
             hold('tNext', () => { const o = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); if (o.length) { const n = o[(o.indexOf(player.slot) + 1) % o.length]; n === 4 && player.slot === 4 ? cycleNade() : selectSlot(n); } });
             hold('tBuy', () => buyOpen ? closeBuy() : openBuy());
@@ -7376,12 +7440,27 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 if (p.team === 'CT' && nearBomb && down('use') && p.speed === 0) { const need = p.kit ? 5 : 10; if (G.bomb.half && p.defuseT < need / 2) p.defuseT = need / 2; p.defuseT += dt; if (p.defuseT >= need / 2 && !G.bomb.half) { G.bomb.half = true; tone(1100, 0.12, 0.12, 0, 'sine'); } prog = { v: p.defuseT / need, txt: G.bomb.half ? 'Entschärfe Bombe… · Checkpoint 50 % ✓' : 'Entschärfe Bombe…', cp: 1 }; if (p.defuseT >= need) { prog = null; xpEvent('defuse'); if (NET.on && !NET.host) { p.defuseT = 0; netSend({ type: 'defuse' }); p.money = Math.min(16000, p.money + 300); } else defuseBomb(p); } } else p.defuseT = 0;
                 if (p.team === 'CT' && nearBomb && G.msgT <= 0) $('sub').textContent = `Halte [${keyName(BIND.use)}] zum Entschärfen` + (p.kit ? ' (Kit)' : ''); const inSite = ['A', 'B'].includes(cell(cr(p.z), cr(p.x)));
                 if (p.team === 'T' && p.slot === 5 && p.weapons[5] && mouseDown && inSite && p.speed === 0) { p.plantT += dt; prog = { v: p.plantT / 3, txt: 'Platziere Bombe…' }; if (Math.floor(p.plantT * 3) !== Math.floor((p.plantT - dt) * 3)) sfx('plant'); if (p.plantT >= 3) { prog = null; xpEvent('plant'); if (NET.on && !NET.host) { p.plantT = 0; netSend({ type: 'plant', x: p.x, z: p.z }); p.money = Math.min(16000, p.money + 300); p.weapons[5] = null; p.slot = p.weapons[1] ? 1 : 2; p.switchT = 1; updateVM(); } else plantBomb(p); } } else p.plantT = 0;
-                if (p.team === 'T' && p.weapons[5] && inSite && G.msgT <= 0) $('sub').textContent = p.slot === 5 ? 'Halte Feuertaste zum Platzieren' : 'Taste [5]: Bombe auswählen';
+                if (p.team === 'T' && p.weapons[5] && inSite && G.msgT <= 0) $('sub').textContent = p.slot === 5 ? 'Halte Feuertaste zum Platzieren' : (IS_TOUCH ? '⇄: Bombe auswählen' : 'Mausrad: Bombe auswählen');
             } else p.defuseT = p.plantT = 0;
             $('prog').classList.toggle('cp', !!(prog && prog.cp)); // 50-%-Marke beim Entschärfen
             if (prog) { $('prog').style.display = 'block'; $('prog').firstElementChild.style.width = (prog.v * 100) + '%'; $('progtxt').style.display = 'block'; $('progtxt').textContent = prog.txt; } else hideProgress();
         }
         function hideProgress() { $('prog').style.display = 'none'; $('progtxt').style.display = 'none'; }
+        // 📍 Ping: Taste 5 / Handy-Knopf – markiert die Stelle unter dem Fadenkreuz (Gegner: rote Warnung) für das eigene Team, 4 s sichtbar, auch durch Wände
+        const PINGS = [], PING_MAT = {}; let pingTs = [];
+        function pingMat(enemy) { const k = enemy ? 'e' : 'p'; if (PING_MAT[k]) return PING_MAT[k]; const c = document.createElement('canvas'); c.width = c.height = 96; const g = c.getContext('2d'), col = enemy ? '#e04848' : '#e8c98a';
+            g.fillStyle = col; g.beginPath(); g.arc(48, 38, 28, 0, Math.PI * 2); g.fill(); g.beginPath(); g.moveTo(30, 56); g.lineTo(66, 56); g.lineTo(48, 90); g.closePath(); g.fill(); g.lineWidth = 4; g.strokeStyle = 'rgba(255,255,255,.9)'; g.beginPath(); g.arc(48, 38, 28, 0, Math.PI * 2); g.stroke();
+            g.fillStyle = '#111'; g.font = 'bold 34px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(enemy ? '!' : '•', 48, 40);
+            return PING_MAT[k] = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, depthWrite: false, transparent: true, sizeAttenuation: false }); }
+        function addPing(x, y, z, enemy) { const sp = new THREE.Sprite(pingMat(enemy).clone()); sp.scale.set(0.05, 0.05, 1); sp.center.set(0.5, 0); sp.position.set(x, y + 0.2, z); sp.renderOrder = 1000; scene.add(sp); PINGS.push({ sp, t: 4 }); while (PINGS.length > 8) scene.remove(PINGS.shift().sp);
+            if (AC) { tone(enemy ? 980 : 760, 0.07, 0.12, 0, 'sine'); setTimeout(() => AC && tone(enemy ? 1320 : 1010, 0.09, 0.12, 0, 'sine'), 90); } }
+        function updPings(dt) { for (let i = PINGS.length - 1; i >= 0; i--) { const p = PINGS[i]; p.t -= dt; p.sp.material.opacity = Math.min(1, p.t * 1.5); if (p.t <= 0) { scene.remove(p.sp); PINGS.splice(i, 1); } } }
+        function doPing() {
+            const p = player; if (!started || gameEnded || paused || !p.alive || DH.on || AL.on) return; const t = performance.now(); pingTs = pingTs.filter(x => t - x < 4000); if (pingTs.length >= 3) return; // max. 3 Pings in 4 s
+            const h = castShot(0); if (!h) return; pingTs.push(t); const ent = h.object.userData.ent, enemy = !!(ent && !ent.dh && !ent.al && !ent.decoy && ent !== p && (GL.on ? !(GL.myTeam && GL.myTeam.members.includes(ent)) : foe(ent, p)));
+            const x = enemy ? ent.x : h.point.x, y = enemy ? (ent.y || 0) + 2 : h.point.y, z = enemy ? ent.z : h.point.z; addPing(x, y, z, enemy);
+            if (NET.on) netSend({ type: 'ping', x: +x.toFixed(2), y: +y.toFixed(2), z: +z.toFixed(2), e: enemy ? 1 : 0, t: p.team, g: GL.on && GL.myTeam ? GL.myTeam.id : null });
+        }
         function tryShoot() {
             if (STK.on) { if (clickQueued || mouseDown) { clickQueued = false; mouseDown = false; strikeConfirm(); } return; } // Luftschlag: Klick = Abwurf
             const p = player; if (!p.alive || G.state === 'freeze' || buyOpen) { clickQueued = false; return; } const w = p.weapons[p.slot]; if (!w) return; const d = w.def; if (d.plant) { clickQueued = false; return; } if (d.nade) { const c = clickQueued; clickQueued = false; if (c) throwNade(d); return; } if (w.reloading) { clickQueued = false; return; }
@@ -7398,7 +7477,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 if (ud.ent && ud.ent.decoy) { ud.ent.hp -= d.dmg; burst(h.point.x, h.point.y, h.point.z, 0x7dffb0, 4, 2); hitT = 0.12; hitHS = false; sfx('hit'); }
                 else if (ud.ent && (GL.on ? !GL.myTeam.members.includes(ud.ent) : foe(ud.ent, p))) {
                     const hs = ud.part === 'head'; hitAny = true;
-                    const dmg = d.key === 'awp' ? 9999 : Math.round(d.dmg * (hs ? (d.pellets ? 1.8 : 4) : ud.part === 'legs' ? 0.75 : 1) * Math.max(d.pellets ? 0.2 : 0.6, 1 - h.distance * (d.pellets ? 0.025 : 0.004)));
+                    const dmg = d.key === 'awp' || (hs && d.key === 'ak47') ? 9999 : Math.round(d.dmg * (hs ? (d.pellets ? 1.8 : 4) : ud.part === 'legs' ? 0.75 : 1) * Math.max(d.pellets ? 0.2 : 0.6, 1 - h.distance * (d.pellets ? 0.025 : 0.004)));
                     if (CFG.hsOnly && !hs) continue;
                     if (ud.ent.remote) { netSend({ type: 'dmg', to: ud.ent.pid, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx(hs ? 'hs' : 'hit'); bleed(ud.ent, hs); }
                     else if (NET.on && !NET.host) { netSend({ type: 'botdmg', id: ud.ent.id, from: NET.pid, d: dmg, w: d.name, hs }); hitT = 0.12; hitHS = hs; sfx(hs ? 'hs' : 'hit'); bleed(ud.ent, hs); }
@@ -7552,7 +7631,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                     el.innerHTML = [1, 2, 3].filter(i => p.weapons[i]).map(i => row(i, p.weapons[i], cur === p.weapons[i].def.key)).join('') + (nk.some(k => p.nades[k] > 0) ? '<div class="nd">' + nk.filter(k => p.nades[k] > 0).map(k => `<div class="wl${cur === k ? ' on' : ''}">${NN[k]}${p.nades[k] > 1 ? ' ×' + p.nades[k] : ''}</div>`).join('') + '<i style="font-style:normal;font-size:10px;opacity:.4;align-self:center">4</i></div>' : '') + (p.weapons[5] ? `<div class="wl${cur === 'c4' ? ' on' : ''}">C4<i>5</i></div>` : ''); } }
             setT('ammo', !w ? '' : w.def.melee ? '—' : w.def.plant ? 'C4' : w.def.nade ? '×' + p.nades[w.def.key] : `${w.ammo}<span style="font-size:22px;opacity:.7">| ${w.res}</span>`);
             const sec = Math.max(0, Math.ceil(G.timer)); setT('timer', G.bomb.state === 'planted' ? '💣' : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`);
-            const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}" style="border-color:${col}">${e.isPlayer ? '★' : (e.name[0] || '?')}</div>`).join('');
+            const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}${e.isPlayer ? ' me' : ''}" style="border-color:${col}">${avH(e.name || '?', e.isPlayer ? myAv() : e.av, 30)}<u><i style="width:${e.alive ? Math.round(Math.max(0, Math.min(1, e.health / (e.maxHP || 100))) * 100) : 0}%;background:${col}"></i></u></div>`).join(''); // Teamleiste oben: Profilbilder mit Lebensbalken (wie CS)
             let avL = '', avR = '';
             if (GL.on) {
                 if (GL.duel && (GL.phase === 'duel' || GL.phase === 'duelend')) {
@@ -7611,7 +7690,8 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             if (k === 'rush') { p.rushT = 10; return; } if (k === 'ward') { p.immune = true; return; }
             for (const e of ents) if (e.alive && e !== p && foe(e, p)) { G.spotted.set(e, now + 3); let v = reveals.find(o => o.e === e); if (!v) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: revealTex, depthTest: false, transparent: true })); sp.scale.set(0.7, 0.7, 1); sp.renderOrder = 999; scene.add(sp); v = { e, sp, t: 0 }; reveals.push(v); } v.t = 5; } }
         function killBanner() { const p = player; p.rk = (p.rk || 0) + 1; const k = Math.min(5, p.rk); let el = $('kban'); if (!el) { el = document.createElement('div'); el.id = 'kban'; $('hud').appendChild(el); }
-            el.innerHTML = `<div class="kb-em">${'<i></i>'.repeat(k)}</div><b>${['', 'KILL', 'DOUBLE KILL', 'TRIPLE KILL', 'QUADRA KILL', 'ACE'][k]}</b>`; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); tone(480 + k * 140, 0.14, 0.1, 0, 'triangle'); }
+            el.innerHTML = `<div class="kb-em">${'<i></i>'.repeat(k)}</div><b>${['', 'KILL', 'DOUBLE KILL', 'TRIPLE KILL', 'QUADRA KILL', 'ACE'][k]}</b>`; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); killChime(k); }
+        function killChime(k) { if (!AC) return; const N = [523.25, 659.25, 783.99, 987.77, 1174.66]; for (let i = 0; i < k; i++) later(() => { tone(N[i], 0.18, 0.11, 0, 'triangle'); tone(N[i] * 2, 0.12, 0.035, 0, 'sine'); }, i * 55); /* je Kill eine Stufe höher */ if (k >= 5) later(() => { for (const fq of [523.25, 659.25, 783.99, 1046.5]) tone(fq, 0.9, 0.06, 0, 'triangle', fq * 1.01); }, 300); }
         function killPop(name, hs) { const kw = player.weapons[player.slot]; xpEvent('kill', { hs, w: kw && kw.def.key }); const el = $('killpop'); el.innerHTML = `${hs ? '☠ HEADSHOT' : '✓ ELIMINIERT'}<span>${name}</span>`; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
         function killfeed(att, vic, w, hs) { const nm = e => `<span class="${e.team === 'CT' ? 'ct' : 't'}">${e.name}</span>`; const d = document.createElement('div'); d.innerHTML = `${att ? nm(att) : '💣'} <span style="color:#fff">[${w ? w.name : 'Bombe'}${hs ? ' ☠' : ''}]</span> ${nm(vic)}`; const f = $('killfeed'); f.prepend(d); while (f.children.length > 6) f.lastChild.remove(); setTimeout(() => d.remove(), 6000); }
         function renderBoard() {
@@ -7683,12 +7763,13 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             if (e.code === 'KeyV' && !Object.values(BIND).includes('KeyV')) selectTac(); // Taktik in die Hand
             if (e.code === BIND.reload) startReload();
             if (e.code === BIND.lastw) selectSlot(player.lastSlot);
-            if (e.code === BIND.drop) dropCurrent(); if (e.code === BIND.abil) glUseAbility(); if (e.code === BIND.inspect && !(GL.on && e.code === BIND.abil)) inspectWeapon(); if (GL.on && glKey(e.code)) { } else if (/^Digit[0-9]$/.test(e.code)) { const n = +e.code[5]; if (!buyOpen && [1, 2, 3, 4, 5].includes(n)) { if (n === 4 && player.slot === 4) cycleNade(); else selectSlot(n); } }
+            if (e.code === BIND.drop) dropCurrent(); if (e.code === BIND.abil) glUseAbility(); if (e.code === BIND.inspect && !(GL.on && e.code === BIND.abil)) inspectWeapon(); if (GL.on && glKey(e.code)) { } else if (e.code === BIND.ping) doPing(); else if (/^Digit[0-9]$/.test(e.code)) { const n = +e.code[5]; if (!buyOpen && [1, 2, 3, 4, 5].includes(n)) { if (n === 4 && player.slot === 4) cycleNade(); else selectSlot(n); } }
         });
         addEventListener('keyup', e => { keys[e.code] = false; if (e.code === BIND.board) $('board').style.display = 'none'; }); addEventListener('mousedown', e => { if (GL.on && GL.phase !== 'duel') return; if (started && !paused && !gameEnded && NET.spec && e.button === 2) { specToggle(); return; } if (started && !paused && !gameEnded && !player.alive) { if (FC.on) { if (!locked) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) cycleSpec(); return; } if (!locked) { if (started && !paused && !buyOpen && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) { mouseDown = true; clickQueued = true; } if (e.button === 2) toggleScope(); }); addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; }); addEventListener('contextmenu', e => e.preventDefault());
         addEventListener('wheel', e => { if (!locked) return; const order = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); let i = order.indexOf(player.slot); i = (i + (e.deltaY > 0 ? 1 : -1) + order.length) % order.length; selectSlot(order[i]); });
         addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on && !AL.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
         document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button,.mapc,[data-cat],.subnav b,#cstabs a,.inv,.gltb')) { initAudio(); sfx('ui'); } }, true);
+        addEventListener('beforeunload', e => { if (!window.cswoApp && started && !gameEnded && NET.on && !NET.inLobby) { e.preventDefault(); e.returnValue = ''; } }); // Browser: Strg+W / Neuladen mitten im Online-Match erst nachfragen (Verlassen-Knopf setzt NET.on = false → keine Frage)
         function showOverlay(html, trans) { const o = $('overlay'); o.classList.remove('oldui'); o.innerHTML = html; o.style.display = 'flex'; o.style.background = trans ? 'none' : 'rgba(8,11,15,.82)'; } function leaveGame() {
             if (NET.ws) { NET.on = false; NET.ws.close(); }
             location.reload();
@@ -8007,8 +8088,8 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 { t: '⚔️ Gauntlet – die Show', d: 'Duo-Turnier mit <b>Draft</b>: Waffe und Upgrade wählen – Granaten, Perks oder Fähigkeiten (' + (IS_TOUCH ? 'Fähigkeits-Symbol antippen' : k('abil')) + '), z. B. 💉 Stim-Spritze oder 👻 Tarnkappe.<br>Vor vielen Duellen wählt das Publikum ein <b>Ereignis</b> (Glaskanone, Turbo, Pistolen, Nacht). In den letzten 15 s schrumpft die Zone – <b>☠ plötzlicher Tod</b>.<br>Beim Zuschauen: ' + (IS_TOUCH ? 'Knöpfe antippen' : '<b class="tk">1</b>/<b class="tk">2</b> tippen auf den Sieger (+1 Reroll), <b class="tk">3</b>–<b class="tk">5</b> stören') + ' – einmal pro Duell Rauch, Blendgranate oder Heilpaket.' },
                 { t: '🦆 Entenjagd', d: '2 Minuten, <b>5 Wellen</b> bis zum CHAOS. Jede Ente bringt Punkte – Gold, Riesen-Ente, 🤖 Robo-Ente (3 Treffer), 👻 Geister-Ente und mehr. 🚫 Rote Lockvögel kosten Punkte.<br>Schieß <b>leuchtende Kisten</b> ab: 💥 Sprengmunition, 🔫 Dauerfeuer, 🔗 Combo-Halter. Die <b>Combo</b> neben dem Fadenkreuz erhöht den Multiplikator.' },
                 IS_TOUCH
-                    ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br><b>✋</b> antippen = Waffe aufheben oder fallen lassen, gedrückt halten = Bombe entschärfen · <b>🔍</b> = Waffe inspizieren.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br><b>Taktik</b>: Icon unter den Ult-Rauten antippen, dann Feuerknopf = werfen · <b>Ultimate</b>: Rauten doppelt antippen.<br>Mitspieler siehst Du als farbige Silhouette durch Wände, mit Namen darunter.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
-                    : { t: '⌨️ Steuerung', d: 'Laufen ' + ['fwd', 'left', 'back', 'right'].map(k).join(' ') + ' · Umsehen mit der Maus · Schießen <b class="tk">Linksklick</b> · Zielfernrohr <b class="tk">Rechtsklick</b><br>Springen ' + k('jump') + ' · Ducken ' + k('crouch') + ' · Leise gehen ' + k('walk') + '<br>Nachladen ' + k('reload') + ' · Benutzen/Entschärfen ' + k('use') + ' · Waffe fallen lassen ' + k('drop') + '<br>Letzte Waffe ' + k('lastw') + ' · Waffe inspizieren ' + k('inspect') + ' · Waffen <b class="tk">1–5</b> · Scoreboard ' + k('board') + '<br>Deine <b>Mitspieler</b> siehst Du als farbige Silhouette durch Wände, mit Namen darunter.<br>Alle Tasten kannst Du in den ⚙️ Einstellungen ändern.' },
+                    ? { t: '📱 Steuerung (Handy)', d: 'Links: <b>Stick</b> zum Laufen · rechts: <b>Wischen</b> zum Umsehen.<br>Die Buttons: Feuern, Springen, Ducken, Nachladen, Zielfernrohr, Waffe wechseln, Kaufen.<br><b>✋</b> antippen = Waffe aufheben oder fallen lassen, gedrückt halten = Bombe entschärfen · <b>🔍</b> = Waffe inspizieren.<br>Eine <b>leichte Zielhilfe</b> zieht das Fadenkreuz sanft zu Gegnern.<br><b>Taktik</b>: Icon unter den Ult-Rauten antippen, dann Feuerknopf = werfen · <b>Ultimate</b>: Rauten doppelt antippen.<br><b>📍</b> = Pingen: markiert die Stelle unter dem Fadenkreuz fürs Team (Gegner rot).<br>Mitspieler siehst Du als farbige Silhouette durch Wände, mit Namen darunter.<br>In den Einstellungen kannst Du unter <b>📱 Buttons anpassen</b> alle Buttons verschieben.' }
+                    : { t: '⌨️ Steuerung', d: 'Laufen ' + ['fwd', 'left', 'back', 'right'].map(k).join(' ') + ' · Umsehen mit der Maus · Schießen <b class="tk">Linksklick</b> · Zielfernrohr <b class="tk">Rechtsklick</b><br>Springen ' + k('jump') + ' · Ducken ' + k('crouch') + ' · Leise gehen ' + k('walk') + '<br>Nachladen ' + k('reload') + ' · Benutzen/Entschärfen ' + k('use') + ' · Waffe fallen lassen ' + k('drop') + '<br>Letzte Waffe ' + k('lastw') + ' · Waffe inspizieren ' + k('inspect') + ' · Waffen <b class="tk">1–4</b> · Pingen ' + k('ping') + ' · Scoreboard ' + k('board') + '<br>Deine <b>Mitspieler</b> siehst Du als farbige Silhouette durch Wände, mit Namen darunter.<br>Alle Tasten kannst Du in den ⚙️ Einstellungen ändern.' },
                 { t: '💰 Kaufen', d: 'Zu Rundenbeginn öffnet sich im Spiel das <b>Kaufmenü</b> (' + (IS_TOUCH ? 'Button 🛒' : k('buy')) + '). Mit Deinem Geld kaufst Du Waffen, Rüstung, Granaten und das Entschärfer-Kit.<br>' + (IS_TOUCH ? '' : '<b>Rechtsklick</b> verkauft, was Du in dieser Runde gekauft hast.<br>') + 'Geld gibt es für Kills und Rundenausgänge – wer gewinnt, bekommt mehr.' },
                 { t: '⚡ Ultimate & Taktik', d: 'Im Kaufmenü wählst Du Deine <b>Ultimate</b> (eine von fünf) und kaufst eine <b>Taktik</b> – Recon-Pfeil, Cluster oder Kälteschaum, eine pro Runde.<br>Die gekaufte Taktik erscheint als <b>Icon unter den Ult-Rauten</b>: ' + (IS_TOUCH ? 'antippen und mit dem Feuerknopf werfen.' : '<b class="tk">V</b> nimmt sie in die Hand, <b class="tk">Linksklick</b> wirft.') + '<br>Die Ultimate lädt sich über Kills, Bombe legen und entschärfen auf – auslösen mit ' + (IS_TOUCH ? 'Doppeltipp auf die Rauten.' : '<b class="tk">X</b>.') + '<br><b>Spike-Checkpoint</b>: Wer 50 % entschärft hat, macht beim nächsten Versuch ab 50 % weiter.' },
                 { go: () => { INV.tab = 'sk'; INV.wk = null; showInventory(); }, sel: '.invgrid', t: '🎒 Inventar – Skins', d: 'Links siehst Du alle Waffen mit dem aktuell ausgerüsteten Skin, rechts alle Skins der gewählten Waffe.<br>Klick auf einen Skin = <b>ausrüsten</b>. Mit 🔒 markierte Skins fehlen Dir noch.' },
@@ -8512,7 +8593,55 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 3.4 „DIE SHOW"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 3.5 „SHOWTIME"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏆 NEUER ENDBILDSCHIRM</p>
+ Nach jedem Match – Ranked, Unranked, Customs, Gauntlet und 1v1 – siehst Du jetzt Spielerkarten mit Profilbild, Kills, Toden, Assists, ADR und HS.<br>
+ Reiter für jedes Team, ★ MVP für den besten Spieler und Auszeichnungen wie Top-Fragger, Kopfjäger oder Teamplayer.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⭐ ACE, CLUTCH & CO.</p>
+ Wer das ganze Gegnerteam allein ausschaltet, bekommt oben ein großes ACE – für alle sichtbar.<br>
+ Am Rundenende gibt es CLUTCH (allein gegen mehrere gewonnen), THRIFTY (mit billigerer Ausrüstung gewonnen) und FLAWLESS (ohne Verluste gewonnen).<br>
+ Neue Kill-Sounds: Jeder Kill in einer Runde klingt eine Stufe höher.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📍 PINGEN</p>
+ Taste 5 markiert die Stelle unter dem Fadenkreuz für Dein Team – Gegner im Visier werden rot markiert, auch durch Wände sichtbar.<br>
+ Am Handy gibt es dafür den neuen 📍-Knopf. Die Bombe wählst Du jetzt mit dem Mausrad bzw. ⇄.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎯 GAMEPLAY</p>
+ AK-47: Kopftreffer sind jetzt immer tödlich – auch mit Helm.<br>
+ Profilbilder mit Lebensbalken oben in der Teamleiste.<br>
+ Mitspieler-Silhouetten erscheinen nur noch hinter Wänden.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📱 HANDY</p>
+ Neue Knöpfe: ✋ hebt Waffen auf, lässt sie fallen und entschärft (halten), 🔍 inspiziert die Waffe.<br>
+ Fähigkeiten und Taktiken per Antippen des Symbols, die Ultimate per Doppeltipp.<br>
+ Zuschauen: Freecam mit Stick und Hoch/Runter-Knöpfen, aufgeräumte Leiste im Gauntlet.<br>
+ Das CLUTCH-Logo steht jetzt auch auf dem Startbildschirm.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🌐 ENGLISCH</p>
+ Das ganze Spiel ist jetzt auf Englisch übersetzt – inklusive Tutorial und Patchnotes – und Englisch ist die neue Standardsprache. Umschalten oben mit DE/EN.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💻 PC-APP 1.2.4</p>
+ Die App startet immer im Vollbild – auch im Menü.<br>
+ Strg+R und Strg+W sind gesperrt: Ducken und Nachladen lädt die App nicht mehr neu.<br>
+ Kommt automatisch per Update.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🐞 BUG-TICKETS</p>
+ Bug-Meldungen aus dem Spiel landen jetzt im Discord als eigenes Ticket – mit eigenem Chat und Status.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🔧 BUGFIXES</p>
+ ADR war im Ranked und Unranked oft 0 – Schaden an Bots zählt jetzt mit.<br>
+ Eigene Agenten und gekaufte Kleidung gingen beim Account-Abgleich verloren – jetzt werden sie gespeichert.<br>
+ Kein Ton am Handy, wenn ein Match ohne Antippen startete – behoben.<br>
+ Die Kartenauswahl war abgeschnitten und ließ sich nicht seitlich scrollen – behoben (auch am Handy).<br>
+ Der F-Knopf am Handy tat außerhalb des Gauntlets nichts – jetzt inspiziert er die Waffe.<br>
+ Mitspieler hatten eine farbige Schicht, wenn sie direkt vor Dir standen – behoben.<br>
+ Standard-Mauszeiger von Windows statt eigenem Zeiger.<br><br>
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 3.4 „DIE SHOW"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚔️ GAUNTLET: DIE SHOW</p>
@@ -10578,7 +10707,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function lobDiscord() { accApi('lfg', { room: NET.room, name: player.name }).then(r => toast(r.ok ? '📣 In Discord gepostet' : '⚠ ' + (r.err || 'Fehler'), r.ok ? '#🤝-mitspielersuche · mit Beitreten-Knopf' : '')).catch(() => toast('⚠ Server nicht erreichbar', '')); }
         function showBug(back) {
             const md = !started ? 'Menü' : AL.on ? 'Aim-Lab' : EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : RK.cur ? (RK.cur.mode === 'ur' ? 'Unranked' : 'Ranked') : 'Customs';
-            const info = `CLUTCH 3.4 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
+            const info = `CLUTCH 3.5 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
             showOverlay(`<h1 style="font-size:34px">🐞 BUG MELDEN<small>GEHT DIREKT AN DEN ENTWICKLER</small></h1>
  <textarea id="bugTxt" maxlength="1500" rows="6" placeholder="Was ist passiert? Was hast Du davor gemacht? Passiert es immer wieder?" style="width:min(520px,88vw);font:14px Arial;padding:10px;background:#141e28;color:#fff;border:1px solid rgba(var(--hl-rgb),.5);border-radius:4px;resize:vertical"></textarea>
  <p style="font-size:11px;color:#8fa3b8;max-width:520px">Wird automatisch mitgeschickt: ${escH(info)}</p><p id="bugMsg" style="font-size:13px;min-height:16px"></p>
@@ -10908,6 +11037,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 }
                 case 'dmg': if (m.to === NET.pid && player.alive && NET.players.has(m.from) && dmgOk(m.from, m.d, m.w)) applyDamage(player, m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
                 case 'kf': {
+                    if (NET.host && m.an && m.at && m.at !== m.vt) awKill(m.an, m.at); // Kills der Mitspieler (Ace)
                     killfeed(m.an ? { name: m.an, team: m.at } : null, { name: m.vn, team: m.vt }, m.w ? { name: m.w } : null, m.hs);
                     if (NET.host && !m.ap && m.an && (DM.on || m.at !== m.vt)) { const kb = bots.find(x => x.name === m.an); if (kb) kb.kills++; }
                     if (m.ap === NET.pid) { if (m.at !== m.vt || GL.on || DM.on) { player.kills++; killBanner(); ultAdd(1); player.money = Math.min(16000, player.money + m.rw); sfx('kill'); killPop(m.vn, m.hs); if (GL.on && player.glP && player.glP.vamp && player.alive) player.health = Math.min(player.maxHP || 100, player.health + 10 * player.glP.vamp); } else player.kills--; } break;
@@ -10937,6 +11067,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 } break;
                 case 'glpick': if (NET.host && GL.on) { GL.humanReady.add(m.pid); GL.waitCache = ''; } break;
                 case 'glduel': if (!NET.host) glDuelClient(m); break;
+                case 'raw': if (!NET.host) showAward(String(m.t), String(m.s || ''), m.tm); break; // Runden-Auszeichnung vom Host
+                case 'ping': if (started && !gameEnded && isFinite(m.x) && isFinite(m.y) && isFinite(m.z) && (GL.on ? !!GL.myTeam && m.g === GL.myTeam.id : !DM.on && m.t === player.team)) addPing(+m.x, +m.y, +m.z, !!m.e); break; // nur fürs eigene Team
                 case 'glsd': if (!NET.host && GL.on) { GL.sd = { t: 0 }; glBan('☠ PLÖTZLICHER TOD – die Zone schrumpft!'); } break;
                 case 'glsab': if (NET.host && GL.on) glSabDo(m.k, +m.x, +m.z, String(m.by || '?').replace(/[<>]/g, '').slice(0, 16)); break;
                 case 'glsabx': if (!NET.host && GL.on && GL_SAB[m.k]) { if (m.k === 'heal' && player.alive && GL.duel && GL.duel.teams.some(t => t.members.includes(player))) player.health = Math.min(player.maxHP || 100, player.health + 25); glBan('😈 ' + String(m.by || '?').slice(0, 16) + ': ' + GL_SAB[m.k][0] + ' ' + GL_SAB[m.k][1] + '!'); } break;
@@ -11119,7 +11251,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (AL.on) alTick(dt); if (DH.on) dhTick(dt); else if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); glFxTick(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
                 updatePlayer(dt); if (IS_TOUCH && OPT.aim !== false) aimAssist(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
-                separate(); updateFX(dt); updateMates(); animChars(dt); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
+                separate(); updateFX(dt); updateMates(); updPings(dt); animChars(dt); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
             }
             if (renderer.shadowMap.enabled) { renderer.shadowMap.autoUpdate = false; const st = started && !paused ? 'g' : 'm';
                 if (st !== SHD.k || !SHD.on) { SHD.k = st; SHD.on = 1; renderer.shadowMap.needsUpdate = true; } else if (st === 'g' && (SHD.f = (SHD.f + 1) & 1) === 0) renderer.shadowMap.needsUpdate = true; } else SHD.on = 0;
