@@ -18,7 +18,8 @@ const ROLLEN = [
 
 // ── Kategorien & Kanäle (Stil wie bei „Die OG's“: -----Name----- und Emoji-Präfix) ──
 // typ: t = Text, v = Sprache · nurLesen = nur Mods/Owner schreiben · privat = nur Mods sehen
-const T = ChannelType.GuildText, V = ChannelType.GuildVoice;
+const norm = n => String(n).toLowerCase().replace(/[^a-z0-9äöüß]/g, ''); // Kanalnamen ohne Emojis/Striche vergleichen
+const T = ChannelType.GuildText, V = ChannelType.GuildVoice, F = ChannelType.GuildForum; // F = Forum: jeder Beitrag ein eigener Chat (Ticket)
 const KATEGORIEN = [
     { name: '-----Moderation-----', privat: true, kanaele: [
         { name: '🔒-owner-notizen', typ: T, nurOwner: true, topic: 'Nur für den Owner: Wichtiges speichern (Links, Codes, Ideen, To-dos)' },
@@ -32,7 +33,7 @@ const KATEGORIEN = [
         { name: '🆕-neuigkeiten', typ: T, nurLesen: true, topic: 'Patchnotes & Updates zu CLUTCH', text: 'news' },
         { name: '📡-server-status', typ: T, nurLesen: true, topic: 'Live: Ist der Spielserver online, wie viele spielen gerade? (aktualisiert sich automatisch)' },
         { name: '📈-vorschläge', typ: T, topic: 'Ideen für neue Modi, Maps, Skins … (Ein Vorschlag pro Nachricht, abstimmen mit 👍 / 👎)' },
-        { name: '🐞-bugs', typ: T, topic: 'Fehler gefunden? Beschreibe: Was ist passiert? Modus/Karte? Handy oder PC? Screenshot hilft!' }] },
+        { name: '🐞-bug-tickets', typ: F, topic: 'Jeder Bug = ein eigenes Ticket. Meldungen aus dem Spiel landen automatisch hier. Selbst melden: „Neuer Beitrag“ → Was ist passiert? Modus/Karte? Handy oder PC? Screenshot hilft!', tags: ['🆕 Offen', '🔧 In Arbeit', '✅ Behoben', '❌ Kein Bug'] }] },
     { name: '-----Communitytalk-----', kanaele: [
         { name: '💬-allgemein', typ: T, topic: 'Quatschen über alles' },
         { name: '🎬-clips-und-highlights', typ: T, topic: 'Aces, Clutches, Headshots – zeig her!' },
@@ -147,7 +148,9 @@ const ITCH_DATEIEN = [ // [Text, Dateien] – max. 10 MB pro Nachricht
     ['## 📦 Upload-Datei für itch.io (bei *Uploads* hochladen)', ['clutch-itch.zip']]];
 async function posteItch(ch) {
     const fs = require('fs'), path = require('path'), dir = path.join(__dirname, 'itch'), alt = await ch.messages.fetch({ limit: 100 }).catch(() => new Map());
-    for (const m of alt.values()) if (m.author.id === client.user.id) await m.delete().catch(() => { }); // alte Version ersetzen
+    const mine = [...alt.values()].filter(m => m.author.id === client.user.id);
+    if (mine.length && !process.argv.includes('--itch')) { console.log('  📦 itch.io-Paket ist schon da – übersprungen (neu posten: node setup.js --itch)'); return; }
+    for (const m of mine) await m.delete().catch(() => { }); // nur mit --itch: alte Version ersetzen
     for (const t of ITCH) await ch.send(t);
     for (const [t, fl] of ITCH_DATEIEN) { const files = fl.map(f => path.join(dir, f)).filter(f => fs.existsSync(f)); if (files.length) await ch.send({ content: t, files }); }
     console.log('  📦 itch.io-Paket gepostet in ' + ch.name);
@@ -188,10 +191,11 @@ client.once('ready', async () => {
         const cat = g.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === k.name) || await g.channels.create({ name: k.name, type: ChannelType.GuildCategory, permissionOverwrites: ow });
         console.log(k.name);
         for (const c of k.kanaele) {
-            let ch = g.channels.cache.find(x => x.parentId === cat.id && x.name === c.name.toLowerCase().replace(/ /g, c.typ === T ? '-' : ' ') || x.parentId === cat.id && x.name === c.name);
+            let ch = g.channels.cache.find(x => x.parentId === cat.id && x.name === c.name.toLowerCase().replace(/ /g, c.typ === T ? '-' : ' ') || x.parentId === cat.id && x.name === c.name)
+                || g.channels.cache.find(x => x.type === c.typ && norm(x.name) === norm(c.name)); // auch verschobene/leicht umbenannte Kanäle wiedererkennen → nie doppelt anlegen
             if (!ch) {
                 const o = c.nurOwner ? [{ id: ev.id, deny: [P.ViewChannel] }, { id: mod.id, deny: [P.ViewChannel] }, { id: R['👑 Owner'].id, allow: [P.ViewChannel] }] : [...ow]; if (c.nurLesen) o.push({ id: ev.id, deny: [P.SendMessages, P.CreatePublicThreads] }, { id: mod.id, allow: [P.SendMessages] });
-                ch = await g.channels.create({ name: c.name, type: c.typ, parent: cat.id, topic: c.topic, permissionOverwrites: o });
+                ch = await g.channels.create({ name: c.name, type: c.typ, parent: cat.id, topic: c.topic, permissionOverwrites: o, ...(c.tags ? { availableTags: c.tags.map(name => ({ name })) } : {}) });
                 if (c.text) K['text:' + c.name] = { ch, key: c.text };
             }
             K[c.name] = ch; if (c.afk) afk = ch; if (c.willkommen) will = ch;
@@ -210,20 +214,21 @@ client.once('ready', async () => {
     const link = n => K[n] ? '<#' + K[n].id + '>' : '#' + n;
     for (const k in K) if (k.startsWith('text:')) {
         const { ch, key } = K[k];
-        const txt = TEXTE[key].replace('<#REGELN>', link('📜-regelwerk')).replace('<#NEWS>', link('🆕-neuigkeiten')).replace('<#BUGS>', link('🐞-bugs')).replace('<#MITSPIELER>', link('🤝-mitspielersuche')).replace('<#VORSCHLAEGE>', link('📈-vorschläge')).replace('<#MAPS>', link('🗺️-maps-und-arenen'));
+        const txt = TEXTE[key].replace('<#REGELN>', link('📜-regelwerk')).replace('<#NEWS>', link('🆕-neuigkeiten')).replace('<#BUGS>', link('🐞-bug-tickets')).replace('<#MITSPIELER>', link('🤝-mitspielersuche')).replace('<#VORSCHLAEGE>', link('📈-vorschläge')).replace('<#MAPS>', link('🗺️-maps-und-arenen'));
         await ch.send(txt); console.log('  ✉ Text gepostet in ' + ch.name);
     }
     for (const ch of Object.values(K)) if (ch.type === T) { // alte Spiel-Adresse in schon geposteten Bot-Nachrichten ersetzen
         const ms = await ch.messages.fetch({ limit: 50 }).catch(() => new Map());
         for (const m of ms.values()) if (m.author.id === client.user.id && m.content.includes(ALTE_URL)) { await m.edit(m.content.split(ALTE_URL).join(SPIEL_URL)).catch(() => { }); console.log('  🔗 Link aktualisiert in ' + ch.name); }
     }
-    if (K['🆕-neuigkeiten']) await postePatches(K['🆕-neuigkeiten']);
+    // Patchnotes postet der Spielserver selbst nach jedem Deploy (nur neue) – das Setup schickt keine alten mehr
     if (K['📦-itch-io']) await posteItch(K['📦-itch-io']); // Patchnotes ab 1.7 (fehlende werden nachgetragen)
 
     // Webhooks: darüber postet der Spielserver (Render) selbst – Patchnotes, Live-Status, Mitspielersuche, Bug-Meldungen
     const hook = async n => { const ch = K[n]; if (!ch) return ''; const ws = await ch.fetchWebhooks(); const w = ws.find(x => x.name === 'CLUTCH' && x.token) || await ch.createWebhook({ name: 'CLUTCH' }); return w.url; };
-    const HOOKS = { DISCORD_NEWS_WEBHOOK: await hook('🆕-neuigkeiten'), DISCORD_STATUS_WEBHOOK: await hook('📡-server-status'), DISCORD_LFG_WEBHOOK: await hook('🤝-mitspielersuche'), DISCORD_BUG_WEBHOOK: await hook('🐞-bugs') };
+    const HOOKS = { DISCORD_NEWS_WEBHOOK: await hook('🆕-neuigkeiten'), DISCORD_STATUS_WEBHOOK: await hook('📡-server-status'), DISCORD_LFG_WEBHOOK: await hook('🤝-mitspielersuche'), DISCORD_BUG_WEBHOOK: await hook('🐞-bug-tickets') };
 
+    console.log('\n🔗 Webhooks – bei Render unter Environment eintragen (Bot-Webhooks lassen sich in Discord nicht kopieren):\n' + Object.entries(HOOKS).map(([k, v]) => '   ' + k + '=' + v).join('\n') + '\n');
     // 🔒 Owner-Notizen: Links & Codes (eigene Nachricht wird bei jedem Start aktualisiert statt doppelt gepostet)
     const own = K['🔒-owner-notizen'];
     if (own) {
