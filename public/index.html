@@ -1236,7 +1236,7 @@
             -webkit-overflow-scrolling: touch
         }
         #mapgrid .mapc { flex: 0 0 auto; scroll-snap-align: start }
-        #mapgrid { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; align-self: stretch } #csplayview { min-width: 0; overflow-x: hidden } /* nur die Kartenreihe scrollt, nicht das ganze Panel */
+        #mapgrid { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; align-self: stretch; flex-shrink: 0; touch-action: pan-x pan-y } .rkmaps { flex-shrink: 0; touch-action: pan-x pan-y } /* nicht zusammenquetschen (Karten sonst unten abgeschnitten), seitlich wischbar */ #csplayview { min-width: 0; overflow-x: hidden } /* nur die Kartenreihe scrollt, nicht das ganze Panel */
 
         .mapc {
             position: relative;
