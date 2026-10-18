@@ -189,7 +189,8 @@ function api(p, b, ip) {
  if (p === '/api/bug') {
  if (!DC.bug) return { err: 'Discord ist nicht eingerichtet.' }; if (limited(ip)) return { err: 'Zu viele Meldungen – bitte kurz warten.' };
  const t = String(b.text || '').trim().slice(0, 1500); if (t.length < 5) return { err: 'Bitte beschreibe den Fehler etwas genauer.' }; const by = byTok(b.tok);
- dcPost(DC.bug, { content: `🐞 **Bug-Meldung** von **${dcEsc(by ? by.name : String(b.name || 'Gast').slice(0, 16))}**${by ? ' ☁️' : ''}\n> ${dcEsc(t).replace(/\n/g, '\n> ')}\n-# ${dcEsc(String(b.info || '').slice(0, 200))}` });
+ const who = by ? by.name : String(b.name || 'Gast').slice(0, 16), msg = { content: `🐞 **Bug-Meldung** von **${dcEsc(who)}**${by ? ' ☁️' : ''}\n> ${dcEsc(t).replace(/\n/g, '\n> ')}\n-# ${dcEsc(String(b.info || '').slice(0, 200))}` };
+ dcPost(DC.bug, { ...msg, thread_name: ('🐞 ' + who + ': ' + t.split('\n')[0]).slice(0, 95) }, 'wait=true').then(r => r || dcPost(DC.bug, msg)); // Forum-Kanal: jede Meldung = eigener Beitrag (Ticket); alter Textkanal → normale Nachricht
  return { ok: 1 };
  }
  const u = byTok(b.tok); if (!u) return { err: 'Bitte neu einloggen.', relog: 1 };
