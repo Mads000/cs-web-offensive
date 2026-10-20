@@ -268,7 +268,11 @@
             font: 15px Arial
         }
 
-        #buy {
+        #tspUI { position: fixed; top: 9%; left: 50%; transform: translateX(-50%); display: none; z-index: 40; text-align: center; font-family: Rajdhani, 'Barlow Condensed', sans-serif; color: #e8edf2; pointer-events: auto }
+        #tspUI h4 { margin: 0 0 8px; font-size: 15px; letter-spacing: .22em; color: #f2c230; text-shadow: 0 2px 6px rgba(0,0,0,.6) }
+        #tspUI .sp { display: inline-block; width: 150px; margin: 0 5px; padding: 10px 8px; background: rgba(18,22,28,.86); border: 2px solid #3a414a; cursor: pointer }
+        #tspUI .sp b { display: block; font-size: 17px } #tspUI .sp small { color: #8f99a4; font-size: 12px } #tspUI .sp.on { border-color: #f2c230; background: rgba(46,40,18,.9) }
+                #buy {
             left: 50%;
             bottom: 90px;
             transform: translateX(-50%);
@@ -5376,6 +5380,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             <div class="tb spec" id="tFcDn" title="Runter">⤓</div>
         </div>
         <div id="buy" class="panel"></div>
+        <div id="tspUI"></div>
         <div id="board" class="panel"></div>
     </div>
  <div id="overlay"></div>
@@ -5524,9 +5529,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // hi: ' ' Himmel · : Luftraum unter Dach · = Boden offen · _ Boden mit Dach · # Wand · r/i Geländer (mit/ohne Dach) · Objekte & D W A B T K wie unten
         // Unbenutzte Felder werden niedrige Nebengebäude (lo '#', hi ' '); mass() = Gebäudehülle bis unters Dach
         // Regeln: Site A oben, Site B unten · 3 T-Spawns (hoch / Haupteingang / tief) · CT erreicht beide Sites zuerst · Treppen mit 2 Feldern Anlauf & Podest, keine Tür daneben
-        const LFH = 3.8, LMS = 1.25, DOOR_H = 2.2; // Geschosshöhe (lichte Höhe EG ≈ 3,5 m) · Feldgröße der Gebäude-Karten in Metern (2 Felder = 2,5 m breite Gänge, Tür = 1 Feld)
+        const LFH = 3.8, LMS = 1.25, DOOR_H = 2.2, HALL_H = 18; // Geschosshöhe (lichte Höhe EG ≈ 3,5 m) · Feldgröße der Gebäude-Karten in Metern (2 Felder = 2,5 m breite Gänge, Tür = 1 Feld)
         function widen(lo, hi, W, H) { // Laufwege mind. 2 Felder (= 2,5 m): 1 Feld breite Engstellen aufweiten – erst Einrichtung räumen, dann dicke Wand/Füllmasse ausdünnen, oben Luftraum neben Stegen zu Boden
-            const LS = '#cChkmWpbsxltfvgo', HW = '=_ABTKD', PROP = 'cChkmpbxltfvgos', st = ch => ch >= '1' && ch <= '5', inb = (r, c) => r > 0 && c > 0 && r < H - 1 && c < W - 1;
+            const LS = '#cChkmWpbsxltfvgoz', HW = '=_ABTKD', PROP = 'cChkmpbxltfvgos', st = ch => ch >= '1' && ch <= '5', inb = (r, c) => r > 0 && c > 0 && r < H - 1 && c < W - 1;
             const walk = (r, c, l) => inb(r, c) && (l ? HW.includes(hi[r][c]) : !LS.includes(lo[r][c])), g = l => l ? hi : lo;
             for (let pass = 0; pass < 3; pass++) for (let l = 0; l < 2; l++) for (let r = 1; r < H - 1; r++) for (let c = 1; c < W - 1; c++) { const ch = g(l)[r][c]; if (!walk(r, c, l) || ch === 'D' || st(ch)) continue;
                 for (const [dr, dc] of [[1, 0], [0, 1]]) { if (walk(r - dr, c - dc, l) || walk(r + dr, c + dc, l)) continue; let done = false;
@@ -5551,49 +5556,100 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 stairs: (...a) => ST.push(a), _stairs: (x, y, dx, dy, w = 2) => { for (let i = 0; i < 5; i++) for (let k = 0; k < w; k++) { const X = x + dx * i + (dy ? k : 0), Y = y + dy * i + (dx ? k : 0); put(lo, String(i + 1), X, Y); put(hi, ' =i'.includes(hi[Y][X]) ? ' ' : ':', X, Y); } } };
             f(M); for (const a of ST) M._stairs(...a); widen(lo, hi, W, H); const m = lo.map(r => r.join('')); m.hi = hi.map(r => r.join('')); m.top = tp.some(r => r.some(ch => ch !== ' ')) ? tp.map(r => r.join('')) : null; m.core = CORE; return m;
         }
-        // ── Industrie-Kern (alle Karten): 52×52 Felder à 1,25 m · Großhalle (7,6 m, Stahlträger) mit umlaufendem Mezzanin, Seitenflügel mit CQC-Fluren auf 2 Etagen, begehbares Flachdach mit Luken
-        //    A oben (Kontrollraum Flügel-OG) · B unten (Serverraum Flügel-EG) · CT im Flügel · T außen: Dach-Annex (Luken) · Verladedock · Tunnel · o.mx/o.my spiegeln die Karte, o.hall/o.ext richten je Karte ein
-        function ironCore(M, o) {
-            const W = 52, H = 52, X = x => o.mx ? W - 1 - x : x, Y = y => o.my ? H - 1 - y : y, T = {};
-            for (const k of ['L', 'U', 'R']) T[k] = (ch, x0, y0, x1 = x0, y1 = y0) => M[k](ch, X(x0), Y(y0), X(x1), Y(y1));
-            for (const k of ['mass', 'yard', 'room', 'hall', 'tunnel', 'core']) T[k] = (x0, y0, x1 = x0, y1 = y0) => M[k](X(x0), Y(y0), X(x1), Y(y1));
-            T.stairs = (x, y, dx, dy, w = 2) => { if (o.mx) { if (dx) { x = W - 1 - x; dx = -dx; } else x = W - 1 - (x + w - 1); } if (o.my) { if (dy) { y = H - 1 - y; dy = -dy; } else y = H - 1 - (y + w - 1); } M.stairs(x, y, dx, dy, w); };
-            T.yard(1, 1, 50, 50); T.mass(1, 7, 7, 39);                                                                          // Gelände · West: angebauter Lagerblock (Tunnel, Annex)
-            T.mass(8, 8, 43, 35); T.core(9, 9, 42, 34);                                                                        // Hauptgebäude (Innenbereich = CT-Zone in der Kaufphase)
-            T.hall(9, 9, 27, 34); T.U('_', 9, 9, 10, 34); T.U('_', 9, 9, 27, 10); T.U('_', 9, 33, 27, 34);                       // Großhalle + Mezzanin West/Nord/Süd
-            T.U('r', 11, 11, 11, 32); T.U('r', 11, 11, 27, 11); T.U('r', 11, 32, 27, 32);                                      // Geländer zur Halle
-            T.stairs(17, 20, -1, 0); T.U('_', 11, 20, 12, 21); T.U('r', 12, 19); T.U('r', 12, 22);                               // Hallentreppe West → Mezzanin
-            T.stairs(23, 26, 0, 1); T.U('_', 23, 31, 24, 32); T.U('r', 22, 31); T.U('r', 25, 31);                                // Hallentreppe Süd → Mezzanin
-            T.mass(28, 8, 28, 35); T.room(29, 9, 42, 34); T.mass(31, 9, 31, 34); T.mass(32, 16, 42, 16); T.mass(32, 22, 42, 22);  // Flügel: Flur (2,5 m) + Räume, 2 Etagen
-            T.L('D', 28, 13); T.L('D', 28, 20, 28, 21); T.L('D', 28, 29); T.L('D', 31, 11); T.L('D', 31, 14); T.L('D', 31, 20); T.L('D', 31, 25); T.L('D', 31, 31); T.L('D', 40, 22); T.L('D', 33, 16); // EG-Türen
-            T.U('D', 28, 9, 28, 10); T.U('D', 28, 33, 28, 34); T.U('D', 28, 17); T.U('D', 31, 11); T.U('D', 31, 14); T.U('D', 31, 19); T.U('D', 31, 27); T.U('D', 31, 32); T.U('D', 40, 16); // OG-Türen (28/17: Absprung in die Halle)
-            T.U('#', 32, 28, 42, 28); T.U('D', 37, 28);                                                                         // OG-Büros
-            T.stairs(34, 18, 1, 0);                                                                                             // Treppenhaus im Mittelraum
-            T.U('A', 32, 9, 42, 15); T.L('B', 32, 23, 42, 34); T.L('K', 33, 10, 41, 14);                                        // Sites & CT-Spawn
-            T.L('D', 18, 8, 19, 8); T.L('D', 13, 35, 14, 35); T.L('D', 21, 35, 22, 35); T.L('D', 8, 29, 8, 30); T.L('D', 43, 19); T.L('W', 43, 26); T.L('W', 43, 31); T.L('W', 24, 8); T.L('W', 36, 8); // Außentüren, Fenster
-            T.R('=', 8, 8, 43, 35); T.R('=', 1, 9, 7, 14); T.R('T', 2, 10, 5, 13);                                              // Flachdach + Annex-Dach mit T-Spawn (hoch)
-            T.R('H', 15, 9); T.R('H', 18, 22); T.R('H', 30, 30); T.R('H', 37, 25); T.R('#', 22, 14, 23, 15); T.R('#', 35, 30, 36, 31); T.R('#', 12, 27, 13, 28); T.R('#', 39, 11, 40, 12); // Luken, Lüftungsanlagen
-            T.tunnel(3, 29, 4, 40); T.tunnel(5, 29, 7, 30); T.L('T', 2, 44, 6, 48);                                             // Tunnel + T-Spawn (tief)
-            T.L('T', 15, 45, 26, 48); T.L('h', 12, 38, 14, 38); T.L('h', 22, 38, 24, 38);                                       // Verladedock + T-Spawn (Haupteingang)
-            T.L('l', 42, 9, 42, 12); T.L('t', 37, 12); T.U('m', 34, 9, 36, 9); T.U('k', 42, 13, 42, 15); T.U('t', 38, 13); T.U('h', 34, 12, 35, 12); // CT-Raum, Kontrollraum A
-            T.L('k', 34, 25, 36, 25); T.L('k', 34, 28, 36, 28); T.L('k', 38, 31, 40, 31); T.L('m', 42, 34); T.L('c', 32, 32); T.L('c', 42, 23); // Serverraum B
-            T.L('l', 42, 17, 42, 18); T.U('l', 42, 23, 42, 27); T.U('t', 35, 31); T.U('c', 32, 23); T.U('x', 42, 34);           // Mittelraum, Büros
-            if (o.hall) o.hall(T); if (o.ext) o.ext(T);
-        }
-        const HALL = { // Hallen-Einrichtung (3 Varianten): Betonpfeiler, Container, Maschinen, Rack-Inseln, Tanks, Kisten, Deckung
-            a: T => { T.L('p', 13, 15); T.L('p', 20, 15); T.L('p', 17, 27); T.L('p', 20, 27); T.L('C', 16, 13, 17, 16); T.L('f', 24, 13, 25, 14); T.L('k', 13, 25, 15, 25); T.L('k', 13, 28, 15, 28); T.L('o', 25, 18); T.L('o', 25, 21); T.L('c', 21, 24); T.L('c', 22, 24); T.L('c', 19, 30); T.L('h', 17, 31, 19, 31); T.L('b', 27, 34); T.L('x', 9, 24); T.L('m', 9, 13); },
-            b: T => { T.L('p', 15, 14); T.L('p', 21, 14); T.L('p', 15, 28); T.L('p', 21, 28); T.L('C', 22, 13, 25, 14); T.L('C', 13, 24, 14, 27); T.L('f', 18, 12, 19, 13); T.L('k', 19, 25, 21, 25); T.L('o', 27, 19); T.L('o', 27, 22); T.L('c', 17, 29); T.L('c', 18, 29); T.L('h', 19, 31, 20, 31); T.L('x', 9, 16); T.L('b', 9, 31); T.L('m', 27, 25); },
-            c: T => { T.L('p', 14, 14); T.L('p', 22, 14); T.L('p', 14, 29); T.L('p', 22, 29); T.L('k', 16, 13, 19, 13); T.L('k', 16, 16, 19, 16); T.L('C', 24, 16, 25, 19); T.L('f', 13, 25, 14, 26); T.L('o', 19, 27); T.L('o', 20, 27); T.L('c', 26, 23); T.L('c', 27, 23); T.L('h', 17, 31, 19, 31); T.L('x', 9, 27); T.L('b', 27, 34); T.L('m', 9, 22); } };
-        MAPS.de_foundry = lmap(52, 52, M => ironCore(M, { hall: HALL.a, ext: T => { // Ironworks – Gießerei-Kern: Werkhof mit Containern, Tanklager
-            T.L('C', 28, 40, 30, 41); T.L('C', 34, 44, 35, 47); T.L('C', 10, 41, 11, 43); T.L('o', 46, 10); T.L('o', 46, 13); T.L('o', 47, 10); T.L('c', 47, 30); T.L('c', 47, 31); T.L('x', 44, 22); T.L('b', 48, 37); T.L('C', 20, 3, 23, 4); T.L('x', 30, 4); T.L('b', 40, 3); T.L('f', 10, 1, 11, 2); } }));
-        MAPS.de_dusty = lmap(52, 52, M => ironCore(M, { mx: 1, hall: HALL.b, ext: T => { // Sienna – Weingut-Kelterei: Hof mit Pflanzkübeln, Fässern, Mauern
-            T.L('g', 10, 40); T.L('g', 14, 42); T.L('g', 27, 42); T.L('g', 31, 40); T.L('b', 18, 40); T.L('b', 26, 41); T.L('h', 33, 44, 35, 44); T.L('g', 46, 6); T.L('g', 46, 20); T.L('g', 46, 34); T.L('b', 48, 27); T.L('h', 13, 4, 16, 4); T.L('g', 25, 3); T.L('g', 33, 3); T.L('x', 40, 4); } }));
-        MAPS.de_bazaar = lmap(52, 52, M => ironCore(M, { my: 1, hall: HALL.c, ext: T => { // Kasbah – Markthalle mit Datenknoten: Marktgasse mit Ständen, Kisten
-            T.L('v', 11, 41); T.L('v', 15, 41); T.L('v', 27, 41); T.L('v', 31, 41); T.L('x', 20, 42); T.L('c', 35, 45); T.L('c', 36, 45); T.L('v', 46, 8); T.L('v', 46, 16); T.L('b', 47, 28); T.L('v', 46, 38); T.L('h', 14, 3, 17, 3); T.L('v', 26, 4); T.L('v', 34, 4); T.L('x', 41, 3); } }));
-        MAPS.de_frost = lmap(52, 52, M => ironCore(M, { mx: 1, my: 1, hall: HALL.a, ext: T => { // Tundra – Polarstation: Hangar-Vorfeld mit Containermodulen, Tanks
-            T.L('C', 10, 41, 12, 42); T.L('C', 29, 40, 30, 43); T.L('C', 35, 46, 37, 47); T.L('o', 46, 8); T.L('o', 47, 8); T.L('C', 46, 18, 47, 21); T.L('c', 46, 30); T.L('x', 48, 33); T.L('C', 21, 3, 24, 4); T.L('o', 12, 3); T.L('c', 38, 4); } }));
-        MAPS.de_moisty = lmap(52, 52, M => ironCore(M, { my: 1, hall: HALL.b, ext: T => { // Mire – Pumpwerk im Sumpf: Fässer, Pumpentanks
-            T.L('o', 11, 41); T.L('o', 12, 43); T.L('b', 17, 40); T.L('b', 26, 41); T.L('h', 29, 43, 31, 43); T.L('x', 34, 45); T.L('b', 46, 7); T.L('o', 47, 15); T.L('b', 46, 27); T.L('x', 48, 36); T.L('h', 12, 4, 15, 4); T.L('o', 28, 3); T.L('b', 36, 4); } }));
+        // ── Trainingshalle: alle Karten 64×64 Felder (80 m), Kartenrand = Hallenwand · jede Karte eigene Architektur im Kartenthema ──
+        //    A oben · B unten · CT im Hauptgebäude (core) · T: Dach-Annex mit Luken (Ebene 2) · Verladedock (Mitte) · Tunnel (Rand) · z = Industriezaun
+        MAPS.de_foundry = lmap(64, 64, M => { // Ironworks – Killhouse: 12 Räume an Kreuzfluren, 2 Etagen, Dach mit Luken
+            M.yard(1, 1, 62, 62); M.mass(12, 8, 51, 41); M.room(13, 9, 50, 40); M.core(13, 9, 50, 40);
+            M.mass(21, 9, 21, 40); M.mass(24, 9, 24, 40); M.mass(39, 9, 39, 40); M.mass(42, 9, 42, 40); M.mass(13, 23, 50, 23); M.mass(13, 26, 50, 26); // Flurwände
+            M.mass(13, 16, 20, 16); M.mass(13, 33, 20, 33); M.mass(43, 16, 50, 16); M.mass(43, 33, 50, 33); M.mass(25, 16, 38, 16); M.mass(25, 33, 38, 33); M.mass(31, 9, 31, 22); M.mass(31, 27, 31, 40); // Raumwände
+            M.room(22, 9, 23, 40); M.room(40, 9, 41, 40); M.room(13, 24, 50, 25); M.L('#', 13, 24, 14, 25); M.L('#', 49, 24, 50, 25); // Kreuzflure (2,5 m)
+            M.stairs(19, 24, -1, 0); M.stairs(44, 24, 1, 0);
+            const D = [[21, 12], [21, 19], [20, 23], [17, 16], [20, 26], [21, 30], [21, 37], [17, 33], [24, 12], [31, 13], [39, 12], [35, 16], [24, 20], [28, 23], [35, 23], [39, 19], [28, 26], [24, 30], [35, 26], [39, 30], [24, 37], [31, 37], [39, 37], [35, 33], [42, 12], [47, 16], [42, 19], [43, 23], [43, 26], [42, 30], [42, 37], [47, 33]];
+            for (const [x, y] of D) { M.L('D', x, y); M.U('D', x, y); } M.U('D', 14, 23); M.U('D', 14, 26); M.U('D', 49, 23); M.U('D', 49, 26); // Türen EG & OG
+            M.U('A', 43, 9, 50, 15); M.U('A', 43, 17, 50, 22); M.L('B', 13, 27, 20, 32); M.L('B', 13, 34, 20, 40); M.L('K', 26, 18, 29, 21);
+            M.L('D', 22, 8, 23, 8); M.L('D', 40, 8, 41, 8); M.L('D', 40, 41, 41, 41); M.L('D', 12, 19); M.L('W', 12, 30); M.L('W', 22, 41); M.L('D', 51, 12); M.L('D', 51, 30); // Außentüren
+            M.L('W', 12, 12); M.L('W', 12, 37); M.L('W', 51, 19); M.L('W', 51, 37); M.L('W', 30, 8); M.L('W', 34, 41);
+            M.L('k', 25, 9, 25, 11); M.L('t', 28, 14); M.L('l', 38, 9, 38, 11); M.L('c', 26, 21); M.L('x', 32, 22); M.L('f', 25, 27, 26, 28); M.L('c', 38, 32); M.L('o', 25, 40); M.L('b', 30, 40); M.L('k', 32, 40, 34, 40); M.L('m', 13, 9); M.L('l', 13, 17, 13, 18); M.L('k', 50, 34, 50, 36); M.L('c', 43, 40); M.L('f', 49, 27, 50, 28);
+            M.L('k', 15, 29, 17, 29); M.L('k', 15, 37, 17, 37); M.L('m', 20, 40); M.L('c', 13, 32);                                                // Serverraum B
+            M.U('m', 44, 9, 46, 9); M.U('k', 50, 9, 50, 11); M.U('t', 47, 12); M.U('h', 44, 19, 45, 19); M.U('c', 50, 22); M.U('l', 25, 9, 25, 11); M.U('t', 34, 29); M.U('c', 13, 40); M.U('x', 38, 9); // Kontrollraum A, OG-Räume
+            M.R('=', 12, 8, 51, 41); M.mass(2, 4, 11, 13); M.R('=', 2, 4, 11, 13); M.R('T', 3, 5, 8, 10); M.R('H', 28, 12); M.R('H', 35, 20); M.R('H', 35, 30); M.R('H', 46, 36); M.R('#', 33, 12, 34, 13); M.R('#', 15, 36, 16, 37); M.R('#', 44, 28, 45, 29); // Dach, Annex, Luken
+            M.mass(52, 27, 62, 53); M.tunnel(57, 30, 58, 53); M.tunnel(52, 30, 56, 31); M.L('T', 55, 54, 61, 61);                            // Tunnel + T (tief)
+            M.L('T', 24, 55, 39, 59); M.L('z', 1, 50, 9, 50); M.L('z', 13, 50, 29, 50); M.L('z', 34, 50, 51, 50); M.L('C', 16, 44, 17, 47); M.L('C', 44, 44, 47, 45); M.L('C', 27, 45, 28, 46); M.L('h', 33, 46, 35, 46); // Dock + T (Mitte)
+            M.L('C', 3, 20, 4, 23); M.L('C', 8, 34, 9, 37); M.L('z', 6, 16, 6, 26); M.L('z', 1, 42, 8, 42); M.L('C', 26, 3, 29, 4); M.L('C', 45, 2, 46, 5); M.L('z', 14, 4, 20, 4); M.L('z', 55, 6, 55, 20); M.L('o', 58, 10); M.L('o', 59, 10); M.L('x', 60, 20); // Hallenfläche: Zäune, Container
+        });
+        MAPS.de_dusty = lmap(64, 64, M => { // Sienna – Villa: große Flügel um einen Innenhof mit Balkon, wenige große Räume
+            M.yard(1, 1, 62, 62); M.mass(14, 12, 49, 45); M.core(15, 13, 48, 44);
+            M.room(15, 13, 48, 20); M.room(15, 21, 22, 44); M.room(41, 21, 48, 44); M.room(24, 37, 39, 44);                                 // Nord-, West-, Ost-, Südflügel
+            M.mass(23, 21, 23, 44); M.mass(40, 21, 40, 44); M.mass(23, 21, 40, 21); M.mass(23, 36, 40, 36); M.yard(24, 22, 39, 35);           // Innenhof
+            M.deck(24, 22, 39, 23); M.U('i', 24, 24, 39, 24);                                                                                 // Balkon über dem Hof
+            M.mass(24, 13, 24, 20); M.mass(39, 13, 39, 20); M.mass(15, 21, 22, 21); M.mass(41, 21, 48, 21); M.mass(15, 32, 22, 32); M.mass(41, 32, 48, 32); M.mass(32, 37, 32, 44);
+            M.stairs(18, 29, 0, -1); M.stairs(44, 35, 0, 1); M.stairs(42, 13, 1, 0);
+            for (const [x, y] of [[24, 16], [39, 17], [19, 21], [44, 21], [19, 32], [44, 32], [23, 41], [40, 41]]) { M.L('D', x, y); M.U('D', x, y); }
+            M.L('D', 31, 21); M.L('D', 23, 27); M.L('D', 40, 27); M.L('D', 27, 36); M.L('D', 36, 36); M.U('D', 28, 21); M.U('D', 35, 21);   // Hoftüren, Balkontüren
+            M.U('A', 25, 13, 38, 20); M.L('B', 24, 37, 31, 44); M.L('K', 28, 15, 35, 18);
+            M.L('D', 31, 12, 32, 12); M.L('D', 14, 26); M.L('D', 14, 40); M.L('W', 49, 27); M.L('D', 49, 40); M.L('W', 27, 45); M.L('D', 36, 45); // Außentüren
+            M.L('W', 20, 12); M.L('W', 43, 12); M.L('W', 14, 35); M.L('W', 49, 35); M.L('W', 45, 45);
+            M.L('o', 31, 28, 32, 29); M.L('g', 24, 25); M.L('g', 39, 25); M.L('g', 24, 35); M.L('g', 39, 35); M.L('h', 27, 31, 28, 31); M.L('h', 35, 31, 36, 31); // Brunnen, Kübel, Hecken
+            M.L('t', 30, 16); M.L('t', 34, 16); M.L('l', 15, 13, 15, 15); M.L('b', 15, 44); M.L('b', 26, 44); M.L('b', 30, 44); M.L('x', 39, 44); M.L('l', 48, 22, 48, 24); M.L('c', 41, 44);
+            M.U('t', 31, 16); M.U('m', 25, 13, 27, 13); M.U('h', 33, 18, 34, 18); M.U('l', 15, 33, 15, 35); M.U('t', 45, 26);
+            M.R('=', 14, 12, 49, 21); M.R('=', 14, 21, 23, 45); M.R('=', 40, 21, 49, 45); M.R('=', 23, 36, 40, 45); M.mass(6, 4, 18, 11); M.R('=', 6, 4, 18, 11); M.R('T', 7, 5, 12, 9);
+            M.R('H', 17, 28); M.R('H', 19, 38); M.R('H', 44, 28); M.R('H', 35, 41); M.R('#', 28, 15, 29, 16); M.R('#', 45, 16, 46, 17);
+            M.mass(50, 10, 62, 44); M.tunnel(57, 10, 58, 41); M.tunnel(50, 40, 56, 41); M.L('T', 55, 3, 61, 8);                            // Tunnel + T (tief)
+            M.L('T', 26, 56, 37, 60); M.L('z', 1, 51, 22, 51); M.L('z', 41, 51, 62, 51); M.L('h', 26, 51, 28, 51); M.L('h', 35, 51, 37, 51); M.L('b', 20, 48); M.L('b', 44, 48); // Kelterei-Hof + T (Mitte)
+            M.L('g', 4, 18); M.L('g', 4, 30); M.L('g', 4, 42); M.L('h', 8, 22, 8, 27); M.L('h', 8, 36, 8, 41); M.L('#', 3, 48, 5, 49); M.L('g', 25, 3); M.L('g', 38, 3); M.L('h', 30, 6, 33, 6); M.L('z', 20, 9, 26, 9); M.L('z', 36, 9, 45, 9); // Garten
+        });
+        MAPS.de_bazaar = lmap(64, 64, M => { // Kasbah – Medina: 8 Häuser an Gassen, Marktplatz, Brücken auf OG-Höhe, begehbare Dächer
+            M.yard(1, 1, 62, 62); M.mass(8, 8, 55, 9); M.mass(8, 48, 55, 49); M.mass(8, 8, 9, 49); M.mass(54, 8, 55, 49); M.core(10, 10, 53, 47); // Stadtmauer (2 Felder)
+            const house = (x0, y0, x1, y1) => { M.mass(x0, y0, x1, y1); M.room(x0 + 1, y0 + 1, x1 - 1, y1 - 1); M.stairs(x0 + 3, y0 + 1, 1, 0); };
+            house(10, 10, 21, 20); house(42, 10, 53, 20); house(10, 24, 21, 33); house(25, 24, 38, 33); house(42, 24, 53, 33); house(10, 37, 21, 47); house(25, 37, 38, 47); house(42, 37, 53, 47);
+            for (const [x, y] of [[16, 20], [21, 16], [47, 20], [42, 16], [21, 29], [16, 33], [25, 29], [38, 29], [28, 33], [42, 29], [47, 33], [21, 42], [20, 37], [25, 42], [35, 37], [42, 42], [52, 37], [34, 24]]) M.L('D', x, y); // EG-Türen zu den Gassen
+            M.deck(22, 14, 24, 15); M.U('D', 21, 14, 21, 15); M.deck(39, 14, 41, 15); M.U('D', 42, 14, 42, 15);                                 // Brücken über die Gassen (OG)
+            M.deck(22, 27, 24, 28); M.U('D', 21, 27, 21, 28); M.U('D', 25, 27, 25, 28); M.deck(39, 27, 41, 28); M.U('D', 38, 27, 38, 28); M.U('D', 42, 27, 42, 28);
+            M.deck(19, 34, 20, 36); M.U('D', 19, 33, 20, 33); M.U('D', 19, 37, 20, 37); M.deck(50, 34, 51, 36); M.U('D', 50, 33, 51, 33); M.U('D', 50, 37, 51, 37);
+            M.L('v', 25, 10); M.L('v', 29, 10); M.L('v', 34, 10); M.L('v', 38, 10); M.L('v', 25, 20); M.L('v', 38, 20); M.L('h', 30, 15, 33, 15); M.L('o', 31, 18); M.L('x', 27, 16); M.L('x', 36, 16); // Marktplatz
+            M.U('A', 43, 11, 52, 19); M.L('B', 11, 38, 20, 46); M.L('K', 27, 27, 30, 32); M.L('K', 33, 27, 36, 32);
+            M.L('l', 52, 12, 52, 13); M.L('t', 46, 16); M.U('m', 43, 11, 45, 11); M.U('k', 52, 15, 52, 17); M.U('h', 47, 18, 48, 18); M.L('k', 13, 44, 15, 44); M.L('m', 20, 46); M.L('c', 11, 46); M.L('t', 49, 30); M.L('l', 11, 30, 11, 31); M.L('b', 52, 46); M.L('x', 37, 46); M.U('t', 16, 30); M.U('c', 52, 46); M.U('l', 11, 45, 11, 46);
+            M.L('D', 31, 8, 32, 9); M.L('D', 39, 48, 40, 49); M.L('D', 8, 35, 9, 36); M.L('D', 54, 22, 55, 22);                                 // Stadttore
+            M.R('=', 8, 8, 55, 49); M.R(' ', 22, 10, 41, 23); M.R(' ', 10, 21, 53, 23); M.R(' ', 22, 24, 24, 47); M.R(' ', 39, 24, 41, 47); M.R(' ', 10, 34, 53, 36); M.R(' ', 25, 10, 38, 20); // Dächer der Häuser + Mauerkrone
+            M.R(' ', 25, 24, 38, 33); M.R('=', 8, 8, 55, 9); M.R('=', 8, 48, 55, 49); M.R('=', 8, 8, 9, 49); M.R('=', 54, 8, 55, 49);
+            M.mass(56, 2, 62, 12); M.R('=', 56, 2, 62, 12); M.R('T', 57, 3, 61, 7); M.R('H', 15, 15); M.R('H', 15, 29); M.R('H', 48, 43); M.R('H', 48, 29); M.R('#', 33, 41, 34, 42); M.R('#', 12, 42, 13, 43);
+            M.mass(1, 30, 7, 53); M.tunnel(3, 37, 4, 53); M.tunnel(5, 35, 7, 36); M.tunnel(3, 35, 4, 36); M.L('T', 2, 55, 6, 61);             // Tunnel + T (tief)
+            M.L('T', 26, 55, 37, 59); M.L('z', 10, 52, 27, 52); M.L('z', 36, 52, 53, 52); M.L('v', 14, 56); M.L('v', 46, 56); M.L('C', 19, 58, 20, 61); M.L('C', 43, 58, 44, 61); // Karawanen-Hof + T (Mitte)
+            M.L('C', 2, 15, 3, 18); M.L('v', 5, 24); M.L('z', 12, 4, 25, 4); M.L('z', 38, 4, 51, 4); M.L('v', 30, 3); M.L('C', 58, 20, 59, 23); M.L('x', 60, 35); M.L('v', 58, 44); // Hallenfläche
+        });
+        MAPS.de_frost = lmap(64, 64, M => { // Tundra – Hangar mit Bürotrakt & Laufsteg, Containerfeld mit langen Sichtlinien
+            M.yard(1, 1, 62, 62); M.mass(16, 14, 47, 41); M.hall(17, 23, 46, 40); M.room(17, 15, 46, 21); M.mass(17, 22, 46, 22); M.core(17, 15, 46, 40);
+            M.mass(26, 15, 26, 21); M.mass(37, 15, 37, 21); M.stairs(19, 15, 1, 0); M.U('_', 45, 23, 46, 33); M.U('r', 44, 23, 44, 33); M.stairs(45, 38, 0, -1); // Büros, Laufsteg
+            M.L('D', 21, 22); M.L('D', 31, 22); M.L('D', 41, 22); M.L('D', 26, 18); M.U('D', 26, 18); M.L('D', 37, 18); M.U('D', 37, 18); M.U('D', 45, 22, 46, 22);
+            M.U('A', 38, 15, 46, 21); M.L('B', 17, 23, 26, 31); M.L('K', 28, 17, 35, 20); M.stairs(29, 15, 1, 0);
+            M.L('D', 30, 41, 33, 41); M.L('D', 38, 41, 41, 41); M.L('D', 16, 30, 16, 31); M.L('D', 47, 28, 47, 29); M.L('D', 42, 14, 43, 14);  // Hangartore
+            M.L('W', 20, 14); M.L('W', 43, 14); M.L('W', 16, 18); M.L('W', 47, 18);
+            M.L('C', 21, 25, 24, 26); M.L('C', 31, 27, 32, 30); M.L('C', 37, 34, 40, 35); M.L('o', 41, 26); M.L('o', 42, 26); M.L('k', 19, 33, 21, 33); M.L('k', 19, 37, 21, 37); M.L('m', 17, 40); M.L('c', 25, 32); M.L('c', 26, 32); M.L('h', 33, 38, 34, 38); M.L('f', 17, 24, 18, 25); M.L('x', 43, 39);
+            M.L('t', 31, 16); M.L('l', 46, 16, 46, 18); M.L('c', 25, 15); M.U('m', 39, 15, 41, 15); M.U('k', 46, 15, 46, 17); M.U('t', 42, 18); M.U('l', 17, 20, 17, 21); M.U('t', 31, 18);
+            M.R('=', 16, 14, 47, 41); M.mass(4, 16, 15, 24); M.R('=', 4, 16, 15, 24); M.R('T', 5, 17, 10, 22); M.R('H', 19, 19); M.R('H', 45, 27); M.R('H', 30, 35); M.R('H', 23, 37); M.R('#', 24, 30, 25, 31); M.R('#', 40, 35, 41, 36);
+            M.mass(48, 24, 62, 52); M.tunnel(57, 29, 58, 52); M.tunnel(48, 28, 56, 29); M.L('T', 55, 53, 61, 60);                               // Tunnel + T (tief)
+            M.L('T', 24, 55, 39, 59); M.L('C', 18, 45, 21, 46); M.L('C', 28, 47, 29, 50); M.L('C', 34, 44, 37, 45); M.L('C', 42, 48, 43, 51); M.L('z', 1, 52, 22, 52); M.L('z', 41, 52, 47, 52); // Containerfeld + T (Mitte)
+            M.L('C', 4, 30, 5, 33); M.L('C', 9, 38, 12, 39); M.L('C', 3, 46, 4, 49); M.L('C', 21, 4, 24, 5); M.L('C', 34, 6, 35, 9); M.L('C', 44, 3, 47, 4); M.L('C', 53, 9, 54, 12); M.L('o', 58, 15); M.L('o', 59, 15); M.L('z', 14, 9, 30, 9); M.L('z', 38, 9, 50, 9); // Hallenfläche
+        });
+        MAPS.de_moisty = lmap(64, 64, M => { // Mire – Pumpwerk: Halle mit Steg-Netz, zentrale Plattform (A), Pumpenflügel
+            M.yard(1, 1, 62, 62); M.mass(12, 10, 51, 43); M.hall(13, 11, 38, 42); M.mass(39, 10, 39, 43); M.room(40, 11, 50, 42); M.core(13, 11, 50, 42);
+            M.U('_', 13, 11, 14, 42); M.U('_', 13, 11, 38, 12); M.U('_', 13, 41, 38, 42); M.U('r', 15, 13, 15, 40); M.U('r', 15, 13, 38, 13); M.U('r', 15, 40, 38, 40); // Steg-Ring
+            M.U('r', 16, 25, 38, 25); M.U('r', 16, 28, 38, 28); M.U('_', 15, 26, 38, 27);                                                        // Quersteg
+            M.U('A', 22, 19, 31, 34); M.U('r', 21, 19, 21, 24); M.U('r', 21, 29, 21, 34); M.U('r', 32, 19, 32, 24); M.U('r', 32, 29, 32, 34); M.U('r', 22, 18, 31, 18); M.U('r', 22, 35, 31, 35); // Plattform A
+            M.stairs(20, 37, -1, 0); M.U('_', 15, 37, 15, 38); M.stairs(34, 33, 0, -1); M.U('_', 34, 28, 35, 28);
+            M.mass(40, 21, 50, 21); M.mass(40, 32, 50, 32); M.stairs(48, 22, -1, 0);                                                             // Pumpenflügel
+            M.L('D', 39, 16); M.L('D', 39, 27); M.L('D', 39, 37); M.L('D', 49, 21); M.U('D', 49, 21); M.L('D', 45, 32); M.U('D', 45, 32); M.U('D', 39, 11, 39, 12); M.U('D', 39, 41, 39, 42); M.U('D', 39, 26, 39, 27);
+            M.L('B', 40, 33, 50, 42); M.L('K', 42, 13, 48, 18);
+            M.L('D', 25, 10, 26, 10); M.L('D', 20, 43, 21, 43); M.L('D', 30, 43, 31, 43); M.L('D', 12, 20, 12, 21); M.L('D', 51, 27, 51, 28); // Außentüren
+            M.L('W', 18, 10); M.L('W', 33, 10); M.L('W', 12, 32); M.L('W', 51, 16);
+            M.L('f', 24, 22, 25, 23); M.L('o', 28, 21); M.L('o', 28, 31); M.L('f', 24, 31, 25, 32); M.L('b', 17, 15); M.L('b', 36, 15); M.L('o', 17, 31); M.L('c', 35, 21); M.L('h', 26, 26, 27, 27); M.L('x', 13, 26); // Pumpen unter der Plattform
+            M.L('k', 42, 35, 44, 35); M.L('k', 42, 39, 44, 39); M.L('o', 49, 34); M.L('o', 49, 37); M.L('m', 50, 42); M.L('l', 50, 12, 50, 14); M.L('t', 45, 15); M.L('b', 40, 31); M.L('c', 50, 31);
+            M.U('h', 25, 21, 26, 21); M.U('m', 28, 33, 30, 33); M.U('c', 22, 30); M.U('k', 31, 22, 31, 23); M.U('t', 45, 14); M.U('l', 50, 34, 50, 36);
+            M.R('=', 12, 10, 51, 43); M.mass(2, 2, 13, 9); M.R('=', 2, 2, 13, 9); M.R('T', 3, 3, 8, 7); M.R('H', 36, 20); M.R('H', 14, 30); M.R('H', 45, 37); M.R('H', 26, 12); M.R('#', 40, 24, 41, 25); M.R('#', 19, 16, 20, 17);
+            M.mass(52, 24, 62, 53); M.tunnel(56, 29, 57, 53); M.tunnel(52, 27, 55, 28); M.tunnel(56, 27, 57, 28); M.L('T', 55, 54, 61, 61);  // Tunnel + T (tief)
+            M.L('T', 18, 55, 33, 59); M.L('z', 1, 51, 15, 51); M.L('z', 37, 51, 51, 51); M.L('b', 18, 47); M.L('b', 33, 47); M.L('o', 10, 47); M.L('h', 24, 48, 27, 48); // Anleger + T (Mitte)
+            M.L('o', 5, 15); M.L('o', 6, 15); M.L('b', 4, 25); M.L('z', 8, 12, 8, 30); M.L('b', 4, 40); M.L('x', 30, 4); M.L('z', 18, 5, 40, 5); M.L('b', 46, 5); M.L('o', 58, 12); M.L('b', 58, 19); // Sumpfufer
+        });
         function fillOpen(g) { // Pflanzinseln: Mitte großer freier Flächen (5×5 ohne Wände, Spawns, Sites, Stufen) → Deckung 'h'; g = Raster aus Zeichen (wird geändert)
             const R = g.length, C = g[0].length, at = (r, c) => (r < 0 || c < 0 || r >= R || c >= C) ? '#' : g[r][c], pick = [];
             for (let r = 2; r < R - 2; r++) for (let c = 2; c < C - 2; c++) { if (at(r, c) !== '.') continue; let ok = true;
@@ -5671,7 +5727,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 else { B(x - S / 2, x + S / 2, 0, 1.0, z - S / 2, z + S / 2, WM); B(x - S / 2, x + S / 2, 2.3, WALL_H, z - S / 2, z + S / 2, WM); AL[AL.length - 1].wall = 1; // Fenster: Brüstung + Sturz, dazwischen frei
                     B(x - S / 2, x + S / 2, 1.0, 1.08, z - S / 2, z + S / 2, TILE_M.frame); } }
         }
-        const solid = ch => ch === '#' || ch === 'c' || ch === 'C' || ch === 'h' || ch === 's' || ch === 'b' || ch === 'W' || ch === 'k' || ch === 'm' || ch === 'p' || (LAY && 'xltfvgo'.includes(ch) && ch !== '');
+        const solid = ch => ch === '#' || ch === 'c' || ch === 'C' || ch === 'h' || ch === 's' || ch === 'b' || ch === 'W' || ch === 'k' || ch === 'm' || ch === 'p' || (LAY && 'xltfvgoz'.includes(ch) && ch !== '');
         const cr = v => Math.floor(v / MS), cx = i => (i + 0.5) * MS, acr = v => Math.floor(v / S), acx = i => (i + 0.5) * S; // Karte (MS) · Arena (S)
         // Ebenen: l = 0 Erdgeschoss, 1 Obergeschoss (nur Gebäude-Karten)
         const HI_WALK = '=_ABTKD', cellHi = (r, c) => !HIG || r < 0 || c < 0 || r >= ROWS || c >= COLS ? '#' : HIG[r][c];
@@ -5694,8 +5750,11 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const scene = new THREE.Scene(); scene.background = new THREE.Color(THEME.sky); scene.fog = new THREE.Fog(THEME.fog, 45, 170); const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.05, 400); camera.rotation.order = 'YXZ'; scene.add(camera);
         const INK_PP = (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } })(); // Konturen als Nachbearbeitung (WebGL2: Tiefen-Textur) – sonst Linien-Geometrie
         const renderer = new THREE.WebGLRenderer({ antialias: !INK_PP }); renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); renderer.setSize(innerWidth, innerHeight);
-        renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; document.body.appendChild(renderer.domElement);
+        renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap; /* klarere Schattenkanten (Cel-Look) */ document.body.appendChild(renderer.domElement);
         addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+        if (LAY) { // Hallenlicht kommt steil von oben: Sonnenschatten nur auf Böden & Oberseiten, nicht auf Wänden (sonst Streifen) → glatte, saubere Wandflächen
+            const k = 'lights_fragment_begin', a0 = 'directLight.color *= all( bvec2( directLight.visible, receiveShadow ) ) ? getShadow( directionalShadowMap[ i ]', b0 = 'vDirectionalShadowCoord[ i ] ) : 1.0;';
+            if (THREE.ShaderChunk[k].includes(a0) && THREE.ShaderChunk[k].includes(b0)) THREE.ShaderChunk[k] = THREE.ShaderChunk[k].replace(a0, 'directLight.color *= all( bvec2( directLight.visible, receiveShadow ) ) ? mix( 1.0, getShadow( directionalShadowMap[ i ]').replace(b0, 'vDirectionalShadowCoord[ i ] ), smoothstep( 0.35, 0.75, dot( geometry.normal, normalize( ( viewMatrix * vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz ) ) ) ) : 1.0;'); }
         // Comic-Konturen (Nachbearbeitung): Szene → Bild + Tiefe, dann Vollbild-Pass: Silhouetten (Tiefensprung, nur auf der vorderen Seite = 1 px) + Knicke (Laplace auf 1/z, für Ebenen exakt 0)
         const INK = { rt: null, sc: null, cam: null, mat: null, sz: new THREE.Vector2() };
         function renderMain() {
@@ -5877,7 +5936,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 de_frost: { roof: 0xeef2f6, ceil: 0xd2dae2, up: '#98a4b0', beam: 0x46525e, rail: 0xf2c230, flat: '#e6ecf1', fill: [4.6, 5.6, 6.4], pool: 0xd6ecff, win: 0xbfe4ff, sun: [0xe2ecff, 0.95, 55, 40, 60], hemi: 0.42, fog: [0xd4e0ea, 25, 110] },
                 de_moisty: { roof: 0x4f5a3e, ceil: 0x9c8b6c, up: '#7b6249', beam: 0x4a3a2a, rail: 0x5a4632, wood: 1, flat: '#55603f', fill: [4.6, 5.2, 6.0], pool: 0xffcf7a, sun: [0xffc48a, 0.62, -80, 28, -30], hemi: 0.3, fog: [0x3e5647, 12, 72], bg: 0x4a6455 },
                 de_foundry: { roof: 0x3d424a, ceil: 0xc7ccd2, up: '#7d838a', beam: 0x2c3138, rail: 0xf2c230, ind: 1, flat: '#7c8187', fill: [4.8, 6.0, 7.4, 5.4], sun: [0xffe2c4, 0.95, -70, 42, 30], hemi: 0.36, fog: [0xa9b5bf, 30, 125] } }[TK] || {});
-            if (TOPG) Object.assign(P, { ceil: 0xc3c8ce, up: '#7d838a', beam: 0x2c3138, rail: 0xf2c230, ind: 1, wood: 0, flat: '#6f747a' }); // Industrie-Kern: 80 % neutrale Grautöne, 20 % Signalfarben (Gelb, Cyan) · Kartenfarben bleiben außen (Nebengebäude, Licht, Nebel)
+            if (TOPG) Object.assign(P, { ceil: 0xc3c8ce, up: '#7d838a', beam: 0x2c3138, rail: 0xf2c230, ind: 1, wood: 0, flat: '#6f747a', sun: [0xf2f5ff, 0.92, -14, 85, 10], hemi: 0.42, fog: [P.fog ? P.fog[0] : 0xa9b5bf, 45, 150], bg: 0x2b3036 }); // Industrie-Kern: 80 % neutrale Grautöne, 20 % Signalfarben (Gelb, Cyan) · Kartenfarben bleiben außen (Nebengebäude, Licht, Nebel)
             const M = c => new THREE.MeshLambertMaterial({ color: c }), E = (c, e) => { const m = M(c); m.emissive = new THREE.Color(e); return m; }, hex = c => '#' + new THREE.Color(c).getHexString();
             const TM = (tex, rx, ry) => { const t = tex.clone(); t.needsUpdate = true; t.repeat.set(Math.max(0.25, rx), Math.max(0.25, ry)); return new THREE.MeshLambertMaterial({ map: t }); };
             const tileTex = (base, n) => makeTex(64, 64, g => { g.fillStyle = base; g.fillRect(0, 0, 64, 64); g.fillStyle = 'rgba(0,0,0,.16)'; for (let i = 0; i < n; i++) { g.fillRect(0, i * 64 / n, 64, 2); g.fillRect(i * 64 / n, 0, 2, 64); } });
@@ -5906,7 +5965,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const F = (x, z, dr, dc, off, w, h, d, y, m, ink) => { const px = x + dc * off, pz = z + dr * off, sx = dc ? d : w, sz = dr ? d : w; return (ink ? BxI : Bx)(px - sx / 2, px + sx / 2, y - h / 2, y + h / 2, pz - sz / 2, pz + sz / 2, m); }; // Teil vor einer Fläche: (dr,dc) = Blickrichtung, off = Abstand vom Zellmittelpunkt
             const flatP = (x, y, z, wx, wz, m, rot = 0) => { const g = new THREE.PlaneGeometry(wx, wz); g.rotateX(-Math.PI / 2); if (rot) g.rotateY(rot); const o = mk(g, m, x, y, z); return o; };
             const strip = (x, y, z, wx, wz) => { const along = wx >= wz, len = along ? wx : wz, t = haz.clone(); t.needsUpdate = true; t.repeat.set(Math.max(1, Math.round(len / 0.5)), 1); DECO.push(flatP(x, y, z, len, along ? wz : wx, new THREE.MeshLambertMaterial({ map: t }), along ? 0 : Math.PI / 2)); };
-            const pool = (x, y, z, rad, c = P.pool) => GLOW.push(flatP(x, y + 0.02, z, rad * 2, rad * 2, glowM(c)));
+            const pool = (x, y, z, rad, c = P.pool) => TOPG ? 0 : GLOW.push( /* Halle: keine weichen Lichtflecken */ flatP(x, y + 0.02, z, rad * 2, rad * 2, glowM(c)));
             const rects = test => { const U = new Uint8Array(R * C), out = []; for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { if (U[r * C + c] || !test(r, c)) continue; let c1 = c, r1 = r; while (c1 + 1 < C && !U[r * C + c1 + 1] && test(r, c1 + 1)) c1++;
                 for (;;) { if (r1 + 1 >= R) break; let ok = true; for (let k = c; k <= c1; k++) if (U[(r1 + 1) * C + k] || !test(r1 + 1, k)) { ok = false; break; } if (!ok) break; r1++; } for (let a = r; a <= r1; a++) for (let k = c; k <= c1; k++) U[a * C + k] = 1; out.push([r, c, r1, c1]); } return out; };
             const OBJ = 'chkmCbxltfvgo', roofedH = h => !' =iT#'.includes(h), roofedAt = (r, c) => { const h = hiC(r, c); return OBJ.includes(h) ? D4.some(([dr, dc]) => '_:ABKDWr'.includes(hiC(r + dr, c + dc))) : roofedH(h); }, isB = (r, c) => r <= 0 || c <= 0 || r >= R - 1 || c >= C - 1, stair = ch => ch >= '1' && ch <= '5';
@@ -5914,7 +5973,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const FC = new Int32Array(R * C); { const seen = new Uint8Array(R * C), isF = (r, c) => r > 0 && c > 0 && r < R - 1 && c < C - 1 && cell(r, c) === '#' && hiC(r, c) === ' '; // kleine Inseln & dünne Mauern im Hof → niedrig
                 for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { if (seen[r * C + c] || !isF(r, c)) continue; const q = [[r, c]], cs = []; seen[r * C + c] = 1; let r0 = r, r1 = r, c0 = c, c1 = c, edge = false; while (q.length) { const [a, b] = q.pop(); cs.push(a * C + b); r0 = Math.min(r0, a); r1 = Math.max(r1, a); c0 = Math.min(c0, b); c1 = Math.max(c1, b); for (const [dr, dc] of D4) { const nr = a + dr, nc = b + dc; if (isB(nr, nc)) edge = true; if (isF(nr, nc) && !seen[nr * C + nc]) { seen[nr * C + nc] = 1; q.push([nr, nc]); } } }
                     const low = !edge && (cs.length <= 24 || Math.min(r1 - r0, c1 - c0) <= 1); for (const i of cs) FC[i] = low ? 1 : 0; } }
-            const fillH = (r, c) => { let h = FC[r * C + c] ? 3.2 : P.fill[cellHash((r / 4) | 0, ((c / 4) | 0) + 7) % P.fill.length]; if (isB(r, c)) h = Math.max(h, 5.2); if (nearUp(r, c)) h = Math.max(h, FH + 1.3); return h; }; // Nebengebäude: Höhe je 4×4-Block (Terrassen-Rand mindestens Brusthöhe)
+            const fillH = (r, c) => { let h = FC[r * C + c] ? 3.2 : P.fill[cellHash((r / 4) | 0, ((c / 4) | 0) + 7) % P.fill.length]; if (isB(r, c)) h = HALL_H; if (nearUp(r, c)) h = Math.max(h, FH + 1.3); return h; }; // Nebengebäude: Höhe je 4×4-Block (Terrassen-Rand mindestens Brusthöhe)
             const wallTopAt = (r, c) => { const h = hiC(r, c); return h === '#' ? RT : h === ' ' ? fillH(r, c) : h === ':' ? RF : FH; }; // Höhe einer Erdgeschoss-Wand
             const loCeil = (r, c) => { const h = hiC(r, c); return h === ' ' ? 4.4 : h === ':' ? RF : FH - SL; };        // Decke über einem EG-Feld (Himmel → Außenwandhöhe)
             // ── 1. Wände, Geschossdecken, Dächer (pro Zelle vertikale Abschnitte → zu Rechtecken zusammengefasst) + Dachformen & Dachaufbauten ──
@@ -5926,12 +5985,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const roofs = []; let masts = 0;
             for (const [key, set] of SEG) { const [k, b0, t0] = key.split('|'), b = +b0, t = +t0;
                 for (const [r0, c0, r1, c1] of rects((r, c) => set.has(r * C + c))) { const x0 = c0, x1 = c1 + 1, z0 = r0, z1 = r1 + 1, w = x1 - x0, d = z1 - z0, flatTop = TOPG && cellTop(r0, c0) !== ' '; // begehbares Dach: Kies/Bitumen
-                    if (k === 'w' || k === 'n') { const top = t === FH ? TM(upTex, w / 2, d / 2) : (k === 'n' && !P.terra) || (flatTop && t >= RT - 0.01) ? TM(flatTex, w / 2, d / 2) : t >= RT - 0.01 || k === 'n' ? TM(roofTex, w / 2, d / 2) : null; const a = Col(x0, x1, b, t, z0, z1, wallM(w, d, t - b, cellHash(r0, c0) + (k === 'n' ? 1 : 0), top, k === 'n' ? wallSet : coreWalls), 1); if (t === FH) a.flr = 1; if (t > FH + 0.5) roofs.push([x0, x1, z0, z1, t, k]); }
+                    if (k === 'w' || k === 'n') { const top = t === FH ? TM(upTex, w / 2, d / 2) : (k === 'n' && !P.terra) || (flatTop && t >= RT - 0.01) ? TM(flatTex, w / 2, d / 2) : t >= RT - 0.01 || k === 'n' ? TM(roofTex, w / 2, d / 2) : null; const a = Col(x0, x1, b, t, z0, z1, wallM(w, d, t - b, cellHash(r0, c0) + (k === 'n' ? 1 : 0), top, k === 'n' && t < HALL_H - 0.5 ? wallSet : coreWalls), 1); if (t === FH) a.flr = 1; if (t > FH + 0.5) roofs.push([x0, x1, z0, z1, t, k]); }
                     else if (k === 's') Col(x0, x1, b, t, z0, z1, [edgeM, edgeM, TM(upTex, w / 2, d / 2), TM(ceilTex, w / 2, d / 2), edgeM, edgeM]);
                     else { Col(x0, x1, b, t, z0, z1, [edgeM, edgeM, TM(flatTop ? flatTex : roofTex, w / 2, d / 2), TM(ceilTex, w / 2, d / 2), edgeM, edgeM], 1); roofs.push([x0, x1, z0, z1, t, 'f']); } } }
             const prism = (w, h, len) => { const s = new THREE.Shape(); s.moveTo(-w / 2, 0); s.lineTo(w / 2, 0); s.lineTo(0, h); s.lineTo(-w / 2, 0); const g = new THREE.ExtrudeGeometry(s, { depth: len, bevelEnabled: false }); g.translate(0, 0, -len / 2); return g; };
             const onTop = (x0, x1, z0, z1) => { for (let r = z0; r < z1; r++) for (let c = x0; c < x1; c++) if (cellTop(r, c) !== ' ') return true; return false; }; // begehbares Dach: eigene Aufbauten (unten)
-            for (const [x0, x1, z0, z1, t, k] of roofs) { const w = x1 - x0, d = z1 - z0, cxr = (x0 + x1) / 2, czr = (z0 + z1) / 2, hh = cellHash(x0 * 7 + 3, z0 * 13 + (t * 10 | 0)), mn = Math.min(w, d), area = w * d; if (TOPG && onTop(x0, x1, z0, z1)) continue;
+            for (const [x0, x1, z0, z1, t, k] of roofs) { const w = x1 - x0, d = z1 - z0, cxr = (x0 + x1) / 2, czr = (z0 + z1) / 2, hh = cellHash(x0 * 7 + 3, z0 * 13 + (t * 10 | 0)), mn = Math.min(w, d), area = w * d; if ((TOPG && onTop(x0, x1, z0, z1)) || t > HALL_H - 1) continue;
                 const pitched = mn >= 2 && mn <= 11 && Math.max(w, d) <= 18 && hh % 5 < (TK === 'de_bazaar' ? 1 : P.terra ? 4 : 2) && !(k === 'f' && d * w > 120);
                 if (pitched && P.terra) { const g = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4, 1); g.rotateY(Math.PI / 4); const o = mk(g, roofM2, cxr, t + mn * 0.17, czr); o.scale.set(w + 0.5, mn * 0.34, d + 0.5); o.castShadow = true; scene.add(o); continue; } // Walmdach mit Terracotta
                 if (pitched) { const along = w >= d, o = mk(prism(along ? d + 0.4 : w + 0.4, mn * 0.3, (along ? w : d) + 0.4), roofM2, cxr, t, czr); if (along) o.rotation.y = Math.PI / 2; o.castShadow = true; scene.add(o); continue; } // Satteldach
@@ -5974,6 +6033,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                     else if (ch === 'v') { Col(c + 0.05, c + 0.95, y0, y0 + 0.9, r + 0.05, r + 0.95, woodM); for (const [a, b] of [[0.08, 0.08], [0.92, 0.08], [0.08, 0.92], [0.92, 0.92]]) Bx(c + a - 0.03, c + a + 0.03, y0 + 0.9, y0 + 2.3, r + b - 0.03, r + b + 0.03, darkM); // Marktstand mit Markise & Ware
                         const aw = Bx(c - 0.05, c + 1.05, y0 + 2.3, y0 + 2.36, r - 0.05, r + 1.05, drum[hh % drum.length]); aw.rotation.set(fc ? 0 : fr * 0.18, 0, fc ? -fc * 0.18 : 0); for (let i = 0; i < 3; i++) Bx(c + 0.15 + i * 0.25, c + 0.35 + i * 0.25, y0 + 0.9, y0 + 1.05, r + 0.3, r + 0.7, drum[(hh + i + 1) % drum.length]); }
                     else if (ch === 'g') { Col(c + 0.1, c + 0.9, y0, y0 + 0.55, r + 0.1, r + 0.9, P.terra ? roofM2 : metalM); const t2 = mk(TK === 'de_dusty' && hh % 2 ? new THREE.ConeGeometry(0.32, 2.4, 7) : new THREE.IcosahedronGeometry(0.42, 0), hedgeM, x, y0 + (TK === 'de_dusty' && hh % 2 ? 1.75 : 0.85), z); t2.castShadow = true; scene.add(t2); } // Pflanzkübel (Zypresse/Busch)
+                    else if (ch === 'z') { const zz = q => at(q[0], q[1]) === 'z' || (!l && cell(q[0], q[1]) === '#'), ax = zz([r, c - 1]) || zz([r, c + 1]) ? 1 : zz([r - 1, c]) || zz([r + 1, c]) ? 0 : 1; Hit(c, c + 1, y0, y0 + 3, r, r + 1); // Industriezaun: Stahlpaneel, Pfosten, gelbe Oberkante
+                        if (ax) { BxI(c, c + 1, y0, y0 + 2.9, z - 0.06, z + 0.06, panelM); Bx(c, c + 1, y0 + 2.9, y0 + 3.0, z - 0.09, z + 0.09, hazY); Bx(c - 0.05, c + 0.05, y0, y0 + 3.05, z - 0.1, z + 0.1, beamM); } else { BxI(x - 0.06, x + 0.06, y0, y0 + 2.9, r, r + 1, panelM); Bx(x - 0.09, x + 0.09, y0 + 2.9, y0 + 3.0, r, r + 1, hazY); Bx(x - 0.1, x + 0.1, y0, y0 + 3.05, r - 0.05, r + 0.05, beamM); } }
                     else if (ch === 'o') { Hit(c + 0.08, c + 0.92, y0, y0 + 1.6, r + 0.08, r + 0.92); Cy(0.42, 0.42, 1.6, x, y0 + 0.8, z, P.terra ? stoneM : metalM, true, 14); Cy(0.44, 0.44, 0.06, x, y0 + 1.2, z, hazY); Cy(0.44, 0.44, 0.06, x, y0 + 0.4, z, darkM); Bx(x - 0.12, x + 0.12, y0 + 1.6, y0 + 1.9, z - 0.12, z + 0.12, darkM); } // Tank / Generator
                     else if (ch === 'W') { Col(c, c + 1, y0, y0 + 1.0, r, r + 1, wallM(1, 1, 1, hh), 1); Col(c, c + 1, y0 + 2.3, top, r, r + 1, wallM(1, 1, top - y0 - 2.3, hh), 1); Bx(c - 0.02, c + 1.02, y0 + 1.0, y0 + 1.06, r - 0.02, r + 1.02, trimMat); }
                     else if (ch === 'D') { Col(c, c + 1, y0 + DOOR_H, top, r, r + 1, wallM(1, 1, top - y0 - DOOR_H, hh), 1); Bx(c, c + 1, y0 + DOOR_H - 0.08, y0 + DOOR_H, r, r + 1, trimC); // Tür (1 Feld = 1,25 m breit, 2,2 m hoch): Sturz + Zarge (gelb in Industrie-Karten) + Lampe
@@ -6046,23 +6107,18 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const stain = new THREE.MeshBasicMaterial({ map: makeTex(64, 64, g => { const gr = g.createRadialGradient(32, 32, 2, 32, 32, 30); gr.addColorStop(0, 'rgba(20,18,16,.45)'); gr.addColorStop(1, 'rgba(20,18,16,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); }), transparent: true, depthWrite: false });
             const water = E(0x2a3d36, 0x0c1a16), snowM = M(0xf4f8fb), reedM = M(0x6f7a3e), grassM = M(0x6d9a4e);
             for (let r = 1; r < R - 1; r++) for (let c = 1; c < C - 1; c++) { if (cell(r, c) !== '.' || hiC(r, c) !== ' ') continue; const hh = cellHash(r * 5 + 1, c * 3 + 2) % 97, wallN = D4.find(([dr, dc]) => cell(r + dr, c + dc) === '#');
-                if (hh < 3) DECO.push(flatP(c + 0.5, 0.014, r + 0.5, 1.6, 1.3, stain, hh));
+                if (hh < 3 && !TOPG) DECO.push(flatP(c + 0.5, 0.014, r + 0.5, 1.6, 1.3, stain, hh)); /* Halle: keine Flecken */
                 else if (TK === 'de_moisty' && hh < 9) DECO.push(flatP(c + 0.5, 0.016, r + 0.5, 1.4 + (hh % 3) * 0.5, 1.1, water, hh));
                 else if (TK === 'de_moisty' && wallN && hh < 16) for (let i = 0; i < 3; i++) { const o = mk(new THREE.ConeGeometry(0.04, 0.9 + i * 0.25, 4), reedM, c + 0.5 - wallN[1] * 0.35 + (i - 1) * 0.18, 0.45 + i * 0.12, r + 0.5 - wallN[0] * 0.35); DECO.push(o); }
                 else if (TK === 'de_frost' && wallN && hh < 22) { const o = mk(new THREE.IcosahedronGeometry(0.5, 0), snowM, c + 0.5 - wallN[1] * 0.3, 0.05, r + 0.5 - wallN[0] * 0.3); o.scale.set(1.1, 0.35, 1.1); DECO.push(o); }
                 else if (TK === 'de_dusty' && r > 28 && hh < 30) DECO.push(flatP(c + 0.5, 0.015, r + 0.5, 1, 1, grassM)); }
-            // ── 8. Kulisse außerhalb der Karte (nie Blick ins Leere): Skyline im Dunst, Häuser mit Terracotta-Dächern, Fabriken mit Schloten, Felsen/Berge, dichter Wald ──
-            const ring = []; for (let x = -10; x <= C + 10; x += 5) { ring.push([x, -7 - (x * 7 & 3)], [x, R + 7 + (x * 5 & 3)]); } for (let z = -5; z <= R + 5; z += 5) { ring.push([-7 - (z * 3 & 3), z], [C + 7 + (z * 11 & 3), z]); }
-            const bw = [0, 1, 2].map(k => new THREE.MeshLambertMaterial({ map: vWallTex(THEME, k) })), leaf = M(0x2f4a2c), leaf2 = M(0x3b5a34), trunk = M(0x4a3626), rock = [M(0x9aa3ab), M(0xc9d2da), M(0x7f8890)], far = M(new THREE.Color(P.fog ? P.fog[0] : 0xb0c0d0).lerp(new THREE.Color(0xffffff), 0.25).getHex());
-            { const g = new THREE.PlaneGeometry(600, 600); g.rotateX(-Math.PI / 2); const o = mk(g, M(new THREE.Color(THEME.floor).lerp(new THREE.Color(P.fog ? P.fog[0] : 0xb0c0d0), 0.35).getHex()), C / 2, -0.03, R / 2); o.receiveShadow = true; scene.add(o); } // Boden außerhalb der Karte (keine schwebende Kulisse)
-            for (const [i, [x, z]] of ring.entries()) { const hh = cellHash(i + 3, x * 3 + z), sz = 5 + hh % 4;
-                if (TK === 'de_moisty') { for (const [ox, oz] of [[0, 0], [2.5, 2], [-2, 2.5]]) { const h = 7 + (hh >>> (ox > 0 ? 3 : 5)) % 6; Bx(x + ox - 0.25, x + ox + 0.25, 0, h * 0.4, z + oz - 0.25, z + oz + 0.25, trunk); DECO.push(mk(new THREE.ConeGeometry(1.9, h, 7), (hh + ox) % 2 ? leaf : leaf2, x + ox, h * 0.4 + h / 2 - 0.5, z + oz)); } }
-                else if (TK === 'de_frost') { const k = mk(new THREE.IcosahedronGeometry(sz * 0.9, 0), rock[hh % 3], x, sz * 0.5, z); k.rotation.set(hh % 5, hh % 7, 0); k.scale.y = 1.4; DECO.push(k); }
-                else { const h = 5 + hh % 6; Bx(x - sz / 2, x + sz / 2, 0, h, z - sz / 2, z + sz / 2, bw[hh % 3]); if (P.terra) { const g = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4); g.rotateY(Math.PI / 4); const o = mk(g, roofM2, x, h + 1, z); o.scale.set(sz + 0.6, 2, sz + 0.6); DECO.push(o); } else Bx(x - sz / 2 - 0.2, x + sz / 2 + 0.2, h, h + 0.4, z - sz / 2 - 0.2, z + sz / 2 + 0.2, wallTop);
-                    if (P.ind && hh % 3 === 0) Cy(0.7, 0.9, 10, x, h + 5, z, darkM);
-                    if (TK === 'de_dusty' && hh % 2) DECO.push(mk(new THREE.ConeGeometry(0.7, 5, 7), leaf, x + sz / 2 + 1.2, 2.5, z)); } }
-            for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2 + 0.3, d = 62 + (i * 37 % 25), x = C / 2 + Math.cos(a) * d, z = R / 2 + Math.sin(a) * d, hh = cellHash(i, 99); // Skyline / Berge im Dunst
-                if (TK === 'de_frost') { const o = mk(new THREE.ConeGeometry(16 + hh % 12, 26 + hh % 20, 6), far, x, 12, z); DECO.push(o); } else if (TK === 'de_moisty') { DECO.push(mk(new THREE.ConeGeometry(4, 18 + hh % 8, 7), leaf2, x, 9, z)); } else { const h = P.terra ? 8 + hh % 8 : 18 + hh % 26, s = 6 + hh % 6; Bx(x - s / 2, x + s / 2, 0, h, z - s / 2, z + s / 2, far); } }
+            // ── 8. Trainingshalle: dunkles Hallendach mit Fachwerk-Hauptträgern, Pfetten & Lichtbändern, Stahlstützen und gelbe Sicherheitslinie an den Hallenwänden ──
+            { const HH = HALL_H, steel = M(0x3a4048), roofIn = M(0x2b3036), g = new THREE.PlaneGeometry(C, R); g.rotateX(Math.PI / 2); DECO.push(mk(g, roofIn, C / 2, HH, R / 2));
+                for (let x = 8; x < C - 1; x += 8) { Bx(x - 0.2, x + 0.2, HH - 1.5, HH, 1, R - 1, steel); for (let z = 1; z < R - 1; z += 2) Bx(x - 0.06, x + 0.06, HH - 1.45, HH - 0.05, z + 0.5 - 0.06, z + 0.5 + 0.06, steel); } // Fachwerkträger
+                for (let z = 8; z < R - 1; z += 8) Bx(1, C - 1, HH - 0.7, HH - 0.4, z - 0.12, z + 0.12, steel); // Pfetten
+                for (let x = 4; x < C - 1; x += 8) for (let z = 4; z < R - 1; z += 8) { Bx(x - 0.18, x + 0.18, HH - 2.0, HH - 1.85, z - 2.6, z + 2.6, lamp); Bx(x - 0.03, x + 0.03, HH - 1.85, HH - 0.7, z - 0.03, z + 0.03, steel); } // Lichtbänder
+                for (let i = 4; i < Math.max(R, C) - 1; i += 8) { if (i < R - 1) { Bx(1, 1.35, 0, HH, i - 0.3, i + 0.3, steel); Bx(C - 1.35, C - 1, 0, HH, i - 0.3, i + 0.3, steel); } if (i < C - 1) { Bx(i - 0.3, i + 0.3, 0, HH, 1, 1.35, steel); Bx(i - 0.3, i + 0.3, 0, HH, R - 1.35, R - 1, steel); } } // Hallenstützen
+                Bx(1, 1.03, 0.9, 1.15, 1, R - 1, hazY); Bx(C - 1.03, C - 1, 0.9, 1.15, 1, R - 1, hazY); Bx(1, C - 1, 0.9, 1.15, 1, 1.03, hazY); Bx(1, C - 1, 0.9, 1.15, R - 1.03, R - 1, hazY); } // Sicherheitslinie
             // ── 9. Zusammenfassen: Deko ohne Schatten (1 Draw-Call je Material), Licht additiv; Lichtstimmung merken ──
             const dG = new THREE.Group(), gG = new THREE.Group(); for (const o of DECO) o.updateMatrixWorld(true); for (const o of GLOW) o.updateMatrixWorld(true);
             mergeStatic(DECO, dG); mergeStatic(GLOW, gG); dG.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = !o.material.transparent; } }); gG.traverse(o => { if (o.isMesh) { o.castShadow = o.receiveShadow = false; o.renderOrder = 2; } }); scene.add(dG, gG);
@@ -6219,19 +6275,22 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         { if (HSG) HSG.updateMatrixWorld(true); const st = [...scene.children.slice(staticFrom), ...(HSG ? HSG.children : [])].filter(o => o.isMesh); st.forEach(o => o.updateMatrixWorld(true)); if (DSV && !INK_PP) outlines(st); mergeStatic(st); st.forEach(o => o.parent.remove(o)); }
         if (CEIL.tex) for (const o of scene.children) if (o.isMesh && o.material && o.material.map && o.material.map.image === CEIL.tex.image) o.receiveShadow = false;
+        if (LAY) { const avg = new Map(), cv = document.createElement('canvas'); cv.width = cv.height = 8; const cg = cv.getContext('2d'); // Valorant-Look: jede Fläche eine glatte Farbe
+            const flat = m => { if (!m || !m.map || m.transparent || !m.map.image) return; let c = avg.get(m.map.image); if (!c) { cg.clearRect(0, 0, 8, 8); cg.drawImage(m.map.image, 0, 0, 8, 8); const d = cg.getImageData(0, 0, 8, 8).data; let r = 0, gg = 0, b = 0; for (let i = 0; i < 256; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; } c = new THREE.Color(r / 64 / 255, gg / 64 / 255, b / 64 / 255); avg.set(m.map.image, c); } m.color.multiply(c); m.map = null; m.needsUpdate = true; };
+            for (const ch of scene.children) if (ch !== camera) ch.traverse(o => { if (o.isMesh) [].concat(o.material).forEach(flat); }); }
         const texFloor = makeTex(256, 256, (g, w, h2) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h2); g.strokeStyle = 'rgba(0,0,0,.07)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 2); i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h2); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); } }, WORLD_W / 8, WORLD_D / 8);
         const SPB = {}, SPBG = { T: [], CT: [] }, spawnBar = new THREE.Group(); // Spawn-Barrieren (Kaufphase): im Spawn bewegen, aber nicht hinaus · SPBG: je Spawn-Zone (Gebäude-Karten: 3 T-Zonen)
         { const bt = makeTex(64, 64, g => { g.fillStyle = 'rgba(79,216,255,.16)'; g.fillRect(0, 0, 64, 64); g.strokeStyle = 'rgba(79,216,255,.5)'; g.lineWidth = 4; for (let i = -64; i < 128; i += 16) { g.beginPath(); g.moveTo(i, 64); g.lineTo(i + 64, 0); g.stroke(); } });
             for (const tm of ['T', 'CT']) for (const cs of (spawnGroups[tm].length ? spawnGroups[tm] : [spawnCells[tm]])) { if (!cs.length) continue; const r0 = Math.min(...cs.map(o => o.r)) - 1, r1 = Math.max(...cs.map(o => o.r)) + 1, c0 = Math.min(...cs.map(o => o.c)) - 1, c1 = Math.max(...cs.map(o => o.c)) + 1;
                 const B = { x0: c0 * MS + 0.4, x1: (c1 + 1) * MS - 0.4, z0: r0 * MS + 0.4, z1: (r1 + 1) * MS - 0.4, grp: new THREE.Group() }, w = B.x1 - B.x0, d = B.z1 - B.z0, y0 = lvY(cs[0].l); if (!SPB[tm]) SPB[tm] = B; SPBG[tm].push(B); spawnBar.add(B.grp);
-                for (const [x, z, len, ry] of [[(B.x0 + B.x1) / 2, B.z0, w, 0], [(B.x0 + B.x1) / 2, B.z1, w, 0], [B.x0, (B.z0 + B.z1) / 2, d, Math.PI / 2], [B.x1, (B.z0 + B.z1) / 2, d, Math.PI / 2]]) { const t = bt.clone(); t.needsUpdate = true; t.repeat.set(len / 2, 1.5); const m = new THREE.Mesh(new THREE.PlaneGeometry(len, 3), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, side: THREE.DoubleSide })); m.position.set(x, y0 + 1.5, z); m.rotation.y = ry; B.grp.add(m); } }
+                for (const [x, z, len, ry] of [[(B.x0 + B.x1) / 2, B.z0, w, 0], [(B.x0 + B.x1) / 2, B.z1, w, 0], [B.x0, (B.z0 + B.z1) / 2, d, Math.PI / 2], [B.x1, (B.z0 + B.z1) / 2, d, Math.PI / 2]]) { const t = bt.clone(); t.needsUpdate = true; t.repeat.set(len / 2, 1.5); const m = new THREE.Mesh(new THREE.PlaneGeometry(len, 3), new THREE.MeshBasicMaterial(LAY ? { color: 0x4fd8ff, opacity: 0.22, transparent: true, depthWrite: false, side: THREE.DoubleSide } : { map: t, transparent: true, depthWrite: false, side: THREE.DoubleSide })); m.position.set(x, y0 + 1.5, z); m.rotation.y = ry; B.grp.add(m); } }
             spawnBar.visible = false; scene.add(spawnBar); }
         // Angreifer-Spawns zur Wahl (Gebäude-Karten): 0 hoch (OG) · 1 Haupteingang (mittig) · 2 tief (Rand) → Index in spawnGroups.T · SETUP_T: Vorsprung der Defender nach der Kaufphase
         const TSPN = ['Dach-Luke', 'Verladedock', 'Tunnel'], TSPO = (() => { const g = spawnGroups.T; if (!LAY || g.length !== 3) return null; const top = Math.max(...g.map(s => s[0].l)), hi = g.findIndex(s => s[0].l === top); if (!top) return null;
             const lo = [0, 1, 2].filter(i => i !== hi), off = i => Math.abs(g[i].reduce((a, s) => a + s.c, 0) / g[i].length - COLS / 2); lo.sort((a, b) => off(a) - off(b)); return [hi, lo[0], lo[1]]; })();
         let tspPick = -1; // eigene Wahl (0–2), -1 = Spawn der Runde
         const tspIdx = () => TSPO && tspPick >= 0 ? TSPO[tspPick] : (G.tsp || 0) % Math.max(1, spawnGroups.T.length);
-        function placeAt(e, cells) { const c = rnd(cells), jit = Math.min(1, MS * 0.4); e.x = cx(c.c) + (Math.random() - 0.5) * jit; e.z = cx(c.r) + (Math.random() - 0.5) * jit; e.y = lvY(c.l); e.vy = 0; }
+        function placeAt(e, cells) { const c = rnd(cells), jit = Math.min(1, MS * 0.4); e.x = cx(c.c) + (Math.random() - 0.5) * jit; e.z = cx(c.r) + (Math.random() - 0.5) * jit; e.y = e.spawnY = lvY(c.l); e.vy = 0; }
         function pickTSpawn(i) { tspPick = i; if (player.team === 'T' && TSPO && G.state === 'freeze' && player.alive) { useSpawn('T', TSPO[i]); placeAt(player, spawnGroups.T[TSPO[i]]); } buyCache = ''; if (buyOpen) renderBuy(); }
         const coreOn = () => CORE.length > 0 && !DM.on && !GL.on && !DH.on && !EX.on; // Kaufphase: CT frei im Hauptgebäude (nie hinaus), T hinter ihrem Tor
         function goMsg() { if (!coreOn()) return; if (player.team === 'T') msg('Los!', 'Die Tore sind offen – rein ins Gebäude', 1.6); else if (player.team === 'CT') msg('Angreifer unterwegs', 'Haltet die Sites', 1.6); }
@@ -6243,7 +6302,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function useSpawn(tm, i) { const L = SPBG[tm]; if (!L.length) return; i = i % L.length; SPB[tm] = L[i]; L.forEach((B, j) => B.grp.visible = j === i); } // aktive Spawn-Zone (Barriere) wählen
         const barrierOn = () => !DM.on && !GL.on && !DH.on && !EX.on && !!SPB[player.team];
         function vFloorPaint(tex) { const g = tex.image.getContext('2d'); g.fillStyle = 'rgba(70,55,45,.16)'; g.fillRect(0, 0, 256, 256); for (let i = 0; i < 18; i++) { const x = Math.random() * 256, y = Math.random() * 256, r = 40 + Math.random() * 70, lt = i % 2; for (const [ox, oy] of [[0, 0], [256, 0], [-256, 0], [0, 256], [0, -256]]) { const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); gr.addColorStop(0, lt ? 'rgba(255,250,240,.07)' : 'rgba(40,30,20,.06)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); } } tex.needsUpdate = true; } // nahtlos gekachelt
-        if (DSV) vFloorPaint(texFloor);
+        if (DSV && !LAY) vFloorPaint(texFloor); // Gebäude-Karten: glatter Hallenboden
         const floor = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W, WORLD_D), new THREE.MeshLambertMaterial({ map: texFloor })); floor.rotation.x = -Math.PI / 2; floor.position.set(WORLD_W / 2, 0, WORLD_D / 2); floor.receiveShadow = true; scene.add(floor); mapMeshes.push(floor);
         function siteMarker(cells, letter) {
             let minR = 99, maxR = -1, minC = 99, maxC = -1; cells.forEach(({ r, c }) => { minR = Math.min(minR, r); maxR = Math.max(maxR, r); minC = Math.min(minC, c); maxC = Math.max(maxC, c); }); const w = (maxC - minC + 1) * MS, d = (maxR - minR + 1) * MS;
@@ -6301,20 +6360,22 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         } scene.add(new THREE.HemisphereLight(0xdbeaff, 0x9a7b4f, DSV ? 0.55 : 0.7)); // Comic-Look: Toon-Licht ist kräftiger
         const sun = new THREE.DirectionalLight(0xfff2d8, DSV ? 0.72 : 1.0); sun.position.set(WORLD_W / 2 + 50, 90, WORLD_D / 2 + 35); sun.target.position.set(WORLD_W / 2, 0, WORLD_D / 2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
         { const tod = (CMAP_INFO[MAPNAME] || {}).tod; if (tod) { /* Tageszeit eigener Karten: Abend / Nacht */ const night = tod === 2, hemi = scene.children.find(o => o.isHemisphereLight), tint = new THREE.Color(night ? 0x0a1022 : 0xff8a4a); sun.color.set(night ? 0x8fa8ff : 0xffa060); sun.intensity = night ? 0.35 : 0.8; if (hemi) hemi.intensity = night ? 0.3 : 0.55; scene.background.lerp(tint, night ? 0.85 : 0.45); scene.fog.color.lerp(tint, night ? 0.8 : 0.35); } }
-        Object.assign(sun.shadow.camera, { left: -80, right: 80, top: 80, bottom: -80, near: 20, far: 260 }); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -0.0005; if (LAY) sun.shadow.normalBias = 0.04; scene.add(sun, sun.target);
+        { const e = LAY ? Math.max(WORLD_W, WORLD_D) / 2 + 6 : 80; Object.assign(sun.shadow.camera, { left: -e, right: e, top: e, bottom: -e, near: 20, far: 260 }); } /* Halle: Schattenkarte genau über der Karte (feinere Kanten) */ sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -0.0005; if (LAY) { sun.shadow.normalBias = 0.09; sun.shadow.bias = -0.0012; } /* steiles Hallenlicht: keine Schatten-Streifen */ scene.add(sun, sun.target);
         if (LMOOD.on) { const hm = scene.children.find(o => o.isHemisphereLight), [sc, si, sx, sy, sz] = LMOOD.sun || [0xfff2d8, 0.9, 50, 80, 35]; sun.color.set(sc); sun.intensity = si; sun.position.set(WORLD_W / 2 + sx, sy, WORLD_D / 2 + sz); if (hm) hm.intensity = LMOOD.hemi || 0.4; // Lichtstimmung der Gebäude-Karte: tiefe Sonne, lange Schatten, dunklere Innenräume
             if (LMOOD.fog && scene.fog) { scene.fog.color.set(LMOOD.fog[0]); scene.fog.near = LMOOD.fog[1]; scene.fog.far = LMOOD.fog[2]; } if (LMOOD.bg) scene.background.set(LMOOD.bg); scene.add(new THREE.AmbientLight(0xffffff, 0.08)); }
 
-        function radarLay(g, w) { // Gebäude-Karte: Erdgeschoss grau, Obergeschoss heller darüber, Treppen dunkler, Sites bläulich
+        function radarLay(g, w, lev = 0) { // Gebäude-Karte je Ebene: aktuelle Etage hell, tiefere Etagen schwach darunter · Treppen dunkler, Sites bläulich, Luken gelb
             const px = (r, c) => { const x0 = Math.round(c * w), y0 = Math.round(r * w); return [x0, y0, Math.round((c + 1) * w) - x0, Math.round((r + 1) * w) - y0]; };
-            for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const ch = cell(r, c); if (solid(ch)) continue; g.fillStyle = ch === 'A' || ch === 'B' ? '#8197ad' : ch >= '1' && ch <= '5' ? '#7d8791' : '#9aa1a9'; g.fillRect(...px(r, c)); }
-            g.globalAlpha = 0.8; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const h = cellHi(r, c); if (!HI_WALK.includes(h)) continue; g.fillStyle = h === 'A' || h === 'B' ? '#a3bbd2' : '#c6ccd2'; g.fillRect(...px(r, c)); } g.globalAlpha = 1;
+            g.globalAlpha = lev ? 0.28 : 1; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const ch = cell(r, c); if (solid(ch)) continue; g.fillStyle = ch === 'A' || ch === 'B' ? '#8197ad' : ch >= '1' && ch <= '5' ? '#7d8791' : '#9aa1a9'; g.fillRect(...px(r, c)); }
+            if (lev >= 1) { g.globalAlpha = lev === 1 ? 1 : 0.28; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const h = cellHi(r, c); if (!HI_WALK.includes(h)) continue; g.fillStyle = h === 'A' || h === 'B' ? '#a3bbd2' : '#c6ccd2'; g.fillRect(...px(r, c)); } }
+            if (lev === 2) { g.globalAlpha = 1; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const t = cellTop(r, c); if (t === ' ' || t === '#') continue; g.fillStyle = t === 'H' ? '#f2c230' : '#d5dade'; g.fillRect(...px(r, c)); } }
+            g.globalAlpha = 1;
         }
         // Radar-Basis
         const radar = $('radar'), rctx = radar.getContext('2d'), RS = radar.width / WORLD_W;
         const radarBase = document.createElement('canvas'); radarBase.width = radarBase.height = radar.width;
         {
-            const g = radarBase.getContext('2d'); if (LAY) radarLay(g, MS * RS); else if (DSV) radarWalk(g, ROWS, COLS, cell, S * RS); else for (let r = 0; r < ROWS; r++)for (let c = 0; c < COLS; c++) { const ch = cell(r, c), x = c * S * RS, y = r * S * RS, w = S * RS; if (ch === '#') { g.fillStyle = DSV ? 'rgba(236,232,225,.72)' : 'rgba(232,201,138,.75)'; g.fillRect(x, y, w, w); } else if (ch === 'c' || ch === 'C' || ch === 'b') { g.fillStyle = DSV ? 'rgba(138,161,184,.8)' : 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'W') { g.fillStyle = 'rgba(160,200,230,.6)'; g.fillRect(x, y, w, w); } else if (ch === 's') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'A' || ch === 'B') { g.fillStyle = DSV ? 'rgba(138,161,184,.3)' : 'rgba(220,130,40,.45)'; g.fillRect(x, y, w, w); } else if (ch === 'h') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch >= '1' && ch <= '6') { g.fillStyle = 'rgba(185,195,205,.5)'; g.fillRect(x, y, w, w); } else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); } }
+            const g = radarBase.getContext('2d'); if (LAY) radarLay(g, MS * RS, 0); else if (DSV) radarWalk(g, ROWS, COLS, cell, S * RS); else for (let r = 0; r < ROWS; r++)for (let c = 0; c < COLS; c++) { const ch = cell(r, c), x = c * S * RS, y = r * S * RS, w = S * RS; if (ch === '#') { g.fillStyle = DSV ? 'rgba(236,232,225,.72)' : 'rgba(232,201,138,.75)'; g.fillRect(x, y, w, w); } else if (ch === 'c' || ch === 'C' || ch === 'b') { g.fillStyle = DSV ? 'rgba(138,161,184,.8)' : 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'W') { g.fillStyle = 'rgba(160,200,230,.6)'; g.fillRect(x, y, w, w); } else if (ch === 's') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'A' || ch === 'B') { g.fillStyle = DSV ? 'rgba(138,161,184,.3)' : 'rgba(220,130,40,.45)'; g.fillRect(x, y, w, w); } else if (ch === 'h') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch >= '1' && ch <= '6') { g.fillStyle = 'rgba(185,195,205,.5)'; g.fillRect(x, y, w, w); } else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); } }
             g.fillStyle = '#fff'; g.font = 'bold 13px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';[['A', siteCells.A], ['B', siteCells.B]].forEach(([l, cells]) => { const mx = cells.reduce((a, c) => a + cx(c.c), 0) / cells.length, mz = cells.reduce((a, c) => a + cx(c.r), 0) / cells.length; g.fillText(l, mx * RS, mz * RS); });
         }
 
@@ -7066,7 +7127,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             return G.m.get(Math.floor(x / S) * 100003 + Math.floor(z / S)) || NO_AABB; }
         const STEP_H = 0.75, BODY_H = 1.7; function blockedBy(e, b) {
             const y = e.y || 0;
-            if (y >= b.top - 0.02 && (!b.wall || b.flr)) return false;     // liegt ganz unter den Füßen (nur Wände unter dem Obergeschoss, flr) – andere Wände nie überspringen
+            if (y >= b.top - 0.02 && (!b.wall || b.flr || (TOPG && Math.abs(b.top - LRT) < 0.05))) return false; /* Wände auf Dachhöhe = begehbares Flachdach */     // liegt ganz unter den Füßen (nur Wände unter dem Obergeschoss, flr) – andere Wände nie überspringen
             if (y >= b.top - STEP_H && !b.wall) return false;              // Stufe: hochgleiten statt anstoßen
             if (b.bot !== undefined && y + BODY_H <= b.bot) return false;  // Steg/Brücke: drunter durchlaufen
             if (b.wall) return true;                                       // Wände nie erklimmen (kein Rausfallen aus der Karte)
@@ -7324,7 +7385,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e === player ? 'color:var(--acc);font-weight:bold' : ''}"><span>${i + 1}. ${e.name}${e === player ? ' (Du)' : ''}</span><b>${e.kills} / ${e.deaths}</b></div>`).join('')}
 <div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div></div><div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button><a class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" style="margin-top:16px">💬 Komm auf unseren Discord</a></div>`);
         }
-        function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; const sb = $('sub'); sb.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .55s cubic-bezier(.2, .8, .3, 1) both'; if (b) sb.style.animation = 'subin .45s .15s ease-out both'; } function placeTeam(team) { const gs = spawnGroups[team], gi = team === 'T' ? G.tsp || 0 : 0, pick = team === 'T' && TSPO; useSpawn(team, pick ? tspIdx() : gi); const pools = gs.length > 1 ? gs.map(g => shuffle(g.slice())) : [shuffle(spawnCells[team].slice())], used = pools.map(() => 0), jit = Math.min(1, MS * 0.4); let k = 0; for (const e of ents) { if (e.team !== team) continue; const pi = gs.length > 1 ? (pick ? (e.isPlayer ? tspIdx() : (gi + k++) % gs.length) : gi % gs.length) : 0, c = pools[pi][used[pi]++ % pools[pi].length]; /* T: eigener Spieler am gewählten Spawn, Bots über alle Spawns verteilt */ e.x = cx(c.c) + (Math.random() - 0.5) * jit; e.z = cx(c.r) + (Math.random() - 0.5) * jit; e.y = lvY(c.l); e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
+        function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; const sb = $('sub'); sb.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .55s cubic-bezier(.2, .8, .3, 1) both'; if (b) sb.style.animation = 'subin .45s .15s ease-out both'; } function placeTeam(team) { const gs = spawnGroups[team], gi = team === 'T' ? G.tsp || 0 : 0, pick = team === 'T' && TSPO; useSpawn(team, pick ? tspIdx() : gi); const pools = gs.length > 1 ? gs.map(g => shuffle(g.slice())) : [shuffle(spawnCells[team].slice())], used = pools.map(() => 0), jit = Math.min(1, MS * 0.4); let k = 0; for (const e of ents) { if (e.team !== team) continue; const pi = gs.length > 1 ? (pick ? (e.isPlayer ? tspIdx() : (gi + k++) % gs.length) : gi % gs.length) : 0, c = pools[pi][used[pi]++ % pools[pi].length]; /* T: eigener Spieler am gewählten Spawn, Bots über alle Spawns verteilt */ e.x = cx(c.c) + (Math.random() - 0.5) * jit; e.z = cx(c.r) + (Math.random() - 0.5) * jit; e.y = e.spawnY = lvY(c.l); e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
         // Spaß-Modus „Waffen": 1 = nur Pistolen (Primärwaffe weg), 2 = nur AWP (gratis für alle)
         function funLoadout(e) { if (!CFG.wpn) return; if (e.isPlayer) e.weapons[1] = CFG.wpn === 2 ? mkWeapon(W.awp) : null; else if (!e.remote) { e.weapon = CFG.wpn === 2 ? W.awp : e.weapon.slot === 1 ? (e.team === 'T' ? W.glock : W.usp) : e.weapon; e.ammo = e.weapon.mag; } }
         function botBuy(b) {
@@ -7735,6 +7796,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             if (p.dashT > 0) { const step = Math.min(dt, p.dashT); const n = Math.ceil(step * 60); for (let s = 0; s < n; s++) collideMove(p, p.dashVX * step / n, p.dashVZ * step / n); p.dashT -= dt; if (p.dashT <= 0) { p.vx = p.dashVX * 0.12; p.vz = p.dashVZ * 0.12; } }
             p.speed = Math.hypot(p.vx, p.vz);
             if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ const py0 = p.y; p.y += p.vy * dt; if (p.vy > 0) { const cb = ceilAt(p, py0); if (p.y + 1.85 > cb) { p.y = Math.max(py0, cb - 1.85); p.vy = 0; } } /* Kopf an der Decke */ const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { p.landK = clamp(-p.vy / 11, 0.25, 1); sfx('land'); shake = Math.max(shake, 0.02 * p.landK); fovKick = Math.max(fovKick, 1.5); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
+            if (G.state === 'freeze' && barrierOn() && p.spawnY !== undefined && p.y < p.spawnY - 0.05) { p.y = p.spawnY; p.vy = 0; p.onGround = true; } // Kaufphase: fest auf der Spawn-Ebene verankert (kein Durchfallen)
             const te = p.alive ? (p.crouch ? 1.15 : 1.65) : 0.35; /* Augenhöhe 1,65 m */ p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
             if (p.speed > 3 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.46 + Math.random() * 0.06; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
@@ -7897,7 +7959,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 });
                 h += `</div>`;
             });
-            const uc = SHOP.findIndex(c => c.ult); h += `</div>` + (p.team === 'T' && TSPO && G.state === 'freeze' ? `<div class="bult"><span>SPAWN</span>${TSPN.map((n, i) => `<div class="card${tspPick === i ? ' own' : ''}" data-sp="${i}"><b>${['▲', '■', '▼'][i]} ${n}</b><div class="cprice">${tspPick === i ? '✓ Gewählt' : ['Hoch', 'Mitte', 'Tief'][i]}</div></div>`).join('')}</div>` : '') + (uc < 0 || GL.on || DH.on || EX.on ? '' : `<div class="bult"><span>ULTIMATE</span>${SHOP[uc].items.map((it, ii) => `<div class="card${ultK() === it.u ? ' own' : ''}" data-b="${uc}-${ii}"><b>${it.label}</b><div class="cprice">${ultK() === it.u ? '✓ Gewählt' : ULTS[it.u][1]}</div></div>`).join('')}</div>`) + `<div class="bfoot"><span>🖱️ Klicken zum Kaufen${IS_TOUCH ? '' : ' · Rechtsklick verkaufen'}</span><span>[B] schließen</span></div>`;
+            const uc = SHOP.findIndex(c => c.ult); h += `</div>` + (uc < 0 || GL.on || DH.on || EX.on ? '' : `<div class="bult"><span>ULTIMATE</span>${SHOP[uc].items.map((it, ii) => `<div class="card${ultK() === it.u ? ' own' : ''}" data-b="${uc}-${ii}"><b>${it.label}</b><div class="cprice">${ultK() === it.u ? '✓ Gewählt' : ULTS[it.u][1]}</div></div>`).join('')}</div>`) + `<div class="bfoot"><span>🖱️ Klicken zum Kaufen${IS_TOUCH ? '' : ' · Rechtsklick verkaufen'}</span><span>[B] schließen</span></div>`;
             if (h !== buyCache) { buyCache = h; $('buy').innerHTML = h; }
         }
         function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); } function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
@@ -7930,14 +7992,20 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             const [ci, ii] = c.dataset.b.split('-').map(Number); sell(SHOP[ci].items[ii]);
         });
         $('buy').addEventListener('click', e => {
-            const sp = e.target.closest('[data-sp]'); if (sp) { pickTSpawn(+sp.dataset.sp); return; } // Angreifer-Spawn wählen
             const c = e.target.closest('[data-b]'); if (!c) return;
             const [ci, ii] = c.dataset.b.split('-').map(Number);
             buy(SHOP[ci].items[ii]);
         });
         const txtCache = {}; function setT(id, s) { if (txtCache[id] !== s) { txtCache[id] = s; $(id).innerHTML = s; } }
         const crossEls = $('cross').children;
-        function updateHUD() {
+        function updateTspUI() { // T: Spawn wählen während der 10-s-Kaufphase (Klick oder F1–F3)
+            const el = $('tspUI'), on = started && !gameEnded && TSPO && player.team === 'T' && player.alive && !NET.spec && G.state === 'freeze' && barrierOn();
+            if (!on) { if (el.style.display !== 'none') el.style.display = 'none'; return; }
+            const cur = TSPO.indexOf(tspIdx()), k = cur + '|' + Math.ceil(G.t); if (el.dataset.k === k && el.style.display === 'block') return; el.dataset.k = k; el.style.display = 'block';
+            el.innerHTML = '<h4>SPAWN WÄHLEN · ' + Math.max(0, Math.ceil(G.t)) + ' s</h4>' + TSPN.map((n, i) => '<div class="sp' + (i === cur ? ' on' : '') + '" data-sp="' + i + '"><b>' + ['▲', '■', '▼'][i] + ' ' + n + '</b><small>[F' + (i + 1) + '] · ' + ['Hoch', 'Mitte', 'Tief'][i] + '</small></div>').join('');
+        }
+        $('tspUI').addEventListener('click', e => { const sp = e.target.closest('[data-sp]'); if (sp) pickTSpawn(+sp.dataset.sp); });
+        function updateHUD() { updateTspUI();
             const p = player, w = p.weapons[p.slot];
             const hpv = Math.max(0, Math.ceil(p.health)), hpm = p.maxHP || 100;
             setT('hp', hpv); setT('ar', Math.ceil(p.armor));
@@ -8041,11 +8109,14 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); }
             }
         }
+        const radarLv = LAY ? [0, 1, 2].map(l => { const cv = document.createElement('canvas'); cv.width = cv.height = radar.width; const g = cv.getContext('2d'); radarLay(g, MS * RS, l); g.fillStyle = '#fff'; g.font = 'bold 13px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; [['A', siteCells.A], ['B', siteCells.B]].forEach(([n, cs]) => { if (cs.length) g.fillText(n, cs.reduce((q, o) => q + cx(o.c), 0) / cs.length * RS, cs.reduce((q, o) => q + cx(o.r), 0) / cs.length * RS); }); return cv; }) : null; // Minimap je Ebene (EG / OG / Dach)
         function radarXY(x, z) { return (GA.cur && RB) ? [(x - RB.minX) * RB.s, (z - RB.minZ) * RB.s] : [x * RS, z * RS]; }
         function drawRadar() {
             rctx.clearRect(0, 0, radar.width, radar.height);
-            rctx.drawImage(GA.cur && RB ? arenaBase : radarBase, 0, 0);
-            const dot = (e, col, r) => { const [x, y] = radarXY(e.x, e.z); rctx.fillStyle = col; rctx.beginPath(); rctx.arc(x, y, r, 0, Math.PI * 2); rctx.fill(); };
+            const rl = radarLv && !GA.cur ? lvOf(player.alive || !specTarget ? player : specTarget) : -1; // eigene Ebene → passende Minimap
+            rctx.drawImage(GA.cur && RB ? arenaBase : rl >= 0 ? radarLv[rl] : radarBase, 0, 0);
+            if (rl >= 0) { rctx.fillStyle = 'rgba(0,0,0,.55)'; rctx.fillRect(4, 4, 44, 16); rctx.fillStyle = '#f2c230'; rctx.font = 'bold 11px Arial'; rctx.textAlign = 'left'; rctx.textBaseline = 'middle'; rctx.fillText(['EG', 'OG', 'DACH'][rl], 9, 12); }
+            const dot = (e, col, r) => { const [x, y] = radarXY(e.x, e.z); rctx.globalAlpha = rl >= 0 && lvOf(e) !== rl ? 0.4 : 1; rctx.fillStyle = col; rctx.beginPath(); rctx.arc(x, y, r, 0, Math.PI * 2); rctx.fill(); rctx.globalAlpha = 1; }; // andere Ebene: blasser
             if (!GA.cur && (G.bomb.state === 'planted' || G.bomb.state === 'dropped')) { rctx.fillStyle = G.bomb.state === 'planted' && Math.sin(now * 10) > 0 ? '#ff3030' : '#ffd040'; const [bx, bz] = radarXY(G.bomb.x, G.bomb.z); rctx.fillRect(bx - 3, bz - 3, 6, 6); }
             for (const b of bots) { if (!b.alive) continue; const mate = GL.on ? (GL.myTeam && GL.myTeam.members.includes(b)) : !DM.on && b.team === player.team; if (mate) dot(b, '#6fa8ff', 3); else { const sp = G.spotted.get(b); if (GA.cur || (sp && now - sp < 2) || (now - b.lastShotT < 1.5 && Math.hypot(b.x - player.x, b.z - player.z) < 40)) dot(b, '#ff3b3b', 3); } }
             for (const pg of PINGS) { const [x, y] = radarXY(pg.sp.position.x, pg.sp.position.z); rctx.globalAlpha = Math.min(1, pg.t * 1.5); rctx.strokeStyle = rctx.fillStyle = pg.en ? '#ff3b3b' : '#ffd040'; rctx.lineWidth = 1.5; rctx.beginPath(); rctx.arc(x, y, 3 + (1 - pg.t % 1) * 6, 0, Math.PI * 2); rctx.stroke(); rctx.beginPath(); rctx.arc(x, y, 2.5, 0, Math.PI * 2); rctx.fill(); } rctx.globalAlpha = 1; // 📍 Pings pulsieren auf der Minimap
@@ -8079,6 +8150,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         });
         addEventListener('keydown', e => {
             if (!started || paused) return; keys[e.code] = true;
+            if (/^F[123]$/.test(e.code) && TSPO && player.team === 'T' && G.state === 'freeze') pickTSpawn(+e.code[1] - 1); // Spawn-Wahl per Taste
             if (e.code === BIND.board) { e.preventDefault(); renderBoard(); $('board').style.display = 'block'; }
             if (e.code === BIND.buy) { buyOpen ? closeBuy() : openBuy(); }
             if (e.code === 'KeyX') useUlt(); // Ultimate
@@ -11568,7 +11640,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             p.alive = true; p.health = 100; p.vx = p.vz = 0; p.vy = 0; p.pitch = 0; setScoped(false); p.weapons[5] = null; if (!p.weapons[2]) p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp);
             if (CFG.wpn) { funLoadout(p); p.slot = p.weapons[1] ? 1 : 2; updateVM(); }
             p.slot = p.weapons[1] ? 1 : 2; updateVM();
-            p.coreX = undefined; if (DM.on) dmRespawn(p); else { const gs = spawnGroups[p.team]; G.tsp = cellHash(G.round, G.score.CT * 31 + G.score.T * 7) % 3; if (gs.length > 1) { const gi = p.team === 'T' ? tspIdx() : 0; useSpawn(p.team, gi); placeAt(p, gs[gi]); } else { const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = lvY(c.l); } } $('dead').style.display = 'none';
+            p.coreX = undefined; if (DM.on) dmRespawn(p); else { const gs = spawnGroups[p.team]; G.tsp = cellHash(G.round, G.score.CT * 31 + G.score.T * 7) % 3; if (gs.length > 1) { const gi = p.team === 'T' ? tspIdx() : 0; useSpawn(p.team, gi); placeAt(p, gs[gi]); } else { const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = p.spawnY = lvY(c.l); } } $('dead').style.display = 'none';
             G.state = FREEZE_TIME > 0 ? 'freeze' : 'live'; G.t = FREEZE_TIME; G.timer = DM.on ? DM.time : ROUND_TIME; msg(DM.on ? '💀 Deathmatch' : 'Runde ' + G.round, DM.on ? 'Jeder gegen jeden · Waffen gratis' : '', 3); openBuy(true); if (NET.spec) specRound();
         }
         function applySnap(m) {
