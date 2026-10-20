@@ -2281,6 +2281,7 @@ body.mob #buy .card b { display: block; font-size: 11px; letter-spacing: .03em; 
 body.mob #buy .cstats, body.mob #buy .bfoot { display: none }
 body.mob #buy .cprice { font-size: 11px }
 body.mob #buy .bult { padding: 2px 10px 6px; gap: 6px } body.mob #buy .bult .card { flex: 1; min-width: 0 }
+body.mob #buy .bult > span { writing-mode: horizontal-tb; transform: none; align-self: center; font-size: 9px; letter-spacing: .12em } body.mob #buy .bult .card { padding: 4px 7px } body.mob #buy .card .bsk { display: none } body.mob #buy .bhead h3 { font-size: 14px } body.mob #buy .bmoney { font-size: 16px } body.mob #buy .card b, body.mob #buy .cprice { line-height: 1.2 } /* Handy: flacher, damit alles ohne Scrollen passt */
 html.dsV body:not(.mob) #buy .card { min-height: 56px }
 #rban { position: fixed; left: 50%; top: 33%; transform: translateX(-50%); z-index: 7; pointer-events: none; text-align: center; opacity: 0; --ac: #ff7a5c } #rban.mine { --ac: var(--hl, #e8c98a) }
 #rban b { display: block; font: 900 54px Rajdhani, sans-serif; letter-spacing: .32em; padding-left: .32em; color: #fff; text-shadow: 0 0 22px var(--ac), 0 3px 0 rgba(0,0,0,.45) }
