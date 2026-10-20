@@ -2266,6 +2266,7 @@ body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy 
 #kban .kb-em { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px } #kban .kb-em i { width: 13px; height: 13px; transform: rotate(45deg); border: 3px solid var(--hl, #e8c98a); background: rgba(0,0,0,.35) }
 #kban b { font: 700 15px 'Barlow Condensed', sans-serif; letter-spacing: .32em; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.9) }
 #ult { position: fixed; left: 50%; bottom: 168px; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; cursor: pointer; pointer-events: auto; padding: 4px } .mob #ult { bottom: 96px; max-width: 170px }
+#buy .card .bsk { display: block; margin-top: -2px; font: 500 10px Arial, sans-serif; letter-spacing: .04em; color: #8fa3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 #buy .bult { display: flex; gap: 8px; align-items: stretch; padding: 10px 14px 4px } #buy .bult > span { writing-mode: vertical-rl; transform: rotate(180deg); font: 600 11px 'Barlow Condensed', sans-serif; letter-spacing: .25em; opacity: .6; align-self: center } #buy .bult .card { flex: 1; min-height: 0; padding: 8px 10px } #buy .bult .card b { font-size: 13px }
 body.imm::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 4; box-shadow: inset 0 0 140px rgba(79,216,255,.32) } /* Bollwerk aktiv */
 #ult { flex-wrap: wrap; justify-content: center; max-width: 120px } #ult b { flex-basis: 100%; text-align: center; font: 600 10px 'Barlow Condensed', sans-serif; letter-spacing: .25em; text-transform: uppercase; opacity: .6; margin-top: 2px } #ult.rdy b { opacity: 1; color: #ffd24f }
@@ -5248,7 +5249,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Spielerkarten oben mit Namen und einheitlichen Initialen in Teamfarbe.":"Player cards at the top with names and uniform initials in team color.",
 "Beim Zuschauen und nach dem Tod liegen die Ult-Rauten nicht mehr unter der Zuschauer-Leiste.":"When spectating or dead, the ult diamonds no longer sit under the spectator bar.",
 "Aufgeräumte Auswahl: Fähigkeits-Stufen als drei Balken, weniger Ballast auf den Karten.":"Cleaner draft: ability levels as three bars, less clutter on the cards.",
-"Skin-Namen sind jetzt einheitlich weiß, die Seltenheit steht als kleines Label darunter – übersichtliches Raster.":"Skin names are now plain white, rarity is a small label below – in a tidy grid.",
+"Waffennamen im Kaufmenü sind jetzt einheitlich weiß statt in Skin-Farbe, der Skin-Name steht klein darunter.":"Weapon names in the buy menu are now plain white instead of skin-colored, the skin name is shown small below.",
+"🛒 KAUFMENÜ":"🛒 BUY MENU",
 "⚙️ SONSTIGES":"⚙️ OTHER",
 "Die Sprache wählst Du jetzt in den Einstellungen.":"You now choose the language in the settings.",
 "NEU · PATCH 3.6 „KARRIERE\"":"NEW · PATCH 3.6 “CAREER”",
@@ -7610,7 +7612,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                     if (it.w && !W[it.w].nade) {
                         const d = W[it.w], rpm = Math.round(60 / d.rate);
                         const sk = skinOf(it.w), skc = sk ? '#' + sk.c.toString(16).padStart(6, '0') : '';
-                        h += `<div class="card ${cls}" data-b="${ci}-${ii}"><b style="${sk ? 'color:' + skc : ''}">${sk ? sk.n : d.name}</b><div class="cstats">${bar(d.dmg * (d.pellets || 1), 120)}${bar(rpm, 750)}${bar(d.mag, 30)}</div><div class="cprice">${owned ? '✓ Gekauft' : '$ ' + price}</div></div>`;
+                        h += `<div class="card ${cls}" data-b="${ci}-${ii}"><b>${d.name}</b>${sk ? '<small class="bsk">' + escH(sk.n) + '</small>' : ''}<div class="cstats">${bar(d.dmg * (d.pellets || 1), 120)}${bar(rpm, 750)}${bar(d.mag, 30)}</div><div class="cprice">${owned ? '✓ Gekauft' : '$ ' + price}</div></div>`;
                     } else {
                         const cnt = it.w && W[it.w].nade ? p.nades[W[it.w].key] : 0;
                         h += `<div class="card ${cls}" data-b="${ci}-${ii}"><b>${it.label || W[it.w].name}${cnt ? ' <span style="color:#9fe08a">×' + cnt + '</span>' : ''}</b><div class="cprice">${it.u ? (owned ? '✓ Gewählt' : ULTS[it.u][1]) : owned ? (it.w && W[it.w].nade ? '✓ Max' : '✓ Gekauft') : '$ ' + price}</div></div>`;
@@ -7869,10 +7871,10 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             const coins = PRG.st.coins || 0, own = new Set(store.inv), ORDER = ['knife', 'awp', 'scout', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
             const list = SKINS.filter(sk => !sk.noCase && SHOP_PRICE[sk.r]).sort((a, b) => (ORDER.indexOf(a.w) - ORDER.indexOf(b.w)) || (b.r - a.r));
             const card = sk => { const has = own.has(sk.id), pr = skPrice(sk), ok = !has && coins >= pr;
-                return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b>${sk.n}</b><small class="skr"><i style="background:${RARITY[sk.r][0]}"></i>${RARITY[sk.r][1]}</small><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; };
+                return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; };
             const me = ACC ? ACC.u : null, com = SKINS.filter(sk => sk.u && !sk.off).sort((a, b) => (b.sold - a.sold) || (b.r - a.r));
             const ccard = sk => { const has = own.has(sk.id), pr = skPrice(sk), mine = sk.by === me;
-                return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b>${sk.n}</b><small class="skr"><i style="background:${RARITY[sk.r][0]}"></i>${RARITY[sk.r][1]}</small><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Aus dem Shop nehmen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; };
+                return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Aus dem Shop nehmen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; };
             // Reiter wie im Inventar: links Waffe bzw. Slot, rechts die passenden Karten
             const tabs = [['sk', '🔫 Skins'], ['cm', '🎨 Community'], ['fit', '👕 Kleidung']].map(([k, t]) => `<b class="${SHP.tab === k ? 'on' : ''}" data-stab="${k}">${t}</b>`).join('');
             const row = (attr, on, sw, name, sub, cnt) => `<div class="invw ${on ? 'on' : ''}" ${attr}><span class="sksw" style="${sw}"></span><div><b>${name}</b><span>${sub}</span></div><em>${cnt}</em></div>`;
@@ -8680,8 +8682,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚔️ GAUNTLET</p>
  Aufgeräumte Auswahl: Fähigkeits-Stufen als drei Balken, weniger Ballast auf den Karten.<br><br>
 
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🪙 SHOP</p>
- Skin-Namen sind jetzt einheitlich weiß, die Seltenheit steht als kleines Label darunter – übersichtliches Raster.<br><br>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🛒 KAUFMENÜ</p>
+ Waffennamen im Kaufmenü sind jetzt einheitlich weiß statt in Skin-Farbe, der Skin-Name steht klein darunter.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚙️ SONSTIGES</p>
  Die Sprache wählst Du jetzt in den Einstellungen.<br><br>
