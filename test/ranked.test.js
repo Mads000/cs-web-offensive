@@ -89,21 +89,21 @@ test('5v5 (2v2 im Test): Regeln, Bots und Rundenzählung werden geprüft', () =>
  let S = setup(4), r = queueAll(S, 'comp', 4); assert.strictEqual(r.go[0].map, 'de_frost', 'Mehrheit der Map-Stimmen');
  let ws = r.go.map((g, i) => enter(S, g, i)); send(S, ws[0], { type: 'start', map: 'de_frost', cfg: Object.assign({}, CFG.rules, { rounds: 3 }) });
  assert.strictEqual(S.RK.mt[r.go[0].id].st, 'invalid');
- // gültiges Match 8:3
+ // gültiges Match 5:3 (zuerst 5 Siege)
  S = setup(4); r = queueAll(S, 'comp', 4); ws = r.go.map((g, i) => enter(S, g, i));
  const host = ws[0], hostTeam = r.go[0].team;
- send(S, host, { type: 'start', map: r.go[0].map, cfg: CFG.rules }); send(S, host, { type: 'roster', bots: [] });
+ send(S, host, { type: 'start', map: r.go[0].map, cfg: r.go[0].rules }); send(S, host, { type: 'roster', bots: [] });
  assert.strictEqual(send(S, ws[1], { type: 'team', team: 'T' }), false, 'Teamwechsel blockiert');
  assert.strictEqual(JSON.parse(send(S, ws[1], { type: 'hello', team: 'XX' })).team, r.go[1].team, 'Team vom Server');
  const other = hostTeam === 'CT' ? 'T' : 'CT';
- for (let i = 0; i < 11; i++) { T += 9000; send(S, host, { type: 'end', w: i < 3 ? other : hostTeam }); }
- T += 1000; send(S, host, { type: 'over', sc: { [hostTeam]: 8, [other]: 3 } });
+ for (let i = 0; i < 8; i++) { T += 9000; send(S, host, { type: 'end', w: i < 3 ? other : hostTeam }); }
+ T += 1000; send(S, host, { type: 'over', sc: { [hostTeam]: 5, [other]: 3 } });
  const mt = S.RK.mt[r.go[0].id]; assert.strictEqual(mt.st, 'rated');
  const win = mt.tm[hostTeam === 'CT' ? 0 : 1], lose = mt.tm[hostTeam === 'CT' ? 1 : 0];
  for (const k of win) assert.ok(mt.ch[k][1] > mt.ch[k][0]); for (const k of lose) assert.ok(mt.ch[k][1] < mt.ch[k][0]);
  // zu schnelle Runden → ungültig
  S = setup(4); r = queueAll(S, 'comp', 4); ws = r.go.map((g, i) => enter(S, g, i));
- send(S, ws[0], { type: 'start', map: r.go[0].map, cfg: CFG.rules }); T += 9000; send(S, ws[0], { type: 'end', w: 'CT' }); T += 500; send(S, ws[0], { type: 'end', w: 'CT' });
+ send(S, ws[0], { type: 'start', map: r.go[0].map, cfg: r.go[0].rules }); T += 9000; send(S, ws[0], { type: 'end', w: 'CT' }); T += 500; send(S, ws[0], { type: 'end', w: 'CT' });
  assert.strictEqual(S.RK.mt[r.go[0].id].st, 'invalid');
  CFG.team.comp = 5;
 });
@@ -158,7 +158,7 @@ test('2v2: eigener Modus & Rating, Map-Bann, Team verlässt → Niederlage', () 
  const S = setup(4), r = queueAll(S, 'duo', 4); // alle stimmen de_frost
  assert.strictEqual(r.go[0].map, 'de_frost'); assert.strictEqual(r.go[0].n, 4);
  const ws = r.go.map((g, i) => enter(S, g, i)), host = ws[0], ht = r.go[0].team;
- send(S, host, { type: 'start', map: r.go[0].map, cfg: CFG.rules });
+ send(S, host, { type: 'start', map: r.go[0].map, cfg: r.go[0].rules });
  const mine = ws.filter((w, i) => r.go[i].team === ht), opp = ws.filter((w, i) => r.go[i].team !== ht);
  send(S, mine[1], { type: 'dmg', to: opp[0].pid, d: 999 }); // Treffer → ADR-Statistik (gedeckelt)
  send(S, host, { type: 'hdmg', d: 60 }); send(S, opp[0], { type: 'botdmg', id: 3, from: opp[1].pid, d: 50 }); // Schaden an Bots zählt (fremde pid nicht)
@@ -250,16 +250,16 @@ test('Matchmaking: Gruppen werden nie getrennt', () => {
 test('Statistik: Kills, Assists, HS, KAST & Trades werden vom Server gezählt und ins Profil übernommen', () => {
  CFG.team.comp = 2; const S = setup(4), r = queueAll(S, 'comp', 4), ws = r.go.map((g, i) => enter(S, g, i)), host = ws[0], hT = r.go[0].team, oT = hT === 'CT' ? 'T' : 'CT';
  const A = ws.filter((_, i) => r.go[i].team === hT), B = ws.filter((_, i) => r.go[i].team !== hT);
- send(S, host, { type: 'start', map: r.go[0].map, cfg: CFG.rules }); send(S, host, { type: 'roster', bots: [] });
+ send(S, host, { type: 'start', map: r.go[0].map, cfg: r.go[0].rules }); send(S, host, { type: 'roster', bots: [] });
  T += 9000; send(S, A[0], { type: 'dmg', to: B[0].pid, d: 40 });
  send(S, B[0], { type: 'kf', ap: A[1].pid, hs: true }); send(S, B[0], { type: 'kf', ap: A[1].pid, hs: true }); // doppelt → zählt einmal
  T += 6000; send(S, A[1], { type: 'kf', ap: B[1].pid }); T += 2000; send(S, B[1], { type: 'kf', ap: A[0].pid }); // A1 wird von A0 getradet, B0 nicht (> 5 s)
- send(S, host, { type: 'end', w: hT }); for (let i = 0; i < 7; i++) { T += 9000; send(S, host, { type: 'end', w: hT }); }
- T += 1000; send(S, host, { type: 'over', sc: { [hT]: 8, [oT]: 0 } });
+ send(S, host, { type: 'end', w: hT }); for (let i = 0; i < 4; i++) { T += 9000; send(S, host, { type: 'end', w: hT }); }
+ T += 1000; send(S, host, { type: 'over', sc: { [hT]: 5, [oT]: 0 } });
  const mt = S.RK.mt[r.go[0].id], st = k => mt.stats[k.acc]; assert.strictEqual(mt.st, 'rated');
- assert.deepStrictEqual([st(A[1]).k, st(A[1]).d, st(A[1]).hs, st(A[1]).kast], [1, 1, 1, 8]); assert.deepStrictEqual([st(A[0]).k, st(A[0]).a, st(A[0]).d], [1, 1, 0]);
- assert.deepStrictEqual([st(B[0]).k, st(B[0]).d, st(B[0]).kast, st(B[0]).rd], [0, 1, 7, 8]);
- const sb = host.last('rkdone').sb; assert.strictEqual(sb.rows.length, 4); assert.ok(sb.rows.every(x => typeof x.ch === 'number')); assert.strictEqual(sb.rows.find(x => x.n.toLowerCase() === B[0].acc).kast, 88);
+ assert.deepStrictEqual([st(A[1]).k, st(A[1]).d, st(A[1]).hs, st(A[1]).kast], [1, 1, 1, 5]); assert.deepStrictEqual([st(A[0]).k, st(A[0]).a, st(A[0]).d], [1, 1, 0]);
+ assert.deepStrictEqual([st(B[0]).k, st(B[0]).d, st(B[0]).kast, st(B[0]).rd], [0, 1, 4, 5]);
+ const sb = host.last('rkdone').sb; assert.strictEqual(sb.rows.length, 4); assert.ok(sb.rows.every(x => typeof x.ch === 'number')); assert.strictEqual(sb.rows.find(x => x.n.toLowerCase() === B[0].acc).kast, 80);
  const pr = S.rk.pub(A[1].acc).m.comp.st; assert.deepStrictEqual([pr.n, pr.kd, pr.hs, pr.kast], [1, 1, 100, 100]); assert.strictEqual(S.rk.pub('niemand').m.comp, undefined);
  CFG.team.comp = 5;
 });
@@ -268,10 +268,10 @@ test('Map-Pool: offizielle Community-Map, Kartendaten vom Server, Host muss gena
  let S = mk(), ws = [0, 1, 2, 3].map(() => fakeWs()); ws.forEach((x, i) => S.rk.queueMsg(x, { type: 'rkq', tok: 't' + i, mode: 'comp' })); S.rk.tick(T);
  let f = ws[0].last('rkfound'); assert.ok(f.maps.includes('pub_x')); assert.strictEqual(f.names.pub_x, 'X-Map');
  ws.forEach(x => S.rk.queueMsg(x, { type: 'rkacc', id: f.id, ok: 1, map: 'pub_x' })); let go = ws.map(x => x.last('rkgo')); assert.strictEqual(go[0].map, 'pub_x'); assert.strictEqual(go[0].cmap.g.length, 28);
- let c = go.map((x, i) => enter(S, x, i)); send(S, c[0], { type: 'start', map: 'pub_x', cfg: CFG.rules }); assert.strictEqual(S.RK.mt[go[0].id].st, 'invalid', 'ohne Kartendaten');
+ let c = go.map((x, i) => enter(S, x, i)); send(S, c[0], { type: 'start', map: 'pub_x', cfg: go[0].rules }); assert.strictEqual(S.RK.mt[go[0].id].st, 'invalid', 'ohne Kartendaten');
  S = mk(); ws = [0, 1, 2, 3].map(() => fakeWs()); ws.forEach((x, i) => S.rk.queueMsg(x, { type: 'rkq', tok: 't' + i, mode: 'comp' })); S.rk.tick(T); f = ws[0].last('rkfound');
  ws.forEach(x => S.rk.queueMsg(x, { type: 'rkacc', id: f.id, ok: 1, map: 'pub_x' })); go = ws.map(x => x.last('rkgo')); c = go.map((x, i) => enter(S, x, i));
- send(S, c[0], { type: 'start', map: 'pub_x', cmap: go[0].cmap, cfg: CFG.rules }); assert.strictEqual(S.RK.mt[go[0].id].st, 'live');
+ send(S, c[0], { type: 'start', map: 'pub_x', cmap: go[0].cmap, cfg: go[0].rules }); assert.strictEqual(S.RK.mt[go[0].id].st, 'live');
  CFG.team.comp = 5;
 });
 
@@ -285,7 +285,7 @@ test('Unranked: eigene Schlange, Bots nach 15 s nach Spielerstärke, Ranked-Rati
  S.rk.queueMsg(a, { type: 'rkacc', id: f.id, ok: 1 }); S.rk.queueMsg(b, { type: 'rkacc', id: f.id, ok: 1 }); const go = [a.last('rkgo'), b.last('rkgo')];
  const ws = go.map((g, i) => enter(S, g, i)), host = ws[0], L = host.rk, hT = go[0].team, oT = hT === 'CT' ? 'T' : 'CT';
  send(S, host, { type: 'start', map: go[0].map, cfg: L.rules }); send(S, host, { type: 'roster', bots: L.side.flatMap((sd, i) => Array.from({ length: L.nb[i] }, (_, j) => ({ n: 'Bot' + i + j, t: sd }))) });
- for (let i = 0; i < 8; i++) { T += 9000; send(S, host, { type: 'end', w: hT }); } T += 1000; send(S, host, { type: 'over', sc: { [hT]: 8, [oT]: 0 } });
+ for (let i = 0; i < 5; i++) { T += 9000; send(S, host, { type: 'end', w: hT }); } T += 1000; send(S, host, { type: 'over', sc: { [hT]: 5, [oT]: 0 } });
  const mt = S.RK.mt[go[0].id]; assert.strictEqual(mt.st, 'rated'); assert.ok(!mt.ch, 'keine sichtbare Ratingänderung');
  for (const k of ['p0', 'p1']) { assert.strictEqual(S.RK.p[k].m.comp.r, 1000); assert.strictEqual(S.RK.p[k].m.comp.n, 0); assert.strictEqual(S.RK.p[k].u.n, 1); }
  const pr = S.rk.profile({ name: 'P0' }); assert.strictEqual(pr.ur.n, 1); assert.strictEqual(pr.ur.r, undefined, 'Stärke bleibt versteckt'); assert.strictEqual(host.last('rkdone').me, null);

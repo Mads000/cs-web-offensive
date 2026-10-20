@@ -24,7 +24,7 @@ const CFG = {
  v1Wins: 5, minRoundMs: 8000, minFirstMs: 5000, minDuelMs: 4000,
  // lückenlose Grenzen: Rang gilt ab „lo“ bis zur nächsten Grenze
  ranks: [[-Infinity, 'Recruit'], [650, 'Contender I'], [750, 'Contender II'], [850, 'Challenger I'], [950, 'Challenger II'], [1050, 'Elite I'], [1150, 'Elite II'], [1250, 'Master I'], [1350, 'Master II'], [1500, 'CLUTCH Elite']],
- keepMatches: 3000, hist: 20,
+ keepMatches: 3000, hist: 20, firstTo5: ['comp', 'ur'],
  party: { max: 5, invMin: 5, offSec: 120, tradeMs: 5000 } // Gruppe: max. Größe, Einladung gültig (Min), getrennte Mitglieder fliegen nach 120 s raus (nicht während eines Matches), Trade-Fenster für KAST
 };
 const MODES = ['comp', 'duo', 'v1'], QMODES = [...MODES, 'ur', 'qdm', 'qgl', 'qv1'], TEAMMODE = md => md !== 'v1' && md !== 'qv1' && md !== 'qgl', QUICK = md => /^q(dm|gl|v1)$/.test(md), VOTE = md => TEAMMODE(md); // QUICK = Matchmaking ohne Rang & ohne Ergebnisprüfung; VOTE = Map-Voting // comp & duo = Wettkampf (Bombe), v1 = Arena-Duell; ur = Unranked (eigene Schlange, kein Rang)
@@ -144,7 +144,8 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   if (BAN.get(key) > Date.now()) out.ban = BAN.get(key);
   return out;
  }
- function matchView(mt, key) {
+ const psPub = p => p ? { k: p.k, d: p.d, a: p.a, adr: p.adr } : null; // eigene Match-Werte fürs öffentliche Profil (Letzte Matches)
+function matchView(mt, key) {
   const side = mt.tm[0].includes(key) ? 0 : 1, c = mt.ch && mt.ch[key];
   return { id: mt.id, mode: mt.mode, t: mt.t1 || mt.t, map: mt.map, st: mt.st, why: mt.why, res: mt.res === undefined ? null : side === 0 ? mt.res : 1 - mt.res, sc: mt.sc ? (side === 0 ? mt.sc : [mt.sc[1], mt.sc[0]]) : null, d: c ? c[1] - c[0] : 0, r: c ? c[1] : null, ps: mt.stats ? mt.stats[key] : null, opp: [...mt.tm[1 - side].map(k => (RK.p[k] || {}).n || k), ...(mt.nb && mt.nb[1 - side] ? ['Bot ×' + mt.nb[1 - side]] : [])], bots: mt.nb ? mt.nb[0] + mt.nb[1] : 0, blv: mt.blv || 0 };
  }
@@ -154,8 +155,8 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
  const aggView = A => !A || !A.n ? { n: 0 } : { n: A.n, adr: A.rd ? Math.round(A.dmg / A.rd) : null, kd: A.d ? Math.round(A.k / A.d * 100) / 100 : null, k: A.k, d: A.d, a: A.a, hs: A.k ? Math.round(A.hs / A.k * 100) : null, kast: A.krd ? Math.round(A.kast / A.krd * 100) : null };
  function pub(key) {
   const out = { season: RK.season, m: {} }; if (!RK.p[key]) return out; const p = rec(key);
-  for (const md of MODES) { const M = p.m[md], placed = M.pl >= M.pq; out.m[md] = { placed, rank: placed ? rankOf(M.r).name : null, r: placed ? M.r : null, pl: M.pl, pq: M.pq, w: M.w, l: M.l, d: M.d, st: aggView((p.agg || {})[md]), hist: M.h.slice(0, 5).map(id => RK.mt[id]).filter(Boolean).map(mt => { const v = matchView(mt, key); return { mode: v.mode, t: v.t, map: v.map, st: v.st, res: v.res, sc: v.sc, d: v.d }; }) }; }
-  if (p.u) out.ur = { w: p.u.w, l: p.u.l, d: p.u.d, st: aggView((p.agg || {}).ur), hist: p.u.h.slice(0, 5).map(id => RK.mt[id]).filter(Boolean).map(mt => { const v = matchView(mt, key); return { mode: v.mode, t: v.t, map: v.map, st: v.st, res: v.res, sc: v.sc, d: 0 }; }) };
+  for (const md of MODES) { const M = p.m[md], placed = M.pl >= M.pq; out.m[md] = { placed, rank: placed ? rankOf(M.r).name : null, r: placed ? M.r : null, pl: M.pl, pq: M.pq, w: M.w, l: M.l, d: M.d, st: aggView((p.agg || {})[md]), hist: M.h.slice(0, 10).map(id => RK.mt[id]).filter(Boolean).map(mt => { const v = matchView(mt, key); return { mode: v.mode, t: v.t, map: v.map, st: v.st, res: v.res, sc: v.sc, d: v.d, ps: psPub(v.ps) }; }) }; }
+  if (p.u) out.ur = { w: p.u.w, l: p.u.l, d: p.u.d, st: aggView((p.agg || {}).ur), hist: p.u.h.slice(0, 10).map(id => RK.mt[id]).filter(Boolean).map(mt => { const v = matchView(mt, key); return { mode: v.mode, t: v.t, map: v.map, st: v.st, res: v.res, sc: v.sc, d: 0, ps: psPub(v.ps) }; }) };
   return out;
  }
  // ── Gruppen (Party): Leiter lädt Freunde ein, startet/bricht die Suche ab; alles läuft hier auf dem Server ──
@@ -279,7 +280,7 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   const id = now.toString(36) + '-' + crypto.randomBytes(4).toString('hex'), keys = [...A, ...B].map(p => p.key), size = CFG.team[md], nb = [size - A.length, size - B.length];
   if (QUICK(md)) { nb[0] = nb[1] = 0; } const fill = md === 'qdm' || md === 'qgl' ? 1 : 0; // Matchmaking: Bot-Zahl regelt das Spiel selbst (DM füllt auf 5 je Seite, Gauntlet füllt Teams)
   const botR = nb[0] + nb[1] || fill ? Math.round(avg([...A, ...B].map(p => p.r))) : null, blv = botR === null ? 0 : rankOf(botR).i + 1;
-  const rules = nb[0] + nb[1] || fill ? Object.assign({}, CFG.rules, { bots: 1, teamSize: CFG.team[md === 'qgl' ? 'comp' : md] || 5, blv }) : CFG.rules;
+  const rules = Object.assign({}, CFG.rules, CFG.firstTo5.includes(md) ? { rounds: 9 } : {}, nb[0] + nb[1] || fill ? { bots: 1, teamSize: CFG.team[md === 'qgl' ? 'comp' : md] || 5, blv } : {}); // 5v5 Ranked & Unranked: wer zuerst 5 Runden gewinnt
   const L = { id, mode: md, st: 'accept', tm: [A.map(p => p.key), B.map(p => p.key)], keys, nb, botR, rules, q: {}, qws: {}, acc: new Set(), dec: new Set(), votes: {}, bans: {}, t: now, maps: pool() };
   for (const p of [...A, ...B]) { Q.delete(p.key); BY.set(p.key, id); L.q[p.key] = p; L.qws[p.key] = p.ws; tx(p.ws, { type: 'rkfound', id, mode: md, maps: VOTE(md) ? L.maps : null, names: VOTE(md) ? Object.fromEntries(L.maps.filter(k => mapData(k)).map(k => [k, mapData(k).n])) : null, sec: CFG.acceptSec, n: keys.length, bots: nb[0] + nb[1], blv }); }
   LIVE.set(id, L);
@@ -328,8 +329,8 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   if (TEAMMODE(L.mode)) {
    if (m.type === 'start') { const c = m.cfg || {}; if (m.dm || (L.cg ? !(m.cmap && Array.isArray(m.cmap.g) && m.cmap.g.join() === L.cg) : m.cmap) || m.map !== L.map || Object.keys(L.rules).some(k => c[k] !== L.rules[k])) return bad('Ungültige Match-Einstellungen'); if (!L.started) { if (connected(L).size < L.keys.length) return bad('Start vor Beitritt aller Spieler'); L.started = true; L.lastEv = now; } }
    if (m.type === 'roster') { const b = Array.isArray(m.bots) ? m.bots : []; if (L.side.some((sd, i) => b.filter(x => x && x.t === sd).length !== L.nb[i]) || b.length !== L.nb[0] + L.nb[1]) return bad('Falsche Anzahl Bots'); L.bt = Object.fromEntries(b.map(x => [String(x.n), L.side.indexOf(x.t)])); } // nur die vom Server vorgesehenen Auffüll-Bots
-   if (m.type === 'end' && L.started) { const i = L.side.indexOf(m.w), W = Math.floor(CFG.rules.rounds / 2) + 1; if (i < 0 || now - L.lastEv < (L.sc[0] + L.sc[1] ? CFG.minRoundMs : CFG.minFirstMs) || Math.max(...L.sc) >= W || L.sc[0] + L.sc[1] >= CFG.rules.rounds) return bad('Unplausible Rundenfolge'); L.sc[i]++; L.lastEv = now; roundEnd(L); }
-   if (m.type === 'over' && L.started) { const sc = m.sc || {}, W = Math.floor(CFG.rules.rounds / 2) + 1; if (sc.CT !== L.sc[0] || sc.T !== L.sc[1] || (Math.max(...L.sc) < W && L.sc[0] + L.sc[1] < CFG.rules.rounds)) return bad('Endstand passt nicht zu den gezählten Runden'); end(L, 'rated', null, L.sc[0] > L.sc[1] ? 1 : L.sc[0] < L.sc[1] ? 0 : 0.5); }
+   if (m.type === 'end' && L.started) { const i = L.side.indexOf(m.w), W = Math.floor(L.rules.rounds / 2) + 1; if (i < 0 || now - L.lastEv < (L.sc[0] + L.sc[1] ? CFG.minRoundMs : CFG.minFirstMs) || Math.max(...L.sc) >= W || L.sc[0] + L.sc[1] >= L.rules.rounds) return bad('Unplausible Rundenfolge'); L.sc[i]++; L.lastEv = now; roundEnd(L); }
+   if (m.type === 'over' && L.started) { const sc = m.sc || {}, W = Math.floor(L.rules.rounds / 2) + 1; if (sc.CT !== L.sc[0] || sc.T !== L.sc[1] || (Math.max(...L.sc) < W && L.sc[0] + L.sc[1] < L.rules.rounds)) return bad('Endstand passt nicht zu den gezählten Runden'); end(L, 'rated', null, L.sc[0] > L.sc[1] ? 1 : L.sc[0] < L.sc[1] ? 0 : 0.5); }
   } else {
    if (m.type === 'glstart') {
     const pid2acc = new Map(r.clients.map(c => [c.pid, c.acc])), T = Array.isArray(m.teams) ? m.teams : [], mem = T.map(t => (t.members || []).map(x => pid2acc.get(x.p)));

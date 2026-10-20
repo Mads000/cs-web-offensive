@@ -16,5 +16,8 @@
   },
   "dependencies": {
     "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "eslint": "^10.13.0"
   }
 }

@@ -1895,19 +1895,15 @@
             }
         }
 
-        @keyframes msgin {
-            0% {
-                opacity: 0;
-                transform: translateX(-50%) scale(1.25);
-                letter-spacing: .3em;
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateX(-50%) scale(1);
-                letter-spacing: .08em;
-            }
+        @keyframes msgin { /* Texte fliegen ein: aus der Unschärfe, groß und weit gesperrt → sitzt mit kurzem Nachfedern */
+            0% { opacity: 0; transform: translateX(-50%) translateY(-22px) scale(1.6); letter-spacing: .5em; filter: blur(8px) }
+            55% { opacity: 1; transform: translateX(-50%) translateY(2px) scale(.96); letter-spacing: .02em; filter: blur(0) }
+            75% { transform: translateX(-50%) translateY(0) scale(1.03) }
+            100% { opacity: 1; transform: translateX(-50%) scale(1); letter-spacing: .08em; filter: blur(0) }
         }
+        @keyframes subin { 0% { opacity: 0; transform: translateX(-50%) translateY(14px); clip-path: inset(0 50% 0 50%) } 100% { opacity: 1; transform: translateX(-50%); clip-path: inset(0 0 0 0) } }
+        @keyframes deadin { 0% { opacity: 0; transform: translateX(-50%) translateY(30px) scale(.9) } 70% { opacity: 1; transform: translateX(-50%) translateY(-3px) scale(1.02) } 100% { opacity: 1; transform: translateX(-50%) } }
+        #dead > div { animation: deadin .45s cubic-bezier(.2, .9, .3, 1.2) both }
 
         .strow {
             display: flex;
@@ -2151,7 +2147,7 @@
         }
 
         .mob #top {
-            transform: scale(.72);
+            transform: translateX(-50%) scale(.72);
             transform-origin: top center;
         }
 
@@ -2245,11 +2241,27 @@ body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy 
 #wlist .wl { display: flex; align-items: center; gap: 8px; font: 600 13px 'Barlow Condensed', sans-serif; letter-spacing: .14em; text-transform: uppercase; opacity: .4; padding: 2px 10px 2px 0; border-right: 2px solid transparent }
 #wlist .wl.on { opacity: 1; border-right-color: var(--hl) } #wlist .wl i { font-style: normal; font-size: 10px; opacity: .6 } #wlist .nd { display: flex; gap: 6px } #wlist .nd .wl { padding-right: 6px; font-size: 11px }
 #kban { position: fixed; left: 50%; top: 63%; transform: translateX(-50%); pointer-events: none; z-index: 6; text-align: center; opacity: 0 } #kban.on { animation: kban 1.5s ease-out forwards }
-#rban { position: fixed; left: 50%; top: 13%; transform: translateX(-50%); z-index: 7; pointer-events: none; text-align: center; opacity: 0; --ac: #ff7a5c } #rban.mine { --ac: var(--hl, #e8c98a) }
+.rcwrap { width: min(780px, 94vw); margin: 6px auto 10px; display: flex; flex-direction: column; gap: 5px; max-height: 58vh; overflow-y: auto; text-align: left }
+.rcm { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding: 8px 12px; background: rgba(255,255,255,.04); border-left: 4px solid #6b7785; font-size: 13px; color: #cfd8e3 }
+.rcm.w { border-color: #5fd38a } .rcm.l { border-color: #ff6b6b } .rcm.d { border-color: #e8c98a }
+.rcm > b { min-width: 118px; font: 700 15px Rajdhani, sans-serif; letter-spacing: .1em; color: #fff } .rcm.w > b { color: #5fd38a } .rcm.l > b { color: #ff6b6b }
+.rcm em { font: 700 15px Rajdhani, sans-serif; font-style: normal; color: #fff; min-width: 46px } .rcm span b { color: #fff } .rcm .rcd { font-weight: 700; color: var(--hl, #e8c98a) } .rcm small { margin-left: auto; color: #8fa3b8 }
+.pptabs { display: flex; gap: 4px; margin: 4px 0 10px } .pptabs b { flex: 1; text-align: center; padding: 6px; cursor: pointer; font: 700 12px Rajdhani, sans-serif; letter-spacing: .14em; color: #8fa3b8; border-bottom: 2px solid rgba(255,255,255,.1) } .pptabs b.on { color: #fff; border-color: var(--acc, #ff7a5c) }
+.inv .skr { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #8fa3b8 } .inv .skr i { width: 8px; height: 8px; border-radius: 2px; display: inline-block }
+#shopBox .invrow { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; align-content: start } #shopBox .inv { min-width: 0 !important }
+.glv { display: flex; gap: 5px; width: 64%; margin-bottom: 2px } .glv em { flex: 1; height: 5px; border-radius: 2px; background: rgba(255,255,255,.12) } .glv em.on { background: var(--uc, #8fa3b8); box-shadow: 0 0 6px var(--uc, #8fa3b8) }
+.pv s { display: block; max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; text-align: center; font: 600 9px Rajdhani, sans-serif; letter-spacing: .03em; color: #e8eef5; text-shadow: 0 1px 2px #000; margin-top: 1px }
+.pv .avi.ini { background: #17202b !important; color: var(--pc, #fff); text-shadow: none } .pv.dd s { opacity: .6 }
+.mob .pv s { max-width: 30px; font-size: 7px }
+.mob #money { left: max(16px, env(safe-area-inset-left)) !important; right: auto !important; bottom: 10px !important }
+.mob #br { right: auto !important; left: 50% !important; bottom: 50px !important; transform: translateX(-50%) scale(.55) !important; transform-origin: bottom center !important; text-align: center }
+.mob #timer, .mob #score, .mob #roundlbl { text-shadow: 0 1px 3px #000, 0 0 8px rgba(0,0,0,.8) }
+.mob #tWalk { left: max(24px, env(safe-area-inset-left)); bottom: 236px; } .mob #tWalk.on { background: #ffd040 !important; color: #111 !important; border-color: #ffd040 !important; box-shadow: 0 0 12px rgba(255,208,64,.6) }
+#rban { position: fixed; left: 50%; top: 33%; transform: translateX(-50%); z-index: 7; pointer-events: none; text-align: center; opacity: 0; --ac: #ff7a5c } #rban.mine { --ac: var(--hl, #e8c98a) }
 #rban b { display: block; font: 900 54px Rajdhani, sans-serif; letter-spacing: .32em; padding-left: .32em; color: #fff; text-shadow: 0 0 22px var(--ac), 0 3px 0 rgba(0,0,0,.45) }
 #rban span { display: inline-block; margin-top: 2px; padding: 3px 16px; font: 700 15px Rajdhani, sans-serif; letter-spacing: .14em; color: #111; background: var(--ac); clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%) }
 #rban.aw-ace b { font-size: 68px } #rban.on { animation: rban 3.2s ease-out forwards } @keyframes rban { 0% { opacity: 0; transform: translateX(-50%) scale(1.5) } 10% { opacity: 1; transform: translateX(-50%) scale(1) } 82% { opacity: 1 } 100% { opacity: 0; transform: translateX(-50%) translateY(-10px) } }
-.mob #rban { top: 16% } .mob #rban b { font-size: 34px } .mob #rban.aw-ace b { font-size: 42px } .mob #rban span { font-size: 12px }
+.mob #rban { top: 30% } .mob #rban b { font-size: 34px } .mob #rban.aw-ace b { font-size: 42px } .mob #rban span { font-size: 12px }
 @keyframes kban { 0% { opacity: 0; transform: translateX(-50%) scale(1.5) } 12% { opacity: 1; transform: translateX(-50%) scale(1) } 75% { opacity: 1; transform: translateX(-50%) } 100% { opacity: 0; transform: translateX(-50%) translateY(-12px) } }
 #kban .kb-em { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px } #kban .kb-em i { width: 13px; height: 13px; transform: rotate(45deg); border: 3px solid var(--hl, #e8c98a); background: rgba(0,0,0,.35) }
 #kban b { font: 700 15px 'Barlow Condensed', sans-serif; letter-spacing: .32em; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.9) }
@@ -2863,7 +2875,7 @@ html.dsV #csmenu .mapc.sel b { box-shadow: inset 0 -3px 0 var(--hl) }
 html.dsV #csmenu .mapc.sel span { color: var(--hl) }
 html.dsV body.mob #csmenu .mapc b { padding: 40px 8px 22px }
 html.dsV body.mob #csmenu .mapc span { left: 8px; bottom: 6px }
-html.dsV #csmenu .mapc canvas { z-index: 0 } html.dsV #csmenu .mapc b, html.dsV #csmenu .mapc span { z-index: 2; -webkit-transform: translateZ(0); transform: translateZ(0) } /* iOS: Text über dem gezoomten Vorschaubild halten */
+html.dsV #csmenu .mapc.shot canvas { filter: saturate(.85) brightness(.78); transform: scale(1.06) } html.dsV #csmenu .mapc.shot:hover canvas { filter: saturate(1) brightness(.95) } html.dsV #csmenu .mapc canvas { z-index: 0 } html.dsV #csmenu .mapc b, html.dsV #csmenu .mapc span { z-index: 2; -webkit-transform: translateZ(0); transform: translateZ(0) } /* iOS: Text über dem gezoomten Vorschaubild halten */
 html.dsV #csmenu .mapc.custom::after { color: #0f1923; border-radius: 0; z-index: 1 }
 /* Seitenleiste, Name, Fußzeile */
 html.dsV #csfriends { background: rgba(15,25,35,.82); border-left: 1px solid rgba(236,232,225,.1) }
@@ -4804,7 +4816,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "🦆 ENTENJAGD 2.0":"🦆 DUCK HUNT 2.0",
 "NEU · PATCH 3.4 „DIE SHOW\"":"NEW · PATCH 3.4 “THE SHOW”",
 "PATCH 3.3 „ZUSAMMEN\"":"PATCH 3.3 “TOGETHER”",
-"CLUTCH 3.5 BETA | * | 📦 * Cases | 🪙 * Coins":"CLUTCH 3.4 BETA | * | 📦 * cases | 🪙 * coins",
+"CLUTCH 3.6 BETA | * | 📦 * Cases | 🪙 * Coins":"CLUTCH 3.4 BETA | * | 📦 * cases | 🪙 * coins",
 "(Challenger II). Die ersten":"(Challenger II). The first",
 "(DU)":"(YOU)",
 "(Strg+Z / Strg+Y) ·":"(Ctrl+Z / Ctrl+Y) ·",
@@ -5212,7 +5224,35 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Mitspieler hatten eine farbige Schicht, wenn sie direkt vor Dir standen – behoben.":"Teammates had a colored layer when standing right in front of you – fixed.",
 "Standard-Mauszeiger von Windows statt eigenem Zeiger.":"Standard Windows mouse cursor instead of a custom one.",
 "NEU · PATCH 3.5 „SHOWTIME\"":"NEW · PATCH 3.5 “SHOWTIME”",
-"PATCH 3.4 „DIE SHOW\"":"PATCH 3.4 “THE SHOW”"}; // Deutsch → Englisch · # = beliebige Zahl
+"PATCH 3.4 „DIE SHOW\"":"PATCH 3.4 “THE SHOW”",
+"KARRIERE":"CAREER",
+"PROFIL":"PROFILE",
+"ABGEBROCHEN":"ABORTED",
+"Lade Matches …":"Loading matches …",
+"Logge Dich ein, damit Deine Online-Matches gespeichert werden.":"Log in so your online matches are saved.",
+"Noch keine Online-Matches":"No online matches yet",
+"🎖 KARRIERE":"🎖 CAREER",
+"Neuer Reiter KARRIERE im Hauptmenü: Letzte Matches, Profil und Statistik an einem Ort.":"New CAREER tab in the main menu: recent matches, profile and stats in one place.",
+"Letzte Matches zeigen Ergebnis, Modus, Karte, K/D/A, ADR, Rating-Änderung und Datum.":"Recent matches show result, mode, map, K/D/A, ADR, rating change and date.",
+"Auch im Profil Deiner Freunde gibt es jetzt den Reiter „Letzte Matches“.":"Your friends' profiles now have a “Recent matches” tab too.",
+"🏆 KÜRZERE MATCHES":"🏆 SHORTER MATCHES",
+"Ranked 5v5 und Unranked: Wer zuerst 5 Runden gewinnt, gewinnt das Match.":"Ranked 5v5 and Unranked: the first team to win 5 rounds wins the match.",
+"📍 PING AUF DER MINIMAP":"📍 PINGS ON THE MINIMAP",
+"Pings erscheinen jetzt auch als pulsierender Kreis auf der Minimap – Gegner-Pings in Rot.":"Pings now also show as a pulsing circle on the minimap – enemy pings in red.",
+"🎬 SHOWTIME-EFFEKTE":"🎬 SHOWTIME EFFECTS",
+"Sieg, Niederlage und alle großen Meldungen fliegen jetzt animiert ein.":"Win, loss and all big messages now fly in animated.",
+"Die Kartenvorschau zeigt ein echtes Luftbild der Karte – einmal im Menü geladen, wird es gespeichert.":"Map previews show a real aerial shot of the map – saved once the map has been loaded in the menu.",
+"Auszeichnungen wie ACE und CLUTCH überdecken die Rundenmeldung nicht mehr.":"Awards like ACE and CLUTCH no longer cover the round message.",
+"Neuer Shift-Knopf: leise gehen per Antippen ein- und ausschalten – aktiv leuchtet er gelb.":"New Shift button: tap to toggle quiet walking – it glows yellow while active.",
+"Aufgeräumtes HUD: Geld unten links, Munition über den Lebenspunkten, Timer mittig.":"Cleaner HUD: money bottom left, ammo above health, timer centered.",
+"Spielerkarten oben mit Namen und einheitlichen Initialen in Teamfarbe.":"Player cards at the top with names and uniform initials in team color.",
+"Beim Zuschauen und nach dem Tod liegen die Ult-Rauten nicht mehr unter der Zuschauer-Leiste.":"When spectating or dead, the ult diamonds no longer sit under the spectator bar.",
+"Aufgeräumte Auswahl: Fähigkeits-Stufen als drei Balken, weniger Ballast auf den Karten.":"Cleaner draft: ability levels as three bars, less clutter on the cards.",
+"Skin-Namen sind jetzt einheitlich weiß, die Seltenheit steht als kleines Label darunter – übersichtliches Raster.":"Skin names are now plain white, rarity is a small label below – in a tidy grid.",
+"⚙️ SONSTIGES":"⚙️ OTHER",
+"Die Sprache wählst Du jetzt in den Einstellungen.":"You now choose the language in the settings.",
+"NEU · PATCH 3.6 „KARRIERE\"":"NEW · PATCH 3.6 “CAREER”",
+"PATCH 3.5 „SHOWTIME\"":"PATCH 3.5 “SHOWTIME”"}; // Deutsch → Englisch · # = beliebige Zahl
             const NUM = /\d+(?:[.,]\d+)?/g, TPL = new Map(), WILD = [], OT = new WeakMap(), OA = new WeakMap(); // * = beliebiger Text (wird selbst übersetzt)
             for (const k in D) if (k.includes('*')) WILD.push([new RegExp('^' + k.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '(.+?)').replace(/#/g, '(\\d+(?:[.,]\\d+)?)') + '$'), D[k], k.match(/[*#]/g)]); else if (k.includes('#')) TPL.set(k, D[k]);
             const core = t => { if (D[t] !== undefined) return D[t]; if (/\d/.test(t)) { const v = TPL.get(t.replace(NUM, '#')); if (v !== undefined) { const n = t.match(NUM); let i = 0; return v.replace(/#/g, () => n[i++] || ''); } }
@@ -5293,6 +5333,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             <div class="tb" id="tJump">⤒</div>
             <div class="tb" id="tCrouch">⤓</div>
             <div class="tb" id="tReload">↻</div>
+            <div class="tb" id="tWalk" title="Leise gehen"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 4 4 12h4.5v7h7v-7H20z"/></svg></div>
             <div class="tb" id="tUse" title="Aufheben · Fallenlassen · Entschärfen"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12"/><path d="M11 11.5v-2a1.5 1.5 0 0 1 3 0V12"/><path d="M14 10.5a1.5 1.5 0 0 1 3 0V12"/><path d="M17 11.5a1.5 1.5 0 0 1 3 0V16a6 6 0 0 1-6 6h-2a6 6 0 0 1-5.2-3L4.3 14.6a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg></div>
             <div class="tb" id="tScope">⊕</div>
             <div class="tb" id="tPing" title="Pingen"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
@@ -5391,7 +5432,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
  <div style="font:bold 12px Arial;letter-spacing:2px;color:#8fa3b8;margin:10px 0 6px">ERFOLGE ${got} / ${ACHS.length}</div>
  <div class="achgrid">${ACHS.map(x => `<div class="ach${PRG.ach[x[0]] ? ' on' : ''}"><i>${x[1]}</i><b>${x[2]}</b><span>${x[3]}</span></div>`).join('')}</div>
  <div><button id="profStats">📊 Statistik</button><button id="profBack">Zurück</button></div>`);
-            $('profBack').onclick = showMenu; $('profStats').onclick = showStats;
+            $('profBack').onclick = showMenu; $('profStats').onclick = showStats; carNav('prof');
         }
         function showStats() { // 📊 Statistik: K/D, Trefferquote, Headshot-Rate, Lieblingswaffe (Werte aus PRG.st)
             const st = PRG.st, v = k => st[k] || 0, pct = (a, b) => b ? Math.round(a / b * 100) + ' %' : '–';
@@ -5406,7 +5447,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
  <div class="stsec">TRAINING & SPASS</div>
  <div class="profstats" style="justify-content:center">${Object.entries(AL_MODES).map(([k, m]) => `<span>${m[0]} ${m[1]} <b>${v('alB_' + k)}</b></span>`).join('')}<span>🎯 Aim-Lab-Genauigkeit <b>${pct(v('alHits'), v('alShots'))}</b></span><span>🦆 Enten <b>${v('ducks')}</b></span><span>🦆 Rekord <b>${v('dhBest')}</b></span></div>
  <div><button id="stProf">🏅 Profil</button><button id="stBack">Zurück</button></div>`);
-            $('stBack').onclick = showMenu; $('stProf').onclick = showProfile;
+            $('stBack').onclick = showMenu; $('stProf').onclick = showProfile; carNav('stats');
         }
         function showAccount() {
             if (ACC) {
@@ -7005,7 +7046,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e === player ? 'color:var(--acc);font-weight:bold' : ''}"><span>${i + 1}. ${e.name}${e === player ? ' (Du)' : ''}</span><b>${e.kills} / ${e.deaths}</b></div>`).join('')}
 <div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div></div><div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button><a class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" style="margin-top:16px">💬 Komm auf unseren Discord</a></div>`);
         }
-        function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .35s ease-out'; } function placeTeam(team) { const cells = shuffle(spawnCells[team].slice()); let i = 0; for (const e of ents) { if (e.team !== team) continue; const c = cells[i++ % cells.length]; e.x = cx(c.c) + (Math.random() - 0.5); e.z = cx(c.r) + (Math.random() - 0.5); e.y = 0; e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
+        function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; const sb = $('sub'); sb.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .55s cubic-bezier(.2, .8, .3, 1) both'; if (b) sb.style.animation = 'subin .45s .15s ease-out both'; } function placeTeam(team) { const cells = shuffle(spawnCells[team].slice()); let i = 0; for (const e of ents) { if (e.team !== team) continue; const c = cells[i++ % cells.length]; e.x = cx(c.c) + (Math.random() - 0.5); e.z = cx(c.r) + (Math.random() - 0.5); e.y = 0; e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
         // Spaß-Modus „Waffen": 1 = nur Pistolen (Primärwaffe weg), 2 = nur AWP (gratis für alle)
         function funLoadout(e) { if (!CFG.wpn) return; if (e.isPlayer) e.weapons[1] = CFG.wpn === 2 ? mkWeapon(W.awp) : null; else if (!e.remote) { e.weapon = CFG.wpn === 2 ? W.awp : e.weapon.slot === 1 ? (e.team === 'T' ? W.glock : W.usp) : e.weapon; e.ammo = e.weapon.mag; } }
         function botBuy(b) {
@@ -7335,7 +7376,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             document.body.classList.add('mob');
              // ── Button-Layout-Editor ──
  const EDITB = { on: false, drag: null };
- const BTN_IDS = ['tstick', 'tFire', 'tFire2', 'tJump', 'tCrouch', 'tReload', 'tUse', 'tScope', 'tAbil', 'tPing', 'tNext', 'tBuy', 'tBoard'];
+ const BTN_IDS = ['tstick', 'tFire', 'tFire2', 'tJump', 'tCrouch', 'tReload', 'tWalk', 'tUse', 'tScope', 'tAbil', 'tPing', 'tNext', 'tBuy', 'tBoard'];
  function applyBtnLayout() { const L = JSON.parse(localStorage.getItem('btnlayout') || '{}'); for (const id of BTN_IDS) { const p = L[id], el = $(id); if (!p || !el) continue; el.style.left = clamp(p.x, 0, innerWidth - 50) + 'px'; el.style.top = clamp(p.y, 0, innerHeight - 50) + 'px'; el.style.right = 'auto'; el.style.bottom = 'auto'; } } function saveBtnLayout() { const L = {}; for (const id of BTN_IDS) { const el = $(id); if (el.style.left) L[id] = { x: parseInt(el.style.left) || 0, y: parseInt(el.style.top) || 0 }; } localStorage.setItem('btnlayout', JSON.stringify(L)); } window.btnEditStart = () => { EDITB.on = true; document.body.classList.add('edit'); $('overlay').style.display = 'none'; $('touch').style.display = 'block'; };
  function btnEditEnd() { EDITB.on = false; saveBtnLayout(); document.body.classList.remove('edit'); if (!started) { $('touch').style.display = 'none'; showSettings(); } } $('editDone').addEventListener('touchstart', e => { e.preventDefault(); btnEditEnd(); }, { passive: false });
  $('editReset').addEventListener('touchstart', e => { e.preventDefault(); localStorage.removeItem('btnlayout'); for (const id of BTN_IDS) { const el = $(id); el.style.left = el.style.top = el.style.right = el.style.bottom = ''; } }, { passive: false });
@@ -7372,7 +7413,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             hold('tFire2', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false); hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
             let useT = 0; hold('tUse', () => { keys[BIND.use] = true; useT = performance.now(); }, () => { // ✋ halten: entschärfen · tippen: aufheben, sonst Waffe fallen lassen
                 const p = player, tap = keys[BIND.use] && performance.now() - useT < 300, nb = G.bomb.state === 'planted' && p.team === 'CT' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2; keys[BIND.use] = false; if (tap && !nb && started && !gameEnded && p.alive) dropCurrent(); });
-            hold('tCrouch', () => keys[BIND.crouch] = !keys[BIND.crouch]);
+            hold('tCrouch', () => keys[BIND.crouch] = !keys[BIND.crouch]); hold('tWalk', () => { keys[BIND.walk] = !keys[BIND.walk]; $('tWalk').classList.toggle('on', !!keys[BIND.walk]); }); // Shift umschalten
             hold('tReload', () => startReload());
             hold('tScope', () => toggleScope());
             hold('tAbil', () => inspectWeapon()); hold('tPing', () => doPing()); // 🔍 Waffe inspizieren (Fähigkeit & Taktik: Symbol antippen)
@@ -7452,7 +7493,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             g.fillStyle = col; g.beginPath(); g.arc(48, 38, 28, 0, Math.PI * 2); g.fill(); g.beginPath(); g.moveTo(30, 56); g.lineTo(66, 56); g.lineTo(48, 90); g.closePath(); g.fill(); g.lineWidth = 4; g.strokeStyle = 'rgba(255,255,255,.9)'; g.beginPath(); g.arc(48, 38, 28, 0, Math.PI * 2); g.stroke();
             g.fillStyle = '#111'; g.font = 'bold 34px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(enemy ? '!' : '•', 48, 40);
             return PING_MAT[k] = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, depthWrite: false, transparent: true, sizeAttenuation: false }); }
-        function addPing(x, y, z, enemy) { const sp = new THREE.Sprite(pingMat(enemy).clone()); sp.scale.set(0.05, 0.05, 1); sp.center.set(0.5, 0); sp.position.set(x, y + 0.2, z); sp.renderOrder = 1000; scene.add(sp); PINGS.push({ sp, t: 4 }); while (PINGS.length > 8) scene.remove(PINGS.shift().sp);
+        function addPing(x, y, z, enemy) { const sp = new THREE.Sprite(pingMat(enemy).clone()); sp.scale.set(0.05, 0.05, 1); sp.center.set(0.5, 0); sp.position.set(x, y + 0.2, z); sp.renderOrder = 1000; scene.add(sp); PINGS.push({ sp, t: 4, en: enemy }); while (PINGS.length > 8) scene.remove(PINGS.shift().sp);
             if (AC) { tone(enemy ? 980 : 760, 0.07, 0.12, 0, 'sine'); setTimeout(() => AC && tone(enemy ? 1320 : 1010, 0.09, 0.12, 0, 'sine'), 90); } }
         function updPings(dt) { for (let i = PINGS.length - 1; i >= 0; i--) { const p = PINGS[i]; p.t -= dt; p.sp.material.opacity = Math.min(1, p.t * 1.5); if (p.t <= 0) { scene.remove(p.sp); PINGS.splice(i, 1); } } }
         function doPing() {
@@ -7623,7 +7664,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             $('hpbar').style.width = Math.min(100, hpv / hpm * 100) + '%';
             $('arbar').style.width = Math.min(100, p.armor) + '%';
             $('hpwrap').classList.toggle('low', p.alive && hpv < 30); setT('money', `$ ${p.money}`); setT('wname', !w ? '' : (GL.on && w.def.nade) ? `${w.def.name} Lv.${player.glN[w.def.key] || 1}${player.glG && player.glG[w.def.key] ? ' ⚡' + GL_GLITCH[w.def.key][player.glG[w.def.key]] : ''}` : (skinOf(w.def.key) ? skinOf(w.def.key).n : w.def.name)); { let ue = $('ult'); if (!ue) { ue = document.createElement('div'); ue.id = 'ult'; ue.title = 'Ultimate: Team-Scan (X)'; ue.onclick = () => { if (!IS_TOUCH) useUlt(); }; ue.addEventListener('touchstart', e => { e.stopPropagation(); e.preventDefault(); const t = performance.now(); if (t - (ue.tapT || 0) < 400) { ue.tapT = 0; ue.classList.remove('arm'); useUlt(); } else { ue.tapT = t; ue.classList.add('arm'); setTimeout(() => ue.classList.remove('arm'), 400); } }, { passive: false }); /* Handy: Doppeltipp löst aus */ $('hud').appendChild(ue); } // Ultimate-Anzeige
-                ue.style.visibility = buyOpen ? 'hidden' : '';
+                ue.style.visibility = buyOpen || !p.alive || NET.spec ? 'hidden' : ''; // tot/zuschauen: keine Ult-Rauten unter der Zuschauer-Leiste
                 for (const e of ents) { if (e === p || !e.mesh) continue; if (!e.mesh.userData.outl) enemyOutline(e.mesh); const on = OPT.outOn !== false && e.alive && (GL.on ? !(GL.myTeam && GL.myTeam.members.includes(e)) : foe(e, p)); if (e.mesh.userData.outOn !== on) { e.mesh.userData.outOn = on; for (const o of e.mesh.userData.outl) o.visible = on; } } for (const d of decoys) { if (d.name !== 'Decoy' || !d.mesh) continue; if (!d.mesh.userData.outl) enemyOutline(d.mesh); const on = OPT.outOn !== false && d.alive && !(GL.myTeam && d.team === GL.myTeam); if (d.mesh.userData.outOn !== on) { d.mesh.userData.outOn = on; for (const o of d.mesh.userData.outl) o.visible = on; } } // Gegner-Umrandung (auch Gauntlet-Klone) document.body.classList.toggle('imm', !!p.immune && p.alive);
                 if (STK.on) { if (!p.alive || G.state !== 'live') STK.on = false; else { camera.getWorldDirection(_fwd); _ray.set(camera.position, _fwd); _ray.far = 90; const h = _ray.intersectObjects(GA.cur ? GA.cur.meshes : mapMeshes, false)[0]; STK.x = h ? h.point.x : p.x + _fwd.x * 40; STK.z = h ? h.point.z : p.z + _fwd.z * 40; stkRing.position.set(STK.x, 0.08, STK.z); } } stkRing.visible = STK.on; const us = (GL.on || DH.on || EX.on || buyOpen) ? 'x' : (p.ult || 0) + ultK(); if (ue.dataset.sig !== us) { ue.dataset.sig = us; ue.style.display = us === 'x' ? 'none' : ''; const u = p.ult || 0; ue.className = u >= ULT_MAX ? 'rdy' : ''; ue.innerHTML = Array.from({ length: ULT_MAX }, (_, i) => `<i class="${i < u ? 'f' : ''}"></i>`).join('') + `<b>${ULTS[ultK()][0]}</b>`; ue.title = 'Ultimate: ' + ULTS[ultK()][0] + ' (X)'; } } updAbar();
             { const nk = ['he', 'flash', 'smoke', 'molly', 'recon', 'cluster', 'slow'], cur = w ? w.def.key : '', sig = [1, 2, 3, 5].map(i => p.weapons[i] ? p.weapons[i].def.key : '').join() + '|' + nk.map(k => p.nades[k]).join() + '|' + cur, el = $('wlist'); // Waffenliste
@@ -7631,7 +7672,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                     el.innerHTML = [1, 2, 3].filter(i => p.weapons[i]).map(i => row(i, p.weapons[i], cur === p.weapons[i].def.key)).join('') + (nk.some(k => p.nades[k] > 0) ? '<div class="nd">' + nk.filter(k => p.nades[k] > 0).map(k => `<div class="wl${cur === k ? ' on' : ''}">${NN[k]}${p.nades[k] > 1 ? ' ×' + p.nades[k] : ''}</div>`).join('') + '<i style="font-style:normal;font-size:10px;opacity:.4;align-self:center">4</i></div>' : '') + (p.weapons[5] ? `<div class="wl${cur === 'c4' ? ' on' : ''}">C4<i>5</i></div>` : ''); } }
             setT('ammo', !w ? '' : w.def.melee ? '—' : w.def.plant ? 'C4' : w.def.nade ? '×' + p.nades[w.def.key] : `${w.ammo}<span style="font-size:22px;opacity:.7">| ${w.res}</span>`);
             const sec = Math.max(0, Math.ceil(G.timer)); setT('timer', G.bomb.state === 'planted' ? '💣' : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`);
-            const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}${e.isPlayer ? ' me' : ''}" style="border-color:${col}">${avH(e.name || '?', e.isPlayer ? myAv() : e.av, 30)}<u><i style="width:${e.alive ? Math.round(Math.max(0, Math.min(1, e.health / (e.maxHP || 100))) * 100) : 0}%;background:${col}"></i></u></div>`).join(''); // Teamleiste oben: Profilbilder mit Lebensbalken (wie CS)
+            const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}${e.isPlayer ? ' me' : ''}" style="border-color:${col};--pc:${col}">${avH(e.name || '?', e.isPlayer ? myAv() : e.av, 30)}<u><i style="width:${e.alive ? Math.round(Math.max(0, Math.min(1, e.health / (e.maxHP || 100))) * 100) : 0}%;background:${col}"></i></u><s>${escH(String(e.name || '?').slice(0, 8))}</s></div>`).join(''); // Teamleiste oben: Profilbilder mit Lebensbalken (wie CS)
             let avL = '', avR = '';
             if (GL.on) {
                 if (GL.duel && (GL.phase === 'duel' || GL.phase === 'duelend')) {
@@ -7727,6 +7768,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             const dot = (e, col, r) => { const [x, y] = radarXY(e.x, e.z); rctx.fillStyle = col; rctx.beginPath(); rctx.arc(x, y, r, 0, Math.PI * 2); rctx.fill(); };
             if (!GA.cur && (G.bomb.state === 'planted' || G.bomb.state === 'dropped')) { rctx.fillStyle = G.bomb.state === 'planted' && Math.sin(now * 10) > 0 ? '#ff3030' : '#ffd040'; const [bx, bz] = radarXY(G.bomb.x, G.bomb.z); rctx.fillRect(bx - 3, bz - 3, 6, 6); }
             for (const b of bots) { if (!b.alive) continue; const mate = GL.on ? (GL.myTeam && GL.myTeam.members.includes(b)) : !DM.on && b.team === player.team; if (mate) dot(b, '#6fa8ff', 3); else { const sp = G.spotted.get(b); if (GA.cur || (sp && now - sp < 2) || (now - b.lastShotT < 1.5 && Math.hypot(b.x - player.x, b.z - player.z) < 40)) dot(b, '#ff3b3b', 3); } }
+            for (const pg of PINGS) { const [x, y] = radarXY(pg.sp.position.x, pg.sp.position.z); rctx.globalAlpha = Math.min(1, pg.t * 1.5); rctx.strokeStyle = rctx.fillStyle = pg.en ? '#ff3b3b' : '#ffd040'; rctx.lineWidth = 1.5; rctx.beginPath(); rctx.arc(x, y, 3 + (1 - pg.t % 1) * 6, 0, Math.PI * 2); rctx.stroke(); rctx.beginPath(); rctx.arc(x, y, 2.5, 0, Math.PI * 2); rctx.fill(); } rctx.globalAlpha = 1; // 📍 Pings pulsieren auf der Minimap
             if (player.alive || !GL.on) {
                 const [px, pz] = radarXY(player.x, player.z), fx = -Math.sin(player.yaw), fz = -Math.cos(player.yaw), rx = Math.cos(player.yaw), rz = -Math.sin(player.yaw);
                 rctx.fillStyle = '#fff'; rctx.beginPath(); rctx.moveTo(px + fx * 7, pz + fz * 7); rctx.lineTo(px - fx * 4 + rx * 4, pz - fz * 4 + rz * 4); rctx.lineTo(px - fx * 4 - rx * 4, pz - fz * 4 - rz * 4); rctx.closePath(); rctx.fill();
@@ -7827,10 +7869,10 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             const coins = PRG.st.coins || 0, own = new Set(store.inv), ORDER = ['knife', 'awp', 'scout', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock'];
             const list = SKINS.filter(sk => !sk.noCase && SHOP_PRICE[sk.r]).sort((a, b) => (ORDER.indexOf(a.w) - ORDER.indexOf(b.w)) || (b.r - a.r));
             const card = sk => { const has = own.has(sk.id), pr = skPrice(sk), ok = !has && coins >= pr;
-                return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; };
+                return `<div class="inv ${has ? 'eq' : ok ? '' : 'locked'}" data-shop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b>${sk.n}</b><small class="skr"><i style="background:${RARITY[sk.r][0]}"></i>${RARITY[sk.r][1]}</small><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span></div>`; };
             const me = ACC ? ACC.u : null, com = SKINS.filter(sk => sk.u && !sk.off).sort((a, b) => (b.sold - a.sold) || (b.r - a.r));
             const ccard = sk => { const has = own.has(sk.id), pr = skPrice(sk), mine = sk.by === me;
-                return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b style="color:${RARITY[sk.r][0]}">${sk.n}</b><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Aus dem Shop nehmen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; };
+                return `<div class="inv ${has ? 'eq' : coins >= pr ? '' : 'locked'}" data-cshop="${sk.id}" style="border-color:${RARITY[sk.r][0]};min-width:150px;position:relative"><span class="sksw" style="background-image:url(${skinSwatch(sk)})"></span><b>${sk.n}</b><small class="skr"><i style="background:${RARITY[sk.r][0]}"></i>${RARITY[sk.r][1]}</small><span>von ${sk.by} · ${sk.sold}× verkauft</span><span>${has ? '✓ Im Inventar' : '🪙 ' + pr}</span>${mine ? `<i data-rmsk="${sk.id}" title="Aus dem Shop nehmen" style="position:absolute;top:4px;right:6px;font-style:normal;cursor:pointer">🗑</i>` : ''}</div>`; };
             // Reiter wie im Inventar: links Waffe bzw. Slot, rechts die passenden Karten
             const tabs = [['sk', '🔫 Skins'], ['cm', '🎨 Community'], ['fit', '👕 Kleidung']].map(([k, t]) => `<b class="${SHP.tab === k ? 'on' : ''}" data-stab="${k}">${t}</b>`).join('');
             const row = (attr, on, sw, name, sub, cnt) => `<div class="invw ${on ? 'on' : ''}" ${attr}><span class="sksw" style="${sw}"></span><div><b>${name}</b><span>${sub}</span></div><em>${cnt}</em></div>`;
@@ -8526,6 +8568,22 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div><button id="edPickBack">Zurück</button></div>`);
             $('edPickMap').onclick = showMapList; $('edPickAr').onclick = showArenaList; $('edPickBack').onclick = showMenu;
         }
+        // 🗺️ Luftbild der geladenen Karte (schräg von oben, wie im Hauptmenü) – einmal aufnehmen, für die Kartenkacheln speichern
+        const shotSig = k => { const m = MAPS[k] || []; let h = 0; for (const r of m) for (let i = 0; i < r.length; i++) h = (h * 31 + r.charCodeAt(i)) | 0; return 's2' + h + (THEMES[k] ? THEMES[k].floor : ''); };
+        const shotOf = k => { try { const v = localStorage.getItem('mshot:' + k); if (v && v.startsWith(shotSig(k) + '|')) return v.slice(v.indexOf('|') + 1); } catch (e) { } return null; };
+        function mapShot() {
+            if (started || GA.cur || shotOf(MAPNAME)) return; const W = 400, H = 600, rt = new THREE.WebGLRenderTarget(W, H), cx = WORLD_W / 2, cz = WORLD_D / 2, span = Math.max(WORLD_W, WORLD_D);
+            const cam = new THREE.OrthographicCamera(-span * 0.56, span * 0.56, span * 0.84, -span * 0.84, 1, 600); cam.position.set(cx, span * 1.1, cz + span * 0.75); cam.lookAt(cx, 0, cz); cam.rotateZ(0); cam.updateProjectionMatrix();
+            const fog = scene.fog, mc = menuChar && menuChar.group, mv = mc && mc.visible; scene.fog = null; if (mc) mc.visible = false;
+            try { renderer.setRenderTarget(rt); renderer.render(scene, cam); const px = new Uint8Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, px);
+                const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d'), im = g.createImageData(W, H);
+                for (let y = 0; y < H; y++) im.data.set(px.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4); g.putImageData(im, 0, 0); // WebGL liest von unten → spiegeln
+                localStorage.setItem('mshot:' + MAPNAME, shotSig(MAPNAME) + '|' + c.toDataURL('image/jpeg', 0.72));
+                document.querySelectorAll('.mapc[data-map="' + MAPNAME + '"] canvas').forEach(cv => drawShot(cv.getContext('2d'), MAPNAME, cv.width, cv.height, cv.closest('.mapc')));
+            } catch (e) { } finally { renderer.setRenderTarget(null); rt.dispose(); scene.fog = fog; if (mc) mc.visible = mv; }
+        }
+        function drawShot(g, k, W, H, card) { const src = shotOf(k); if (!src) return false; const im = new Image(); im.onload = () => { const r = Math.max(W / im.width, H / im.height), w = im.width * r, h = im.height * r; g.drawImage(im, (W - w) / 2, (H - h) / 2, w, h); }; im.src = src; if (card) card.classList.add('shot'); return true; }
+        setTimeout(() => { try { mapShot(); } catch (e) { } }, 2500); // nach dem Aufbau der Menü-Szene
         function showMenu() {
             edFrom = 'play';
             $('hud').style.display = 'none'; setupMenuScene();
@@ -8538,11 +8596,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             showOverlay(`
  <div id="csmenu">
  <div id="cstop">
- <div class="ctic"><span id="navHome">🏠</span><span id="navProf" title="Profil & Erfolge">🏅</span><span id="navSet">⚙️</span><span id="navLang" title="Sprache / Language" style="font:700 13px Rajdhani;letter-spacing:.05em">${getLang() === 'en' ? 'DE' : 'EN'}</span><span id="navInst" title="Als App installieren" style="${instEvt ? '' : 'display:none'}">📲</span><span id="navOff">⏻</span></div>
+ <div class="ctic"><span id="navHome">🏠</span><span id="navProf" title="Profil & Erfolge">🏅</span><span id="navSet">⚙️</span><span id="navInst" title="Als App installieren" style="${instEvt ? '' : 'display:none'}">📲</span><span id="navOff">⏻</span></div>
  <nav id="cstabs">
  <a data-nav="inv">INVENTAR</a>
  <a data-nav="play">SPIELEN</a>
  <a data-nav="shop">SHOP</a>
+ <a data-nav="career">KARRIERE</a>
  <a data-nav="news">NEWS</a>
  <a data-nav="editor">EDITOR</a>
  </nav>
@@ -8593,7 +8652,42 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
- <div class="cspanel newscard"><h3>NEU · PATCH 3.5 „SHOWTIME"</h3>
+ <div class="cspanel newscard"><h3>NEU · PATCH 3.6 „KARRIERE"</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎖 KARRIERE</p>
+ Neuer Reiter KARRIERE im Hauptmenü: Letzte Matches, Profil und Statistik an einem Ort.<br>
+ Letzte Matches zeigen Ergebnis, Modus, Karte, K/D/A, ADR, Rating-Änderung und Datum.<br>
+ Auch im Profil Deiner Freunde gibt es jetzt den Reiter „Letzte Matches“.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏆 KÜRZERE MATCHES</p>
+ Ranked 5v5 und Unranked: Wer zuerst 5 Runden gewinnt, gewinnt das Match.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📍 PING AUF DER MINIMAP</p>
+ Pings erscheinen jetzt auch als pulsierender Kreis auf der Minimap – Gegner-Pings in Rot.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎬 SHOWTIME-EFFEKTE</p>
+ Sieg, Niederlage und alle großen Meldungen fliegen jetzt animiert ein.<br>
+ Die Kartenvorschau zeigt ein echtes Luftbild der Karte – einmal im Menü geladen, wird es gespeichert.<br>
+ Auszeichnungen wie ACE und CLUTCH überdecken die Rundenmeldung nicht mehr.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📱 HANDY</p>
+ Neuer Shift-Knopf: leise gehen per Antippen ein- und ausschalten – aktiv leuchtet er gelb.<br>
+ Aufgeräumtes HUD: Geld unten links, Munition über den Lebenspunkten, Timer mittig.<br>
+ Spielerkarten oben mit Namen und einheitlichen Initialen in Teamfarbe.<br>
+ Beim Zuschauen und nach dem Tod liegen die Ult-Rauten nicht mehr unter der Zuschauer-Leiste.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚔️ GAUNTLET</p>
+ Aufgeräumte Auswahl: Fähigkeits-Stufen als drei Balken, weniger Ballast auf den Karten.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🪙 SHOP</p>
+ Skin-Namen sind jetzt einheitlich weiß, die Seltenheit steht als kleines Label darunter – übersichtliches Raster.<br><br>
+
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">⚙️ SONSTIGES</p>
+ Die Sprache wählst Du jetzt in den Einstellungen.<br><br>
+
+ </div></div>
+ <div class="cspanel newscard"><h3>PATCH 3.5 „SHOWTIME"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏆 NEUER ENDBILDSCHIRM</p>
@@ -9432,10 +9526,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  </div>
  </div>
  <div id="cschar"><b>${ACC ? '☁️ ' + ACC.u : savedName || 'Spieler'}</b></div>
- <div id="csver">CLUTCH 3.4 BETA | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
+ <div id="csver">CLUTCH 3.5 BETA | ${MAPLABEL} | 📦 ${store.cases} Cases | 🪙 ${PRG.st.coins || 0} Coins</div><button id="csTut" onclick="startTutorial()">❓ Wie funktioniert alles?</button><a id="csDc" class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" title="Discord-Server: Mitspieler, Patchnotes, Bugs melden">💬 Discord</a>${IS_TOUCH || /Electron/.test(navigator.userAgent) ? '' : '<a id="csApp" href="https://github.com/Mads000/cs-web-offensive/releases/latest/download/CS-WO-Setup.exe" title="Desktop-App für Windows – mehr Leistung, Updates kommen automatisch">💻 PC-App herunterladen</a>'} </div>`, true);
             document.querySelectorAll('.mapc').forEach(el => {
                 const map = MAPS[el.dataset.map], th = THEMES[el.dataset.map] || THEMES.de_dusty;
-                const g = el.querySelector('canvas').getContext('2d');
+                const g = el.querySelector('canvas').getContext('2d'); if (!CMAP_INFO[el.dataset.map] && drawShot(g, el.dataset.map, 200, 300, el)) return; // echtes Luftbild, falls schon aufgenommen
                 if (CMAP_INFO[el.dataset.map]) { // eigene Karte: Bauplan-Bild in Editor-Farben
                     const inf = CMAP_INFO[el.dataset.map], emb = el.querySelector('.emb'); el.classList.add('custom'); if (el.dataset.map.startsWith('pub_')) { el.classList.add('pub'); el.querySelector('span').textContent = '🌍 von ' + ((PUBC[el.dataset.map] || {}).by || 'Community'); } emb.textContent = inf.em || '🛠'; if (inf.emc) emb.style.background = `radial-gradient(circle at 35% 30%, ${inf.emc}, #0e1620)`;
                     const bg = g.createLinearGradient(0, 0, 0, 300); bg.addColorStop(0, '#16324f'); bg.addColorStop(1, '#0a1626'); g.fillStyle = bg; g.fillRect(0, 0, 200, 300);
@@ -9469,7 +9563,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             };
             document.querySelectorAll('#cstabs a').forEach(a => a.onclick = () => {
                 const nav = a.dataset.nav; if (RK.open && nav !== 'play') rkLeave(); // Reiter wechseln beendet Ranked-/Unranked-Suche
-                if (nav === 'inv') { showInventory(); return; }
+                if (nav === 'inv') { showInventory(); return; } if (nav === 'career') { showCareer('recent'); return; }
                 if (nav === 'store') { showCases(); return; } // (Cases liegen jetzt im SHOP-Reiter)
                 if (nav === 'shop') { showShop(); return; } if (nav === 'ranked') { showRanked('rk'); return; } if (nav === 'unranked') { showRanked('ur'); return; }
                 if (nav === 'maps') { showMapList(); return; } if (nav === 'arenas') { showArenaList(); return; } if (nav === 'editor') { showEditorPick(); return; }
@@ -9541,7 +9635,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('btnCT').onclick = () => startGame('CT'); $('btnT').onclick = () => startGame('T'); $('btnDM').onclick = () => { DM.on = true; startGame('CT'); }; $('btnEx').onclick = () => exStart(null); $('btnAim').onclick = alPick; $('btnExAr').onclick = exPickArena; $('btnDuck').onclick = () => dhPick(w => dhStart(w), () => { sessionStorage.setItem('opentab', 'play'); showMenu(); }); $('btnDuckLb').onclick = showDuckLb;
             $('mpCT').onclick = () => startMP('CT'); $('mpT').onclick = () => startMP('T');
             $('btnSet').onclick = showSettings; $('btnGSet').onclick = () => showGameSettings(); $('ruleChips').onclick = () => showGameSettings();
-            $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navLang').onclick = () => { setLang(getLang() === 'en' ? 'de' : 'en'); $('navLang').textContent = getLang() === 'en' ? 'DE' : 'EN'; }; $('navProf').onclick = showProfile; frSide();
+            $('navHome').onclick = () => setTab('home'); $('navSet').onclick = showSettings; $('navProf').onclick = showProfile; frSide();
             $('navInst').onclick = () => { if (!instEvt) return; instEvt.prompt(); instEvt.userChoice.finally(() => { instEvt = null; const b = $('navInst'); if (b) b.style.display = 'none'; }); }; $('navOff').onclick = () => location.reload();
             if (sessionStorage.getItem('opentab') === 'play') { sessionStorage.removeItem('opentab'); setTab('play'); }
             else if (sessionStorage.getItem('opentab') === 'ranked' || sessionStorage.getItem('opentab') === 'unranked') { setTab('play'); showRanked(sessionStorage.getItem('opentab') === 'unranked' ? 'ur' : 'rk'); sessionStorage.removeItem('opentab'); const w = sessionStorage.getItem('rkmsg'); if (w) { sessionStorage.removeItem('rkmsg'); RK.msg = '⚠ ' + w; rkRender(); } }
@@ -10389,7 +10483,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 + `<div style="margin-top:8px;font-size:13px">${me}${rows}</div>`;
         }
         function glDraftUI() {
-            const wCards = GL.offW.map(k => { const d = W[k], rpm = Math.round(60 / d.rate); return `<div class="glw ${GL.pickW === k ? 'sel' : ''}" data-glw="${k}"><b>${d.name}</b><div class="cstats">${bar(d.dmg * (d.pellets || 1), 120)}${bar(rpm, 750)}${bar(d.mag, 30)}</div><span>${GL.pickW === k ? '✓ GEWÄHLT' : 'WAFFE'}</span></div>`; }).join('');
+            const wCards = GL.offW.map(k => { const d = W[k], rpm = Math.round(60 / d.rate); return `<div class="glw ${GL.pickW === k ? 'sel' : ''}" data-glw="${k}"><b>${d.name}</b><span>${GL.pickW === k ? '✓ GEWÄHLT' : 'WAFFE'}</span></div>`; }).join('');
             const UC = { he: '#ff7a5c', flash: '#ffd964', smoke: '#7ec8e3', molly: '#ff9b3d', armor: '#8ab4ff', speed: '#9fe08a', vamp: '#c86bff', hp: '#ff6b81', dash: '#7dffb0', decoy: '#ffc95c', turret: '#c2d64a', hound: '#ff8ab0', stim: '#7dff9a', cloak: '#9fb4ff' };
             const uCards = GL.offU.length ? GL.offU.map((u, i) => {
                 let ico, name, desc, tag;
@@ -10397,17 +10491,16 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 else if (u.kind === 'abil') { const A = GL_ABIL[u.key]; ico = A.ico; name = A.name; desc = A.desc[u.lv - 1] + ' · CD ' + A.cd[u.lv - 1] + 's'; tag = 'FÄHIGKEIT [F]'; }
                 else { ico = GL_NADE_ICO[u.key]; name = W[u.key].name; desc = u.lv === 1 ? 'Neue Granate im Loadout' : u.lv === 2 ? 'Level-Up: stärkere Version' : 'GLITCH-Version freischalten'; tag = 'GRANATE'; }
                 const col = u.lv === 3 ? '#e8c98a' : UC[u.key] || '#8fa3b8';
-                return `<div class="glu ${GL.pickU === i ? 'sel' : ''}" data-glu="${i}" style="--uc:${col}"><div class="ico">${ico}</div><b>${name.toUpperCase()}</b><i>${desc}</i><span class="tag">${tag} · LV. ${u.lv}${u.lv === 3 ? ' ⚡' : ''}</span></div>`;
+                return `<div class="glu ${GL.pickU === i ? 'sel' : ''}" data-glu="${i}" style="--uc:${col}">${u.lv ? `<div class="glv" title="${tag} · Stufe ${u.lv}">${[1, 2, 3].map(i => `<em class="${i <= u.lv ? 'on' : ''}"></em>`).join('')}</div>` : ''}<div class="ico">${ico}</div><b>${name.toUpperCase()}</b><i>${desc}</i></div>`;
             }).join('') : '<p style="color:#8fa3b8">Alles auf Maximum – keine Ausrüstungs-Karte nötig</p>';
             showOverlay(`<div class="gldraft">
  <div class="glhead"><span>STAGE ${GL.stage}${GL.bye ? '<br>' + GL.bye.name + ': FREILOS' : ''}</span><b><span id="glcnt">${Math.ceil(GL.t)}</span></b><span style="text-align:right">GAUNTLET<br>DRAFT</span></div> <div class="glsec">SELECT A WEAPON LOADOUT</div>
  <div class="glrow">${wCards}</div>
- <button class="glreroll" data-rr="w" ${GL.rerolls < 1 ? 'disabled' : ''}>🔄 REROLL</button>
  <div class="glsec">DRAFT AN ABILITY</div>
  <div class="glrow">${uCards}</div>
  ${GL.offU.length ? `<button class="glreroll" data-rr="u" ${GL.rerolls < 1 ? 'disabled' : ''}>🔄 REROLL</button>` : ''}
  <div style="font:bold 11px Arial;letter-spacing:2px;color:#c86bff">REROLLS ÜBRIG: ${GL.rerolls}</div>
- <div id="glwait" style="padding:10px 18px;border:1px solid rgba(255,255,255,.15);border-radius:6px;background:rgba(0,0,0,.35);font-size:13px;color:#ddd;width:100%;box-sizing:border-box">${glWaitHTML()}</div>
+ <div id="glwait" style="display:none;padding:10px 18px;border:1px solid rgba(255,255,255,.15);border-radius:6px;background:rgba(0,0,0,.35);font-size:13px;color:#ddd;width:100%;box-sizing:border-box">${glWaitHTML()}</div>
  </div>`, true);
             GL.waitCache = '';
             document.querySelectorAll('[data-glw]').forEach(el => el.onclick = () => { GL.pickW = el.dataset.glw; glDraftUI(); });
@@ -10664,7 +10757,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         const AVS = [['🦊', '#c8642e'], ['🐺', '#4f5f80'], ['🦅', '#7d5f32'], ['🐯', '#c47d16'], ['🦈', '#2f6f96'], ['🐻', '#6b4730'], ['🐉', '#33804e'], ['🦂', '#93491f'], ['👾', '#6a43b0'], ['🤖', '#4c6e7c'], ['💀', '#43434e'], ['🎯', '#b03232'], ['🔥', '#bf4a15'], ['⚡', '#a88c12'], ['🦆', '#43852f'], ['👑', '#9c7a20']]; // muss zu AV_N in server.js passen
         const avCol = n => { let h = 0; for (const c of String(n || '?').toLowerCase()) h = (h * 31 + c.charCodeAt(0)) >>> 0; return 'hsl(' + h % 360 + ',40%,38%)'; };
         const myAv = () => ACC && (Number.isInteger(ACC.av) || /^u\d+$/.test(ACC.av)) ? ACC.av : -1;
-        function avH(n, av, px = 28) { const a = AVS[av], up = typeof av === 'string' && /^u\d+$/.test(av); return `<i class="avi" aria-hidden="true" style="width:${px}px;height:${px}px;font-size:${Math.round(px * (a ? .58 : .46))}px;background:${a ? a[1] : avCol(n)}">${a ? a[0] : escH((String(n || '?')[0] || '?').toUpperCase())}${up ? `<b style="background-image:url('/av/${encodeURIComponent(String(n)).replace(/'/g, '%27')}?v=${av.slice(1)}')"></b>` : ''}</i>`; } // av: 0–15 Motiv, 'u3' = hochgeladenes Bild (Version 3), sonst Initiale // ohne Auswahl: Initiale auf Farbe aus dem Namen
+        function avH(n, av, px = 28) { const a = AVS[av], up = typeof av === 'string' && /^u\d+$/.test(av); return `<i class="avi${a || up ? '' : ' ini'}" aria-hidden="true" style="width:${px}px;height:${px}px;font-size:${Math.round(px * (a ? .58 : .46))}px;background:${a ? a[1] : avCol(n)}">${a ? a[0] : escH((String(n || '?')[0] || '?').toUpperCase())}${up ? `<b style="background-image:url('/av/${encodeURIComponent(String(n)).replace(/'/g, '%27')}?v=${av.slice(1)}')"></b>` : ''}</i>`; } // av: 0–15 Motiv, 'u3' = hochgeladenes Bild (Version 3), sonst Initiale // ohne Auswahl: Initiale auf Farbe aus dem Namen
         function bdH(bd) { bd = String(bd || ''); return (bd.includes('m') ? '<span class="bdg" title="Map-Creator · eigene Karte im offiziellen Ranked-Map-Pool">🗺️</span>' : '') + (bd.includes('s') ? '<span class="bdg" title="Skin-Creator · eigene Community-Skins haben das Einnahmen-Ziel erreicht">🎨</span>' : ''); }
         const mapLbl = k => !k ? 'Arenen' : MAP_NAMES[k] || (CMAP_INFO[k] || {}).n || (PUBC[k] && PUBC[k].n) || k;
         if (ACC && ACC.av === undefined) accApi('pprof', { n: ACC.u }).then(r => { if (r.ok && ACC) { ACC.av = r.av; accStore(); } }).catch(() => { }); // ältere Logins: Profilbild einmal nachladen
@@ -10676,6 +10769,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             el.innerHTML = '<div class="frh"><b>👤 SPIELERPROFIL</b><span data-ppx tabindex="0" role="button" aria-label="Schließen">✕</span></div><p class="rksub">Lade Profil …</p>'; el.focus();
             accApi('pprof', { n }).then(r => { if (PP.n === n && $('pppanel')) ppRender(r); }).catch(() => { if (PP.n === n && $('pppanel')) ppRender({ err: 'Server nicht erreichbar' }); });
         }
+        // 🎖 KARRIERE: letzte Matches · Profil · Statistik (Reiter oben); letzte Matches auch im Spielerprofil von Freunden
+        function carNav(cur) { const h = document.querySelector('#overlay h1'); if (!h) return; const d = document.createElement('div'); d.className = 'shopnav'; d.innerHTML = [['recent', '🕘 LETZTE MATCHES'], ['prof', '🏅 PROFIL'], ['stats', '📊 STATISTIK']].map(([k, t]) => `<b class="${cur === k ? 'on' : ''}" data-car="${k}">${t}</b>`).join(''); h.after(d); d.querySelectorAll('[data-car]').forEach(b => b.onclick = () => showCareer(b.dataset.car)); }
+        function showCareer(t) { if (t === 'prof') return showProfile(); if (t === 'stats') return showStats();
+            showOverlay(`<h1 style="font-size:34px">🎖 KARRIERE<small>${ACC ? escH(ACC.u) : 'OFFLINE'}</small></h1><div class="rcwrap" id="carList"><p class="rksub">${ACC ? 'Lade Matches …' : 'Logge Dich ein, damit Deine Online-Matches gespeichert werden.'}</p></div><div><button id="carBack">Zurück</button></div>`); carNav('recent'); $('carBack').onclick = showMenu;
+            if (ACC) accApi('pprof', { n: ACC.u }).then(r => { const el = $('carList'); if (el) el.innerHTML = r.ok ? recentHTML(r) : '<p class="rksub">⚠ ' + escH(r.err || 'Fehler') + '</p>'; }).catch(() => { const el = $('carList'); if (el) el.innerHTML = '<p class="rksub">Server nicht erreichbar</p>'; }); }
+        function recentHTML(r) { const L = []; for (const md of ['comp', 'duo', 'v1']) for (const h of (r.m && r.m[md] && r.m[md].hist) || []) L.push(Object.assign({ md }, h)); for (const h of (r.ur && r.ur.hist) || []) L.push(Object.assign({ md: 'ur' }, h));
+            if (!L.length) return '<p class="rksub">Noch keine Online-Matches</p>'; const loc = getLang() === 'en' ? 'en-GB' : 'de-DE';
+            return L.sort((a, b) => (b.t || 0) - (a.t || 0)).slice(0, 15).map(h => { const c = h.st !== 'rated' ? 'x' : h.res === 1 ? 'w' : h.res === 0 ? 'l' : 'd', ps = h.ps, dt = h.t ? new Date(h.t) : null;
+                return `<div class="rcm ${c}"><b>${{ w: 'SIEG', l: 'NIEDERLAGE', d: 'UNENTSCHIEDEN', x: 'ABGEBROCHEN' }[c]}</b><em>${h.sc ? h.sc.join(' : ') : '–'}</em><span>${RK_TI[h.md] || h.md}</span><span>${escH(mapLbl(h.map))}</span>${ps && ps.k !== undefined ? `<span>K/D/A <b>${ps.k}/${ps.d}/${ps.a || 0}</b></span>` : ''}${ps && ps.adr !== undefined ? `<span>ADR <b>${ps.adr}</b></span>` : ''}${h.md !== 'ur' && h.st === 'rated' && h.d ? `<span class="rcd">${h.d > 0 ? '+' : ''}${h.d}</span>` : ''}<small>${dt ? dt.toLocaleDateString(loc, { day: '2-digit', month: '2-digit' }) + ' · ' + dt.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' }) : ''}</small></div>`; }).join(''); }
         function ppClose() { PP.n = null; const el = $('pppanel'); if (el) el.remove(); }
         function ppRender(r) {
             const el = $('pppanel'), head = '<div class="frh"><b>👤 SPIELERPROFIL</b><span data-ppx tabindex="0" role="button" aria-label="Schließen">✕</span></div>';
@@ -10687,10 +10789,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="ppst"><span>ADR <b>${na(s.adr)}</b></span><span>KAST <b>${md === 'v1' ? 'n. v.' : s.kast === null || s.kast === undefined ? '–' : s.kast + ' %'}</b></span><span>HS <b>${s.hs === null || s.hs === undefined ? '–' : s.hs + ' %'}</b></span><span>K/D <b>${s.n ? (s.kd !== null ? s.kd.toFixed(2) : s.k + '.00') : '–'}</b></span></div>
  <div class="rksub">${s.n ? 'Ø aus ' + s.n + ' gewertet' + (s.n === 1 ? 'em Match' : 'en Matches') : 'Noch keine gewerteten Matches mit Statistik'}${few ? ' · ⚠ wenige Matches – noch wenig aussagekräftig' : ''} · ${md === 'ur' ? 'Gesamt' : 'Saison ' + r.season}: ${gp ? x.w + '–' + x.l + (x.d ? '–' + x.d : '') + ' · Siegquote ' + pc(x.w, gp) : 'keine Matches'}</div>
  ${x.hist.length ? '<div class="pph" aria-label="Letzte Matches">' + x.hist.map(h => `<i class="${h.st !== 'rated' ? 'x' : h.res === 1 ? 'w' : h.res === 0 ? 'l' : 'd'}" title="${escH(mapLbl(h.map))} · ${h.sc ? h.sc.join(':') : '–'}${h.st === 'rated' ? ' · ' + (h.d >= 0 ? '+' : '') + h.d : ' · ohne Wertung'}">${h.st !== 'rated' ? '–' : h.res === 1 ? 'S' : h.res === 0 ? 'N' : 'U'}</i>`).join('') + '</div>' : ''}</div>`; };
-            el.innerHTML = head + `<div class="pptop">${avH(r.n, r.av, 56)}<div><b class="ppn">${escH(r.n)}${bdH((B.map ? 'm' : '') + (B.skin ? 's' : ''))}</b><span class="rksub">${r.xp !== null ? 'Level ' + lvlOf(r.xp) : 'Level unbekannt'}</span></div></div>
+            el.innerHTML = head + `<div class="pptabs"><b class="on" data-ppt="p">PROFIL</b><b data-ppt="r">LETZTE MATCHES</b></div><div data-ppp="p"><div class="pptop">${avH(r.n, r.av, 56)}<div><b class="ppn">${escH(r.n)}${bdH((B.map ? 'm' : '') + (B.skin ? 's' : ''))}</b><span class="rksub">${r.xp !== null ? 'Level ' + lvlOf(r.xp) : 'Level unbekannt'}</span></div></div>
  ${B.map ? `<div class="ppb">🗺️ <b>Map-Creator</b> · ${B.map.maps.map(x => escH(x.n) + (x.now ? ' (im Ranked-Pool)' : ' (ehemals im Pool)')).join(', ')}</div>` : ''}${B.skin ? `<div class="ppb">🎨 <b>Skin-Creator</b> · eigene Skins haben über ${B.skin.goal} Coins eingebracht</div>` : ''}
- ${['comp', 'duo', 'v1', 'ur'].map(mode).join('')}<div class="rksub">ADR, KAST, HS & K/D: Durchschnitt über alle gewerteten Ranked-Matches, vom Server gezählt. 5v5, 2v2 und 1v1 getrennt.</div>
+ ${['comp', 'duo', 'v1', 'ur'].map(mode).join('')}<div class="rksub">ADR, KAST, HS & K/D: Durchschnitt über alle gewerteten Ranked-Matches, vom Server gezählt. 5v5, 2v2 und 1v1 getrennt.</div></div><div data-ppp="r" hidden><div class="rcwrap" style="width:auto;max-height:none">${recentHTML(r)}</div></div>
  <div class="ppbtn">${typeof r.av === 'string' ? `<button data-ppmod="${escH(r.n)}" title="Admin: hochgeladenes Profilbild entfernen (Code nötig)" aria-label="Profilbild entfernen (Admin)">🛡</button>` : ''}${!ACC || me ? '' : fr ? `<button data-ppg="${escH(r.n)}">👥 In Gruppe einladen</button>` : `<button data-ppf="${escH(r.n)}">＋ Freund hinzufügen</button>`}<button data-ppx>Schließen</button></div>`;
+            el.querySelectorAll('[data-ppt]').forEach(b => b.onclick = () => { el.querySelectorAll('[data-ppt]').forEach(x => x.classList.toggle('on', x === b)); el.querySelectorAll('[data-ppp]').forEach(p => p.hidden = p.dataset.ppp !== b.dataset.ppt); });
             el.querySelectorAll('[data-ppmod]').forEach(b => b.onclick = () => askCode('Code: Profilbild entfernen', code => accApi('rmav', { code, n: b.dataset.ppmod }).then(x => { alert(x.ok ? 'Profilbild entfernt.' : x.err); if (x.ok) ppOpen(b.dataset.ppmod); }).catch(() => alert('Server nicht erreichbar.'))));
             el.querySelectorAll('[data-ppf]').forEach(b => b.onclick = () => { frAct('fradd', b.dataset.ppf); b.disabled = true; b.textContent = '✓ Anfrage gesendet'; });
             el.querySelectorAll('[data-ppg]').forEach(b => b.onclick = () => { ptInvite(b.dataset.ppg); b.disabled = true; b.textContent = '✓ Eingeladen'; });
@@ -10707,7 +10810,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function lobDiscord() { accApi('lfg', { room: NET.room, name: player.name }).then(r => toast(r.ok ? '📣 In Discord gepostet' : '⚠ ' + (r.err || 'Fehler'), r.ok ? '#🤝-mitspielersuche · mit Beitreten-Knopf' : '')).catch(() => toast('⚠ Server nicht erreichbar', '')); }
         function showBug(back) {
             const md = !started ? 'Menü' : AL.on ? 'Aim-Lab' : EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : RK.cur ? (RK.cur.mode === 'ur' ? 'Unranked' : 'Ranked') : 'Customs';
-            const info = `CLUTCH 3.5 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
+            const info = `CLUTCH 3.6 · ${IS_TOUCH ? '📱 Handy' : '🖥 PC'} · ${md}${started ? ' · ' + MAPLABEL : ''}${NET.on ? ' · Online' : ''} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '').slice(0, 90)}`;
             showOverlay(`<h1 style="font-size:34px">🐞 BUG MELDEN<small>GEHT DIREKT AN DEN ENTWICKLER</small></h1>
  <textarea id="bugTxt" maxlength="1500" rows="6" placeholder="Was ist passiert? Was hast Du davor gemacht? Passiert es immer wieder?" style="width:min(520px,88vw);font:14px Arial;padding:10px;background:#141e28;color:#fff;border:1px solid rgba(var(--hl-rgb),.5);border-radius:4px;resize:vertical"></textarea>
  <p style="font-size:11px;color:#8fa3b8;max-width:520px">Wird automatisch mitgeschickt: ${escH(info)}</p><p id="bugMsg" style="font-size:13px;min-height:16px"></p>
@@ -10782,7 +10885,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             accApi('ranked', { tok: ACC.tok }).then(r => { if (r.ok) { RK.prof = r; RK.ban = r.ban || 0; } else RK.msg = '⚠ ' + (r.err || 'Fehler'); rkRender(); }).catch(() => { RK.msg = '⚠ Server nicht erreichbar'; rkRender(); });
         }
         function rkMini(cv) { // kleine Draufsicht der Karte (wie die Kartenkacheln im Spielen-Menü); unbekannte Karte → nur Farbfläche
-            const k = cv.dataset.rkmini, map = MAPS[k], th = THEMES[k] || THEMES.de_dusty, g = cv.getContext('2d'), W = cv.width, H = cv.height;
+            const k = cv.dataset.rkmini, map = MAPS[k], th = THEMES[k] || THEMES.de_dusty, g = cv.getContext('2d'), W = cv.width, H = cv.height; if (drawShot(g, k, W, H)) return;
             const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#' + th.sky.toString(16).padStart(6, '0')); gr.addColorStop(1, th.floor); g.fillStyle = gr; g.fillRect(0, 0, W, H); g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(0, 0, W, H); if (!map) return;
             const rows = map.length, cols = map[0].length, s = Math.min(W / cols, H / rows), ox = (W - cols * s) / 2, oy = (H - rows * s) / 2;
             for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const ch = map[r][c];
