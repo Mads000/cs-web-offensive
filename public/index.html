@@ -7584,16 +7584,18 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         // Ansicht-Optionen anwenden (HUD-Farbe, Radar, Killfeed, Handy-Buttons) – nur bei Änderung, nicht pro Frame
         function applyLook() { $('hud').style.color = OPT.hudCol === '#e8c98a' && document.documentElement.classList.contains('dsV') ? '#ece8e1' : OPT.hudCol; const r = $('radar'); r.style.display = OPT.radar ? '' : 'none'; if (OPT.radar) r.style.width = r.style.height = Math.round((IS_TOUCH ? 100 : 170) * OPT.radar) + 'px'; $('killfeed').style.display = OPT.kf ? '' : 'none'; let fe = $('fpsBox'); if (OPT.fps && !fe) { fe = document.createElement('div'); fe.id = 'fpsBox'; document.body.appendChild(fe); } if (fe) fe.style.display = OPT.fps ? '' : 'none'; const ds = document.documentElement.style; ds.setProperty('--tbs', OPT.tbs); ds.setProperty('--tba', OPT.tba); }
         // Handy: alle 2 s FPS prüfen – unter 40 FPS Auflösung senken, über 56 FPS wieder bis zur Grafikstufe anheben
-        const DRS = { t: 0, n: 0 };
+        const DRS = { t: 0, n: 0, lo: 0, hi: 0, sk: 0 }; // lo/hi = schlechte/gute 2-s-Fenster in Folge, sk = Fenster mit Ladehänger (wird ignoriert)
         function fpsCap() { // 0 = keine Grenze (PC im Spiel); Bilder dazwischen werden übersprungen → spart Akku & Wärme
             const play = started && !paused && !gameEnded, sub = !started && !document.getElementById('csmenu');
             if (OPT.eco) return play ? 30 : 15;
             if (!play) return sub || started ? 20 : IS_TOUCH ? 30 : 0;
             return IS_TOUCH ? 60 : 0;
         }
-        function dynRes(fdt) { DRS.t += fdt; DRS.n++; if (DRS.t < 2000) return; const fps = DRS.n * 1000 / DRS.t; DRS.t = DRS.n = 0; if (document.hidden) return; { const c = fpsCap(); if (c && c < 50) return; } // gedrosselt (Menü/Akku-Sparmodus): Auflösung nicht absenken
+        function dynRes(fdt) { if (fdt > 250) DRS.sk = 1; DRS.t += fdt; DRS.n++; if (DRS.t < 2000) return; const fps = DRS.n * 1000 / DRS.t, sk = DRS.sk; DRS.t = DRS.n = DRS.sk = 0; if (document.hidden || sk) return; { const c = fpsCap(); if (c && c < 50) return; } // gedrosselt (Menü/Akku-Sparmodus): Auflösung nicht absenken
             const max = OPT.gfx === 0 || OPT.eco ? 1 : Math.min(devicePixelRatio, OPT.gfx === 1 ? 1.5 : 2), cur = renderer.getPixelRatio(); let pr = cur;
-            if (fps < 40) pr = Math.max(IS_TOUCH ? 0.6 : 0.75, cur - 0.15); else if (fps > 56) pr = Math.min(max, cur + 0.1); if (Math.abs(pr - cur) > 0.01) renderer.setPixelRatio(pr); }
+            // Jede Änderung baut den Bildpuffer neu auf (30–60 ms Hänger) → nur bei anhaltend schlechter/guter Leistung und in größeren Schritten
+            if (fps < 40) { DRS.hi = 0; if (++DRS.lo >= 2) { DRS.lo = 0; pr = Math.max(IS_TOUCH ? 0.6 : 0.75, cur - 0.25); } } else if (fps > 56) { DRS.lo = 0; if (++DRS.hi >= 4) { DRS.hi = 0; pr = Math.min(max, cur + 0.25); } } else DRS.lo = DRS.hi = 0;
+            if (Math.abs(pr - cur) > 0.01) renderer.setPixelRatio(pr); }
         function applyGfx() {
             const g = OPT.eco ? 0 : OPT.gfx; // Akku-Sparmodus = niedrige Grafik
             renderer.setPixelRatio(g === 0 ? 1 : g === 1 ? Math.min(devicePixelRatio, 1.5) : Math.min(devicePixelRatio, 2));
