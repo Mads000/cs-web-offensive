@@ -5518,13 +5518,25 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // =====================================================================
         // Layout-Regeln: CT erreicht beide Sites deutlich schneller als T, je 3 Routen pro Map, Treppen (1–4) nur längs begehbar (Seiten zu), Stege (=) auf 2,8 m
         const MAPS = {};
-        // ── Gebäude-Karten (Raster 1 m, 2 Ebenen) ── lo = Erdgeschoss, hi = Obergeschoss auf LFH = 3,4 m
+        // ── Gebäude-Karten (Raster 1,25 m, 2 Ebenen) ── lo = Erdgeschoss, hi = Obergeschoss auf LFH = 3,8 m
         // lo: # Wand · . Boden · c Kiste · C Container · h Deckung · k Server-Rack · m Terminal · p Pfeiler · W Fenster · D Tür · 1–5 Treppe (5 = oben) · A/B Sites · T/K Spawns
         //     Einrichtung: b Fässer · x Palette · l Spind/Regal · t Tisch · f Maschine · v Marktstand · g Pflanzkübel · o Tank/Generator
         // hi: ' ' Himmel · : Luftraum unter Dach · = Boden offen · _ Boden mit Dach · # Wand · r/i Geländer (mit/ohne Dach) · Objekte & D W A B T K wie unten
         // Unbenutzte Felder werden niedrige Nebengebäude (lo '#', hi ' '); mass() = Gebäudehülle bis unters Dach
         // Regeln: Site A oben, Site B unten · 3 T-Spawns (hoch / Haupteingang / tief) · CT erreicht beide Sites zuerst · Treppen mit 2 Feldern Anlauf & Podest, keine Tür daneben
-        const LFH = 3.4;
+        const LFH = 3.8, LMS = 1.25, DOOR_H = 2.2; // Geschosshöhe (lichte Höhe EG ≈ 3,5 m) · Feldgröße der Gebäude-Karten in Metern (2 Felder = 2,5 m breite Gänge, Tür = 1 Feld)
+        function widen(lo, hi, W, H) { // Laufwege mind. 2 Felder (= 2,5 m): 1 Feld breite Engstellen aufweiten – erst Einrichtung räumen, dann dicke Wand/Füllmasse ausdünnen, oben Luftraum neben Stegen zu Boden
+            const LS = '#cChkmWpbsxltfvgo', HW = '=_ABTKD', PROP = 'cChkmpbxltfvgos', st = ch => ch >= '1' && ch <= '5', inb = (r, c) => r > 0 && c > 0 && r < H - 1 && c < W - 1;
+            const walk = (r, c, l) => inb(r, c) && (l ? HW.includes(hi[r][c]) : !LS.includes(lo[r][c])), g = l => l ? hi : lo;
+            for (let pass = 0; pass < 3; pass++) for (let l = 0; l < 2; l++) for (let r = 1; r < H - 1; r++) for (let c = 1; c < W - 1; c++) { const ch = g(l)[r][c]; if (!walk(r, c, l) || ch === 'D' || st(ch)) continue;
+                for (const [dr, dc] of [[1, 0], [0, 1]]) { if (walk(r - dr, c - dc, l) || walk(r + dr, c + dc, l)) continue; let done = false;
+                    for (const s of [1, -1]) { const a = r + dr * s, b = c + dc * s, q = g(l)[a][b]; if (inb(a, b) && PROP.includes(q)) { g(l)[a][b] = l ? (ch === '_' ? '_' : '=') : '.'; done = true; break; } } if (done) continue;
+                    for (const s of [1, -1]) { const a = r + dr * s, b = c + dc * s, a2 = a + dr * s, b2 = b + dc * s; if (!inb(a, b) || !inb(a2, b2) || st(lo[a][b])) continue; const q = g(l)[a][b];
+                        if (!l && q === '#' && lo[a2][b2] === '#' && !'Dri'.includes(hi[a][b])) { lo[a][b] = '.'; done = true; break; }
+                        if (l && q === ':' && !st(lo[a][b])) { hi[a][b] = '_'; done = true; break; } }
+                    if (done) continue;
+                    for (const s of [1, -1]) { const a = r + dr * s, b = c + dc * s, a2 = a + dr * s, b2 = b + dc * s; if (!inb(a, b) || !inb(a2, b2)) continue; if (l && hi[a][b] === '#' && hi[a2][b2] === '#' && lo[a][b] === '#') { hi[a][b] = ch === '_' ? '_' : '='; break; } } } }
+        }
         function lmap(W, H, f) { // baut lo/hi aus Bausteinen; Rand bleibt Mauer · Ergebnis: Zeilen von lo, .hi = Zeilen von hi
             const lo = [], hi = []; for (let y = 0; y < H; y++) { lo.push(Array(W).fill('#')); hi.push(Array(W).fill(' ')); }
             const put = (g, ch, x0, y0, x1 = x0, y1 = y0) => { for (let y = Math.max(1, Math.min(y0, y1)); y <= Math.min(H - 2, Math.max(y0, y1)); y++) for (let x = Math.max(1, Math.min(x0, x1)); x <= Math.min(W - 2, Math.max(x0, x1)); x++) g[y][x] = ch; };
@@ -5536,7 +5548,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 deck: (...a) => { put(lo, '.', ...a); put(hi, '=', ...a); },     // Raum mit Dachterrasse
                 tunnel: (...a) => { put(lo, '.', ...a); put(hi, '#', ...a); },   // niedriger Gang
                 stairs: (...a) => ST.push(a), _stairs: (x, y, dx, dy, w = 2) => { for (let i = 0; i < 5; i++) for (let k = 0; k < w; k++) { const X = x + dx * i + (dy ? k : 0), Y = y + dy * i + (dx ? k : 0); put(lo, String(i + 1), X, Y); put(hi, ' =i'.includes(hi[Y][X]) ? ' ' : ':', X, Y); } } };
-            f(M); for (const a of ST) M._stairs(...a); const m = lo.map(r => r.join('')); m.hi = hi.map(r => r.join('')); return m;
+            f(M); for (const a of ST) M._stairs(...a); widen(lo, hi, W, H); const m = lo.map(r => r.join('')); m.hi = hi.map(r => r.join('')); return m;
         }
         MAPS.de_dusty = lmap(44, 44, M => { // Sienna – Villa mit verstecktem Labor: A oben in der Galerie mit Oberlicht (Ost-OG), B unten im Server-Keller (West-EG)
             M.mass(8, 5, 35, 28); M.room(9, 6, 34, 11); M.room(9, 13, 16, 27); M.room(27, 13, 34, 27); M.room(18, 22, 25, 27); M.yard(18, 13, 25, 20); // Villa: Nordtrakt, West-/Ostflügel, Südhalle, Innenhof
@@ -5669,12 +5681,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
         const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 4, CRATE_H = 1.0, TALL_H = 3;
-        const LAY = !!MAP.hi, HIG = MAP.hi || null, MS = LAY ? 1 : S; // Gebäude-Karte: 1-m-Raster mit Obergeschoss (HIG) · Arenen & eigene Karten bleiben bei 4 m
+        const LAY = !!MAP.hi, HIG = MAP.hi || null, MS = LAY ? LMS : S; // Gebäude-Karte: 1,25-m-Raster mit Obergeschoss (HIG) · Arenen & eigene Karten bleiben bei 4 m
         const WORLD_W = COLS * MS, WORLD_D = ROWS * MS;
         const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, bots: 1, agTheme: 0, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
         const CFG = Object.assign({}, CFG_DEF, JSON.parse(localStorage.getItem('gamecfg') || '{}'));
         const SKILL_VAL = [0.6, 0.85, 1.05], SKILL_LBL = ['Leicht', 'Normal', 'Schwer'];
-        const BOT_SPEED = 5.2;
+        const BOT_SPEED = 5.2 * 0.73; // taktisches Tempo: wie der Spieler ~27 % langsamer
         let BOT_SKILL, ROUND_TIME, FREEZE_TIME, BOMB_TIME, WIN_SCORE, MAX_ROUNDS, BOT_LV = 0;
         // Bot-Stufe 1–10 → 0..1: Treffsicherheit 0,45–1,15 · Reaktion 0,75–1,25 s bis 0,17–0,31 s · Sicht 35–57 m · Hören 20–35 m · Sichtfeld · Granaten seltener/öfter
         const BLF = () => (BOT_LV - 1) / 9;
@@ -5974,10 +5986,10 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                     else if (ch === 'g') { Col(c + 0.1, c + 0.9, y0, y0 + 0.55, r + 0.1, r + 0.9, P.terra ? roofM2 : metalM); const t2 = mk(TK === 'de_dusty' && hh % 2 ? new THREE.ConeGeometry(0.32, 2.4, 7) : new THREE.IcosahedronGeometry(0.42, 0), hedgeM, x, y0 + (TK === 'de_dusty' && hh % 2 ? 1.75 : 0.85), z); t2.castShadow = true; scene.add(t2); } // Pflanzkübel (Zypresse/Busch)
                     else if (ch === 'o') { Hit(c + 0.08, c + 0.92, y0, y0 + 1.6, r + 0.08, r + 0.92); Cy(0.42, 0.42, 1.6, x, y0 + 0.8, z, P.terra ? stoneM : metalM, true, 14); Cy(0.44, 0.44, 0.06, x, y0 + 1.2, z, hazY); Cy(0.44, 0.44, 0.06, x, y0 + 0.4, z, darkM); Bx(x - 0.12, x + 0.12, y0 + 1.6, y0 + 1.9, z - 0.12, z + 0.12, darkM); } // Tank / Generator
                     else if (ch === 'W') { Col(c, c + 1, y0, y0 + 1.0, r, r + 1, wallM(1, 1, 1, hh), 1); Col(c, c + 1, y0 + 2.3, top, r, r + 1, wallM(1, 1, top - y0 - 2.3, hh), 1); Bx(c - 0.02, c + 1.02, y0 + 1.0, y0 + 1.06, r - 0.02, r + 1.02, trimMat); }
-                    else if (ch === 'D') { Col(c, c + 1, y0 + 2.5, top, r, r + 1, wallM(1, 1, top - y0 - 2.5, hh), 1); Bx(c, c + 1, y0 + 2.4, y0 + 2.5, r, r + 1, trimC); // Tür: Sturz + Zarge (gelb in Industrie-Karten) + Lampe
-                        for (const [dr, dc] of D4) if (at(r + dr, c + dc) === '#') { const bx = x + dc * 0.5, bz = z + dr * 0.5; BxI(bx - (dc ? 0.08 : 0.58), bx + (dc ? 0.08 : 0.58), y0, y0 + 2.5, bz - (dr ? 0.08 : 0.58), bz + (dr ? 0.08 : 0.58), trimC); }
+                    else if (ch === 'D') { Col(c, c + 1, y0 + DOOR_H, top, r, r + 1, wallM(1, 1, top - y0 - DOOR_H, hh), 1); Bx(c, c + 1, y0 + DOOR_H - 0.08, y0 + DOOR_H, r, r + 1, trimC); // Tür (1 Feld = 1,25 m breit, 2,2 m hoch): Sturz + Zarge (gelb in Industrie-Karten) + Lampe
+                        for (const [dr, dc] of D4) if (at(r + dr, c + dc) === '#') { const bx = x + dc * 0.5, bz = z + dr * 0.5; BxI(bx - (dc ? 0.08 : 0.58), bx + (dc ? 0.08 : 0.58), y0, y0 + DOOR_H, bz - (dr ? 0.08 : 0.58), bz + (dr ? 0.08 : 0.58), trimC); }
                         if (P.ind || TK === 'de_frost') { const ax = walkL(r - 1, c, l) && walkL(r + 1, c, l); strip(x, y0 + 0.02, z, ax ? 1 : 0.3, ax ? 0.3 : 1); }
-                        if (hh % 2 === 0) for (const [dr, dc] of D4) if (walkL(r + dr, c + dc, l) && (l ? !roofedH(hiC(r + dr, c + dc)) : hiC(r + dr, c + dc) === ' ')) { F(x, z, dr, dc, 0.56, 0.3, 0.12, 0.14, y0 + 2.7, lamp); pool(x + dc, y0, z + dr, 1.3); } }
+                        if (hh % 2 === 0) for (const [dr, dc] of D4) if (walkL(r + dr, c + dc, l) && (l ? !roofedH(hiC(r + dr, c + dc)) : hiC(r + dr, c + dc) === ' ')) { F(x, z, dr, dc, 0.56, 0.3, 0.12, 0.14, y0 + DOOR_H + 0.25, lamp); pool(x + dc, y0, z + dr, 1.3); } }
                     else if (l && (ch === 'r' || ch === 'i')) { const rl = q => q === 'r' || q === 'i', ax = rl(hiC(r, c - 1)) || rl(hiC(r, c + 1)) ? true : rl(hiC(r - 1, c)) || rl(hiC(r + 1, c)) ? false : HI_WALK.includes(hiC(r - 1, c)) || HI_WALK.includes(hiC(r + 1, c)), rm = P.ind || TK === 'de_frost' ? hazY : railM; // Geländer längs der Kante zum Luftraum
                         aabbs.push(ax ? { minX: c, maxX: c + 1, minZ: z - 0.06, maxZ: z + 0.06, top: FH + 1.05, bot: FH } : { minX: x - 0.06, maxX: x + 0.06, minZ: r, maxZ: r + 1, top: FH + 1.05, bot: FH });
                         if (ax) { BxI(c, c + 1, FH + 1.0, FH + 1.07, z - 0.05, z + 0.05, rm); Bx(c, c + 1, FH + 0.5, FH + 0.55, z - 0.025, z + 0.025, railM); Bx(c, c + 1, FH, FH + 0.12, z - 0.02, z + 0.02, rm); Bx(x - 0.04, x + 0.04, FH, FH + 1.0, z - 0.04, z + 0.04, railM); }
@@ -6138,7 +6150,13 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 D(W2, H, W2, x, H / 2, z, bw[hh % 3]); D(W2 + 0.4, 0.4, W2 + 0.4, x, H + 0.2, z, wallTop); if (hh % 2) D(2, 1.2, 1.6, x + 1, H + 1, z - 1, ac); if (hh % 5 === 0) D(1.6, 2.4, 1.6, x - 2, H + 1.6, z + 1.5, pipe); }
         }
         if (DSV && !LAY) cityDeco(cell, ROWS, COLS, 0, scene, 1, true);
-        if (LAY) buildLayered();
+        let HSG = null; if (LAY) { const a0 = aabbs.length, m0 = mapMeshes.length, c0 = scene.children.length; buildLayered(); HSG = layScale(a0, m0, c0); }
+        function layScale(a0, m0, c0) { // Gebäude-Karte wird in Feld-Einheiten gebaut → waagerecht auf LMS Meter je Feld strecken (Höhen bleiben): Grafik, Kollision, Treffer-Meshes
+            const k = LMS, g = new THREE.Group(); g.scale.set(k, 1, k);
+            for (let i = a0; i < aabbs.length; i++) { const b = aabbs[i]; b.minX *= k; b.maxX *= k; b.minZ *= k; b.maxZ *= k; }
+            for (const o of scene.children.slice(c0)) g.add(o);
+            for (let i = m0; i < mapMeshes.length; i++) { const o = mapMeshes[i]; if (!o.parent) { o.position.x *= k; o.position.z *= k; o.scale.x *= k; o.scale.z *= k; o.updateMatrixWorld(true); } }
+            scene.add(g); g.updateMatrixWorld(true); return g; }
         if (DSV && !LAY) { // Pflanzinseln (Erde, Blumen, Laterne) + flache Bodendetails auf freien Flächen (ohne Einfluss aufs Spiel)
             const dm = c => new THREE.MeshLambertMaterial({ color: c }), soil = dm(0x5b4636), leaf = dm(0x5f9a52), bloom = [dm(0xe0683a), dm(0xf2c230), dm(0xe8e2d6)], dark = dm(0x2b2f36), lamp = dm(0xffe6b0); lamp.emissive = new THREE.Color(0xffc060);
             const D = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = true; scene.add(o); };
@@ -6198,7 +6216,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (TK === 'de_foundry') { let n = 0; for (let r = 0; r < ROWS && n < 4; r++) for (let c = 0; c < COLS && n < 4; c++) for (const [dr, dc] of DIRS) { if (n >= 4 || cell(r + dr, c + dc) !== '.' || cellHash(r + 9, c + 2) % 13 || !free(r, c, dr, dc)) continue; used.add(r * 1000 + c); n++;
                 W2(r, c, dr, dc, 0, 2.6, 3.2, 0.28, 0.28, 1.6, rackM); W2(r, c, dr, dc, 0, 1.5, 1.0, 0.03, 0.29, 1.0, furn); W2(r, c, dr, dc, 0, 2.8, 0.25, 0.3, 0.3, 3.3, beamM); for (const lat of [-0.9, 0.9]) W2(r, c, dr, dc, lat, 0.18, 0.9, 0.04, 0.31, 2.2, hazY); } }
         }
-        { const st = scene.children.slice(staticFrom).filter(o => o.isMesh); st.forEach(o => o.updateMatrixWorld(true)); if (DSV) outlines(st); mergeStatic(st); st.forEach(o => scene.remove(o)); }
+        { if (HSG) HSG.updateMatrixWorld(true); const st = [...scene.children.slice(staticFrom), ...(HSG ? HSG.children : [])].filter(o => o.isMesh); st.forEach(o => o.updateMatrixWorld(true)); if (DSV) outlines(st); mergeStatic(st); st.forEach(o => o.parent.remove(o)); }
         if (CEIL.tex) for (const o of scene.children) if (o.isMesh && o.material && o.material.map && o.material.map.image === CEIL.tex.image) o.receiveShadow = false;
         const texFloor = makeTex(256, 256, (g, w, h2) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h2); g.strokeStyle = 'rgba(0,0,0,.07)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 2); i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h2); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); } }, WORLD_W / 8, WORLD_D / 8);
         const SPB = {}, SPBG = { T: [], CT: [] }, spawnBar = new THREE.Group(); // Spawn-Barrieren (Kaufphase): im Spawn bewegen, aber nicht hinaus · SPBG: je Spawn-Zone (Gebäude-Karten: 3 T-Zonen)
@@ -6207,6 +6225,15 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 const B = { x0: c0 * MS + 0.4, x1: (c1 + 1) * MS - 0.4, z0: r0 * MS + 0.4, z1: (r1 + 1) * MS - 0.4, grp: new THREE.Group() }, w = B.x1 - B.x0, d = B.z1 - B.z0, y0 = lvY(cs[0].l); if (!SPB[tm]) SPB[tm] = B; SPBG[tm].push(B); spawnBar.add(B.grp);
                 for (const [x, z, len, ry] of [[(B.x0 + B.x1) / 2, B.z0, w, 0], [(B.x0 + B.x1) / 2, B.z1, w, 0], [B.x0, (B.z0 + B.z1) / 2, d, Math.PI / 2], [B.x1, (B.z0 + B.z1) / 2, d, Math.PI / 2]]) { const t = bt.clone(); t.needsUpdate = true; t.repeat.set(len / 2, 1.5); const m = new THREE.Mesh(new THREE.PlaneGeometry(len, 3), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, side: THREE.DoubleSide })); m.position.set(x, y0 + 1.5, z); m.rotation.y = ry; B.grp.add(m); } }
             spawnBar.visible = false; scene.add(spawnBar); }
+        // Angreifer-Spawns zur Wahl (Gebäude-Karten): 0 hoch (OG) · 1 Haupteingang (mittig) · 2 tief (Rand) → Index in spawnGroups.T · SETUP_T: Vorsprung der Defender nach der Kaufphase
+        const SETUP_T = 3, TSPN = ['Dach / Mezzanin', 'Haupteingang', 'Tunnel / Keller'], TSPO = (() => { const g = spawnGroups.T; if (!LAY || g.length !== 3) return null; const hi = g.findIndex(s => s[0].l === 1); if (hi < 0) return null;
+            const lo = [0, 1, 2].filter(i => i !== hi), off = i => Math.abs(g[i].reduce((a, s) => a + s.c, 0) / g[i].length - COLS / 2); lo.sort((a, b) => off(a) - off(b)); return [hi, lo[0], lo[1]]; })();
+        let tspPick = -1; // eigene Wahl (0–2), -1 = Spawn der Runde
+        const tspIdx = () => TSPO && tspPick >= 0 ? TSPO[tspPick] : (G.tsp || 0) % Math.max(1, spawnGroups.T.length);
+        function placeAt(e, cells) { const c = rnd(cells), jit = Math.min(1, MS * 0.4); e.x = cx(c.c) + (Math.random() - 0.5) * jit; e.z = cx(c.r) + (Math.random() - 0.5) * jit; e.y = lvY(c.l); e.vy = 0; }
+        function pickTSpawn(i) { tspPick = i; if (player.team === 'T' && TSPO && G.state === 'freeze' && player.alive) { useSpawn('T', TSPO[i]); placeAt(player, spawnGroups.T[TSPO[i]]); } buyCache = ''; if (buyOpen) renderBuy(); }
+        const setupOn = () => !DM.on && !GL.on && !DH.on && !EX.on && !!SPB.T;
+        function setupStart() { G.setupT = SETUP_T; for (const B of SPBG.CT) B.grp.visible = false; if (player.team === 'T') msg('Tore öffnen in ' + SETUP_T + ' s', 'Die Defender positionieren sich', SETUP_T); else if (player.team === 'CT') msg('Positioniert euch!', 'Die Angreifer kommen in ' + SETUP_T + ' s', SETUP_T); }
         function useSpawn(tm, i) { const L = SPBG[tm]; if (!L.length) return; i = i % L.length; SPB[tm] = L[i]; L.forEach((B, j) => B.grp.visible = j === i); } // aktive Spawn-Zone (Barriere) wählen
         const barrierOn = () => !DM.on && !GL.on && !DH.on && !EX.on && !!SPB[player.team];
         function vFloorPaint(tex) { const g = tex.image.getContext('2d'); g.fillStyle = 'rgba(70,55,45,.16)'; g.fillRect(0, 0, 256, 256); for (let i = 0; i < 18; i++) { const x = Math.random() * 256, y = Math.random() * 256, r = 40 + Math.random() * 70, lt = i % 2; for (const [ox, oy] of [[0, 0], [256, 0], [-256, 0], [0, 256], [0, -256]]) { const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); gr.addColorStop(0, lt ? 'rgba(255,250,240,.07)' : 'rgba(40,30,20,.06)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); } } tex.needsUpdate = true; } // nahtlos gekachelt
@@ -7289,7 +7316,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e === player ? 'color:var(--acc);font-weight:bold' : ''}"><span>${i + 1}. ${e.name}${e === player ? ' (Du)' : ''}</span><b>${e.kills} / ${e.deaths}</b></div>`).join('')}
 <div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div></div><div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button><a class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" style="margin-top:16px">💬 Komm auf unseren Discord</a></div>`);
         }
-        function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; const sb = $('sub'); sb.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .55s cubic-bezier(.2, .8, .3, 1) both'; if (b) sb.style.animation = 'subin .45s .15s ease-out both'; } function placeTeam(team) { const gs = spawnGroups[team], gi = team === 'T' ? G.tsp || 0 : 0; useSpawn(team, gi); const cells = shuffle((gs.length > 1 ? gs[gi % gs.length] : spawnCells[team]).slice()), jit = Math.min(1, MS * 0.4); let i = 0; for (const e of ents) { if (e.team !== team) continue; const c = cells[i++ % cells.length]; e.x = cx(c.c) + (Math.random() - 0.5) * jit; e.z = cx(c.r) + (Math.random() - 0.5) * jit; e.y = lvY(c.l); e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
+        function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; const sb = $('sub'); sb.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .55s cubic-bezier(.2, .8, .3, 1) both'; if (b) sb.style.animation = 'subin .45s .15s ease-out both'; } function placeTeam(team) { const gs = spawnGroups[team], gi = team === 'T' ? G.tsp || 0 : 0, pick = team === 'T' && TSPO; useSpawn(team, pick ? tspIdx() : gi); const pools = gs.length > 1 ? gs.map(g => shuffle(g.slice())) : [shuffle(spawnCells[team].slice())], used = pools.map(() => 0), jit = Math.min(1, MS * 0.4); let k = 0; for (const e of ents) { if (e.team !== team) continue; const pi = gs.length > 1 ? (pick ? (e.isPlayer ? tspIdx() : (gi + k++) % gs.length) : gi % gs.length) : 0, c = pools[pi][used[pi]++ % pools[pi].length]; /* T: eigener Spieler am gewählten Spawn, Bots über alle Spawns verteilt */ e.x = cx(c.c) + (Math.random() - 0.5) * jit; e.z = cx(c.r) + (Math.random() - 0.5) * jit; e.y = lvY(c.l); e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
         // Spaß-Modus „Waffen": 1 = nur Pistolen (Primärwaffe weg), 2 = nur AWP (gratis für alle)
         function funLoadout(e) { if (!CFG.wpn) return; if (e.isPlayer) e.weapons[1] = CFG.wpn === 2 ? mkWeapon(W.awp) : null; else if (!e.remote) { e.weapon = CFG.wpn === 2 ? W.awp : e.weapon.slot === 1 ? (e.team === 'T' ? W.glock : W.usp) : e.weapon; e.ammo = e.weapon.mag; } }
         function botBuy(b) {
@@ -7326,7 +7353,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             later(() => { for (const fq of seq.slice(-3)) tone(fq, 0.8, 0.05, 0, 'sine'); }, seq.length * 95); }
         function startRound() {
             roundKills = 0; G.aw = null; G.eqv = null;
-            clearDrops(); clearNades(); clearBlood(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, y: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear(); G.tsp = cellHash(G.round, G.score.CT * 31 + G.score.T * 7) % 3; // T-Spawn-Zone dieser Runde (online überall gleich)
+            clearDrops(); clearNades(); clearBlood(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, y: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear(); G.setupT = 0; G.tsp = cellHash(G.round, G.score.CT * 31 + G.score.T * 7) % 3; // T-Spawn-Zone dieser Runde (online überall gleich)
             const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } funLoadout(p); p.weapons[5] = null; p.alive = true; p.health = 100;
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.rk = 0; p.rushT = 0; p.immune = false; STK.on = false; p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); funLoadout(b); }
             placeTeam('T'); placeTeam('CT');
@@ -7371,8 +7398,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         }
         function updateRound(dt) {
             if (DM.on && G.state === 'live') { G.timer -= dt; for (const b of bots) dmDeadTick(b, dt); if (G.timer <= 0 || ents.some(e => e.kills >= DM.limit)) { gameOver(); return; } if (G.msgT > 0) { G.msgT -= dt; if (G.msgT <= 0) { $('msg').textContent = ''; $('sub').textContent = ''; } } return; }
-            spawnBar.visible = G.state === 'freeze' && barrierOn();
-            if (G.state === 'freeze') { G.t -= dt; if (G.t <= 0) { G.state = 'live'; G.eqv = { CT: 0, T: 0 }; for (const e of ents) if (e.alive && (e.team === 'CT' || e.team === 'T')) G.eqv[e.team] += eqVal(e); } } // Ausrüstungswert für THRIFTY
+            if (G.state === 'freeze') { G.t -= dt; if (G.t <= 0) { G.state = 'live'; if (setupOn()) setupStart(); G.eqv = { CT: 0, T: 0 }; for (const e of ents) if (e.alive && (e.team === 'CT' || e.team === 'T')) G.eqv[e.team] += eqVal(e); } } // Ausrüstungswert für THRIFTY
             else if (G.state === 'live') {
                 if (G.bomb.state === 'planted') { G.bomb.t -= dt; G.beepT -= dt; bombRing.position.set(G.bomb.x, 0.05, G.bomb.z); bombRing.material.opacity = Math.max(0.12, bombRing.material.opacity - dt * 1.2); if (G.beepT <= 0) { sfx('beep', G.bomb.x, G.bomb.z); bombRing.material.opacity = 0.6; if (G.bomb.t < 10) tone(700 + (1 - G.bomb.t / 10) * 900, 0.07, 0.06, 0, 'triangle'); G.beepT = 0.15 + (G.bomb.t / BOMB_TIME) * 0.85; bombLed.material.color.setHex(0xff2020); setTimeout(() => bombLed.material.color.setHex(0x400000), 90); } if (G.bomb.t <= 0) explode(); }
                 else { G.timer -= dt; if (G.timer <= 0) endRound('CT', 'Zeit abgelaufen'); }
@@ -7540,7 +7566,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         function updateBot(b, dt) {
             if (b.flashT > 0) { b.flashT -= dt; if (b.flashT <= 0) b.flash.visible = false; }
             if (!b.alive) return;
-            if (G.state === 'freeze') { b.mesh.position.set(b.x, b.y || 0, b.z); b.mesh.rotation.y = b.yaw; return; }
+            if (G.state === 'freeze' || (G.setupT > 0 && b.team === 'T')) { b.mesh.position.set(b.x, b.y || 0, b.z); b.mesh.rotation.y = b.yaw; return; } // T-Bots warten auch in der Vorbereitungsphase
             b.moving = false; b.wantMove = false; const ox = b.x, oz = b.z;
             if (b.blindT > 0) { b.blindT -= dt; b.target = null; b.yaw += Math.sin(now * 3 + b.id) * dt * 2; b.mesh.position.set(b.x, b.y || 0, b.z); b.mesh.rotation.y = b.yaw; return; }
             b.losT -= dt; if (b.losT <= 0) { b.losT = 0.22 + Math.random() * 0.1; const t = findEnemy(b); if (t !== b.target) { b.target = t; if (t) b.reaction = BOT_LV ? 0.75 - 0.58 * BLF() + Math.random() * (0.5 - 0.36 * BLF()) : 0.3 + Math.random() * 0.5; } }
@@ -7562,7 +7588,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 }
                 b.path = []; b.goal = null;
             } else { b.crouch = false; if (GL.on) { glBotHunt(b, dt); } else if (DM.on) { if (!botPickup(b, dt)) dmBotRoam(b, dt); } else if (!botPickup(b, dt)) { botHelp(b, dt); botObjective(b, dt); } } b.speed = Math.hypot(b.x - ox, b.z - oz) / Math.max(dt, 0.001);
-            if (b.moving) { b.stepT -= dt; if (b.stepT <= 0) { b.stepT = 0.4; sfx('step', b.x, b.z); } }
+            if (b.moving) { b.stepT -= dt; if (b.stepT <= 0) { b.stepT = 0.48; sfx('step', b.x, b.z); } }
             b.stuckT += dt; if (b.stuckT > 0.7) { if (b.wantMove && Math.hypot(b.x - b.lastX, b.z - b.lastZ) < 0.25) { b.goal = null; b.path = []; b.waitT = 0; collideMove(b, (Math.random() - 0.5), (Math.random() - 0.5)); } b.lastX = b.x; b.lastZ = b.z; b.stuckT = 0; }
             b.y = groundAt(b);
             const ts = b.crouch ? 0.72 : 1; b.mesh.scale.y += (ts - b.mesh.scale.y) * Math.min(1, dt * 10);
@@ -7669,7 +7695,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             hold('tBoard', () => { const b = $('board'); if (b.style.display === 'block') b.style.display = 'none'; else { renderBoard(); b.style.display = 'block'; } });
             // Doppeltipp auf die Tab-Ansicht → Pause-Menü (wie Esc am PC)
             let boardTap = 0; $('board').addEventListener('touchend', e => { const t = performance.now(); if (t - boardTap < 350) { e.preventDefault(); boardTap = 0; $('board').style.display = 'none'; mobPause(); } else boardTap = t; });
-        } const ACCEL = 40, FRICTION = 5, STOP_FRICTION = 10, AIR_ACCEL = 10; // Trägheit: kurz verzögertes Beschleunigen & Abbremsen – die Gegentaste (Counter-Strafe) stoppt sofort
+        } const ACCEL = 40, FRICTION = 5, STOP_FRICTION = 14, AIR_ACCEL = 10, MOVE_K = 0.73; // MOVE_K: taktisches Grundtempo (−27 %) · STOP_FRICTION: etwas kräftigeres Abbremsen beim Loslassen // Trägheit: kurz verzögertes Beschleunigen & Abbremsen – die Gegentaste (Counter-Strafe) stoppt sofort
         // Leichte Zielhilfe (nur Touch): zieht das Fadenkreuz sanft zum nächsten sichtbaren Gegner im kleinen Kegel, beim Schießen etwas stärker
         function aimAssist(dt) {
             const p = player; if (!p.alive || FC.on || DH.on || buyOpen || G.state === 'freeze' || (GL.on && GL.phase !== 'duel')) return;
@@ -7686,12 +7712,12 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             p.yaw += bY * Math.min(1, k); p.pitch = clamp(p.pitch + bP * Math.min(1, k), -1.5, 1.5);
         }
         function updatePlayer(dt) {
-            const p = player; if (p.vx === undefined) { p.vx = 0; p.vz = 0; }
-            if (G.state === 'freeze' && barrierOn()) { const B = SPB[p.team]; p.x = clamp(p.x, B.x0, B.x1); p.z = clamp(p.z, B.z0, B.z1); } const canMove = p.alive && (G.state !== 'freeze' || barrierOn()); // Kaufphase: Bewegung im Spawn erlaubt
+            const p = player; if (p.vx === undefined) { p.vx = 0; p.vz = 0; } if (G.setupT > 0) { G.setupT -= dt; if (G.setupT <= 0 && p.team === 'T' && G.state === 'live') msg('Los!', 'Die Tore sind offen', 1.2); } spawnBar.visible = (G.state === 'freeze' || G.setupT > 0) && barrierOn(); // Vorbereitungsphase: Defender frei, Angreifer noch hinter dem Tor
+            if ((G.state === 'freeze' || (G.setupT > 0 && p.team === 'T')) && barrierOn()) { const B = SPB[p.team]; p.x = clamp(p.x, B.x0, B.x1); p.z = clamp(p.z, B.z0, B.z1); } const canMove = p.alive && (G.state !== 'freeze' || barrierOn()); // Kaufphase: Bewegung im Spawn erlaubt
             const f = canMove ? ((down('fwd') ? 1 : 0) - (down('back') ? 1 : 0) + TOUCH.f) : 0;
             const s = canMove ? ((down('right') ? 1 : 0) - (down('left') ? 1 : 0) + TOUCH.s) : 0;
             const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
-            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); if (p.rushT > 0) p.rushT -= dt; let max = 0.92 * (p.tagT > now ? 0.55 : 1) * (p.rushT > 0 ? 1.2 : 1) * (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * (p.immune ? 1 : slowAt(p.x, p.z)) * CFG.speed / 100; p.walk = canMove && !p.crouch && down('walk'); if (p.crouch) max *= 0.45; else if (p.walk) max *= 0.52; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - (wl > 0 ? FRICTION : STOP_FRICTION) * dt); p.vx *= fr; p.vz *= fr; }
+            let wx = fx * f + rx * s, wz = fz * f + rz * s; const wl = Math.hypot(wx, wz); if (wl > 1) { wx /= wl; wz /= wl; } p.crouch = canMove && down('crouch'); if (p.rushT > 0) p.rushT -= dt; let max = MOVE_K * 0.92 * (p.tagT > now ? 0.55 : 1) * (p.rushT > 0 ? 1.2 : 1) * (curDef().speed || 6.5) * (GL.on ? (p.spdMul || 1) : 1) * (p.immune ? 1 : slowAt(p.x, p.z)) * CFG.speed / 100; p.walk = canMove && !p.crouch && down('walk'); if (p.crouch) max *= 0.45; else if (p.walk) max *= 0.52; if (p.scoped) max *= 0.6; if (p.onGround) { const fr = Math.max(0, 1 - (wl > 0 ? FRICTION : STOP_FRICTION) * dt); p.vx *= fr; p.vz *= fr; }
             let braked = false; // Counter-Strafing: Gegentaste bremst sehr schnell bis exakt 0 (1 Tick Stillstand = präziser Schuss), danach normale Beschleunigung
             if (p.onGround && wl > 0.01) { const sp = Math.hypot(p.vx, p.vz); if (sp > 0.05 && (p.vx * wx + p.vz * wz) / sp < -0.3) { const ns = Math.max(0, sp - max * 14 * dt); p.vx *= ns / sp; p.vz *= ns / sp; braked = ns === 0; } }
             const acc = p.onGround ? ACCEL : AIR_ACCEL;
@@ -7702,7 +7728,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             p.speed = Math.hypot(p.vx, p.vz);
             if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ const py0 = p.y; p.y += p.vy * dt; if (p.vy > 0) { const cb = ceilAt(p, py0); if (p.y + 1.85 > cb) { p.y = Math.max(py0, cb - 1.85); p.vy = 0; } } /* Kopf an der Decke */ const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { p.landK = clamp(-p.vy / 11, 0.25, 1); sfx('land'); shake = Math.max(shake, 0.02 * p.landK); fovKick = Math.max(fovKick, 1.5); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
             const te = p.alive ? (p.crouch ? 1.15 : 1.7) : 0.35; p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
-            if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.39 + Math.random() * 0.06; sfx('step'); } } else p.stepT = 0.1;
+            if (p.speed > 3 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.46 + Math.random() * 0.06; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
             p.recoil = Math.max(0, p.recoil - dt * 5); p.moving = p.speed > 0;
             specHide(!p.alive && !FC.on ? specTarget : null); if (NET.spec) specTick();
@@ -7863,7 +7889,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 });
                 h += `</div>`;
             });
-            const uc = SHOP.findIndex(c => c.ult); h += `</div>` + (uc < 0 || GL.on || DH.on || EX.on ? '' : `<div class="bult"><span>ULTIMATE</span>${SHOP[uc].items.map((it, ii) => `<div class="card${ultK() === it.u ? ' own' : ''}" data-b="${uc}-${ii}"><b>${it.label}</b><div class="cprice">${ultK() === it.u ? '✓ Gewählt' : ULTS[it.u][1]}</div></div>`).join('')}</div>`) + `<div class="bfoot"><span>🖱️ Klicken zum Kaufen${IS_TOUCH ? '' : ' · Rechtsklick verkaufen'}</span><span>[B] schließen</span></div>`;
+            const uc = SHOP.findIndex(c => c.ult); h += `</div>` + (p.team === 'T' && TSPO && G.state === 'freeze' ? `<div class="bult"><span>SPAWN</span>${TSPN.map((n, i) => `<div class="card${tspPick === i ? ' own' : ''}" data-sp="${i}"><b>${['▲', '■', '▼'][i]} ${n}</b><div class="cprice">${tspPick === i ? '✓ Gewählt' : ['Hoch', 'Mitte', 'Tief'][i]}</div></div>`).join('')}</div>` : '') + (uc < 0 || GL.on || DH.on || EX.on ? '' : `<div class="bult"><span>ULTIMATE</span>${SHOP[uc].items.map((it, ii) => `<div class="card${ultK() === it.u ? ' own' : ''}" data-b="${uc}-${ii}"><b>${it.label}</b><div class="cprice">${ultK() === it.u ? '✓ Gewählt' : ULTS[it.u][1]}</div></div>`).join('')}</div>`) + `<div class="bfoot"><span>🖱️ Klicken zum Kaufen${IS_TOUCH ? '' : ' · Rechtsklick verkaufen'}</span><span>[B] schließen</span></div>`;
             if (h !== buyCache) { buyCache = h; $('buy').innerHTML = h; }
         }
         function openBuy() { if (!canBuy() || buyOpen) return; buyOpen = true; buyCache = ''; renderBuy(); $('buy').style.display = 'block'; if (locked) document.exitPointerLock(); } function closeBuy() { if (!buyOpen) return; buyOpen = false; $('buy').style.display = 'none'; if (started && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); }
@@ -7896,6 +7922,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             const [ci, ii] = c.dataset.b.split('-').map(Number); sell(SHOP[ci].items[ii]);
         });
         $('buy').addEventListener('click', e => {
+            const sp = e.target.closest('[data-sp]'); if (sp) { pickTSpawn(+sp.dataset.sp); return; } // Angreifer-Spawn wählen
             const c = e.target.closest('[data-b]'); if (!c) return;
             const [ci, ii] = c.dataset.b.split('-').map(Number);
             buy(SHOP[ci].items[ii]);
@@ -11533,12 +11560,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             p.alive = true; p.health = 100; p.vx = p.vz = 0; p.vy = 0; p.pitch = 0; setScoped(false); p.weapons[5] = null; if (!p.weapons[2]) p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp);
             if (CFG.wpn) { funLoadout(p); p.slot = p.weapons[1] ? 1 : 2; updateVM(); }
             p.slot = p.weapons[1] ? 1 : 2; updateVM();
-            if (DM.on) dmRespawn(p); else { const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = lvY(c.l); } $('dead').style.display = 'none';
+            G.setupT = 0; if (DM.on) dmRespawn(p); else { const gs = spawnGroups[p.team]; G.tsp = cellHash(G.round, G.score.CT * 31 + G.score.T * 7) % 3; if (gs.length > 1) { const gi = p.team === 'T' ? tspIdx() : 0; useSpawn(p.team, gi); placeAt(p, gs[gi]); } else { const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = lvY(c.l); } } $('dead').style.display = 'none';
             G.state = FREEZE_TIME > 0 ? 'freeze' : 'live'; G.t = FREEZE_TIME; G.timer = DM.on ? DM.time : ROUND_TIME; msg(DM.on ? '💀 Deathmatch' : 'Runde ' + G.round, DM.on ? 'Jeder gegen jeden · Waffen gratis' : '', 3); openBuy(true); if (NET.spec) specRound();
         }
         function applySnap(m) {
             const prev = G.bomb.state;
-            if (m.gs === 'freeze' || m.gs === 'live') { G.state = m.gs; G.t = m.gt; }
+            if (m.gs === 'freeze' || m.gs === 'live') { if (G.state === 'freeze' && m.gs === 'live' && setupOn()) setupStart(); G.state = m.gs; G.t = m.gt; }
             G.timer = m.tm; G.score = m.sc; G.round = m.rd; G.bomb.state = m.bs; G.bomb.x = m.bx; G.bomb.z = m.bz; G.bomb.y = m.by || 0;
             if (m.bs === 'planted' && prev !== 'planted') msg('Die Bombe wurde platziert!', '', 3);
             if (m.bs === 'exploded' && prev !== 'exploded') { sfx('explosion'); whiteFlash = 1; shake = 1; boomMesh.position.set(m.bx, (m.by || 0) + 1, m.bz); boomMesh.visible = true; boomT = 0.7; if (player.alive) { const d = Math.hypot(player.x - m.bx, player.z - m.bz); if (d < 16) applyDamage(player, 400 * (1 - d / 16), null, null, false); } } bombMesh.visible = (m.bs === 'planted' || m.bs === 'dropped'); bombMesh.position.set(m.bx, m.by || 0, m.bz);
@@ -11570,7 +11597,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const k = Math.min(1, dt * 12);
             for (const rp of NET.players.values()) {
                 if (!rp.alive) { rp.mesh.position.set(rp.x, (rp.y || 0) + 0.3, rp.z); continue; }
-                const ox = rp.x, oz = rp.z; rp.x += (rp.tx - rp.x) * k; rp.y += (rp.ty - rp.y) * k; rp.z += (rp.tz - rp.z) * k; { const dd = Math.hypot(rp.x - ox, rp.z - oz), sp = dd / Math.max(0.001, now - (rp._nt || now)); rp._nt = now; if (sp > 4) { rp._sd = (rp._sd || 0) + dd; if (rp._sd > 2.3) { rp._sd = 0; sfx('step', rp.x, rp.z); } } } rp.yaw = lerpAngle(rp.yaw, rp.tyaw, k); // Schritte von Mitspielern/Gegnern online; Blickrichtung weich übernehmen (stand versehentlich im Kommentar)
+                const ox = rp.x, oz = rp.z; rp.x += (rp.tx - rp.x) * k; rp.y += (rp.ty - rp.y) * k; rp.z += (rp.tz - rp.z) * k; { const dd = Math.hypot(rp.x - ox, rp.z - oz), sp = dd / Math.max(0.001, now - (rp._nt || now)); rp._nt = now; if (sp > 3) { rp._sd = (rp._sd || 0) + dd; if (rp._sd > 2.1) { rp._sd = 0; sfx('step', rp.x, rp.z); } } } rp.yaw = lerpAngle(rp.yaw, rp.tyaw, k); // Schritte von Mitspielern/Gegnern online; Blickrichtung weich übernehmen (stand versehentlich im Kommentar)
                 rp.mesh.position.set(rp.x, rp.y, rp.z); rp.mesh.rotation.y = rp.yaw + Math.PI; /* Kamera-Blick → Modell-Vorderseite (um 180° gedreht) */
             }
         }
