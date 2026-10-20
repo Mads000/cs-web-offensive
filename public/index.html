@@ -5782,14 +5782,14 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 INK.mat = new THREE.ShaderMaterial({ depthTest: false, depthWrite: false, uniforms: { tC: { value: INK.rt.texture }, tD: { value: dt }, px: { value: new THREE.Vector2() }, cn: { value: 0.05 }, cf: { value: 400 }, fd: { value: new THREE.Vector2(30, 170) }, ink: { value: new THREE.Color(0x0b0d12) } },
                     vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
                     fragmentShader: `uniform sampler2D tC, tD; uniform vec2 px, fd; uniform float cn, cf; uniform vec3 ink; varying vec2 vUv;
-                        float W(vec2 o) { float d = texture2D(tD, vUv + o * px * 1.6).x; float z = d * 2.0 - 1.0; return (cf + cn - z * (cf - cn)) / (2.0 * cn * cf); }
+                        float W(vec2 o) { float d = texture2D(tD, vUv + o * px * 0.8).x; float z = d * 2.0 - 1.0; return (cf + cn - z * (cf - cn)) / (2.0 * cn * cf); }
                         void main() { vec4 col = texture2D(tC, vUv); float c = W(vec2(0.0)), l = W(vec2(-1.0, 0.0)), r = W(vec2(1.0, 0.0)), u = W(vec2(0.0, 1.0)), d = W(vec2(0.0, -1.0));
                             float zc = 1.0 / c, sil = max(max(c - l, c - r), max(c - u, c - d)) / c;
                             float crs = abs(l + r + u + d - 4.0 * c) / c;
                             float e = max(smoothstep(0.06, 0.12, sil), smoothstep(0.001, 0.004, crs) * step(sil, 0.06)) * (1.0 - smoothstep(fd.x, fd.y, zc)) * step(1.001 / cf, c);
                             vec3 o = col.rgb; float lu = dot(o, vec3(0.299, 0.587, 0.114)); o = mix(vec3(lu), o, 1.3); o = clamp((o - 0.5) * 1.12 + 0.5, 0.0, 1.0);
                             vec2 hp = gl_FragCoord.xy / 5.0; hp = vec2(hp.x + hp.y, hp.y - hp.x) * 0.7071; float dt = length(fract(hp) - 0.5), sh = clamp((0.42 - lu) / 0.3, 0.0, 1.0); o *= 1.0 - 0.22 * step(dt, 0.42 * sqrt(sh)) * step(0.001, sh); /* Halbtonraster im Schatten */
-                            o = mix(o, ink, e * 0.95); vec2 q = vUv - 0.5; o *= 1.0 - dot(q, q) * 0.45;
+                            o = mix(o, ink, e * 0.85); vec2 q = vUv - 0.5; o *= 1.0 - dot(q, q) * 0.45;
                             gl_FragColor = vec4(o, 1.0); }` });
                 INK.sc = new THREE.Scene(); INK.sc.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), INK.mat)); INK.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1); }
             renderer.getDrawingBufferSize(INK.sz); if (INK.rt.width !== INK.sz.x || INK.rt.height !== INK.sz.y) { INK.rt.setSize(INK.sz.x, INK.sz.y); INK.mat.uniforms.px.value.set(1 / INK.sz.x, 1 / INK.sz.y); }
