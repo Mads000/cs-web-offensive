@@ -2256,7 +2256,32 @@ body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy 
 .mob #money { left: max(16px, env(safe-area-inset-left)) !important; right: auto !important; bottom: 10px !important }
 .mob #br { right: auto !important; left: 50% !important; bottom: 50px !important; transform: translateX(-50%) scale(.55) !important; transform-origin: bottom center !important; text-align: center }
 .mob #timer, .mob #score, .mob #roundlbl { text-shadow: 0 1px 3px #000, 0 0 8px rgba(0,0,0,.8) }
-.mob #tWalk { left: max(24px, env(safe-area-inset-left)); bottom: 236px; } .mob #tWalk.on { background: #ffd040 !important; color: #111 !important; border-color: #ffd040 !important; box-shadow: 0 0 12px rgba(255,208,64,.6) }
+/* ── Handy-Knöpfe: rechtes Cluster im Bogen um den Feuerknopf, Hilfsknöpfe als Spalte daneben ── */
+.mob .tb { background: radial-gradient(circle at 50% 30%, rgba(44,56,70,.66), rgba(10,14,20,.66)); border: 1.5px solid rgba(236,232,225,.26); color: #f2efe9; box-shadow: 0 2px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08); transition: background .12s, transform .08s }
+.mob .tb:not(.spec):active { background: rgba(var(--hl-rgb),.55); transform: scale(calc(var(--tbs,1) * .92)) }
+.mob #tFire, .mob #tFire2 { background: radial-gradient(circle at 50% 30%, rgba(232,98,72,.62), rgba(150,40,30,.58)); border-color: rgba(255,175,155,.55) }
+.mob .tb.on { background: #ffd040 !important; color: #111 !important; border-color: #ffd040 !important; box-shadow: 0 0 12px rgba(255,208,64,.6) }
+.mob #tFire { right: max(40px, env(safe-area-inset-right)); bottom: 30px; width: 92px; height: 92px }
+.mob #tJump { right: 160px; bottom: 60px; width: 62px; height: 62px }
+.mob #tCrouch { right: 138px; bottom: 130px; width: 52px; height: 52px }
+.mob #tWalk { right: 78px; bottom: 150px; width: 52px; height: 52px }
+.mob #tScope { right: max(10px, env(safe-area-inset-right)); bottom: 132px }
+.mob #tReload { right: 150px; bottom: 196px }
+.mob #tNext { right: 86px; bottom: 214px }
+.mob #tUse { right: 236px; bottom: 72px; width: 52px; height: 52px }
+.mob #tPing { right: 239px; bottom: 134px; width: 46px; height: 46px }
+.mob #tAbil { right: 239px; bottom: 188px; width: 46px; height: 46px }
+/* ── Handy-Kaufmenü: alle Kategorien nebeneinander, kompakte Karten → kein Scrollen ── */
+body.mob #buy .bhead { padding: 6px 14px }
+body.mob #buy .bgrid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; padding: 6px 10px }
+body.mob #buy .bcol { min-width: 0; padding: 0; gap: 4px }
+body.mob #buy .bcol h4 { font-size: 9px; padding: 3px 0; letter-spacing: .1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+body.mob #buy .card { min-height: 0; padding: 5px 7px }
+body.mob #buy .card b { display: block; font-size: 11px; letter-spacing: .03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+body.mob #buy .cstats, body.mob #buy .bfoot { display: none }
+body.mob #buy .cprice { font-size: 11px }
+body.mob #buy .bult { padding: 2px 10px 6px; gap: 6px } body.mob #buy .bult .card { flex: 1; min-width: 0 }
+html.dsV body:not(.mob) #buy .card { min-height: 56px }
 #rban { position: fixed; left: 50%; top: 33%; transform: translateX(-50%); z-index: 7; pointer-events: none; text-align: center; opacity: 0; --ac: #ff7a5c } #rban.mine { --ac: var(--hl, #e8c98a) }
 #rban b { display: block; font: 900 54px Rajdhani, sans-serif; letter-spacing: .32em; padding-left: .32em; color: #fff; text-shadow: 0 0 22px var(--ac), 0 3px 0 rgba(0,0,0,.45) }
 #rban span { display: inline-block; margin-top: 2px; padding: 3px 16px; font: 700 15px Rajdhani, sans-serif; letter-spacing: .14em; color: #111; background: var(--ac); clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%) }
@@ -5335,7 +5360,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             <div class="tb" id="tJump">⤒</div>
             <div class="tb" id="tCrouch">⤓</div>
             <div class="tb" id="tReload">↻</div>
-            <div class="tb" id="tWalk" title="Leise gehen"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 4 4 12h4.5v7h7v-7H20z"/></svg></div>
+            <div class="tb" id="tWalk" title="Leise gehen"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 4v14"/><path d="m6 12 6 6 6-6"/><path d="M6 21h12"/></svg></div>
             <div class="tb" id="tUse" title="Aufheben · Fallenlassen · Entschärfen"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12"/><path d="M11 11.5v-2a1.5 1.5 0 0 1 3 0V12"/><path d="M14 10.5a1.5 1.5 0 0 1 3 0V12"/><path d="M17 11.5a1.5 1.5 0 0 1 3 0V16a6 6 0 0 1-6 6h-2a6 6 0 0 1-5.2-3L4.3 14.6a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg></div>
             <div class="tb" id="tScope">⊕</div>
             <div class="tb" id="tPing" title="Pingen"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
@@ -7415,7 +7440,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             hold('tFire2', () => { mouseDown = true; clickQueued = true; }, () => mouseDown = false); hold('tJump', () => keys[BIND.jump] = true, () => keys[BIND.jump] = false);
             let useT = 0; hold('tUse', () => { keys[BIND.use] = true; useT = performance.now(); }, () => { // ✋ halten: entschärfen · tippen: aufheben, sonst Waffe fallen lassen
                 const p = player, tap = keys[BIND.use] && performance.now() - useT < 300, nb = G.bomb.state === 'planted' && p.team === 'CT' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2; keys[BIND.use] = false; if (tap && !nb && started && !gameEnded && p.alive) dropCurrent(); });
-            hold('tCrouch', () => keys[BIND.crouch] = !keys[BIND.crouch]); hold('tWalk', () => { keys[BIND.walk] = !keys[BIND.walk]; $('tWalk').classList.toggle('on', !!keys[BIND.walk]); }); // Shift umschalten
+            hold('tCrouch', () => { keys[BIND.crouch] = !keys[BIND.crouch]; $('tCrouch').classList.toggle('on', !!keys[BIND.crouch]); }); hold('tWalk', () => { keys[BIND.walk] = !keys[BIND.walk]; $('tWalk').classList.toggle('on', !!keys[BIND.walk]); }); // Shift umschalten
             hold('tReload', () => startReload());
             hold('tScope', () => toggleScope());
             hold('tAbil', () => inspectWeapon()); hold('tPing', () => doPing()); // 🔍 Waffe inspizieren (Fähigkeit & Taktik: Symbol antippen)
