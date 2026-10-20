@@ -5384,7 +5384,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         if (document.documentElement.classList.contains('dsV')) { // Comic-Look (neues Design): Cel-Shading – alle Lambert-Materialien werden Toon-Materialien mit 3 harten Lichtstufen
-            const grad = new THREE.DataTexture(new Uint8Array([110, 110, 110, 255, 165, 165, 165, 255, 215, 215, 215, 255]), 3, 1, THREE.RGBAFormat); grad.minFilter = grad.magFilter = THREE.NearestFilter; grad.generateMipmaps = false; grad.needsUpdate = true;
+            const grad = new THREE.DataTexture(new Uint8Array([89, 89, 89, 255, 179, 179, 179, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat); grad.minFilter = grad.magFilter = THREE.NearestFilter; grad.generateMipmaps = false; grad.needsUpdate = true;
             THREE.MeshLambertMaterial = class extends THREE.MeshToonMaterial { constructor(p) { const fs2 = p && p.flatShading; if (p) delete p.flatShading; super(p); this.gradientMap = grad; if (fs2) this.flatShading = true; } };
         }
         (() => { 'use strict'; // Anti-Cheat: alles lokal in dieser Funktion – Konsolen-Skripte kommen nicht an player, bots, updatePlayer & Co.
@@ -5518,163 +5518,113 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // =====================================================================
         // Layout-Regeln: CT erreicht beide Sites deutlich schneller als T, je 3 Routen pro Map, Treppen (1–4) nur längs begehbar (Seiten zu), Stege (=) auf 2,8 m
         const MAPS = {};
-        MAPS.de_dusty = [
-            "############################",
-            "#.........#.KKKKKK.#......c#",
-            "#..BBBB...#.KKKKKK.#.AAAA..#",
-            "#..BBBB.c.D........D.AAAA..#",
-            "#.CBBBB...#........#.AAAA..#",
-            "#..BBBB...#..c..c..#.AAAA..#",
-            "#......hh.##......##..hh...#",
-            "##..####.#####..####..##..##",
-            "#....#RDRR#..c..c..#==#....#",
-            "#.c..#R##R#........#==#..C.#",
-            "#.c..#RRcR#..##....#44#D##.#",
-            "#....#RRRR#...C....#33#RRRR#",
-            "#.#..#RRRRD........#22#hRRR#",
-            "#..c.######..#.....#11#RRRR#",
-            "#..c.######..#..........##.#",
-            "#.........#..c..s..####W#..#",
-            "#....#..c....c.....####....#",
-            "#C...W....##.......####..c.#",
-            "##...######......h.####....#",
-            "#..h.######...##...####....#",
-            "##..#######W#....#######..##",
-            "#....c..#....hh....#..c....#",
-            "#..##...#..........#...##..#",
-            "#..........TTTTTT..........#",
-            "#..#.......TTTTTT.......#..#",
-            "#....c..##.TTTTTT.##..c....#",
-            "#.......#..........#.......#",
-            "############################"
-        ];
-        MAPS.de_bazaar = [
-            "############################",
-            "#......#..........#.#......#",
-            "#...C....c..#..............#",
-            "#.BBBB.......c.c...h..#.#..#",
-            "#.BBBB.#.....c.c....#.#C...#",
-            "#.BBBB.########.#W###.c...c#",
-            "#.BBBB.#RDRRR##...###......#",
-            "#.b...h#R#RRR##...###......#",
-            "#.....h.R#RcR##..c#####..###",
-            "#......#RRRRR##...###....#.#",
-            "###.########D###D####......#",
-            "#.....##.........#..#..TTT.#",
-            "#KK.c..#............#..TTT.#",
-            "#KK....#.c#..##c.c...h.TTT.#",
-            "#KK.......#....c.c.#.h.TTT.#",
-            "#KK.h..............#...TTT.#",
-            "#KK...c#.c..s..........TTT.#",
-            "#KK....#............#......#",
-            "#.....##............#....#.#",
-            "###D##########.########..###",
-            "#.......==4321.######......#",
-            "#.AAAA..==4321.######......#",
-            "#.AAAAh#######D######.c...c#",
-            "#.AAAAh#...RhRR#....#.#C...#",
-            "#.AAAA....#RRR##......#.#..#",
-            "#..C.....C#RRR#...c........#",
-            "#.c....#............#......#",
-            "############################"
-        ];
-        MAPS.de_frost = [
-            "############################",
-            "#.c......#...c.#...#.KKKKK.#",
-            "#.AAAAAs.........b...KKKKK.#",
-            "#.AAAAA....#.........KKKKK.#",
-            "#.AAAAA..####...####.......#",
-            "#.AAAAA..####...#####.....##",
-            "#....hh..####...#####..c..##",
-            "##..###..####...#####.....##",
-            "#....W..==..D.c...###.....##",
-            "#.c..#..==..###...###.....##",
-            "###..#..==........W.....c..#",
-            "#RRRR#c.==........#.BBBBB..#",
-            "#RRRR#..==.c..c.#...BBBBB..#",
-            "#RR###..==....c.....BBBBB..#",
-            "#RhRR#..==........#.BBBBBC.#",
-            "#RRRRD..==........#...#....#",
-            "#RRRR#.#44#.......##....#.##",
-            "#RRcR#.#33#.s..##D##.c....##",
-            "#RRRR#.#22#.......####....##",
-            "#..###D#11##......##......##",
-            "#....#............##......##",
-            "##..#######...#######...#W##",
-            "#....c...#........#........#",
-            "#..##..h...TTTTTT...s..#...#",
-            "#..........TTTTTT.....hh...#",
-            "#.b......##TTTTTT##........#",
-            "#......c.....#........c....#",
-            "############################"
-        ];
-        MAPS.de_moisty = [
-            "############################",
-            "#......#....K......#.......#",
-            "#..K.c..........K....h.K.c.#",
-            "#......#.K...#####.#.......#",
-            "#......#.....#.....#.......#",
-            "###D####.....#...b.####D####",
-            "#.AAAA.#.....#.............#",
-            "#.AAAA.#####D#........c....#",
-            "#.AAAA.#RRRRR#.1234====4321#",
-            "#.AAAA.#RRcRR#######...#####",
-            "#......WRRcRR#.........C...#",
-            "#..c...#..####...C.BBBB....#",
-            "#..c...#..#..D...c.BBBB....#",
-            "#......#.....######BBBB#W###",
-            "##W#.###..####.#...BBBB....#",
-            "#......#.......#.C..123=...#",
-            "#...c..##12344##...#########",
-            "#...c..##.....######.......#",
-            "#1234======4321#.....#.....#",
-            "#..............#..s..#..c..#",
-            "######.#########.....#.....#",
-            "#RRRRRRRRRRRRRR#.....#.....#",
-            "#RRcRRRRsRRRRRR#.....#.....#",
-            "#..c......hh.......hh......#",
-            "#......#.....h...c.......h.#",
-            "#..T...#...T...#.....T.....#",
-            "#..T...#.......#.....T.....#",
-            "############################"
-        ];
-        MAPS.de_foundry = [
-            "############################",
-            "#...KKKK.#........1234=====#",
-            "#...KKKK....c......###=====#",
-            "#......c....c........cC##..#",
-            "#......c.#.................#",
-            "#........#.........#.##44#.#",
-            "#..hh....##D####D###.......#",
-            "#........#............s....#",
-            "###D###..#...c.....##AAAA###",
-            "###.###..#...c.....##AAAA###",
-            "#..BBBB..#.........#.AAAA==#",
-            "#..BBBc..W.........#D#####3#",
-            "######44##h...######......2#",
-            "#..1234==========4321.C...1#",
-            "#.........h...#............#",
-            "#....##...#RRR#...##########",
-            "#.........WRRc#...#........#",
-            "#.........#RRc#.b.#C..s....#",
-            "#.........#RRR#...#........#",
-            "#.........#RRR#............#",
-            "#......h.....hh............#",
-            "#.........#W##.####........#",
-            "#..c......#RRRRRRR#...c....#",
-            "#..c......#RRRCRRR#...c....#",
-            "#.........#RRRRRRR#........#",
-            "#......h.....TTT........h..#",
-            "#............TTTT..........#",
-            "############################"
-        ];
+        // ── Gebäude-Karten (Raster 1 m, 2 Ebenen) ── lo = Erdgeschoss, hi = Obergeschoss auf LFH = 3,4 m
+        // lo: # Wand · . Boden · c Kiste · C Container · h Deckung · k Server-Rack · m Terminal · p Pfeiler · W Fenster · D Tür · 1–5 Treppe (5 = oben) · A/B Sites · T/K Spawns
+        //     Einrichtung: b Fässer · x Palette · l Spind/Regal · t Tisch · f Maschine · v Marktstand · g Pflanzkübel · o Tank/Generator
+        // hi: ' ' Himmel · : Luftraum unter Dach · = Boden offen · _ Boden mit Dach · # Wand · r/i Geländer (mit/ohne Dach) · Objekte & D W A B T K wie unten
+        // Unbenutzte Felder werden niedrige Nebengebäude (lo '#', hi ' '); mass() = Gebäudehülle bis unters Dach
+        // Regeln: Site A oben, Site B unten · 3 T-Spawns (hoch / Haupteingang / tief) · CT erreicht beide Sites zuerst · Treppen mit 2 Feldern Anlauf & Podest, keine Tür daneben
+        const LFH = 3.4;
+        function lmap(W, H, f) { // baut lo/hi aus Bausteinen; Rand bleibt Mauer · Ergebnis: Zeilen von lo, .hi = Zeilen von hi
+            const lo = [], hi = []; for (let y = 0; y < H; y++) { lo.push(Array(W).fill('#')); hi.push(Array(W).fill(' ')); }
+            const put = (g, ch, x0, y0, x1 = x0, y1 = y0) => { for (let y = Math.max(1, Math.min(y0, y1)); y <= Math.min(H - 2, Math.max(y0, y1)); y++) for (let x = Math.max(1, Math.min(x0, x1)); x <= Math.min(W - 2, Math.max(x0, x1)); x++) g[y][x] = ch; };
+            const ST = [], M = { L: (ch, ...a) => put(lo, ch, ...a), U: (ch, ...a) => put(hi, ch, ...a),
+                mass: (...a) => { put(lo, '#', ...a); put(hi, '#', ...a); },     // Gebäudehülle / massiver Block
+                yard: (...a) => { put(lo, '.', ...a); put(hi, ' ', ...a); },     // offener Hof
+                room: (...a) => { put(lo, '.', ...a); put(hi, '_', ...a); },     // Raum mit Obergeschoss
+                hall: (...a) => { put(lo, '.', ...a); put(hi, ':', ...a); },     // doppelt hohe Halle
+                deck: (...a) => { put(lo, '.', ...a); put(hi, '=', ...a); },     // Raum mit Dachterrasse
+                tunnel: (...a) => { put(lo, '.', ...a); put(hi, '#', ...a); },   // niedriger Gang
+                stairs: (...a) => ST.push(a), _stairs: (x, y, dx, dy, w = 2) => { for (let i = 0; i < 5; i++) for (let k = 0; k < w; k++) { const X = x + dx * i + (dy ? k : 0), Y = y + dy * i + (dx ? k : 0); put(lo, String(i + 1), X, Y); put(hi, ' =i'.includes(hi[Y][X]) ? ' ' : ':', X, Y); } } };
+            f(M); for (const a of ST) M._stairs(...a); const m = lo.map(r => r.join('')); m.hi = hi.map(r => r.join('')); return m;
+        }
+        MAPS.de_dusty = lmap(44, 44, M => { // Sienna – Villa mit verstecktem Labor: A oben in der Galerie mit Oberlicht (Ost-OG), B unten im Server-Keller (West-EG)
+            M.mass(8, 5, 35, 28); M.room(9, 6, 34, 11); M.room(9, 13, 16, 27); M.room(27, 13, 34, 27); M.room(18, 22, 25, 27); M.yard(18, 13, 25, 20); // Villa: Nordtrakt, West-/Ostflügel, Südhalle, Innenhof
+            M.U('W', 19, 12, 24, 12); M.U('W', 17, 15, 17, 18); M.U('W', 26, 14, 26, 16); M.U('W', 19, 21, 24, 21);                                   // Fenster zum Innenhof
+            M.L('D', 21, 12, 22, 12); M.L('D', 17, 15, 17, 16); M.L('D', 26, 17, 26, 18); M.L('D', 21, 21, 22, 21); M.L('D', 20, 28, 23, 28);        // Innenhof-Türen, Hauptportal
+            M.L('D', 12, 12, 13, 12); M.L('D', 30, 12, 31, 12); M.L('D', 8, 23, 8, 24); M.L('D', 35, 23, 35, 24);                                     // Nordtrakt ↔ Flügel, Seitentüren
+            M.U('D', 12, 12, 13, 12); M.U('D', 32, 12, 33, 12); M.U('D', 17, 24, 17, 25); M.U('D', 26, 24, 26, 25); M.U('D', 8, 7, 8, 8);           // OG-Türen, Dach-Einstieg
+            M.stairs(26, 8, 1, 0); M.stairs(10, 25, 0, -1); M.stairs(28, 25, 0, -1);
+            M.L('K', 16, 7, 23, 10); M.L('g', 10, 7); M.L('g', 33, 10); M.L('t', 17, 6, 18, 6); M.L('l', 9, 10, 9, 11);                                // Foyer (CT)
+            M.L('B', 9, 13, 16, 20); M.L('k', 10, 15, 12, 15); M.L('k', 10, 18, 12, 18); M.L('k', 15, 16, 15, 18); M.L('m', 16, 13); M.L('b', 9, 20); M.L('c', 14, 20); // Server-Keller (B)
+            M.U('A', 27, 13, 34, 20); M.U('m', 30, 16, 31, 16); M.U('l', 34, 13, 34, 15); M.U('t', 28, 14); M.U('g', 27, 18); M.U('c', 33, 19);          // Galerie (A)
+            M.L('g', 21, 16, 22, 17); M.L('h', 19, 14); M.L('h', 24, 19); M.L('t', 31, 15, 32, 15); M.L('f', 34, 18); M.L('l', 27, 21, 27, 22); M.L('c', 33, 26); // Innenhof, Labor
+            M.L('t', 20, 24, 21, 24); M.L('g', 24, 23); M.U('l', 9, 14, 9, 16); M.U('t', 13, 15); M.U('c', 20, 7); M.U('l', 34, 7, 34, 8); M.U('t', 19, 24);
+            M.yard(2, 4, 7, 28); M.mass(1, 1, 7, 9); M.U('=', 2, 2, 7, 9); M.U('T', 3, 3, 6, 5); M.stairs(3, 14, 0, -1);                                // T3: Dachterrasse West (hoch)
+            M.yard(36, 12, 41, 28); M.yard(1, 29, 42, 42); M.L('#', 12, 32, 13, 42);                                                                     // Ostgasse, Garten mit Gartenmauer
+            M.L('T', 3, 37, 9, 40); M.L('T', 18, 37, 25, 40);                                                                                             // T1 Gartenmauer (tief) · T2 Hauptportal
+            M.L('g', 20, 32, 23, 32); M.L('h', 29, 33, 33, 33); M.L('g', 16, 35); M.L('g', 27, 36); M.L('c', 38, 35); M.L('b', 37, 31); M.L('h', 4, 31, 6, 31); M.L('g', 4, 21); M.L('x', 39, 18); M.L('b', 41, 25); M.L('h', 38, 22, 40, 22);
+        });
+        MAPS.de_bazaar = lmap(44, 44, M => { // Kasbah – Altstadt-Datenknoten: A oben im Relaisturm (NO-OG), B unten im Gewölbe (NW-EG)
+            M.mass(3, 2, 15, 17); M.room(4, 3, 14, 16); M.mass(15, 2, 28, 11); M.room(16, 3, 27, 10); M.mass(28, 2, 40, 17); M.room(29, 3, 39, 16);   // Gewölbehaus, CT-Haus, Relaisturm
+            M.mass(3, 19, 15, 32); M.room(4, 20, 14, 31); M.mass(28, 19, 40, 32); M.deck(29, 20, 39, 31); M.yard(16, 12, 27, 31);                     // Teppichhaus, Lagerhaus mit Dachterrasse, Basar
+            M.L('D', 15, 5, 15, 6); M.U('D', 15, 7, 15, 8); M.L('D', 28, 7, 28, 8); M.U('D', 28, 4, 28, 5); M.L('D', 25, 11, 26, 11);                 // Hausdurchgänge
+            M.L('D', 15, 13, 15, 14); M.L('D', 28, 13, 28, 14); M.L('D', 15, 22, 15, 23); M.L('D', 28, 22, 28, 23);                                  // Basar ↔ Häuser
+            M.mass(7, 18, 10, 18); M.U('D', 8, 17, 9, 19); M.mass(33, 18, 36, 18); M.U('D', 34, 17, 35, 19);                                         // OG-Brücken
+            M.stairs(19, 9, 1, 0); M.stairs(12, 14, 0, -1); M.stairs(30, 14, 0, -1); M.stairs(5, 29, 0, -1); M.stairs(37, 29, 0, -1);
+            M.L('B', 4, 3, 11, 11); M.L('k', 5, 5, 7, 5); M.L('k', 5, 8, 7, 8); M.L('k', 10, 6, 10, 7); M.L('m', 11, 3); M.L('b', 4, 11); M.L('x', 9, 13); M.L('l', 4, 15, 4, 16);   // Gewölbe (B)
+            M.U('A', 29, 3, 39, 9); M.U('m', 34, 5, 35, 5); M.U('k', 39, 6, 39, 8); M.U('t', 31, 4); M.U('c', 37, 9); M.U('l', 29, 12, 29, 14); M.U('t', 36, 13);    // Relais (A)
+            M.L('K', 17, 3, 23, 7); M.L('t', 26, 4); M.L('l', 27, 4, 27, 5); M.L('k', 33, 4, 34, 4); M.L('f', 38, 4); M.L('c', 37, 15); M.L('x', 35, 11);
+            M.L('v', 18, 15, 19, 15); M.L('v', 24, 15, 25, 15); M.L('v', 18, 25, 19, 25); M.L('v', 24, 25, 25, 25); M.L('o', 21, 20, 22, 20); M.L('c', 17, 20); M.L('x', 26, 19); M.L('b', 21, 29);   // Marktstände, Brunnen
+            M.L('t', 8, 22); M.L('l', 13, 21, 13, 22); M.L('c', 11, 30); M.U('c', 7, 24); M.U('t', 11, 22); M.L('C', 32, 22, 33, 24); M.L('x', 36, 21); M.U('h', 31, 26, 32, 26); M.U('c', 25, 7); M.U('l', 4, 12, 4, 14);
+            M.mass(16, 32, 27, 32); M.L('D', 20, 32, 23, 32); M.yard(16, 33, 27, 41); M.L('T', 18, 37, 25, 40); M.L('h', 19, 35, 20, 35); M.L('b', 26, 34);   // Stadttor, T2 (Haupteingang)
+            M.yard(1, 2, 2, 32); M.tunnel(1, 18, 2, 30); M.L('D', 3, 13, 3, 14); M.L('D', 3, 27, 3, 28); M.yard(1, 33, 14, 41); M.L('T', 2, 37, 8, 40); M.L('c', 5, 35); M.L('x', 11, 38);  // Westgasse mit Tunnel, T1 (tief)
+            M.yard(41, 2, 42, 32); M.L('D', 40, 13, 40, 14); M.L('D', 40, 27, 40, 28);                                                                  // Ostgasse
+            M.U('=', 29, 32, 39, 40); M.U('T', 31, 35, 37, 39); M.U('h', 30, 33, 32, 33);                                                               // T3: Dachterrasse (hoch)
+        });
+        MAPS.de_frost = lmap(44, 44, M => { // Tundra – Eis-Forschungsstation: A oben im Kontrollmodul (NO-OG), B unten im Hangar
+            M.mass(13, 2, 30, 13); M.room(14, 3, 29, 12); M.mass(30, 5, 40, 17); M.room(31, 6, 39, 16); M.mass(13, 13, 30, 30); M.hall(14, 14, 29, 29); // Nordmodul (CT), Kontrollmodul, Hangar
+            M.U('_', 14, 14, 29, 16); M.U('_', 24, 17, 29, 18); M.U('r', 14, 16, 20, 16); M.U('r', 24, 17, 24, 18); M.U('r', 25, 18, 26, 18);         // Hangar-Galerie mit Geländer
+            M.L('D', 17, 13, 18, 13); M.U('D', 20, 13, 21, 13); M.U('D', 30, 8, 30, 9); M.U('D', 30, 14, 30, 15); M.L('D', 13, 22, 13, 23); M.L('D', 30, 25, 30, 26); M.L('D', 25, 30, 28, 30); M.L('D', 40, 7, 40, 8);
+            M.stairs(22, 4, 1, 0); M.stairs(27, 23, 0, -1); M.stairs(37, 14, 0, -1);
+            M.U('A', 31, 6, 39, 13); M.U('m', 34, 9, 35, 9); M.U('k', 31, 11, 31, 13); M.U('t', 38, 7); M.U('h', 33, 12, 34, 12); M.U('l', 39, 14, 39, 16);      // Kontrollraum (A)
+            M.L('B', 15, 19, 22, 26); M.L('C', 16, 21, 17, 22); M.L('k', 20, 20, 21, 20); M.L('k', 19, 24, 20, 24); M.L('m', 22, 26); M.L('o', 15, 19);           // Hangar (B)
+            M.L('K', 15, 6, 20, 10); M.L('l', 14, 3, 15, 3); M.L('t', 25, 9, 26, 9); M.L('x', 28, 11); M.L('C', 24, 25, 25, 27); M.L('f', 28, 20); M.L('x', 15, 28); M.L('b', 23, 21);
+            M.L('k', 33, 7, 34, 7); M.L('f', 32, 15); M.L('t', 36, 10); M.U('c', 16, 4); M.U('l', 27, 10, 28, 10); M.U('k', 18, 15, 19, 15); M.U('t', 23, 4);
+            M.mass(2, 3, 9, 12); M.U('=', 3, 4, 8, 12); M.U('T', 4, 5, 7, 8); M.mass(10, 6, 12, 9); M.U('=', 10, 7, 12, 8); M.U('i', 10, 6, 12, 6); M.U('i', 10, 9, 12, 9); M.U('D', 13, 7, 13, 8); // T1: Eisplateau + Steg (hoch)
+            M.yard(2, 13, 12, 31); M.stairs(4, 17, 0, -1); M.yard(2, 31, 36, 41); M.L('T', 16, 37, 24, 40);                                             // Westhof, Schneefeld, T2
+            M.yard(31, 18, 39, 29); M.yard(32, 30, 34, 30); M.L('C', 33, 20, 34, 22); M.L('C', 36, 25, 37, 27); M.L('c', 32, 27); M.L('o', 38, 19); M.L('x', 35, 23); // Container-Hof
+            M.tunnel(41, 7, 42, 30); M.yard(38, 31, 42, 41); M.L('T', 39, 37, 42, 40);                                                                     // Eistunnel, T3 (tief)
+            M.L('h', 10, 34, 12, 34); M.L('C', 27, 34, 29, 35); M.L('c', 6, 38); M.L('c', 8, 22); M.L('h', 5, 26, 7, 26); M.L('c', 40, 34); M.L('o', 9, 15); M.L('x', 21, 33); M.L('b', 33, 37);
+        });
+        MAPS.de_moisty = lmap(44, 44, M => { // Mire – Sumpf-Feldlabor auf Pfählen: A oben in der Funkhütte (NO-OG), B unten im Container-Schuppen (SW-EG)
+            M.yard(1, 1, 42, 42);
+            M.mass(9, 3, 23, 13); M.room(10, 4, 22, 12); M.L('D', 12, 13, 13, 13); M.L('D', 23, 10, 23, 11); M.stairs(16, 5, 1, 0); M.L('K', 11, 8, 20, 11); M.L('t', 21, 5); M.L('l', 10, 9, 10, 10); M.U('c', 12, 6); M.U('t', 16, 5); // CT-Hütte
+            M.mass(5, 21, 18, 34); M.hall(6, 22, 17, 33); M.L('D', 13, 21, 14, 21);                     // Container-Schuppen
+            M.L('B', 7, 24, 15, 31); M.L('C', 8, 26, 9, 27); M.L('C', 13, 28, 14, 29); M.L('k', 11, 24, 12, 24); M.L('k', 7, 31, 9, 31); M.L('m', 15, 31); M.L('o', 16, 25); M.L('x', 6, 28);
+            M.U('#', 26, 5, 39, 16); M.U('_', 27, 6, 38, 15); for (const [x, y] of [[26, 5], [31, 5], [35, 5], [39, 5], [26, 10], [32, 10], [39, 10], [26, 16], [34, 16], [39, 16]]) M.L('p', x, y); // Funkhütte auf Pfählen
+            M.U('A', 28, 7, 37, 14); M.U('m', 32, 10, 33, 10); M.U('k', 37, 11, 37, 13); M.U('t', 29, 8); M.U('h', 30, 12, 31, 12); M.U('l', 28, 14);
+            M.U('D', 23, 8, 23, 9); M.U('=', 24, 8, 25, 9); M.U('D', 26, 8, 26, 9);                                                                          // Steg CT-Hütte → Funkhütte
+            M.U('D', 30, 16, 31, 16); M.U('=', 30, 17, 31, 17); M.stairs(30, 22, 0, -1);                                                                    // Treppe vom Sumpf
+            M.U('D', 37, 16, 38, 16); M.U('=', 37, 17, 38, 29); M.U('i', 36, 18, 36, 29); M.U('i', 39, 18, 39, 29);                                        // Holzsteg zur Plattform
+            M.L('#', 35, 30, 41, 40); M.U('=', 35, 30, 41, 40); M.U('T', 36, 35, 40, 39); M.U('h', 36, 31, 37, 31);                                        // T1: Baumplattform (hoch)
+            M.L('T', 18, 37, 25, 40);                                                                                                                          // T2: Anlegestelle
+            M.mass(1, 20, 4, 36); M.tunnel(2, 21, 3, 36); M.yard(2, 20, 3, 20); M.L('T', 2, 38, 7, 41);                                                    // T3: Rohrtunnel (tief)
+            M.mass(27, 23, 29, 27); M.mass(13, 15, 16, 18); M.mass(30, 32, 33, 34); M.L('C', 21, 18, 23, 19); M.L('C', 24, 30, 25, 33); M.L('h', 20, 26, 22, 26); M.L('h', 33, 25, 35, 25);
+            M.L('c', 8, 16); M.L('c', 24, 14); M.L('x', 12, 37); M.L('b', 29, 38, 30, 38); M.L('h', 6, 18, 8, 18); M.L('h', 40, 20, 41, 20); M.L('o', 30, 12); M.L('b', 36, 8); M.L('x', 20, 30); M.L('g', 9, 39);
+        });
+        MAPS.de_foundry = lmap(44, 44, M => { // Ironworks – Gießerei mit Rechenzentrum: A oben im Kontrollraum (Ost-OG), B unten im Serverraum (Ost-EG)
+            M.mass(10, 4, 33, 24); M.hall(11, 5, 22, 23); M.U('_', 11, 5, 22, 7); M.U('_', 19, 8, 22, 23); M.U('r', 11, 7, 11, 7); M.U('r', 14, 7, 18, 7); M.U('r', 19, 8, 19, 14); M.U('r', 19, 17, 19, 23); // Gießhalle + Galerie
+            M.room(24, 5, 32, 23); M.L('#', 24, 13, 32, 13); M.U('#', 24, 13, 32, 13); M.L('D', 31, 13, 32, 13); M.U('D', 25, 13, 26, 13);                // Ostflügel: CT-Raum / Serverraum, OG: Kontrollraum / Büro
+            M.L('D', 14, 24, 17, 24); M.L('D', 10, 17, 10, 18); M.L('D', 23, 18, 23, 19); M.L('D', 23, 8, 23, 9); M.U('D', 23, 10, 23, 11); M.U('D', 23, 19, 23, 20); M.L('D', 33, 20, 33, 21);
+            M.stairs(12, 12, 0, -1); M.stairs(26, 11, 1, 0);
+            M.U('A', 24, 5, 32, 12); M.U('m', 28, 6, 30, 6); M.U('k', 32, 5, 32, 7); M.U('t', 25, 6); M.U('h', 28, 9, 29, 9); M.U('c', 24, 8);           // Kontrollraum (A)
+            M.L('B', 24, 14, 32, 23); M.L('k', 26, 16, 28, 16); M.L('k', 26, 19, 28, 19); M.L('k', 31, 16, 31, 18); M.L('m', 32, 22); M.L('c', 24, 22);  // Serverraum (B)
+            M.L('K', 25, 5, 30, 9); M.L('l', 32, 5, 32, 7); M.L('t', 31, 9); M.U('l', 32, 15, 32, 17); M.U('t', 28, 21, 29, 21); M.U('c', 24, 23); M.U('x', 31, 22);
+            M.L('f', 11, 15, 11, 16); M.L('f', 11, 20, 11, 21); M.L('C', 15, 16, 16, 19); M.L('c', 20, 20); M.L('c', 17, 11); M.L('x', 21, 12, 21, 13); M.L('b', 21, 5); M.L('o', 13, 22); M.L('h', 18, 22, 19, 22); M.U('c', 20, 9); M.U('b', 22, 22);
+            M.yard(8, 4, 9, 18); M.mass(2, 8, 7, 18); M.U('=', 3, 9, 6, 18); M.U('T', 3, 10, 6, 13); M.U('=', 7, 12, 9, 13); M.U('D', 10, 12, 10, 13); M.stairs(3, 23, 0, -1); // T1: Anbau mit Dachterrasse + Brücke (hoch)
+            M.yard(2, 19, 9, 41); M.yard(10, 25, 33, 41); M.L('#', 10, 30, 11, 41); M.L('T', 17, 37, 26, 40);                                                // Westhof, Südhof, T2 (Haupttor)
+            M.L('C', 13, 28, 15, 29); M.L('C', 28, 31, 30, 32); M.L('#', 20, 31, 22, 32); M.L('c', 25, 28); M.L('c', 26, 28); M.L('x', 18, 28); M.L('b', 31, 27); M.L('o', 32, 35); M.L('x', 14, 34); M.L('c', 5, 30); M.L('b', 7, 35); M.L('h', 3, 28, 4, 28);
+            M.yard(34, 2, 42, 23); M.yard(34, 24, 35, 27); M.tunnel(40, 24, 41, 34); M.yard(36, 35, 42, 41); M.L('T', 37, 37, 41, 40);                      // Osthof, Tunnel, T3 (tief)
+            M.L('C', 36, 5, 37, 8); M.L('C', 39, 12, 41, 13); M.L('c', 35, 16); M.L('o', 41, 3); M.L('x', 38, 19); M.L('b', 35, 10); M.L('c', 38, 38); M.L('h', 37, 18, 38, 18);
+        });
         function fillOpen(g) { // Pflanzinseln: Mitte großer freier Flächen (5×5 ohne Wände, Spawns, Sites, Stufen) → Deckung 'h'; g = Raster aus Zeichen (wird geändert)
             const R = g.length, C = g[0].length, at = (r, c) => (r < 0 || c < 0 || r >= R || c >= C) ? '#' : g[r][c], pick = [];
             for (let r = 2; r < R - 2; r++) for (let c = 2; c < C - 2; c++) { if (at(r, c) !== '.') continue; let ok = true;
                 for (let a = -2; a <= 2 && ok; a++) for (let b = -2; b <= 2; b++) { const ch = at(r + a, c + b); if (!(ch === '.' || ((Math.abs(a) === 2 || Math.abs(b) === 2) && !'#ABTK123456=R'.includes(ch)))) { ok = false; break; } }
                 if (ok && !pick.some(([pr, pc]) => Math.abs(pr - r) + Math.abs(pc - c) < 6)) pick.push([r, c]); }
             for (const [r, c] of pick) g[r][c] = 'h'; return pick; }
-        for (const k of ['de_dusty', 'de_bazaar', 'de_frost', 'de_moisty', 'de_foundry']) { const g = MAPS[k].map(r => r.split('')); fillOpen(g); MAPS[k] = g.map(r => r.join('')); }
+        for (const k of ['de_dusty', 'de_bazaar', 'de_frost', 'de_moisty', 'de_foundry']) { if (MAPS[k].hi) continue; const g = MAPS[k].map(r => r.split('')); fillOpen(g); MAPS[k] = g.map(r => r.join('')); }
         const THEMES = {
             de_dusty: { sky: 0xa9c8e8, fog: 0xcbbd9c, floor: '#c6a872', wallBase: '#b9a078', wallHue: 34, wallSat: 30, wallLight: 58, crateHue: 26, crateSat: 45, crateLight: 32 },
             de_bazaar: { sky: 0xf2c98f, fog: 0xd9a87a, floor: '#b9906b', wallBase: '#c08a60', wallHue: 16, wallSat: 38, wallLight: 52, crateHue: 32, crateSat: 40, crateLight: 36 },
@@ -5719,7 +5669,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
         const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 4, CRATE_H = 1.0, TALL_H = 3;
-        const WORLD_W = COLS * S, WORLD_D = ROWS * S;
+        const LAY = !!MAP.hi, HIG = MAP.hi || null, MS = LAY ? 1 : S; // Gebäude-Karte: 1-m-Raster mit Obergeschoss (HIG) · Arenen & eigene Karten bleiben bei 4 m
+        const WORLD_W = COLS * MS, WORLD_D = ROWS * MS;
         const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, bots: 1, agTheme: 0, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
         const CFG = Object.assign({}, CFG_DEF, JSON.parse(localStorage.getItem('gamecfg') || '{}'));
         const SKILL_VAL = [0.6, 0.85, 1.05], SKILL_LBL = ['Leicht', 'Normal', 'Schwer'];
@@ -5744,8 +5695,13 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 else { B(x - S / 2, x + S / 2, 0, 1.0, z - S / 2, z + S / 2, WM); B(x - S / 2, x + S / 2, 2.3, WALL_H, z - S / 2, z + S / 2, WM); AL[AL.length - 1].wall = 1; // Fenster: Brüstung + Sturz, dazwischen frei
                     B(x - S / 2, x + S / 2, 1.0, 1.08, z - S / 2, z + S / 2, TILE_M.frame); } }
         }
-        const solid = ch => ch === '#' || ch === 'c' || ch === 'C' || ch === 'h' || ch === 's' || ch === 'b' || ch === 'W';
-        const cr = v => Math.floor(v / S), cx = i => (i + 0.5) * S;
+        const solid = ch => ch === '#' || ch === 'c' || ch === 'C' || ch === 'h' || ch === 's' || ch === 'b' || ch === 'W' || ch === 'k' || ch === 'm' || ch === 'p' || (LAY && 'xltfvgo'.includes(ch) && ch !== '');
+        const cr = v => Math.floor(v / MS), cx = i => (i + 0.5) * MS, acr = v => Math.floor(v / S), acx = i => (i + 0.5) * S; // Karte (MS) · Arena (S)
+        // Ebenen: l = 0 Erdgeschoss, 1 Obergeschoss (nur Gebäude-Karten)
+        const HI_WALK = '=_ABTKD', cellHi = (r, c) => !HIG || r < 0 || c < 0 || r >= ROWS || c >= COLS ? '#' : HIG[r][c];
+        const chAt = (r, c, l) => l ? cellHi(r, c) : cell(r, c), walkL = (r, c, l) => l ? HI_WALK.includes(cellHi(r, c)) : !solid(cell(r, c));
+        const lvXY = (x, z, y) => LAY && (y || 0) > LFH * 0.6 && HI_WALK.includes(cellHi(cr(z), cr(x))) ? 1 : 0, lvOf = e => lvXY(e.x, e.z, e.y);
+        const siteAt = e => chAt(cr(e.z), cr(e.x), lvOf(e)), lvY = l => l ? LFH : 0; // Site unter den Füßen · Bodenhöhe einer Ebene
         const rnd = a => a[Math.floor(Math.random() * a.length)];
         const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
         function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
@@ -5769,7 +5725,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { const ch = at(r, c); if ('#cCbhsW'.includes(ch)) continue; g.fillStyle = ch === 'R' ? '#8c9299' : ch === 'A' || ch === 'B' ? '#8197ad' : (ch >= '1' && ch <= '6') || ch === '=' ? '#7d8791' : '#a3a9b0'; const x0 = Math.round(c * w), y0 = Math.round(r * w); g.fillRect(x0, y0, Math.round((c + 1) * w) - x0, Math.round((r + 1) * w) - y0); }
         }
         function speckle(g, w, h, n, a) { for (let i = 0, nn = DSV ? n * 0.06 : n; i < nn; i++) { g.fillStyle = `rgba(${60 + Math.random() * 120 | 0},${50 + Math.random() * 90 | 0},${20 + Math.random() * 60 | 0},${a * Math.random()})`; g.fillRect(Math.random() * w, Math.random() * h, 1 + Math.random() * 2, 1 + Math.random() * 2); } }
-        const texSand = makeTex(256, 256, (g, w, h) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h); speckle(g, w, h, 5000, 0.35); g.strokeStyle = 'rgba(90,70,40,.18)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 4); i++) { g.beginPath(); g.moveTo(i * 64, 0); g.lineTo(i * 64, h); g.moveTo(0, i * 64); g.lineTo(w, i * 64); g.stroke(); } }, COLS * 2, ROWS * 2);
+        const texSand = makeTex(256, 256, (g, w, h) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h); speckle(g, w, h, 5000, 0.35); g.strokeStyle = 'rgba(90,70,40,.18)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 4); i++) { g.beginPath(); g.moveTo(i * 64, 0); g.lineTo(i * 64, h); g.moveTo(0, i * 64); g.lineTo(w, i * 64); g.stroke(); } }, WORLD_W / 2, WORLD_D / 2);
         const texWall = makeTex(128, 256, (g, w, h) => {
             g.fillStyle = `hsl(${THEME.wallHue},${THEME.wallSat * 0.4}%,${THEME.wallLight * 0.72}%)`; g.fillRect(0, 0, w, h);
             const pw = 64, ph = 52;
@@ -5785,7 +5741,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // =====================================================================
         //  KARTE BAUEN
         // =====================================================================
-        const aabbs = [], mapMeshes = [], openCells = [], siteCells = { A: [], B: [] }, spawnCells = { T: [], CT: [] };
+        const aabbs = [], mapMeshes = [], openCells = [], siteCells = { A: [], B: [] }, spawnCells = { T: [], CT: [] }, spawnGroups = { T: [], CT: [] }; // Zellen: { r, c, l } (l = Ebene)
         // ── Low-Poly-Varianten für Wände, Kisten, Sandsäcke ──
         const HS = (hh, s, l) => `hsl(${hh},${s}%,${l}%)`;
         const dirt = () => { };
@@ -5914,8 +5870,193 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const roofMats = (() => { const side = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.wallBase).multiplyScalar(0.8) }), under = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.wallBase).multiplyScalar(0.5) }); return [side, side, wallTop, under, side, side]; })();
         const inFloorMat = new THREE.MeshLambertMaterial({ color: new THREE.Color(THEME.floor).multiplyScalar(0.82) }), inFloorGeo = new THREE.PlaneGeometry(S, S);
         const roofed = (r, c) => { const ch = cell(r, c); if (ch === 'R') return true; if (!'cChsbD'.includes(ch)) return false; let k = 0; for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (cell(r + dr, c + dc) === 'R') k++; return k >= 2; };
+        const CEIL = { tex: null }, LMOOD = { on: false }; // Deckenflächen ohne Schatten (Toon-Licht + Schatten → Streifen) · Lichtstimmung der Gebäude-Karte (wird nach dem Sonnenlicht angewendet)
+        function buildLayered() { // Gebäude-Karte (1-m-Raster, 2 Ebenen): Gebäude, Nebengebäude mit Dächern, Treppen, Einrichtung, Tech-Lore, Lichtstimmung, Kulisse
+            const FH = LFH, SL = 0.3, RF = 2 * LFH, RT = RF + 0.35, TK = MAPNAME, R = ROWS, C = COLS, hiC = cellHi, D4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+            const P = Object.assign({ roof: 0x8a8f96, ceil: 0xd9dde2, up: '#8d9399', beam: 0x3a4048, rail: 0x2b2f36, flat: '#8b9096', fill: [4.6, 5.8, 4.6, 7.2], pool: 0xffe6b8, win: 0xffd27a }, { // Baustoffe & Licht je Karte (Terracotta: Dächer & Böden von Sienna/Kasbah)
+                de_dusty: { roof: 0xb4583a, ceil: 0xeee6d8, up: '#b0705a', beam: 0x6b5848, rail: 0x3a2f28, terra: 1, flat: '#b9a184', fill: [4.8, 6.2, 5.4, 7.4], sun: [0xffd49a, 1.05, -60, 50, 35], hemi: 0.36, fog: [0xe2c9a6, 35, 140] },
+                de_bazaar: { roof: 0xbd6440, ceil: 0xe8dcc6, up: '#a8735a', beam: 0x6e5440, rail: 0x3a2f28, terra: 1, flat: '#c2a47e', fill: [5.2, 6.6, 4.8, 7.8, 6.0], sun: [0xffe0a8, 1.1, 30, 85, -25], hemi: 0.38, fog: [0xdcc5a0, 35, 140] },
+                de_frost: { roof: 0xeef2f6, ceil: 0xd2dae2, up: '#98a4b0', beam: 0x46525e, rail: 0xf2c230, flat: '#e6ecf1', fill: [4.6, 5.6, 6.4], pool: 0xd6ecff, win: 0xbfe4ff, sun: [0xe2ecff, 0.95, 55, 40, 60], hemi: 0.42, fog: [0xd4e0ea, 25, 110] },
+                de_moisty: { roof: 0x4f5a3e, ceil: 0x9c8b6c, up: '#7b6249', beam: 0x4a3a2a, rail: 0x5a4632, wood: 1, flat: '#55603f', fill: [4.6, 5.2, 6.0], pool: 0xffcf7a, sun: [0xffc48a, 0.62, -80, 28, -30], hemi: 0.3, fog: [0x3e5647, 12, 72], bg: 0x4a6455 },
+                de_foundry: { roof: 0x3d424a, ceil: 0xc7ccd2, up: '#7d838a', beam: 0x2c3138, rail: 0xf2c230, ind: 1, flat: '#7c8187', fill: [4.8, 6.0, 7.4, 5.4], sun: [0xffe2c4, 0.95, -70, 42, 30], hemi: 0.36, fog: [0xa9b5bf, 30, 125] } }[TK] || {});
+            const M = c => new THREE.MeshLambertMaterial({ color: c }), E = (c, e) => { const m = M(c); m.emissive = new THREE.Color(e); return m; }, hex = c => '#' + new THREE.Color(c).getHexString();
+            const TM = (tex, rx, ry) => { const t = tex.clone(); t.needsUpdate = true; t.repeat.set(Math.max(0.25, rx), Math.max(0.25, ry)); return new THREE.MeshLambertMaterial({ map: t }); };
+            const tileTex = (base, n) => makeTex(64, 64, g => { g.fillStyle = base; g.fillRect(0, 0, 64, 64); g.fillStyle = 'rgba(0,0,0,.16)'; for (let i = 0; i < n; i++) { g.fillRect(0, i * 64 / n, 64, 2); g.fillRect(i * 64 / n, 0, 2, 64); } });
+            const upTex = P.wood ? makeTex(64, 64, g => { for (let i = 0; i < 4; i++) { g.fillStyle = HS(28, 30, 30 + (i % 2) * 5); g.fillRect(0, i * 16, 64, 15); } }) : tileTex(P.up, 2);
+            const roofTex = P.terra ? makeTex(64, 64, g => { g.fillStyle = hex(P.roof); g.fillRect(0, 0, 64, 64); for (let y = 0; y < 64; y += 16) { g.fillStyle = 'rgba(70,25,10,.38)'; g.fillRect(0, y + 13, 64, 3); for (let x = (y / 16 % 2) * 8; x < 64; x += 16) { g.fillStyle = 'rgba(255,220,180,.2)'; g.fillRect(x + 2, y + 2, 10, 8); g.fillStyle = 'rgba(70,25,10,.25)'; g.fillRect(x + 14, y, 2, 13); } } }) : tileTex(hex(P.roof), 1);
+            const flatTex = makeTex(64, 64, g => { g.fillStyle = P.flat; g.fillRect(0, 0, 64, 64); for (let i = 0; i < 260; i++) { g.fillStyle = `rgba(0,0,0,${Math.random() * 0.12})`; g.fillRect(Math.random() * 64, Math.random() * 64, 2, 2); } g.fillStyle = 'rgba(0,0,0,.15)'; g.fillRect(0, 0, 64, 2); g.fillRect(0, 0, 2, 64); }); // Flachdach (Kies/Bitumen)
+            const ceilTex = CEIL.tex = tileTex(hex(P.ceil), 2), inTex = tileTex(hex(new THREE.Color(THEME.floor).multiplyScalar(0.86)), 1);
+            const haz = makeTex(64, 16, g => { g.fillStyle = '#f2c230'; g.fillRect(0, 0, 64, 16); g.fillStyle = '#1d2026'; for (let x = -16; x < 80; x += 16) { g.beginPath(); g.moveTo(x, 16); g.lineTo(x + 8, 0); g.lineTo(x + 16, 0); g.lineTo(x + 8, 16); g.fill(); } });
+            const rollTex = makeTex(64, 64, g => { g.fillStyle = '#7d848c'; g.fillRect(0, 0, 64, 64); for (let y = 0; y < 64; y += 6) { g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(0, y, 64, 2); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(0, y + 2, 64, 1); } }); // Rolltor
+            const edgeM = M(new THREE.Color(THEME.wallBase).multiplyScalar(0.55).getHex()), beamM = M(P.beam), railM = M(P.rail), darkM = M(0x23272e), panelM = M(0x323944), hazY = M(0xf2c230), glassM = E(0x5d7a8e, 0x1a2a36), winM = E(0xffe3a6, new THREE.Color(P.win).multiplyScalar(0.55).getHex());
+            const led = E(0x4fd8ff, 0x2fb8e0), ledR = E(0xff5a3c, 0xc03018), scr = E(0x6fe6ff, 0x1f8fb0), lamp = E(0xf4f8ff, 0xd0dae6), furn = E(0xff8a2a, 0xd05a10), stiltM = M(0x5a4632), hedgeM = M(0x5f8a4a), acM = M(0xc4c8cd), stoneM = M(0xb8a284), metalM = M(0x6b737c), woodM = M(0x8a6240), boxM = M(0xc29a6a);
+            const pillarM = M(new THREE.Color(THEME.wallBase).multiplyScalar(0.84).getHex()), trimC = P.ind || TK === 'de_frost' ? hazY : P.wood ? woodM : trimMat, roofM2 = M(P.roof), drum = [M(0x2f6fb0), M(0xc23b33), M(0x4f8a4a), M(0xe0a03a)];
+            const aoM = new THREE.MeshBasicMaterial({ map: makeTex(8, 64, g => { const gr = g.createLinearGradient(0, 0, 0, 64); gr.addColorStop(0, 'rgba(0,0,0,.42)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 8, 64); }), transparent: true, depthWrite: false });
+            const poolTex = makeTex(64, 64, g => { const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(0.5, 'rgba(255,255,255,.18)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); });
+            const poolM = {}, glowM = c => poolM[c] || (poolM[c] = new THREE.MeshBasicMaterial({ map: poolTex, color: c, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+            const shaftM = new THREE.MeshBasicMaterial({ map: makeTex(8, 64, g => { const gr = g.createLinearGradient(0, 0, 0, 64); gr.addColorStop(0, 'rgba(255,250,235,.32)'); gr.addColorStop(1, 'rgba(255,250,235,0)'); g.fillStyle = gr; g.fillRect(0, 0, 8, 64); }), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide });
+            const wallM = (w, d, h, k, top) => { const tx = wallSet[k % wallSet.length], ry = Math.max(1, Math.round(h / 4)), a = TM(tx, d / 2, ry), b = TM(tx, w / 2, ry); return [a, a, top || wallTop, wallEnd, b, b]; };
+            // Sammellisten: DECO (ohne Schatten & Konturen), GLOW (Licht, additiv) · INK = direkt in die Szene (Schatten + Konturen)
+            const DECO = [], GLOW = [], mk = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); return o; };
+            const Bx = (x0, x1, y0, y1, z0, z1, m) => { const o = mk(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), m, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); DECO.push(o); return o; };
+            const BxI = (x0, x1, y0, y1, z0, z1, m) => { const o = mk(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), m, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); o.castShadow = o.receiveShadow = true; scene.add(o); return o; };
+            const Cy = (r0, r1, h, x, y, z, m, ink, seg = 10) => { const o = mk(new THREE.CylinderGeometry(r0, r1, h, seg), m, x, y, z); if (ink) { o.castShadow = o.receiveShadow = true; scene.add(o); } else DECO.push(o); return o; };
+            const Col = (x0, x1, y0, y1, z0, z1, m, wall) => { addBox(x0, x1, y0, y1, z0, z1, m); if (wall) aabbs[aabbs.length - 1].wall = 1; return aabbs[aabbs.length - 1]; }; // mit Kollision & Treffern
+            const hitG = new THREE.BoxGeometry(1, 1, 1), Hit = (x0, x1, y0, y1, z0, z1) => { const o = new THREE.Mesh(hitG); o.scale.set(x1 - x0, y1 - y0, z1 - z0); o.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); o.updateMatrixWorld(true); mapMeshes.push(o); aabbs.push({ minX: x0, maxX: x1, minZ: z0, maxZ: z1, top: y1, bot: y0 }); }; // unsichtbare Kollision (Optik separat)
+            const F = (x, z, dr, dc, off, w, h, d, y, m, ink) => { const px = x + dc * off, pz = z + dr * off, sx = dc ? d : w, sz = dr ? d : w; return (ink ? BxI : Bx)(px - sx / 2, px + sx / 2, y - h / 2, y + h / 2, pz - sz / 2, pz + sz / 2, m); }; // Teil vor einer Fläche: (dr,dc) = Blickrichtung, off = Abstand vom Zellmittelpunkt
+            const flatP = (x, y, z, wx, wz, m, rot = 0) => { const g = new THREE.PlaneGeometry(wx, wz); g.rotateX(-Math.PI / 2); if (rot) g.rotateY(rot); const o = mk(g, m, x, y, z); return o; };
+            const strip = (x, y, z, wx, wz) => { const along = wx >= wz, len = along ? wx : wz, t = haz.clone(); t.needsUpdate = true; t.repeat.set(Math.max(1, Math.round(len / 0.5)), 1); DECO.push(flatP(x, y, z, len, along ? wz : wx, new THREE.MeshLambertMaterial({ map: t }), along ? 0 : Math.PI / 2)); };
+            const pool = (x, y, z, rad, c = P.pool) => GLOW.push(flatP(x, y + 0.02, z, rad * 2, rad * 2, glowM(c)));
+            const rects = test => { const U = new Uint8Array(R * C), out = []; for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { if (U[r * C + c] || !test(r, c)) continue; let c1 = c, r1 = r; while (c1 + 1 < C && !U[r * C + c1 + 1] && test(r, c1 + 1)) c1++;
+                for (;;) { if (r1 + 1 >= R) break; let ok = true; for (let k = c; k <= c1; k++) if (U[(r1 + 1) * C + k] || !test(r1 + 1, k)) { ok = false; break; } if (!ok) break; r1++; } for (let a = r; a <= r1; a++) for (let k = c; k <= c1; k++) U[a * C + k] = 1; out.push([r, c, r1, c1]); } return out; };
+            const OBJ = 'chkmCbxltfvgo', roofedH = h => !' =iT#'.includes(h), roofedAt = (r, c) => { const h = hiC(r, c); return OBJ.includes(h) ? D4.some(([dr, dc]) => '_:ABKDWr'.includes(hiC(r + dr, c + dc))) : roofedH(h); }, isB = (r, c) => r <= 0 || c <= 0 || r >= R - 1 || c >= C - 1, stair = ch => ch >= '1' && ch <= '5';
+            const nearUp = (r, c) => { for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) if (HI_WALK.includes(hiC(r + a, c + b))) return true; return false; };
+            const FC = new Int32Array(R * C); { const seen = new Uint8Array(R * C), isF = (r, c) => r > 0 && c > 0 && r < R - 1 && c < C - 1 && cell(r, c) === '#' && hiC(r, c) === ' '; // kleine Inseln & dünne Mauern im Hof → niedrig
+                for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { if (seen[r * C + c] || !isF(r, c)) continue; const q = [[r, c]], cs = []; seen[r * C + c] = 1; let r0 = r, r1 = r, c0 = c, c1 = c, edge = false; while (q.length) { const [a, b] = q.pop(); cs.push(a * C + b); r0 = Math.min(r0, a); r1 = Math.max(r1, a); c0 = Math.min(c0, b); c1 = Math.max(c1, b); for (const [dr, dc] of D4) { const nr = a + dr, nc = b + dc; if (isB(nr, nc)) edge = true; if (isF(nr, nc) && !seen[nr * C + nc]) { seen[nr * C + nc] = 1; q.push([nr, nc]); } } }
+                    const low = !edge && (cs.length <= 24 || Math.min(r1 - r0, c1 - c0) <= 1); for (const i of cs) FC[i] = low ? 1 : 0; } }
+            const fillH = (r, c) => { let h = FC[r * C + c] ? 3.2 : P.fill[cellHash((r / 4) | 0, ((c / 4) | 0) + 7) % P.fill.length]; if (isB(r, c)) h = Math.max(h, 5.2); if (nearUp(r, c)) h = Math.max(h, FH + 1.3); return h; }; // Nebengebäude: Höhe je 4×4-Block (Terrassen-Rand mindestens Brusthöhe)
+            const wallTopAt = (r, c) => { const h = hiC(r, c); return h === '#' ? RT : h === ' ' ? fillH(r, c) : h === ':' ? RF : FH; }; // Höhe einer Erdgeschoss-Wand
+            const loCeil = (r, c) => { const h = hiC(r, c); return h === ' ' ? 4.4 : h === ':' ? RF : FH - SL; };        // Decke über einem EG-Feld (Himmel → Außenwandhöhe)
+            // ── 1. Wände, Geschossdecken, Dächer (pro Zelle vertikale Abschnitte → zu Rechtecken zusammengefasst) + Dachformen & Dachaufbauten ──
+            const SEG = new Map(), seg = (k, b, t, r, c) => { const key = k + '|' + b + '|' + t; if (!SEG.has(key)) SEG.set(key, new Set()); SEG.get(key).add(r * C + c); };
+            for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { const L = cell(r, c), H = hiC(r, c);
+                if (L === '#') { const t = wallTopAt(r, c); seg(H === ' ' ? 'n' : 'w', 0, t, r, c); if (t === FH ? roofedAt(r, c) : H === ':') seg('f', RF, RT, r, c); }
+                else { if (H === '#') seg('w', FH - SL, RT, r, c); else if (H !== ' ' && H !== ':') seg('s', FH - SL, FH, r, c); if (roofedAt(r, c)) seg('f', RF, RT, r, c); } }
+            const roofs = []; let masts = 0;
+            for (const [key, set] of SEG) { const [k, b0, t0] = key.split('|'), b = +b0, t = +t0;
+                for (const [r0, c0, r1, c1] of rects((r, c) => set.has(r * C + c))) { const x0 = c0, x1 = c1 + 1, z0 = r0, z1 = r1 + 1, w = x1 - x0, d = z1 - z0;
+                    if (k === 'w' || k === 'n') { const top = t === FH ? TM(upTex, w / 2, d / 2) : k === 'n' && !P.terra ? TM(flatTex, w / 2, d / 2) : t >= RT - 0.01 || k === 'n' ? TM(roofTex, w / 2, d / 2) : null; const a = Col(x0, x1, b, t, z0, z1, wallM(w, d, t - b, cellHash(r0, c0) + (k === 'n' ? 1 : 0), top), 1); if (t === FH) a.flr = 1; if (t > FH + 0.5) roofs.push([x0, x1, z0, z1, t, k]); }
+                    else if (k === 's') Col(x0, x1, b, t, z0, z1, [edgeM, edgeM, TM(upTex, w / 2, d / 2), TM(ceilTex, w / 2, d / 2), edgeM, edgeM]);
+                    else { Col(x0, x1, b, t, z0, z1, [edgeM, edgeM, TM(roofTex, w / 2, d / 2), TM(ceilTex, w / 2, d / 2), edgeM, edgeM], 1); roofs.push([x0, x1, z0, z1, t, 'f']); } } }
+            const prism = (w, h, len) => { const s = new THREE.Shape(); s.moveTo(-w / 2, 0); s.lineTo(w / 2, 0); s.lineTo(0, h); s.lineTo(-w / 2, 0); const g = new THREE.ExtrudeGeometry(s, { depth: len, bevelEnabled: false }); g.translate(0, 0, -len / 2); return g; };
+            for (const [x0, x1, z0, z1, t, k] of roofs) { const w = x1 - x0, d = z1 - z0, cxr = (x0 + x1) / 2, czr = (z0 + z1) / 2, hh = cellHash(x0 * 7 + 3, z0 * 13 + (t * 10 | 0)), mn = Math.min(w, d), area = w * d;
+                const pitched = mn >= 2 && mn <= 11 && Math.max(w, d) <= 18 && hh % 5 < (TK === 'de_bazaar' ? 1 : P.terra ? 4 : 2) && !(k === 'f' && d * w > 120);
+                if (pitched && P.terra) { const g = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4, 1); g.rotateY(Math.PI / 4); const o = mk(g, roofM2, cxr, t + mn * 0.17, czr); o.scale.set(w + 0.5, mn * 0.34, d + 0.5); o.castShadow = true; scene.add(o); continue; } // Walmdach mit Terracotta
+                if (pitched) { const along = w >= d, o = mk(prism(along ? d + 0.4 : w + 0.4, mn * 0.3, (along ? w : d) + 0.4), roofM2, cxr, t, czr); if (along) o.rotation.y = Math.PI / 2; o.castShadow = true; scene.add(o); continue; } // Satteldach
+                for (const [a0, a1, b0, b1] of [[x0, x1, z0, z0 + 0.22], [x0, x1, z1 - 0.22, z1], [x0, x0 + 0.22, z0, z1], [x1 - 0.22, x1, z0, z1]]) BxI(a0, a1, t, t + 0.38, b0, b1, wallTop); // Brüstung
+                if (area >= 6) { const ax = x0 + 1 + (hh % Math.max(1, w - 2)), az = z0 + 1 + ((hh >>> 4) % Math.max(1, d - 2)); BxI(ax - 0.5, ax + 0.5, t, t + 0.75, az - 0.4, az + 0.4, acM); Cy(0.28, 0.28, 0.05, ax, t + 0.78, az, darkM); } // Klimagerät
+                if (area >= 14 && hh % 3 === 0) { const ax = x0 + 1.2, az = z1 - 1.2; Cy(0.6, 0.6, 1.4, ax, t + 1.6, az, P.terra ? woodM : metalM, true); for (const [a, b] of [[-0.4, -0.4], [0.4, -0.4], [-0.4, 0.4], [0.4, 0.4]]) Bx(ax + a - 0.04, ax + a + 0.04, t, t + 0.9, az + b - 0.04, az + b + 0.04, beamM); } // Wassertank
+                if (area >= 10 && hh % 3 === 1) { const zz = z0 + 0.6; Bx(x0 + 0.5, x1 - 0.5, t + 0.25, t + 0.4, zz - 0.08, zz + 0.08, metalM); Bx(x0 + 0.5, x0 + 0.66, t, t + 0.4, zz - 0.08, zz + 0.08, metalM); } // Rohrleitung
+                if (k === 'f' && area >= 20 && hh % 2 === 0) for (let x = x0 + 1.5; x < x1 - 1; x += 3) Bx(x - 0.5, x + 0.5, t, t + 0.18, czr - Math.min(2, d / 2 - 0.6), czr + Math.min(2, d / 2 - 0.6), glassM); // Oberlichter
+                if (/de_(frost|moisty|bazaar|foundry)/.test(TK) && masts < 3 && area >= 9 && hh % 7 === 3) { masts++; const x = cxr, z = czr; for (const [a, b] of [[-0.3, -0.3], [0.3, -0.3], [-0.3, 0.3], [0.3, 0.3]]) Bx(x + a - 0.035, x + a + 0.035, t, t + 5, z + b - 0.035, z + b + 0.035, beamM); for (let y = 1; y < 5; y += 1.2) { Bx(x - 0.33, x + 0.33, t + y, t + y + 0.05, z - 0.33, z - 0.28, beamM); Bx(x - 0.33, x + 0.33, t + y, t + y + 0.05, z + 0.28, z + 0.33, beamM); } Bx(x - 0.03, x + 0.03, t + 5, t + 6.6, z - 0.03, z + 0.03, darkM); Bx(x - 0.09, x + 0.09, t + 6.6, t + 6.78, z - 0.09, z + 0.09, ledR); } }
+            for (const [r0, c0, r1, c1] of rects((r, c) => !solid(cell(r, c)) && !stair(cell(r, c)) && hiC(r, c) !== ' ')) { const o = flatP((c0 + c1 + 1) / 2, 0.012, (r0 + r1 + 1) / 2, c1 + 1 - c0, r1 + 1 - r0, TM(inTex, (c1 + 1 - c0) / 2, (r1 + 1 - r0) / 2)); o.receiveShadow = true; scene.add(o); } // Innenböden
+            // ── 2. Treppen: 5 Felder bis aufs Obergeschoss, je Feld 4 Stufen mit Warnkante, Handlauf an offenen Seiten ──
+            const stH = FH / 5, lvS = q => stair(q) ? +q : 0;
+            for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { const ch = cell(r, c); if (!stair(ch)) continue; const nv = +ch, h0 = (nv - 1) * stH;
+                let dir = D4.find(([dr, dc]) => lvS(cell(r + dr, c + dc)) > nv); if (!dir) { const lo = D4.find(([dr, dc]) => nv > 1 && lvS(cell(r + dr, c + dc)) === nv - 1); if (lo) dir = [-lo[0], -lo[1]]; }
+                if (!dir) { Col(c, c + 1, 0, nv * stH, r, r + 1, stepMat); continue; }
+                for (let i = 0; i < 4; i++) { const a = i / 4, top = h0 + stH * (i + 1) / 4; let x0 = c, x1 = c + 1, z0 = r, z1 = r + 1;
+                    if (dir[1]) { x0 = dir[1] > 0 ? c + a : c + 0.75 - a; x1 = x0 + 0.25; } else { z0 = dir[0] > 0 ? r + a : r + 0.75 - a; z1 = z0 + 0.25; }
+                    Col(x0, x1, 0, top, z0, z1, stepMat);
+                    if (dir[1]) strip(dir[1] > 0 ? x0 + 0.05 : x1 - 0.05, top + 0.006, r + 0.5, 0.08, 1); else strip(c + 0.5, top + 0.006, dir[0] > 0 ? z0 + 0.05 : z1 - 0.05, 1, 0.08); }
+                for (const s of [-1, 1]) { const sr = r + (dir[1] ? s : 0), sc = c + (dir[0] ? s : 0); if (stair(cell(sr, sc)) || cell(sr, sc) === '#') continue; const ex = c + 0.5 + (dir[0] ? s * 0.46 : 0), ez = r + 0.5 + (dir[1] ? s * 0.46 : 0), yt = nv * stH;
+                    Bx(ex - 0.03, ex + 0.03, 0, yt + 0.95, ez - 0.03, ez + 0.03, railM); Bx(ex - (dir[1] ? 0.5 : 0.035), ex + (dir[1] ? 0.5 : 0.035), yt - stH / 2 + 0.92, yt - stH / 2 + 0.98, ez - (dir[0] ? 0.5 : 0.035), ez + (dir[0] ? 0.5 : 0.035), trimC); } } // Pfosten + Handlauf
+            // ── 3. Objekte & Einrichtung je Ebene + Zellen merken ──
+            for (const l of [0, 1]) { const y0 = l ? FH : 0, at = l ? hiC : cell;
+                for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { const ch = at(r, c), x = c + 0.5, z = r + 0.5, hh = cellHash(r + l * 97, c);
+                    if (l ? HI_WALK.includes(ch) : !solid(ch)) openCells.push({ r, c, l });
+                    if (ch === 'A' || ch === 'B') siteCells[ch].push({ r, c, l }); if (ch === 'T') spawnCells.T.push({ r, c, l }); if (ch === 'K') spawnCells.CT.push({ r, c, l });
+                    const face = D4.find(([dr, dc]) => walkL(r + dr, c + dc, l)) || [1, 0], [fr, fc] = face, top = l ? RF : loCeil(r, c);
+                    if (ch === 'c') { Col(c + 0.05, c + 0.95, y0, y0 + 0.9, r + 0.05, r + 0.95, crateMats[hh % crateMats.length]); if (hh % 3 === 0) Col(x - 0.3, x + 0.3, y0 + 0.9, y0 + 1.5, z - 0.3, z + 0.3, crateMats[(hh >>> 3) % crateMats.length]); }
+                    else if (ch === 'k') { Col(c + 0.06, c + 0.94, y0, y0 + 2.1, r + 0.06, r + 0.94, darkM); // Server-Rack: Front mit LED-Leisten zu jedem Gang + blauer Schein
+                        for (const [dr, dc] of D4) { if (!walkL(r + dr, c + dc, l)) continue; F(x, z, dr, dc, 0.45, 0.78, 1.9, 0.02, y0 + 1.05, panelM); for (let i = 0; i < 5; i++) F(x, z, dr, dc, 0.465, 0.5, 0.04, 0.02, y0 + 0.35 + i * 0.36, (i + hh) % 7 ? led : ledR); if (hh % 2) pool(x + dc * 0.9, y0, z + dr * 0.9, 0.8, 0x2fb8e0); } }
+                    else if (ch === 'm') { Col(c + 0.04, c + 0.96, y0, y0 + 0.92, r + 0.04, r + 0.96, panelM); // Daten-Terminal: Pult, Monitor, Tastatur
+                        F(x, z, fr, fc, 0, 0.98, 0.04, 0.98, y0 + 0.94, beamM); F(x, z, fr, fc, -0.25, 0.82, 0.52, 0.06, y0 + 1.27, darkM, 1); F(x, z, fr, fc, -0.215, 0.72, 0.42, 0.01, y0 + 1.27, scr); F(x, z, fr, fc, 0.2, 0.5, 0.03, 0.18, y0 + 0.975, darkM); pool(x + fc * 0.8, y0, z + fr * 0.8, 0.9, 0x2fb8e0); }
+                    else if (ch === 'p') Col(x - 0.22, x + 0.22, y0, top, z - 0.22, z + 0.22, P.wood ? stiltM : pillarM, 1);
+                    else if (ch === 'b') { Hit(c + 0.1, c + 0.9, y0, y0 + 1.0, r + 0.1, r + 0.9); for (const [ox, oz, k] of [[-0.18, -0.15, 0], [0.2, 0.17, 1]]) { const m2 = drum[(hh + k) % drum.length]; Cy(0.27, 0.27, 1.0, x + ox, y0 + 0.5, z + oz, m2, true); Cy(0.28, 0.28, 0.05, x + ox, y0 + 0.75, z + oz, darkM); Cy(0.28, 0.28, 0.05, x + ox, y0 + 0.25, z + oz, darkM); } } // Fässer
+                    else if (ch === 'x') { Col(c + 0.05, c + 0.95, y0, y0 + 0.14, r + 0.05, r + 0.95, woodM); Col(c + 0.1, c + 0.62, y0 + 0.14, y0 + 0.62, r + 0.1, r + 0.88, boxM); Col(c + 0.62, c + 0.9, y0 + 0.14, y0 + 0.5, r + 0.15, r + 0.6, boxM); if (hh % 2) Col(c + 0.2, c + 0.55, y0 + 0.62, y0 + 0.85, r + 0.25, r + 0.7, boxM); } // Palette mit Kartons
+                    else if (ch === 'l') { Col(c + 0.05, c + 0.95, y0, y0 + 2.0, r + 0.05, r + 0.95, P.terra ? woodM : metalM); for (let i = 1; i < 4; i++) F(x, z, fr, fc, 0.465, 0.86, 0.04, 0.03, y0 + i * 0.5, darkM); F(x, z, fr, fc, 0.47, 0.03, 1.9, 0.02, y0 + 1, darkM); for (let i = 0; i < 3; i++) if ((hh >>> i) & 1) F(x - fc * 0 + (fr ? (i - 1) * 0.25 : 0), z + (fc ? (i - 1) * 0.25 : 0), fr, fc, 0.4, 0.18, 0.28, 0.12, y0 + 0.66 + i * 0.5, i % 2 ? boxM : drum[i]); } // Regal / Spind
+                    else if (ch === 't') { Hit(c + 0.06, c + 0.94, y0, y0 + 0.78, r + 0.06, r + 0.94); BxI(c + 0.04, c + 0.96, y0 + 0.72, y0 + 0.78, r + 0.04, r + 0.96, P.terra || P.wood ? woodM : metalM); for (const [a, b] of [[0.12, 0.12], [0.88, 0.12], [0.12, 0.88], [0.88, 0.88]]) Bx(c + a - 0.03, c + a + 0.03, y0, y0 + 0.72, r + b - 0.03, r + b + 0.03, darkM); // Tisch + Laptop + Stuhl
+                        F(x, z, fr, fc, -0.1, 0.42, 0.02, 0.3, y0 + 0.79, darkM); F(x, z, fr, fc, -0.24, 0.42, 0.28, 0.02, y0 + 0.93, scr); F(x, z, fr, fc, 0.78, 0.42, 0.06, 0.42, y0 + 0.46, darkM); F(x, z, fr, fc, 0.98, 0.42, 0.5, 0.06, y0 + 0.74, darkM); }
+                    else if (ch === 'f') { Col(c + 0.05, c + 0.95, y0, y0 + 1.5, r + 0.05, r + 0.95, darkM); Bx(c + 0.03, c + 0.97, y0 + 1.5, y0 + 1.62, r + 0.03, r + 0.97, hazY); F(x, z, fr, fc, 0.47, 0.5, 0.35, 0.03, y0 + 1.05, P.ind ? furn : scr); F(x, z, fr, fc, 0.47, 0.6, 0.12, 0.03, y0 + 0.4, hazY); Cy(0.1, 0.1, Math.max(0.2, top - y0 - 1.62), x + 0.2, (y0 + 1.62 + top) / 2, z - 0.2, metalM); pool(x + fc * 0.9, y0, z + fr * 0.9, 1.0, P.ind ? 0xff8a3a : 0x2fb8e0); } // Maschine
+                    else if (ch === 'v') { Col(c + 0.05, c + 0.95, y0, y0 + 0.9, r + 0.05, r + 0.95, woodM); for (const [a, b] of [[0.08, 0.08], [0.92, 0.08], [0.08, 0.92], [0.92, 0.92]]) Bx(c + a - 0.03, c + a + 0.03, y0 + 0.9, y0 + 2.3, r + b - 0.03, r + b + 0.03, darkM); // Marktstand mit Markise & Ware
+                        const aw = Bx(c - 0.05, c + 1.05, y0 + 2.3, y0 + 2.36, r - 0.05, r + 1.05, drum[hh % drum.length]); aw.rotation.set(fc ? 0 : fr * 0.18, 0, fc ? -fc * 0.18 : 0); for (let i = 0; i < 3; i++) Bx(c + 0.15 + i * 0.25, c + 0.35 + i * 0.25, y0 + 0.9, y0 + 1.05, r + 0.3, r + 0.7, drum[(hh + i + 1) % drum.length]); }
+                    else if (ch === 'g') { Col(c + 0.1, c + 0.9, y0, y0 + 0.55, r + 0.1, r + 0.9, P.terra ? roofM2 : metalM); const t2 = mk(TK === 'de_dusty' && hh % 2 ? new THREE.ConeGeometry(0.32, 2.4, 7) : new THREE.IcosahedronGeometry(0.42, 0), hedgeM, x, y0 + (TK === 'de_dusty' && hh % 2 ? 1.75 : 0.85), z); t2.castShadow = true; scene.add(t2); } // Pflanzkübel (Zypresse/Busch)
+                    else if (ch === 'o') { Hit(c + 0.08, c + 0.92, y0, y0 + 1.6, r + 0.08, r + 0.92); Cy(0.42, 0.42, 1.6, x, y0 + 0.8, z, P.terra ? stoneM : metalM, true, 14); Cy(0.44, 0.44, 0.06, x, y0 + 1.2, z, hazY); Cy(0.44, 0.44, 0.06, x, y0 + 0.4, z, darkM); Bx(x - 0.12, x + 0.12, y0 + 1.6, y0 + 1.9, z - 0.12, z + 0.12, darkM); } // Tank / Generator
+                    else if (ch === 'W') { Col(c, c + 1, y0, y0 + 1.0, r, r + 1, wallM(1, 1, 1, hh), 1); Col(c, c + 1, y0 + 2.3, top, r, r + 1, wallM(1, 1, top - y0 - 2.3, hh), 1); Bx(c - 0.02, c + 1.02, y0 + 1.0, y0 + 1.06, r - 0.02, r + 1.02, trimMat); }
+                    else if (ch === 'D') { Col(c, c + 1, y0 + 2.5, top, r, r + 1, wallM(1, 1, top - y0 - 2.5, hh), 1); Bx(c, c + 1, y0 + 2.4, y0 + 2.5, r, r + 1, trimC); // Tür: Sturz + Zarge (gelb in Industrie-Karten) + Lampe
+                        for (const [dr, dc] of D4) if (at(r + dr, c + dc) === '#') { const bx = x + dc * 0.5, bz = z + dr * 0.5; BxI(bx - (dc ? 0.08 : 0.58), bx + (dc ? 0.08 : 0.58), y0, y0 + 2.5, bz - (dr ? 0.08 : 0.58), bz + (dr ? 0.08 : 0.58), trimC); }
+                        if (P.ind || TK === 'de_frost') { const ax = walkL(r - 1, c, l) && walkL(r + 1, c, l); strip(x, y0 + 0.02, z, ax ? 1 : 0.3, ax ? 0.3 : 1); }
+                        if (hh % 2 === 0) for (const [dr, dc] of D4) if (walkL(r + dr, c + dc, l) && (l ? !roofedH(hiC(r + dr, c + dc)) : hiC(r + dr, c + dc) === ' ')) { F(x, z, dr, dc, 0.56, 0.3, 0.12, 0.14, y0 + 2.7, lamp); pool(x + dc, y0, z + dr, 1.3); } }
+                    else if (l && (ch === 'r' || ch === 'i')) { const rl = q => q === 'r' || q === 'i', ax = rl(hiC(r, c - 1)) || rl(hiC(r, c + 1)) ? true : rl(hiC(r - 1, c)) || rl(hiC(r + 1, c)) ? false : HI_WALK.includes(hiC(r - 1, c)) || HI_WALK.includes(hiC(r + 1, c)), rm = P.ind || TK === 'de_frost' ? hazY : railM; // Geländer längs der Kante zum Luftraum
+                        aabbs.push(ax ? { minX: c, maxX: c + 1, minZ: z - 0.06, maxZ: z + 0.06, top: FH + 1.05, bot: FH } : { minX: x - 0.06, maxX: x + 0.06, minZ: r, maxZ: r + 1, top: FH + 1.05, bot: FH });
+                        if (ax) { BxI(c, c + 1, FH + 1.0, FH + 1.07, z - 0.05, z + 0.05, rm); Bx(c, c + 1, FH + 0.5, FH + 0.55, z - 0.025, z + 0.025, railM); Bx(c, c + 1, FH, FH + 0.12, z - 0.02, z + 0.02, rm); Bx(x - 0.04, x + 0.04, FH, FH + 1.0, z - 0.04, z + 0.04, railM); }
+                        else { BxI(x - 0.05, x + 0.05, FH + 1.0, FH + 1.07, r, r + 1, rm); Bx(x - 0.025, x + 0.025, FH + 0.5, FH + 0.55, r, r + 1, railM); Bx(x - 0.02, x + 0.02, FH, FH + 0.12, r, r + 1, rm); Bx(x - 0.04, x + 0.04, FH, FH + 1.0, z - 0.04, z + 0.04, railM); } } }
+                for (const [r0, c0, r1, c1] of rects((r, c) => at(r, c) === 'C')) { const h = Math.min(2.5, (l ? RF : loCeil(r0, c0)) - y0 - 0.15), k = cellHash(r0 + l, c0) % contMats.length, x0 = c0 + 0.05, x1 = c1 + 0.95, z0 = r0 + 0.05, z1 = r1 + 0.95;
+                    Col(x0, x1, y0, y0 + h, z0, z1, contMats[k]); for (let x = c0 + 0.5; x < c1 + 1; x += 1) Bx(x - 0.03, x + 0.03, y0 + 0.1, y0 + h - 0.1, z0 - 0.03, z1 + 0.03, trimMat);
+                    if (TK === 'de_frost' || TK === 'de_moisty') { Bx(x0 - 0.02, x1 + 0.02, y0 + h - 0.4, y0 + h - 0.32, z0 - 0.02, z1 + 0.02, led); Bx((x0 + x1) / 2 - 0.5, (x0 + x1) / 2 + 0.5, y0 + h, y0 + h + 0.45, (z0 + z1) / 2 - 0.4, (z0 + z1) / 2 + 0.4, darkM); } } // Container-Servermodul
+                for (const [r0, c0, r1, c1] of rects((r, c) => at(r, c) === 'h')) Col(c0 + 0.08, c1 + 0.92, y0, y0 + 1.1, r0 + 0.08, r1 + 0.92, TK === 'de_dusty' && !l && hiC(r0, c0) === ' ' ? hedgeM : halfMat);
+            }
+            for (const tm of ['T', 'CT']) { const key = o => o.l * 1e6 + o.r * 1000 + o.c, by = new Map(spawnCells[tm].map(o => [key(o), o])), seen = new Set(); // Spawn-Zonen = zusammenhängende Felder
+                for (const o of spawnCells[tm]) { if (seen.has(key(o))) continue; const grp = [], q = [o]; seen.add(key(o)); while (q.length) { const p = q.pop(); grp.push(p); for (const [dr, dc] of D4) { const k2 = p.l * 1e6 + (p.r + dr) * 1000 + p.c + dc; if (by.has(k2) && !seen.has(k2)) { seen.add(k2); q.push(by.get(k2)); } } } spawnGroups[tm].push(grp); } }
+            // ── 4. Fassaden & Wanddetails: Fenster (teils beleuchtet), Rolltore, Fallrohre, Klimageräte, Pfeiler, Kabelkanäle, Bodenmarkierung, Kontaktschatten ──
+            const aoP = [], aoU = [];
+            const isWall = (r, c, l) => l ? hiC(r, c) === '#' || (cell(r, c) === '#' && (hiC(r, c) === ' ' || hiC(r, c) === ':')) : cell(r, c) === '#';
+            for (const l of [0, 1]) for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { if (!isWall(r, c, l)) continue; const x = c + 0.5, z = r + 0.5;
+                for (const [dr, dc] of D4) { const nr = r + dr, nc = c + dc; if (!walkL(nr, nc, l)) continue; const hn = hiC(nr, nc), y0 = l ? FH : 0, hh = cellHash(r * 3 + l, c * 5 + dr + dc * 2), al = dr ? c : r;
+                    const wt = l ? (hiC(r, c) === '#' ? RT : wallTopAt(r, c)) : wallTopAt(r, c), indoor = l ? roofedH(hn) : hn !== ' ', ext = Math.min(wt, l ? (indoor ? RF : wt) : (indoor ? loCeil(nr, nc) : wt));
+                    if (indoor) { if (al % 4 === 0) F(x, z, dr, dc, 0.56, 0.4, ext - y0, 0.12, (y0 + ext) / 2, pillarM); F(x, z, dr, dc, 0.525, 1, 0.16, 0.05, y0 + 0.08, edgeM);
+                        if (ext - y0 > 2.4) { F(x, z, dr, dc, 0.59, 1, 0.12, 0.18, ext - 0.32, beamM); F(x, z, dr, dc, 0.57, 1, 0.05, 0.05, ext - 0.46, darkM); }
+                        if (hh % 17 === 0 && ext - y0 > 2.4) { F(x, z, dr, dc, 0.53, 0.9, 0.55, 0.05, y0 + 1.6, darkM); F(x, z, dr, dc, 0.556, 0.8, 0.45, 0.01, y0 + 1.6, scr); } // Wand-Monitor
+                        else if (hh % 23 === 5) { F(x, z, dr, dc, 0.54, 0.5, 0.7, 0.08, y0 + 1.5, metalM); F(x, z, dr, dc, 0.585, 0.12, 0.12, 0.01, y0 + 1.7, ledR); } // Sicherungskasten
+                        else if (hh % 19 === 7) F(x, z, dr, dc, 0.51, 0.7, 0.9, 0.02, y0 + 1.5, hazY); // Warnschild
+                        if (P.ind && !l && hn === ':' && hh % 13 === 1) { F(x, z, dr, dc, 0.62, 0.5, 0.5, 0.25, 2.9, darkM); F(x, z, dr, dc, 1.2, 0.18, 0.18, 1.0, 2.9, hazY); F(x, z, dr, dc, 1.68, 0.16, 0.7, 0.16, 2.5, hazY); F(x, z, dr, dc, 1.68, 0.3, 0.12, 0.3, 2.12, darkM); } } // Roboterarm
+                    else { const door = !l && al % 9 === 4 && wt >= 4.4 && isWall(r + dc, c + dr, 0) && walkL(nr + dc, nc + dr, 0) && hiC(nr + dc, nc + dr) === ' '; // Rolltor über 2 Felder (Attrappe)
+                        if (door) { const bx = x + dc * 0.53 + dr * 0.5, bz = z + dr * 0.53 + dc * 0.5, sx = dc ? 0.04 : 1.8, sz = dr ? 0.04 : 1.8; Bx(bx - sx / 2, bx + sx / 2, 0, 2.5, bz - sz / 2, bz + sz / 2, TM(rollTex, 1, 1)); F(x + dr * 0.5, z + dc * 0.5, dr, dc, 0.56, 2.1, 0.14, 0.12, 2.57, trimC, 1); for (const s of [-1, 1]) F(x + dr * (0.5 + s * 0.98), z + dc * (0.5 + s * 0.98), dr, dc, 0.56, 0.12, 2.6, 0.12, 1.3, trimC, 1);
+                            const aw = F(x + dr * 0.5, z + dc * 0.5, dr, dc, 0.95, 2.4, 0.06, 0.9, 2.95, P.terra ? drum[hh % 2] : metalM, 1); aw.rotation.set(dr ? dr * 0.25 : 0, 0, dc ? -dc * 0.25 : 0); F(x + dr * 0.5, z + dc * 0.5, dr, dc, 0.6, 0.3, 0.12, 0.16, 3.2, lamp); pool(nc + 0.5 + dr * 0.5, 0, nr + 0.5 + dc * 0.5, 1.6); if (P.ind) strip(nc + 0.5 + dr * 0.5, 0.02, nr + 0.5 + dc * 0.5, dr ? 2 : 0.3, dr ? 0.3 : 2); }
+                        else if (l || al % 9 < 3 || al % 9 > 5) { for (const wy of (wt - y0 >= 5.4 ? [2.1, 4.6] : wt - y0 >= 3.2 ? [2.1] : [])) if (al % 3 === 1) { const lit = (hh >>> 3) % 4 === 0; F(x, z, dr, dc, 0.505, 0.8, 1.1, 0.02, y0 + wy, lit ? winM : glassM); F(x, z, dr, dc, 0.53, 0.94, 0.08, 0.1, y0 + wy - 0.58, trimMat); F(x, z, dr, dc, 0.52, 0.94, 0.06, 0.06, y0 + wy + 0.58, trimMat); for (const s of [-1, 1]) F(x + dr * s * 0.44, z + dc * s * 0.44, dr, dc, 0.52, 0.06, 1.1, 0.06, y0 + wy, trimMat); } // Fenster mit Rahmen
+                            if (al % 7 === 3 && wt - y0 > 2.5) F(x, z, dr, dc, 0.56, 0.12, wt - y0 - 0.3, 0.12, y0 + (wt - y0 - 0.3) / 2, metalM); // Fallrohr
+                            if (hh % 29 === 11 && wt - y0 > 3) { F(x, z, dr, dc, 0.7, 0.8, 0.6, 0.4, y0 + 2.6, acM, 1); F(x, z, dr, dc, 0.905, 0.4, 0.4, 0.01, y0 + 2.6, darkM); } } // Klimagerät
+                        if (!l && (P.ind || TK === 'de_frost')) { const g = flatP(nc + 0.5 - dc * 0.15, 0.018, nr + 0.5 - dr * 0.15, dr ? 1 : 0.07, dr ? 0.07 : 1, hazY); DECO.push(g); } } // gelbe Bodenlinie
+                    const g = new THREE.PlaneGeometry(1, 0.5); g.rotateX(-Math.PI / 2); if (dr === -1) g.rotateY(Math.PI); if (dc === 1) g.rotateY(Math.PI / 2); if (dc === -1) g.rotateY(-Math.PI / 2);
+                    g.translate(nc + 0.5 - dc * 0.25, y0 + 0.015, nr + 0.5 - dr * 0.25); const gi = g.toNonIndexed(); aoP.push(...gi.attributes.position.array); aoU.push(...gi.attributes.uv.array); g.dispose(); gi.dispose(); } }
+            { const ag = new THREE.BufferGeometry(); ag.setAttribute('position', new THREE.Float32BufferAttribute(aoP, 3)); ag.setAttribute('uv', new THREE.Float32BufferAttribute(aoU, 2)); const aoG = new THREE.Group(); aoG.add(new THREE.Mesh(ag, aoM)); scene.add(aoG); }
+            // ── 5. Decken: durchgehende Stahlträger, LED-Paneele mit Lichtkegeln (EG unter dem OG, Dach-Untersicht oben & in Hallen) ──
+            const ceilLo = (r, c) => !solid(cell(r, c)) && !stair(cell(r, c)) && !' :'.includes(hiC(r, c)), ceilUp = (r, c) => roofedAt(r, c) && !OBJ.includes(hiC(r, c)) && hiC(r, c) !== '#';
+            for (const [test, yb, th, step] of [[ceilLo, FH - SL, 0.16, 3], [ceilUp, RF, 0.3, 4]]) {
+                for (let r = 0; r < R; r++) { if (r % step) continue; let c = 0; while (c < C) { if (!test(r, c)) { c++; continue; } const s = c; while (c < C && test(r, c)) c++; Bx(s, c, yb - th, yb, r, r + th * 0.8, beamM); } }
+                for (let c = 0; c < C; c++) { if (c % step) continue; let r = 0; while (r < R) { if (!test(r, c)) { r++; continue; } const s = r; while (r < R && test(r, c)) r++; Bx(c, c + th * 0.8, yb - th, yb, s, r, beamM); } }
+                for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { if (r % step !== 1 || c % step !== 1 || !test(r, c)) continue; const big = step === 4, fy = big && hiC(r, c) === ':' ? 0 : big ? FH : 0;
+                    if (big && hiC(r, c) === ':' && (P.ind || TK === 'de_frost')) { Bx(c + 0.47, c + 0.53, RF - 1.4, RF, r + 0.47, r + 0.53, darkM); Cy(0.05, 0.45, 0.35, c + 0.5, RF - 1.55, r + 0.5, darkM); Cy(0.4, 0.4, 0.03, c + 0.5, RF - 1.72, r + 0.5, lamp); } // Hallenstrahler
+                    else Bx(c + 0.12, c + (big ? 1.5 : 0.88), yb - 0.04, yb, r + 0.12, r + (big ? 1.2 : 0.88), lamp);
+                    pool(c + 0.5, fy, r + 0.5, big ? 2.1 : 1.6); } }
+            // ── 6. Bombsites: Warnstreifen, Schild mit Buchstabe, rote Warnleuchte ──
+            for (const L of ['A', 'B']) { const signs = [];
+                for (const { r, c, l } of siteCells[L]) for (const [dr, dc] of D4) { const n = chAt(r + dr, c + dc, l); if (isWall(r + dr, c + dc, l)) signs.push([r + dr, c + dc, -dr, -dc, l]); if (n === L || !walkL(r + dr, c + dc, l) || stair(n)) continue; const y = (l ? FH : 0) + 0.03;
+                    if (dr) strip(c + 0.5, y, r + 0.5 + dr * 0.62, 1, 0.22); else strip(c + 0.5 + dc * 0.62, y, r + 0.5, 0.22, 1); }
+                const tex = makeTex(128, 128, g => { g.fillStyle = '#ece8e1'; g.fillRect(0, 0, 128, 128); g.strokeStyle = '#1d2530'; g.lineWidth = 6; g.strokeRect(8, 8, 112, 112); g.fillStyle = '#c23b33'; g.font = 'bold 84px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(L, 64, 72); g.fillStyle = '#1d2530'; g.font = 'bold 15px Arial'; g.fillText('BOMB SITE', 64, 22); }), sm = new THREE.MeshLambertMaterial({ map: tex });
+                for (const sp of [signs[signs.length >> 2], signs[(signs.length * 3) >> 2]]) if (sp) { const [r, c, dr, dc, l] = sp, y0 = l ? FH : 0; F(c + 0.5, r + 0.5, dr, dc, 0.53, 1.2, 1.2, 0.04, y0 + 1.9, sm, 1); F(c + 0.5, r + 0.5, dr, dc, 0.6, 0.22, 0.16, 0.14, y0 + 2.75, ledR); pool(c + 0.5 + dc * 1.2, y0, r + 0.5 + dr * 1.2, 1.4, 0xff4a30); } }
+            // ── 7. Boden: Schriftzug im größten Hof, Ölflecken, Pfützen (Mire), Schneewehen (Tundra), Gras (Sienna) ──
+            { let best = null; for (const rc of rects((r, c) => cell(r, c) === '.' && hiC(r, c) === ' ')) { const a = (rc[2] - rc[0] + 1) * (rc[3] - rc[1] + 1); if (!best || a > best[4]) best = [...rc, a]; }
+                if (best && best[4] >= 30) { const [r0, c0, r1, c1] = best, w = Math.min(9, c1 - c0 + 1), d = Math.min(2.6, r1 - r0 + 1), tx = makeTex(256, 64, g => { g.clearRect(0, 0, 256, 64); g.fillStyle = 'rgba(236,232,225,.75)'; g.font = 'bold 54px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('CLUTCH', 128, 34); });
+                    DECO.push(flatP((c0 + c1 + 1) / 2, 0.016, (r0 + r1 + 1) / 2, w, d, new THREE.MeshLambertMaterial({ map: tx, transparent: true, depthWrite: false }))); } }
+            const stain = new THREE.MeshBasicMaterial({ map: makeTex(64, 64, g => { const gr = g.createRadialGradient(32, 32, 2, 32, 32, 30); gr.addColorStop(0, 'rgba(20,18,16,.45)'); gr.addColorStop(1, 'rgba(20,18,16,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); }), transparent: true, depthWrite: false });
+            const water = E(0x2a3d36, 0x0c1a16), snowM = M(0xf4f8fb), reedM = M(0x6f7a3e), grassM = M(0x6d9a4e);
+            for (let r = 1; r < R - 1; r++) for (let c = 1; c < C - 1; c++) { if (cell(r, c) !== '.' || hiC(r, c) !== ' ') continue; const hh = cellHash(r * 5 + 1, c * 3 + 2) % 97, wallN = D4.find(([dr, dc]) => cell(r + dr, c + dc) === '#');
+                if (hh < 3) DECO.push(flatP(c + 0.5, 0.014, r + 0.5, 1.6, 1.3, stain, hh));
+                else if (TK === 'de_moisty' && hh < 9) DECO.push(flatP(c + 0.5, 0.016, r + 0.5, 1.4 + (hh % 3) * 0.5, 1.1, water, hh));
+                else if (TK === 'de_moisty' && wallN && hh < 16) for (let i = 0; i < 3; i++) { const o = mk(new THREE.ConeGeometry(0.04, 0.9 + i * 0.25, 4), reedM, c + 0.5 - wallN[1] * 0.35 + (i - 1) * 0.18, 0.45 + i * 0.12, r + 0.5 - wallN[0] * 0.35); DECO.push(o); }
+                else if (TK === 'de_frost' && wallN && hh < 22) { const o = mk(new THREE.IcosahedronGeometry(0.5, 0), snowM, c + 0.5 - wallN[1] * 0.3, 0.05, r + 0.5 - wallN[0] * 0.3); o.scale.set(1.1, 0.35, 1.1); DECO.push(o); }
+                else if (TK === 'de_dusty' && r > 28 && hh < 30) DECO.push(flatP(c + 0.5, 0.015, r + 0.5, 1, 1, grassM)); }
+            // ── 8. Kulisse außerhalb der Karte (nie Blick ins Leere): Skyline im Dunst, Häuser mit Terracotta-Dächern, Fabriken mit Schloten, Felsen/Berge, dichter Wald ──
+            const ring = []; for (let x = -10; x <= C + 10; x += 5) { ring.push([x, -7 - (x * 7 & 3)], [x, R + 7 + (x * 5 & 3)]); } for (let z = -5; z <= R + 5; z += 5) { ring.push([-7 - (z * 3 & 3), z], [C + 7 + (z * 11 & 3), z]); }
+            const bw = [0, 1, 2].map(k => new THREE.MeshLambertMaterial({ map: vWallTex(THEME, k) })), leaf = M(0x2f4a2c), leaf2 = M(0x3b5a34), trunk = M(0x4a3626), rock = [M(0x9aa3ab), M(0xc9d2da), M(0x7f8890)], far = M(new THREE.Color(P.fog ? P.fog[0] : 0xb0c0d0).lerp(new THREE.Color(0xffffff), 0.25).getHex());
+            { const g = new THREE.PlaneGeometry(600, 600); g.rotateX(-Math.PI / 2); const o = mk(g, M(new THREE.Color(THEME.floor).lerp(new THREE.Color(P.fog ? P.fog[0] : 0xb0c0d0), 0.35).getHex()), C / 2, -0.03, R / 2); o.receiveShadow = true; scene.add(o); } // Boden außerhalb der Karte (keine schwebende Kulisse)
+            for (const [i, [x, z]] of ring.entries()) { const hh = cellHash(i + 3, x * 3 + z), sz = 5 + hh % 4;
+                if (TK === 'de_moisty') { for (const [ox, oz] of [[0, 0], [2.5, 2], [-2, 2.5]]) { const h = 7 + (hh >>> (ox > 0 ? 3 : 5)) % 6; Bx(x + ox - 0.25, x + ox + 0.25, 0, h * 0.4, z + oz - 0.25, z + oz + 0.25, trunk); DECO.push(mk(new THREE.ConeGeometry(1.9, h, 7), (hh + ox) % 2 ? leaf : leaf2, x + ox, h * 0.4 + h / 2 - 0.5, z + oz)); } }
+                else if (TK === 'de_frost') { const k = mk(new THREE.IcosahedronGeometry(sz * 0.9, 0), rock[hh % 3], x, sz * 0.5, z); k.rotation.set(hh % 5, hh % 7, 0); k.scale.y = 1.4; DECO.push(k); }
+                else { const h = 5 + hh % 6; Bx(x - sz / 2, x + sz / 2, 0, h, z - sz / 2, z + sz / 2, bw[hh % 3]); if (P.terra) { const g = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4); g.rotateY(Math.PI / 4); const o = mk(g, roofM2, x, h + 1, z); o.scale.set(sz + 0.6, 2, sz + 0.6); DECO.push(o); } else Bx(x - sz / 2 - 0.2, x + sz / 2 + 0.2, h, h + 0.4, z - sz / 2 - 0.2, z + sz / 2 + 0.2, wallTop);
+                    if (P.ind && hh % 3 === 0) Cy(0.7, 0.9, 10, x, h + 5, z, darkM);
+                    if (TK === 'de_dusty' && hh % 2) DECO.push(mk(new THREE.ConeGeometry(0.7, 5, 7), leaf, x + sz / 2 + 1.2, 2.5, z)); } }
+            for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2 + 0.3, d = 62 + (i * 37 % 25), x = C / 2 + Math.cos(a) * d, z = R / 2 + Math.sin(a) * d, hh = cellHash(i, 99); // Skyline / Berge im Dunst
+                if (TK === 'de_frost') { const o = mk(new THREE.ConeGeometry(16 + hh % 12, 26 + hh % 20, 6), far, x, 12, z); DECO.push(o); } else if (TK === 'de_moisty') { DECO.push(mk(new THREE.ConeGeometry(4, 18 + hh % 8, 7), leaf2, x, 9, z)); } else { const h = P.terra ? 8 + hh % 8 : 18 + hh % 26, s = 6 + hh % 6; Bx(x - s / 2, x + s / 2, 0, h, z - s / 2, z + s / 2, far); } }
+            // ── 9. Zusammenfassen: Deko ohne Schatten (1 Draw-Call je Material), Licht additiv; Lichtstimmung merken ──
+            const dG = new THREE.Group(), gG = new THREE.Group(); for (const o of DECO) o.updateMatrixWorld(true); for (const o of GLOW) o.updateMatrixWorld(true);
+            mergeStatic(DECO, dG); mergeStatic(GLOW, gG); dG.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = !o.material.transparent; } }); gG.traverse(o => { if (o.isMesh) { o.castShadow = o.receiveShadow = false; o.renderOrder = 2; } }); scene.add(dG, gG);
+            Object.assign(LMOOD, { on: true, sun: P.sun, hemi: P.hemi, fog: P.fog, bg: P.bg });
+        }
         const staticFrom = scene.children.length;
-        for (let r = 0; r < ROWS; r++) {
+        if (!LAY) for (let r = 0; r < ROWS; r++) { // alte 4-m-Karten (eigene & Community-Karten)
             for (let c = 0; c < COLS; c++) {
                 const ch = cell(r, c), x = cx(c), z = cx(r);
                 if (!solid(ch)) openCells.push({ r, c });
@@ -5996,8 +6137,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (full) for (let side = 0; side < 4; side++) for (let i = 0; i < 9; i++) { const t = (i + 0.5) / 9, hh = cellHash(side * 9, i) % 100, H = 8 + hh % 14, W2 = 8 + hh % 5, o = 9 + (hh % 3) * 5, x = side < 2 ? t * WORLD_W : side === 2 ? -o : WORLD_W + o, z = side < 2 ? (side ? WORLD_D + o : -o) : t * WORLD_D;
                 D(W2, H, W2, x, H / 2, z, bw[hh % 3]); D(W2 + 0.4, 0.4, W2 + 0.4, x, H + 0.2, z, wallTop); if (hh % 2) D(2, 1.2, 1.6, x + 1, H + 1, z - 1, ac); if (hh % 5 === 0) D(1.6, 2.4, 1.6, x - 2, H + 1.6, z + 1.5, pipe); }
         }
-        if (DSV) cityDeco(cell, ROWS, COLS, 0, scene, 1, true);
-        if (DSV) { // Pflanzinseln (Erde, Blumen, Laterne) + flache Bodendetails auf freien Flächen (ohne Einfluss aufs Spiel)
+        if (DSV && !LAY) cityDeco(cell, ROWS, COLS, 0, scene, 1, true);
+        if (LAY) buildLayered();
+        if (DSV && !LAY) { // Pflanzinseln (Erde, Blumen, Laterne) + flache Bodendetails auf freien Flächen (ohne Einfluss aufs Spiel)
             const dm = c => new THREE.MeshLambertMaterial({ color: c }), soil = dm(0x5b4636), leaf = dm(0x5f9a52), bloom = [dm(0xe0683a), dm(0xf2c230), dm(0xe8e2d6)], dark = dm(0x2b2f36), lamp = dm(0xffe6b0); lamp.emissive = new THREE.Color(0xffc060);
             const D = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = true; scene.add(o); };
             const plantAt = []; for (let r = 1; r < ROWS - 1; r++) for (let c = 1; c < COLS - 1; c++) { if (cell(r, c) !== 'h') continue; let ok = true; for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) if ((a || b) && cell(r + a, c + b) !== '.') ok = false; if (ok) plantAt.push([r, c]); } // freistehende Deckung = Pflanzinsel
@@ -6011,29 +6153,77 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 else if (h < 3) D(new THREE.CylinderGeometry(0.45, 0.45, 0.03, 14), manM, x + 0.8, 0.015, z - 0.6); // Kanaldeckel
                 else if (h < 5) D(new THREE.BoxGeometry(0.9, 0.025, 0.35), grate, x - 0.7, 0.013, z + 0.9); } // Abflussgitter
         }
+        if (!LAY) { // Tech-Lore (Data-Purge): Server-Racks, Daten-Terminals, Kabelkanäle, Kassetten-Decken in Innenräumen, Wandpfeiler, Warnstreifen an Sites & Treppen, Funkmasten/Öfen je Thema
+            const TK = (CMAP_INFO[MAPNAME] || {}).th || MAPNAME, dm = (c, e) => { const m = new THREE.MeshLambertMaterial({ color: c }); if (e) m.emissive = new THREE.Color(e); return m; };
+            const rackM = dm(0x23272e), rackF = dm(0x323944), led = dm(0x4fd8ff, 0x2fb8e0), ledR = dm(0xff5a3c, 0xc03018), scr = dm(0x6fe6ff, 0x1f8fb0), beamM = dm(0x3a4048), ledP = dm(0xf4f8ff, 0xb8c4d0), cableM = dm(0x1a1d22), ventM = dm(0x2a2e34), furn = dm(0xff8a2a, 0xd05a10), hazY = dm(0xf2c230);
+            const pillarM = dm(new THREE.Color(THEME.wallBase).multiplyScalar(0.86).getHex()), haz = makeTex(64, 16, g => { g.fillStyle = '#f2c230'; g.fillRect(0, 0, 64, 16); g.fillStyle = '#1d2026'; for (let x = -16; x < 80; x += 16) { g.beginPath(); g.moveTo(x, 16); g.lineTo(x + 8, 0); g.lineTo(x + 16, 0); g.lineTo(x + 8, 16); g.fill(); } });
+            const Bx = (w, h, d, x, y, z, m) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; scene.add(o); return o; };
+            const strip = (len, wd, x, y, z, alongX) => { const t = haz.clone(); t.needsUpdate = true; t.repeat.set(Math.max(1, Math.round(len / 0.8)), 1); const g = new THREE.PlaneGeometry(len, wd); g.rotateX(-Math.PI / 2); if (!alongX) g.rotateY(Math.PI / 2); const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ map: t })); m.position.set(x, y, z); m.receiveShadow = true; scene.add(m); };
+            // Teil an einer Wandseite: (dr,dc) = Richtung von der Wand in den Raum, lat = seitlicher Versatz, w = Breite längs der Wand, d = Tiefe, off = Abstand der Vorderkante zur Wand
+            const W2 = (r, c, dr, dc, lat, w, h, d, off, y, m, col) => { const fx = (c + 0.5) * S + dc * (S / 2 + off - d / 2) + (dr ? lat : 0), fz = (r + 0.5) * S + dr * (S / 2 + off - d / 2) + (dc ? lat : 0), sx = dc ? d : w, sz = dr ? d : w;
+                if (col) addBox(fx - sx / 2, fx + sx / 2, y - h / 2, y + h / 2, fz - sz / 2, fz + sz / 2, m); else Bx(sx, h, sz, fx, y, fz, m); };
+            const walk = ch => !!ch && !solid(ch), DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]], used = new Set();
+            const cdBusy = (r, c, dr, dc) => { if (!DSV) return false; const d0 = DIRS.find(([a, b]) => walk(cell(r + a, c + b))); if (!d0 || d0[0] !== dr || d0[1] !== dc) return false; const h = cellHash(r, c) % 100; return h < 27 || cellHash(c + 101, r + 37) % 100 < 61; }; // Platz schon von der Stadt-Deko belegt?
+            const free = (r, c, dr, dc) => cell(r, c) === '#' && '.RABK'.includes(cell(r + dr, c + dc)) && !cdBusy(r, c, dr, dc) && !used.has(r * 1000 + c);
+            const rack = (r, c, dr, dc) => { used.add(r * 1000 + c); for (const lat of [-0.62, 0.62]) { W2(r, c, dr, dc, lat, 1.1, 2.2, 0.7, 0.7, 1.1, rackM, 1); W2(r, c, dr, dc, lat, 0.96, 2.0, 0.03, 0.72, 1.1, rackF);
+                for (let i = 0; i < 5; i++) W2(r, c, dr, dc, lat + (i % 2 ? 0.1 : -0.1), 0.6, 0.04, 0.02, 0.745, 0.45 + i * 0.36, (i + r + c) % 7 ? led : ledR); } };
+            const terminal = (r, c, dr, dc) => { used.add(r * 1000 + c); W2(r, c, dr, dc, 0, 1.8, 0.9, 0.62, 0.62, 0.45, rackF, 1); W2(r, c, dr, dc, 0, 1.8, 0.05, 0.66, 0.64, 0.92, beamM);
+                for (const lat of [-0.5, 0.5]) { W2(r, c, dr, dc, lat, 0.9, 0.58, 0.06, 0.08, 1.55, cableM); W2(r, c, dr, dc, lat, 0.8, 0.48, 0.02, 0.1, 1.55, scr); } W2(r, c, dr, dc, 0, 0.7, 0.03, 0.22, 0.42, 0.96, cableM); };
+            // Wandpfeiler (an Stößen zweier Wandzellen) + Kabelkanal an Innenraumwänden + Server-Racks in Innenräumen
+            for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { if (cell(r, c) !== '#') continue;
+                for (const [dr, dc] of DIRS) { const n = cell(r + dr, c + dc); if (!walk(n)) continue; const lr = r + Math.abs(dc), lc = c + Math.abs(dr); // Nachbar-Wandzelle seitlich (+S/2)
+                    if ((dr ? c : r) % 2 === 0 && cell(lr, lc) === '#' && walk(cell(lr + dr, lc + dc))) W2(r, c, dr, dc, S / 2, 0.45, WALL_H, 0.14, 0.14, WALL_H / 2, pillarM);
+                    if (n === 'R') { W2(r, c, dr, dc, 0, S, 0.07, 0.34, 0.36, 3.22, beamM); for (const k of [0, 1, 2]) W2(r, c, dr, dc, 0, S, 0.06, 0.06, 0.1 + k * 0.1, 3.15, cableM); if (cellHash(r + 5, c + 17) % 100 < 45 && free(r, c, dr, dc)) rack(r, c, dr, dc); } } }
+            // Kassetten-Decke unter jedem Innenraum-Dach: Stahlträger im Zellraster, LED-Paneele & Lüftungsgitter im Wechsel
+            for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { if (!roofed(r, c)) continue; const x = cx(c), z = cx(r), yb = WALL_H - 0.3;
+                Bx(S, 0.26, 0.22, x, yb - 0.13, r * S, beamM); Bx(0.22, 0.26, S, c * S, yb - 0.13, z, beamM);
+                if ((r + c) % 2 === 0) Bx(1.5, 0.05, 1.5, x, yb - 0.03, z, ledP); else { Bx(1.3, 0.07, 0.55, x, yb - 0.04, z, ventM); for (const o of [-0.45, -0.15, 0.15, 0.45]) Bx(0.06, 0.02, 0.5, x + o, yb - 0.085, z, cableM); } }
+            // Bombsites: Warnstreifen (Gelb/Schwarz) rund um die Fläche · A = Daten-Hauptkonsole, B = Server-Cluster
+            for (const L of ['A', 'B']) { const spots = [];
+                for (const { r, c } of siteCells[L]) for (const [dr, dc] of DIRS) { const n = cell(r + dr, c + dc);
+                    if (n === '#') spots.push([r + dr, c + dc, -dr, -dc]);
+                    else if (n !== L && walk(n) && !(n >= '1' && n <= '6') && n !== '=') { if (dr) strip(S, 0.24, cx(c), 0.03, cx(r) + dr * (S / 2 + 0.14), true); else strip(S, 0.24, cx(c) + dc * (S / 2 + 0.14), 0.03, cx(r), false); } }
+                const pick = [spots[spots.length >> 2], spots[(spots.length * 3) >> 2], spots[(spots.length * 5) >> 3], spots[spots.length >> 3]].filter(Boolean); let nT = 0, nR = 0;
+                for (const [r, c, dr, dc] of pick) { if (!free(r, c, dr, dc)) continue; if (L === 'A' ? nT < 2 : nT < 1) { terminal(r, c, dr, dc); nT++; } else if (L === 'B' && nR < 3) { rack(r, c, dr, dc); nR++; } } }
+            // Treppen: Warnstreifen an den Stufenkanten
+            for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const ch = cell(r, c); if (!(ch >= '1' && ch <= '6')) continue;
+                stairBoxes(cell, r, c, cx(c), cx(r), ch, (x0, x1, y0, y1, z0, z1) => { const wx = x1 - x0, wz = z1 - z0; if (Math.abs(wx - wz) < 0.01) return; if (wx < wz) for (const e of [x0 + 0.08, x1 - 0.08]) strip(wz, 0.14, e, y1 + 0.006, (z0 + z1) / 2, false); else for (const e of [z0 + 0.08, z1 - 0.08]) strip(wx, 0.14, (x0 + x1) / 2, y1 + 0.006, e, true); }); }
+            // Themen-Extras: Funk-/Datenmasten (Tundra, Mire, Kasbah), Container-Servermodule mit LED-Band (Tundra, Mire), Schmelzöfen (Ironworks)
+            if (/de_(frost|moisty|bazaar)/.test(TK)) { let n = 0; for (let r = 1; r < ROWS - 1 && n < 3; r++) for (let c = 1; c < COLS - 1 && n < 3; c++) { if (cell(r, c) !== '#' || cellHash(r + 3, c + 41) % 29) continue; let s0 = c; while (s0 > 0 && cell(r, s0 - 1) === '#') s0--; const hv = WALL_H + ((r * 7 + s0 * 13) % 3) * 0.6, x = cx(c), z = cx(r); n++;
+                for (const [a, b] of [[-0.3, -0.3], [0.3, -0.3], [-0.3, 0.3], [0.3, 0.3]]) Bx(0.07, 5, 0.07, x + a, hv + 2.5, z + b, beamM); for (let y = 1; y < 5; y += 1.2) { Bx(0.66, 0.05, 0.05, x, hv + y, z - 0.3, beamM); Bx(0.66, 0.05, 0.05, x, hv + y, z + 0.3, beamM); }
+                Bx(0.05, 1.6, 0.05, x, hv + 5.8, z, cableM); Bx(0.16, 0.16, 0.16, x, hv + 6.65, z, ledR); const dish = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.15, 0.25, 12), rackF); dish.rotation.z = Math.PI / 2.6; dish.position.set(x + 0.45, hv + 4.3, z); scene.add(dish); } }
+            if (/de_(frost|moisty)/.test(TK)) for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (cell(r, c) === 'C') { const x = cx(c), z = cx(r), a = tiltOf(cellHash(r, c), 4, 5, 0.06), k = 1 / (Math.abs(Math.cos(a)) + Math.abs(Math.sin(a))); // gleiche Drehung wie der Container
+                for (const [ox, oz, w, d] of [[0, -1.52, 3.06, 0.04], [0, 1.52, 3.06, 0.04], [-1.52, 0, 0.04, 3.06], [1.52, 0, 0.04, 3.06]]) { const o = Bx(w * k, 0.08, d * k, x + k * (ox * Math.cos(a) + oz * Math.sin(a)), 2.55, z + k * (oz * Math.cos(a) - ox * Math.sin(a)), led); o.rotation.y = a; }
+                Bx(1.1, 0.6, 0.9, x, TALL_H + 0.3, z, ventM).rotation.y = a; }
+            if (TK === 'de_foundry') { let n = 0; for (let r = 0; r < ROWS && n < 4; r++) for (let c = 0; c < COLS && n < 4; c++) for (const [dr, dc] of DIRS) { if (n >= 4 || cell(r + dr, c + dc) !== '.' || cellHash(r + 9, c + 2) % 13 || !free(r, c, dr, dc)) continue; used.add(r * 1000 + c); n++;
+                W2(r, c, dr, dc, 0, 2.6, 3.2, 0.28, 0.28, 1.6, rackM); W2(r, c, dr, dc, 0, 1.5, 1.0, 0.03, 0.29, 1.0, furn); W2(r, c, dr, dc, 0, 2.8, 0.25, 0.3, 0.3, 3.3, beamM); for (const lat of [-0.9, 0.9]) W2(r, c, dr, dc, lat, 0.18, 0.9, 0.04, 0.31, 2.2, hazY); } }
+        }
         { const st = scene.children.slice(staticFrom).filter(o => o.isMesh); st.forEach(o => o.updateMatrixWorld(true)); if (DSV) outlines(st); mergeStatic(st); st.forEach(o => scene.remove(o)); }
-        const texFloor = makeTex(256, 256, (g, w, h2) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h2); g.strokeStyle = 'rgba(0,0,0,.07)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 2); i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h2); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); } }, COLS / 2, ROWS / 2);
-        const SPB = {}, spawnBar = new THREE.Group(); // Spawn-Barrieren (Kaufphase): im Spawn bewegen, aber nicht hinaus
+        if (CEIL.tex) for (const o of scene.children) if (o.isMesh && o.material && o.material.map && o.material.map.image === CEIL.tex.image) o.receiveShadow = false;
+        const texFloor = makeTex(256, 256, (g, w, h2) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h2); g.strokeStyle = 'rgba(0,0,0,.07)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 2); i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h2); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); } }, WORLD_W / 8, WORLD_D / 8);
+        const SPB = {}, SPBG = { T: [], CT: [] }, spawnBar = new THREE.Group(); // Spawn-Barrieren (Kaufphase): im Spawn bewegen, aber nicht hinaus · SPBG: je Spawn-Zone (Gebäude-Karten: 3 T-Zonen)
         { const bt = makeTex(64, 64, g => { g.fillStyle = 'rgba(79,216,255,.16)'; g.fillRect(0, 0, 64, 64); g.strokeStyle = 'rgba(79,216,255,.5)'; g.lineWidth = 4; for (let i = -64; i < 128; i += 16) { g.beginPath(); g.moveTo(i, 64); g.lineTo(i + 64, 0); g.stroke(); } });
-            for (const tm of ['T', 'CT']) { const cs = spawnCells[tm]; if (!cs.length) continue; const r0 = Math.min(...cs.map(o => o.r)) - 1, r1 = Math.max(...cs.map(o => o.r)) + 1, c0 = Math.min(...cs.map(o => o.c)) - 1, c1 = Math.max(...cs.map(o => o.c)) + 1;
-                const B = SPB[tm] = { x0: c0 * S + 0.4, x1: (c1 + 1) * S - 0.4, z0: r0 * S + 0.4, z1: (r1 + 1) * S - 0.4 }, w = B.x1 - B.x0, d = B.z1 - B.z0;
-                for (const [x, z, len, ry] of [[(B.x0 + B.x1) / 2, B.z0, w, 0], [(B.x0 + B.x1) / 2, B.z1, w, 0], [B.x0, (B.z0 + B.z1) / 2, d, Math.PI / 2], [B.x1, (B.z0 + B.z1) / 2, d, Math.PI / 2]]) { const t = bt.clone(); t.needsUpdate = true; t.repeat.set(len / 2, 1.5); const m = new THREE.Mesh(new THREE.PlaneGeometry(len, 3), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, side: THREE.DoubleSide })); m.position.set(x, 1.5, z); m.rotation.y = ry; spawnBar.add(m); } }
+            for (const tm of ['T', 'CT']) for (const cs of (spawnGroups[tm].length ? spawnGroups[tm] : [spawnCells[tm]])) { if (!cs.length) continue; const r0 = Math.min(...cs.map(o => o.r)) - 1, r1 = Math.max(...cs.map(o => o.r)) + 1, c0 = Math.min(...cs.map(o => o.c)) - 1, c1 = Math.max(...cs.map(o => o.c)) + 1;
+                const B = { x0: c0 * MS + 0.4, x1: (c1 + 1) * MS - 0.4, z0: r0 * MS + 0.4, z1: (r1 + 1) * MS - 0.4, grp: new THREE.Group() }, w = B.x1 - B.x0, d = B.z1 - B.z0, y0 = lvY(cs[0].l); if (!SPB[tm]) SPB[tm] = B; SPBG[tm].push(B); spawnBar.add(B.grp);
+                for (const [x, z, len, ry] of [[(B.x0 + B.x1) / 2, B.z0, w, 0], [(B.x0 + B.x1) / 2, B.z1, w, 0], [B.x0, (B.z0 + B.z1) / 2, d, Math.PI / 2], [B.x1, (B.z0 + B.z1) / 2, d, Math.PI / 2]]) { const t = bt.clone(); t.needsUpdate = true; t.repeat.set(len / 2, 1.5); const m = new THREE.Mesh(new THREE.PlaneGeometry(len, 3), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, side: THREE.DoubleSide })); m.position.set(x, y0 + 1.5, z); m.rotation.y = ry; B.grp.add(m); } }
             spawnBar.visible = false; scene.add(spawnBar); }
+        function useSpawn(tm, i) { const L = SPBG[tm]; if (!L.length) return; i = i % L.length; SPB[tm] = L[i]; L.forEach((B, j) => B.grp.visible = j === i); } // aktive Spawn-Zone (Barriere) wählen
         const barrierOn = () => !DM.on && !GL.on && !DH.on && !EX.on && !!SPB[player.team];
         function vFloorPaint(tex) { const g = tex.image.getContext('2d'); g.fillStyle = 'rgba(70,55,45,.16)'; g.fillRect(0, 0, 256, 256); for (let i = 0; i < 18; i++) { const x = Math.random() * 256, y = Math.random() * 256, r = 40 + Math.random() * 70, lt = i % 2; for (const [ox, oy] of [[0, 0], [256, 0], [-256, 0], [0, 256], [0, -256]]) { const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); gr.addColorStop(0, lt ? 'rgba(255,250,240,.07)' : 'rgba(40,30,20,.06)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); } } tex.needsUpdate = true; } // nahtlos gekachelt
         if (DSV) vFloorPaint(texFloor);
         const floor = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W, WORLD_D), new THREE.MeshLambertMaterial({ map: texFloor })); floor.rotation.x = -Math.PI / 2; floor.position.set(WORLD_W / 2, 0, WORLD_D / 2); floor.receiveShadow = true; scene.add(floor); mapMeshes.push(floor);
         function siteMarker(cells, letter) {
-            let minR = 99, maxR = -1, minC = 99, maxC = -1; cells.forEach(({ r, c }) => { minR = Math.min(minR, r); maxR = Math.max(maxR, r); minC = Math.min(minC, c); maxC = Math.max(maxC, c); }); const w = (maxC - minC + 1) * S, d = (maxR - minR + 1) * S;
+            let minR = 99, maxR = -1, minC = 99, maxC = -1; cells.forEach(({ r, c }) => { minR = Math.min(minR, r); maxR = Math.max(maxR, r); minC = Math.min(minC, c); maxC = Math.max(maxC, c); }); const w = (maxC - minC + 1) * MS, d = (maxR - minR + 1) * MS;
             const tex = makeTex(256, 256, g => { g.fillStyle = 'rgba(200,120,40,0.35)'; g.fillRect(0, 0, 256, 256); g.strokeStyle = 'rgba(255,230,180,.8)'; g.lineWidth = 8; g.strokeRect(6, 6, 244, 244); g.fillStyle = 'rgba(255,240,200,.85)'; g.font = 'bold 170px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(letter, 128, 135); });
-            const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(minC * S + w / 2, 0.02, minR * S + d / 2); scene.add(m);
+            const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(minC * MS + w / 2, lvY(cells[0].l) + 0.02, minR * MS + d / 2); scene.add(m);
         }
         function siteMarkerV(cells, letter) { // neues Design: nur Umriss + kleines Buchstaben-Kästchen
             if (!cells.length) return; let minR = 99, maxR = -1, minC = 99, maxC = -1; cells.forEach(({ r, c }) => { minR = Math.min(minR, r); maxR = Math.max(maxR, r); minC = Math.min(minC, c); maxC = Math.max(maxC, c); });
-            const P = 64, cw = maxC - minC + 1, chh = maxR - minR + 1, inS = new Set(cells.map(({ r, c }) => r * 1000 + c));
+            const P = LAY ? 24 : 64, cw = maxC - minC + 1, chh = maxR - minR + 1, inS = new Set(cells.map(({ r, c }) => r * 1000 + c));
+            if (LAY) for (let r = minR; r <= maxR; r++) for (let c = minC; c <= maxC; c++) if (!walkL(r, c, cells[0].l)) inS.add(r * 1000 + c); // Objekte auf der Site: Umriss nur außen herum
             const cv = document.createElement('canvas'); cv.width = cw * P; cv.height = chh * P; const g = cv.getContext('2d');
             g.fillStyle = 'rgba(255,240,205,.05)'; cells.forEach(({ r, c }) => g.fillRect((c - minC) * P, (r - minR) * P, P, P));
-            g.strokeStyle = 'rgba(255,238,200,.95)'; g.lineWidth = 5; g.lineCap = 'square'; g.beginPath();
+            g.strokeStyle = 'rgba(255,238,200,.95)'; g.lineWidth = LAY ? 3 : 5; g.lineCap = 'square'; g.beginPath();
             cells.forEach(({ r, c }) => { const x = (c - minC) * P, y = (r - minR) * P, i = 3;
                 if (!inS.has((r - 1) * 1000 + c)) { g.moveTo(x, y + i); g.lineTo(x + P, y + i); } if (!inS.has((r + 1) * 1000 + c)) { g.moveTo(x, y + P - i); g.lineTo(x + P, y + P - i); }
                 if (!inS.has(r * 1000 + c - 1)) { g.moveTo(x + i, y); g.lineTo(x + i, y + P); } if (!inS.has(r * 1000 + c + 1)) { g.moveTo(x + P - i, y); g.lineTo(x + P - i, y + P); } });
@@ -6041,12 +6231,12 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const mr = cells.reduce((a, o) => a + o.r, 0) / cells.length, mc = cells.reduce((a, o) => a + o.c, 0) / cells.length;
             const lc = cells.reduce((b, o) => Math.hypot(o.r - mr, o.c - mc) < Math.hypot(b.r - mr, b.c - mc) ? o : b, cells[0]), lx = (lc.c - minC + 0.5) * P, ly = (lc.r - minR + 0.5) * P;
             g.strokeStyle = 'rgba(255,238,200,.9)'; g.lineWidth = 3; g.strokeRect(lx - 18, ly - 18, 36, 36); g.fillStyle = 'rgba(255,238,200,.95)'; g.font = 'bold 26px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(letter, lx, ly + 1);
-            const tex = new THREE.CanvasTexture(cv); const w = cw * S, d = chh * S;
-            const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(minC * S + w / 2, 0.02, minR * S + d / 2); scene.add(m);
+            const tex = new THREE.CanvasTexture(cv); const w = cw * MS, d = chh * MS;
+            const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.set(minC * MS + w / 2, lvY(cells[0].l) + 0.025, minR * MS + d / 2); scene.add(m);
         }
         if (DSV) { siteMarkerV(siteCells.A, 'A'); siteMarkerV(siteCells.B, 'B'); } else { siteMarker(siteCells.A, 'A'); siteMarker(siteCells.B, 'B'); }
         // ── Props (rein dekorativ, keine Kollision – hugging walls) ──
-        {
+        if (!LAY) {
             const M = c2 => new THREE.MeshLambertMaterial({ color: c2 });
             const wallDir = (r, c) => { for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (cell(r + dr, c + dc) === '#') return [dc, dr]; return null; };
             const cand = shuffle(openCells.filter(o => cell(o.r, o.c) === '.' && wallDir(o.r, o.c)));
@@ -6078,13 +6268,20 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         } scene.add(new THREE.HemisphereLight(0xdbeaff, 0x9a7b4f, DSV ? 0.55 : 0.7)); // Comic-Look: Toon-Licht ist kräftiger
         const sun = new THREE.DirectionalLight(0xfff2d8, DSV ? 0.72 : 1.0); sun.position.set(WORLD_W / 2 + 50, 90, WORLD_D / 2 + 35); sun.target.position.set(WORLD_W / 2, 0, WORLD_D / 2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
         { const tod = (CMAP_INFO[MAPNAME] || {}).tod; if (tod) { /* Tageszeit eigener Karten: Abend / Nacht */ const night = tod === 2, hemi = scene.children.find(o => o.isHemisphereLight), tint = new THREE.Color(night ? 0x0a1022 : 0xff8a4a); sun.color.set(night ? 0x8fa8ff : 0xffa060); sun.intensity = night ? 0.35 : 0.8; if (hemi) hemi.intensity = night ? 0.3 : 0.55; scene.background.lerp(tint, night ? 0.85 : 0.45); scene.fog.color.lerp(tint, night ? 0.8 : 0.35); } }
-        Object.assign(sun.shadow.camera, { left: -80, right: 80, top: 80, bottom: -80, near: 20, far: 260 }); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -0.0005; scene.add(sun, sun.target);
+        Object.assign(sun.shadow.camera, { left: -80, right: 80, top: 80, bottom: -80, near: 20, far: 260 }); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -0.0005; if (LAY) sun.shadow.normalBias = 0.04; scene.add(sun, sun.target);
+        if (LMOOD.on) { const hm = scene.children.find(o => o.isHemisphereLight), [sc, si, sx, sy, sz] = LMOOD.sun || [0xfff2d8, 0.9, 50, 80, 35]; sun.color.set(sc); sun.intensity = si; sun.position.set(WORLD_W / 2 + sx, sy, WORLD_D / 2 + sz); if (hm) hm.intensity = LMOOD.hemi || 0.4; // Lichtstimmung der Gebäude-Karte: tiefe Sonne, lange Schatten, dunklere Innenräume
+            if (LMOOD.fog && scene.fog) { scene.fog.color.set(LMOOD.fog[0]); scene.fog.near = LMOOD.fog[1]; scene.fog.far = LMOOD.fog[2]; } if (LMOOD.bg) scene.background.set(LMOOD.bg); scene.add(new THREE.AmbientLight(0xffffff, 0.08)); }
 
+        function radarLay(g, w) { // Gebäude-Karte: Erdgeschoss grau, Obergeschoss heller darüber, Treppen dunkler, Sites bläulich
+            const px = (r, c) => { const x0 = Math.round(c * w), y0 = Math.round(r * w); return [x0, y0, Math.round((c + 1) * w) - x0, Math.round((r + 1) * w) - y0]; };
+            for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const ch = cell(r, c); if (solid(ch)) continue; g.fillStyle = ch === 'A' || ch === 'B' ? '#8197ad' : ch >= '1' && ch <= '5' ? '#7d8791' : '#9aa1a9'; g.fillRect(...px(r, c)); }
+            g.globalAlpha = 0.8; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const h = cellHi(r, c); if (!HI_WALK.includes(h)) continue; g.fillStyle = h === 'A' || h === 'B' ? '#a3bbd2' : '#c6ccd2'; g.fillRect(...px(r, c)); } g.globalAlpha = 1;
+        }
         // Radar-Basis
         const radar = $('radar'), rctx = radar.getContext('2d'), RS = radar.width / WORLD_W;
         const radarBase = document.createElement('canvas'); radarBase.width = radarBase.height = radar.width;
         {
-            const g = radarBase.getContext('2d'); if (DSV) radarWalk(g, ROWS, COLS, cell, S * RS); else for (let r = 0; r < ROWS; r++)for (let c = 0; c < COLS; c++) { const ch = cell(r, c), x = c * S * RS, y = r * S * RS, w = S * RS; if (ch === '#') { g.fillStyle = DSV ? 'rgba(236,232,225,.72)' : 'rgba(232,201,138,.75)'; g.fillRect(x, y, w, w); } else if (ch === 'c' || ch === 'C' || ch === 'b') { g.fillStyle = DSV ? 'rgba(138,161,184,.8)' : 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'W') { g.fillStyle = 'rgba(160,200,230,.6)'; g.fillRect(x, y, w, w); } else if (ch === 's') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'A' || ch === 'B') { g.fillStyle = DSV ? 'rgba(138,161,184,.3)' : 'rgba(220,130,40,.45)'; g.fillRect(x, y, w, w); } else if (ch === 'h') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch >= '1' && ch <= '6') { g.fillStyle = 'rgba(185,195,205,.5)'; g.fillRect(x, y, w, w); } else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); } }
+            const g = radarBase.getContext('2d'); if (LAY) radarLay(g, MS * RS); else if (DSV) radarWalk(g, ROWS, COLS, cell, S * RS); else for (let r = 0; r < ROWS; r++)for (let c = 0; c < COLS; c++) { const ch = cell(r, c), x = c * S * RS, y = r * S * RS, w = S * RS; if (ch === '#') { g.fillStyle = DSV ? 'rgba(236,232,225,.72)' : 'rgba(232,201,138,.75)'; g.fillRect(x, y, w, w); } else if (ch === 'c' || ch === 'C' || ch === 'b') { g.fillStyle = DSV ? 'rgba(138,161,184,.8)' : 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'W') { g.fillStyle = 'rgba(160,200,230,.6)'; g.fillRect(x, y, w, w); } else if (ch === 's') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'A' || ch === 'B') { g.fillStyle = DSV ? 'rgba(138,161,184,.3)' : 'rgba(220,130,40,.45)'; g.fillRect(x, y, w, w); } else if (ch === 'h') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch >= '1' && ch <= '6') { g.fillStyle = 'rgba(185,195,205,.5)'; g.fillRect(x, y, w, w); } else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); } }
             g.fillStyle = '#fff'; g.font = 'bold 13px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';[['A', siteCells.A], ['B', siteCells.B]].forEach(([l, cells]) => { const mx = cells.reduce((a, c) => a + cx(c.c), 0) / cells.length, mz = cells.reduce((a, c) => a + cx(c.r), 0) / cells.length; g.fillText(l, mx * RS, mz * RS); });
         }
 
@@ -6594,21 +6791,21 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             g.traverse(o => { if (o.isMesh) { o.castShadow = true; if (sk && !o.userData.ns && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); skinMat(o, sk, i); i++; } } });
             const st = own ? store.stick[key] : null; if (st) { if (!stickerTex[key]) stickerTex[key] = wrapTex(st); g.traverse(o => { if (o.isMesh && !o.userData.ns && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); o.material.map = stickerTex[key]; o.material.color.setHex(0xffffff); } }); } return g;
         }
-        function dropWeapon(def, x, z, ammo, res, sid) {
+        function dropWeapon(def, x, z, ammo, res, sid, y = 0) { // y: Höhe des Werfers → landet auf dem Boden darunter (Obergeschoss)
             if (!def || (def.slot !== 1 && def.slot !== 2)) return null;
             const own = sid === undefined;
             if (own) { const sk = skinOf(def.key); sid = sk ? sk.id : null; }
             const m = makeDropModel(def.key, sid, own);
-            m.position.set(x, 0.14, z); m.rotation.y = Math.random() * Math.PI * 2; m.rotation.z = -Math.PI / 2;
+            const fy = floorY(x, z, y); m.position.set(x, fy + 0.14, z); m.rotation.y = Math.random() * Math.PI * 2; m.rotation.z = -Math.PI / 2;
             scene.add(m);
-            const d = { def, ammo, res, x, z, mesh: m, sk: sid };
+            const d = { def, ammo, res, x, y: fy, z, mesh: m, sk: sid };
             drops.push(d); return d;
         }
         function clearDrops() { for (const d of drops) scene.remove(d.mesh); drops.length = 0; }
         function pickupDrop(i) {
             const d = drops[i], p = player, s = d.def.slot;
             if (NET.on && d.did) netSend({ type: 'wtake', did: d.did });
-            if (p.weapons[s]) { const old = dropWeapon(p.weapons[s].def, p.x, p.z, p.weapons[s].ammo, p.weapons[s].res, p.weapons[s].sk); if (old && NET.on) { old.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: old.def.key, x: old.x, z: old.z, a: old.ammo, rs: old.res, did: old.did, sk: old.sk }); } }
+            if (p.weapons[s]) { const old = dropWeapon(p.weapons[s].def, p.x, p.z, p.weapons[s].ammo, p.weapons[s].res, p.weapons[s].sk, p.y); if (old && NET.on) { old.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: old.def.key, x: old.x, y: old.y, z: old.z, a: old.ammo, rs: old.res, did: old.did, sk: old.sk }); } }
             p.weapons[s] = { def: d.def, ammo: d.ammo, res: d.res, sk: d.sk, reloading: false, reloadT: 0, last: -9 };
             p.lastSlot = p.slot; p.slot = s; p.switchT = 1; setScoped(false); updateVM();
             scene.remove(d.mesh); drops.splice(i, 1);
@@ -6616,9 +6813,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         function updateDrops() {
             const p = player; if (!p.alive) return;
-            const nearDefuse = p.team === 'CT' && G.bomb.state === 'planted' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2.2;
+            const nearDefuse = p.team === 'CT' && G.bomb.state === 'planted' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2.2 && Math.abs((p.y || 0) - (G.bomb.y || 0)) < 1.8;
             for (let i = drops.length - 1; i >= 0; i--) {
-                const d = drops[i], s = d.def.slot, dist = Math.hypot(p.x - d.x, p.z - d.z);
+                const d = drops[i], s = d.def.slot, dist = Math.hypot(p.x - d.x, p.z - d.z) + (Math.abs((p.y || 0) - (d.y || 0)) > 1.5 ? 99 : 0);
                 if (d.noAuto && dist > 2.2) d.noAuto = false;
                 if (dist < 1.5) {
                     if (!p.weapons[s]) {
@@ -6650,7 +6847,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 G.spotted.set(e, now + 1.5); let v = reveals.find(o => o.e === e); if (!v) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: revealTex, depthTest: false, transparent: true })); sp.scale.set(0.7, 0.7, 1); sp.renderOrder = 999; scene.add(sp); v = { e, sp, t: 0 }; reveals.push(v); } v.t = 3; }
         }
         const SV = 4 / 3, _sm4 = new THREE.Matrix4(); // Smoke-Raster 1,33 m
-        function smokeSolidAt(x, z) { const A = GA.cur; let ch; if (A) { const c = Math.floor((x - A.ox) / S), r = Math.floor(z / S); ch = (r < 0 || c < 0 || r >= A.R || c >= A.C) ? '#' : A.rows[r][c]; } else ch = cell(Math.floor(z / S), Math.floor(x / S)); return ch === '#' || ch === 'W'; }
+        function smokeSolidAt(x, z) { const A = GA.cur; let ch; if (A) { const c = Math.floor((x - A.ox) / S), r = Math.floor(z / S); ch = (r < 0 || c < 0 || r >= A.R || c >= A.C) ? '#' : A.rows[r][c]; } else ch = cell(cr(z), cr(x)); return ch === '#' || ch === 'W'; }
         function smokeFill(x0, z0, R) { // Rauch breitet sich wie Gas aus: festes Volumen, Wände stoppen ihn → in Gängen weiter, um Ecken & durch Türen
             const budget = Math.round(Math.PI * R * R / (SV * SV)), gx = Math.floor(x0 / SV), gz = Math.floor(z0 / SV), seen = new Set([gx + ',' + gz]), q = [[gx, gz]], out = [];
             while (q.length && out.length < budget) { const [ix, iz] = q.shift(), x = (ix + 0.5) * SV, z = (iz + 0.5) * SV; if (smokeSolidAt(x, z)) continue; const d = Math.hypot(x - x0, z - z0); if (d > R * 2.2) continue; out.push({ x, z, d, k: ix + ',' + iz });
@@ -6680,9 +6877,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const w = p.weapons[p.slot];
             camera.getWorldDirection(_fwd);
             const dx = p.x + _fwd.x * 1.2, dz = p.z + _fwd.z * 1.2;
-            const d = dropWeapon(w.def, dx, dz, w.ammo, w.res, w.sk);
+            const d = dropWeapon(w.def, dx, dz, w.ammo, w.res, w.sk, p.y);
             if (!d) return;
-            d.did = (NET.on ? NET.pid : 0) + '-' + dropSeq++; d.noAuto = true; if (NET.on) netSend({ type: 'wdrop', w: w.def.key, x: dx, z: dz, a: w.ammo, rs: w.res, did: d.did, sk: d.sk });
+            d.did = (NET.on ? NET.pid : 0) + '-' + dropSeq++; d.noAuto = true; if (NET.on) netSend({ type: 'wdrop', w: w.def.key, x: dx, y: d.y, z: dz, a: w.ammo, rs: w.res, did: d.did, sk: d.sk });
             p.weapons[p.slot] = null;
             p.slot = p.weapons[1] ? 1 : (p.weapons[2] ? 2 : 3); p.switchT = 1; setScoped(false); updateVM();
         }
@@ -6746,14 +6943,14 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 }
             } else if (n.key === 'strike') { nadeBoom(Object.assign({}, n, { key: 'he', lv: 2, g: null, mini: false })); burst(n.x, 1.5, n.z, 0xff7a3d, 30, 9); // Luftschlag
             } else if (n.key === 'recon') { // Recon-Pfeil: 2 Scan-Pulse – Gegner in Sichtlinie werden für das Team des Werfers markiert (Radar + Marker durch Wände)
-                tone(1500, 0.12, 0.12, 0, 'sine'); const ring = new THREE.Mesh(new THREE.RingGeometry(0.92, 1, 48), new THREE.MeshBasicMaterial({ color: 0x4fd8ff, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.set(n.x, 0.06, n.z); scene.add(ring);
+                tone(1500, 0.12, 0.12, 0, 'sine'); const ring = new THREE.Mesh(new THREE.RingGeometry(0.92, 1, 48), new THREE.MeshBasicMaterial({ color: 0x4fd8ff, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.set(n.x, floorY(n.x, n.z, n.y || 0) + 0.06, n.z); scene.add(ring);
                 const dm2 = new THREE.MeshLambertMaterial({ color: 0x4fd8ff }); dm2.emissive = new THREE.Color(0x1d6f88); const dart = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.35, 8), dm2); dart.position.set(n.x, 0.2, n.z); scene.add(dart);
                 recons.push({ x: n.x, y: Math.max(0.5, n.y), z: n.z, t: 0, pulses: 0, owner: n.owner, ring, dart });
             } else if (n.key === 'cluster') { // Cluster-Granate: kleine Explosion, dann 4 springende Bomblets
                 nadeBoom(Object.assign({}, n, { key: 'he', mini: true, lv: 1 }));
                 for (let i = 0; i < 4; i++) { const a = i / 4 * Math.PI * 2 + Math.random() * 0.6, sp = 3 + Math.random() * 2, mat = new THREE.MeshLambertMaterial({ color: 0xe2457a }); mat.emissive = new THREE.Color(0x601030); const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 6), mat); scene.add(mesh); nades.push({ key: 'he', x: n.x, y: n.y + 0.3, z: n.z, vx: Math.cos(a) * sp, vy: 5 + Math.random() * 1.5, vz: Math.sin(a) * sp, t: 0.75 + i * 0.12, mesh, owner: n.owner, lv: 1, mini: true }); }
             } else if (n.key === 'slow') { // Slow-Orb: Eisfeld für 7 s, alle darin laufen mit halbem Tempo
-                sfx('smokepop', n.x, n.z); const R = 4.5, grp = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff, transparent: true, opacity: 0.32, depthWrite: false }), disc = new THREE.Mesh(new THREE.CircleGeometry(R, 40), mat); disc.rotation.x = -Math.PI / 2; disc.position.set(n.x, 0.04, n.z); grp.add(disc);
+                sfx('smokepop', n.x, n.z); const R = 4.5, grp = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: 0x9fd8ff, transparent: true, opacity: 0.32, depthWrite: false }), disc = new THREE.Mesh(new THREE.CircleGeometry(R, 40), mat); disc.rotation.x = -Math.PI / 2; disc.position.set(n.x, floorY(n.x, n.z, n.y || 0) + 0.04, n.z); grp.add(disc);
                 const cm = new THREE.MeshLambertMaterial({ color: 0xbfe6ff, transparent: true, opacity: 0.85 }); for (let i = 0; i < 14; i++) { const a = Math.random() * 6.283, r = Math.random() * (R - 0.4), c = new THREE.Mesh(new THREE.ConeGeometry(0.12 + Math.random() * 0.1, 0.3 + Math.random() * 0.4, 5), cm); c.position.set(n.x + Math.cos(a) * r, 0.2, n.z + Math.sin(a) * r); grp.add(c); }
                 scene.add(grp); slows.push({ grp, mat, cm, x: n.x, z: n.z, r: R, t: 7 });
             } else if (n.key === 'molly') {
@@ -6783,10 +6980,11 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 const n = nades[i], AB = activeAabbs(), R9 = 0.09, inB = (b, x, z) => x + R9 > b.minX && x - R9 < b.maxX && z + R9 > b.minZ && z - R9 < b.maxZ, hit = sp => { if (sp > 2.2) sfx('empty', n.x, n.z); };
                 const st = Math.max(1, Math.ceil(Math.hypot(n.vx, n.vy, n.vz) * dt / 0.12)), h = dt / st; let ground = false; // Unterschritte: keine Tunnel durch dünne Wände
                 for (let k = 0; k < st; k++) { n.vy -= NADE_GRAV * h; let nx = n.x + n.vx * h;
-                    for (const b of AB) { if (n.y - R9 < b.top - 0.02 && inB(b, nx, n.z)) { hit(Math.abs(n.vx)); n.vx *= -0.5; n.vz *= 0.8; n.vy *= 0.85; nx = n.x; break; } }
+                    for (const b of AB) { if (n.y - R9 < b.top - 0.02 && !(n.y + R9 <= b.bot) && inB(b, nx, n.z)) { hit(Math.abs(n.vx)); n.vx *= -0.5; n.vz *= 0.8; n.vy *= 0.85; nx = n.x; break; } }
                     n.x = nx; let nz = n.z + n.vz * h;
-                    for (const b of AB) { if (n.y - R9 < b.top - 0.02 && inB(b, n.x, nz)) { hit(Math.abs(n.vz)); n.vz *= -0.5; n.vx *= 0.8; n.vy *= 0.85; nz = n.z; break; } }
-                    n.z = nz; const ny = n.y + n.vy * h; let floor = R9;
+                    for (const b of AB) { if (n.y - R9 < b.top - 0.02 && !(n.y + R9 <= b.bot) && inB(b, n.x, nz)) { hit(Math.abs(n.vz)); n.vz *= -0.5; n.vx *= 0.8; n.vy *= 0.85; nz = n.z; break; } }
+                    n.z = nz; let ny = n.y + n.vy * h; let floor = R9;
+                    if (n.vy > 0) for (const b of AB) if (n.y + R9 <= b.bot && ny + R9 > b.bot && inB(b, n.x, n.z)) { ny = b.bot - R9; n.vy *= -0.35; hit(1); break; } // an der Decke abprallen
                     for (const b of AB) if (n.y - R9 >= b.top - 0.02 && inB(b, n.x, n.z)) floor = Math.max(floor, b.top + R9); // auf Kisten/Mauern landen
                     if (ny < floor) { n.y = floor; ground = true; if (n.key === 'molly' && n.vy < -2) n.t = 0; // Molotov zerplatzt beim Aufprall
                         if (n.vy < -2.2) { hit(-n.vy); n.vy *= -0.38; n.vx *= 0.75; n.vz *= 0.75; } else n.vy = 0; } else n.y = ny; }
@@ -6835,6 +7033,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             return G.m.get(Math.floor(x / S) * 100003 + Math.floor(z / S)) || NO_AABB; }
         const STEP_H = 0.75, BODY_H = 1.7; function blockedBy(e, b) {
             const y = e.y || 0;
+            if (y >= b.top - 0.02 && (!b.wall || b.flr)) return false;     // liegt ganz unter den Füßen (nur Wände unter dem Obergeschoss, flr) – andere Wände nie überspringen
             if (y >= b.top - STEP_H && !b.wall) return false;              // Stufe: hochgleiten statt anstoßen
             if (b.bot !== undefined && y + BODY_H <= b.bot) return false;  // Steg/Brücke: drunter durchlaufen
             if (b.wall) return true;                                       // Wände nie erklimmen (kein Rausfallen aus der Karte)
@@ -6845,6 +7044,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             e.x += dx; for (const b of near) { if (!blockedBy(e, b)) continue; if (e.x + r > b.minX && e.x - r < b.maxX && e.z + r > b.minZ && e.z - r < b.maxZ) { const l = e.x + r - b.minX, rt = b.maxX - (e.x - r); e.x = l < rt ? b.minX - r : b.maxX + r; } }
             e.z += dz; for (const b of near) { if (!blockedBy(e, b)) continue; if (e.x + r > b.minX && e.x - r < b.maxX && e.z + r > b.minZ && e.z - r < b.maxZ) { const l = e.z + r - b.minZ, rt = b.maxZ - (e.z - r); e.z = l < rt ? b.minZ - r : b.maxZ + r; } }
         }
+        function ceilAt(e, y0) { let m = 1e9; const rr = e.r * 0.6; for (const b of aabbsNear(e.x, e.z)) if (b.bot > y0 + 1.0 && e.x + rr > b.minX && e.x - rr < b.maxX && e.z + rr > b.minZ && e.z - rr < b.maxZ) m = Math.min(m, b.bot); return m; } // Decke über dem Kopf
+        function floorY(x, z, y) { let g = 0; for (const b of aabbsNear(x, z)) if (b.top <= (y || 0) + 0.6 && x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ) g = Math.max(g, b.top); return g; } // Boden unter einem Punkt (Drops)
         function groundAt(e) { let g = 0; const rr = e.r * 0.6, y = e.y || 0; for (const b of aabbsNear(e.x, e.z)) { if (y < b.top - STEP_H - 0.05) continue; if (e.x + rr > b.minX && e.x - rr < b.maxX && e.z + rr > b.minZ && e.z - rr < b.maxZ) g = Math.max(g, b.top); } return g; }
         // Wegsuche mit Höhen (Treppen/Stege) – gemeinsam für Karten und Arenen (cell/ROWS/COLS werden übergeben)
         function bfs(sr, sc, tr, tc, onTop) { return bfsGrid(cell, ROWS, COLS, sr, sc, tr, tc, onTop); }
@@ -6857,15 +7058,28 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         function aCellCur(r, c) { const A = GA.cur; return (r < 0 || c < 0 || r >= A.R || c >= A.C) ? '#' : (A.rows[r][c] || '.'); }
         function bfsArena(sr, sc, tr, tc, onTop) { return bfsGrid(aCellCur, GA.cur.R, GA.cur.C, sr, sc, tr, tc, onTop); } // jetzt auch mit Treppen-/Steg-Logik
-        function setGoal(b, r, c) {
-            b.goal = { r, c };
-            if (GA.cur) { b.path = (bfsArena(cr(b.z), cr(b.x - GA.cur.ox), r, c, (b.y || 0) > 2) || []).map(p => ({ r: p.r, c: p.c, ax: GA.cur.ox + cx(p.c), az: cx(p.r) })); }
+        function bfsLay(sr, sc, sl, tr, tc, tl) { // Gebäude-Karten: Wege über 2 Ebenen – Treppe 1–5 (max. 1 Stufe hoch), Treppe 4/5 ↔ Obergeschoss, durch Luftraum herunterfallen
+            const hgt = (r, c, l) => { if (l) return 5; const ch = cell(r, c); return ch >= '1' && ch <= '5' ? +ch : 0; }, open = (r, c) => { const h = cellHi(r, c); return h === ' ' || h === ':'; };
+            if (!walkL(sr, sc, sl)) { let f = null; for (const l of [sl, 1 - sl]) for (let a = -1; a <= 1 && !f; a++) for (let d = -1; d <= 1 && !f; d++) if (walkL(sr + a, sc + d, l)) f = [sr + a, sc + d, l]; if (!f) return null; [sr, sc, sl] = f; } // Start z. B. halb in einer Kiste
+            if (!walkL(tr, tc, tl)) return null;
+            const N = ROWS * COLS * 2, prev = new Int32Array(N).fill(-1), q = new Int32Array(N), nb = [[1, 0], [-1, 0], [0, 1], [0, -1]]; let qh = 0, qt = 0, end = -1;
+            const s = (sr * COLS + sc) * 2 + sl, t = (tr * COLS + tc) * 2 + tl; prev[s] = s; q[qt++] = s;
+            while (qh < qt) { const cur = q[qh++]; if (cur === t) { end = cur; break; } const l = cur & 1, ci = cur >> 1, r = (ci / COLS) | 0, c = ci % COLS, h = hgt(r, c, l); if (Math.random() < 0.5) nb.reverse();
+                for (const [dr, dc] of nb) { const nr = r + dr, nc = c + dc, go = nl => { const id = (nr * COLS + nc) * 2 + nl; if (prev[id] < 0) { prev[id] = cur; q[qt++] = id; } };
+                    if (l === 0) { if (walkL(nr, nc, 0) && hgt(nr, nc, 0) - h <= 1 && (h <= 1 || open(nr, nc))) go(0); if (h >= 4 && walkL(nr, nc, 1)) go(1); }
+                    else { if (walkL(nr, nc, 1)) go(1); if (open(nr, nc) && walkL(nr, nc, 0)) go(0); } } }
+            if (end < 0) return null; const path = []; let cur = end; while (cur !== s) { const ci = cur >> 1; path.push({ r: (ci / COLS) | 0, c: ci % COLS, l: cur & 1 }); cur = prev[cur]; } return path.reverse();
+        }
+        function setGoal(b, r, c, l) { // l = Ebene des Ziels (Gebäude-Karten); fehlt sie, gilt das Erdgeschoss, falls dort begehbar
+            if (l === undefined) l = LAY && !walkL(r, c, 0) ? 1 : 0; b.goal = { r, c, l };
+            if (GA.cur) { b.path = (bfsArena(acr(b.z), acr(b.x - GA.cur.ox), r, c, (b.y || 0) > 2) || []).map(p => ({ r: p.r, c: p.c, ax: GA.cur.ox + acx(p.c), az: acx(p.r) })); }
+            else if (LAY) b.path = bfsLay(cr(b.z), cr(b.x), lvOf(b), r, c, l) || [];
             else b.path = bfs(cr(b.z), cr(b.x), r, c, (b.y || 0) > 2) || [];
-        } function randomNear(r, c, rad) { for (let i = 0; i < 12; i++) { const rr = r + Math.round((Math.random() * 2 - 1) * rad), cc = c + Math.round((Math.random() * 2 - 1) * rad); if (!solid(cell(rr, cc))) return { r: rr, c: cc }; } return { r, c }; }
+        } function randomNear(r, c, rad, l = 0) { const R = Math.round(rad * S / MS); for (let i = 0; i < 12; i++) { const rr = r + Math.round((Math.random() * 2 - 1) * R), cc = c + Math.round((Math.random() * 2 - 1) * R); if (walkL(rr, cc, l)) return { r: rr, c: cc, l }; } return { r, c, l }; }
         function botMoveToward(b, tx, tz, dt, spd) { const dx = tx - b.x, dz = tz - b.z, d = Math.hypot(dx, dz); if (d < 0.05) return; const s = Math.min(spd * (b.spdMul || 1) * (b.tagT > now ? 0.6 : 1) * slowAt(b.x, b.z) * CFG.speed / 100 * dt, d); collideMove(b, dx / d * s, dz / d * s); if (!b.target) b.yaw = lerpAngle(b.yaw, Math.atan2(dx, dz), Math.min(1, dt * 12)); b.moving = true; b.wantMove = true; }
         function followPath(b, dt) { if (!b.path.length) return false; const wp = b.path[0], tx = wp.ax !== undefined ? wp.ax : cx(wp.c), tz = wp.az !== undefined ? wp.az : cx(wp.r); if (Math.hypot(tx - b.x, tz - b.z) < 0.6) { b.path.shift(); return followPath(b, dt); } botMoveToward(b, tx, tz, dt, BOT_SPEED); return true; } function separate() {
             const all = ents, bot = e => !e.isPlayer && !e.remote;
-            for (let i = 0; i < all.length; i++) { const a = all[i]; if (!a.alive) continue; for (let j = i + 1; j < all.length; j++) { const b = all[j]; if (!b.alive) continue;
+            for (let i = 0; i < all.length; i++) { const a = all[i]; if (!a.alive) continue; for (let j = i + 1; j < all.length; j++) { const b = all[j]; if (!b.alive || Math.abs((a.y || 0) - (b.y || 0)) > 1.5) continue; // andere Etage: nicht schieben
                 const dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz); if (d >= 0.85 || d <= 0.001) continue; const p = 0.85 - d, nx = dx / d, nz = dz / d;
                 if (bot(a) && bot(b)) { collideMove(a, -nx * p / 2, -nz * p / 2); collideMove(b, nx * p / 2, nz * p / 2); continue; }
                 const o = bot(a) ? a : bot(b) ? b : null; if (!o) continue; const sg = o === b ? 1 : -1, other = o === a ? b : a, ox = o.x, oz = o.z;
@@ -6923,11 +7137,11 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (att && att !== e && att.name && att.team && att.team !== e.team) awKill(att.name, att.team); // Ace-Zählung
             if (att && att !== e && hs) att.hsK = (att.hsK || 0) + 1; if (e.dmgBy) { for (const o of e.dmgBy) if (o !== att && o !== e) o.ast = (o.ast || 0) + 1; e.dmgBy = null; } // Endbildschirm: HS & Assists
             if (e.isPlayer) { roundKills = 0; if (!EX.on) { PRG.st.deaths = (PRG.st.deaths || 0) + 1; localStorage.setItem('prog', JSON.stringify(PRG)); } } e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
-            if (DM.on || (GL.on && GL.v1)) { /* Deathmatch & 1v1: keine Waffen-Drops */ } else if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
-            else if (!e.remote && e.weapon && e.weapon.slot === 1) { const dd = dropWeapon(e.weapon, e.x, e.z, e.weapon.mag, 0, null); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } }
+            if (DM.on || (GL.on && GL.v1)) { /* Deathmatch & 1v1: keine Waffen-Drops */ } else if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk, e.y); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, y: dd.y, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
+            else if (!e.remote && e.weapon && e.weapon.slot === 1) { const dd = dropWeapon(e.weapon, e.x, e.z, e.weapon.mag, 0, null, e.y); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, y: dd.y, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } }
             if (att && att !== e) { if (att.team !== e.team || GL.on || DM.on) { att.kills++; botUltAdd(att); att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); killBanner(); ultAdd(1); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
-            if (NET.on && (e.isPlayer || (NET.host && !e.remote))) netSend({ type: 'kf', ap: att ? (att.isPlayer ? NET.pid : att.pid || null) : null, an: att ? att.name : null, at: att ? att.team : '', vn: e.name, vt: e.team, w: w ? w.name : null, hs: !!hs, rw: w && (w.key === 'knife' || w.name === 'Butterfly' || w.name === 'Karambit') ? 1500 : w && (w.key === 'awp' || w.name === 'AWP') ? 100 : 300 }); if (G.bomb.carrier === e && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); if (e.isPlayer) e.weapons[5] = null; }
-            if (e.isPlayer) playerDie(att); else { e.mesh.rotation.x = -Math.PI / 2; e.mesh.scale.y = 1; e.crouch = false; e.mesh.position.set(e.x, 0.3, e.z); e.target = null; e.flash.visible = false; } checkRoundEnd();
+            if (NET.on && (e.isPlayer || (NET.host && !e.remote))) netSend({ type: 'kf', ap: att ? (att.isPlayer ? NET.pid : att.pid || null) : null, an: att ? att.name : null, at: att ? att.team : '', vn: e.name, vt: e.team, w: w ? w.name : null, hs: !!hs, rw: w && (w.key === 'knife' || w.name === 'Butterfly' || w.name === 'Karambit') ? 1500 : w && (w.key === 'awp' || w.name === 'AWP') ? 100 : 300 }); if (G.bomb.carrier === e && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.y = e.y || 0; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, G.bomb.y, e.z); if (e.isPlayer) e.weapons[5] = null; }
+            if (e.isPlayer) playerDie(att); else { e.mesh.rotation.x = -Math.PI / 2; e.mesh.scale.y = 1; e.crouch = false; e.mesh.position.set(e.x, (e.y || 0) + 0.3, e.z); e.target = null; e.flash.visible = false; } checkRoundEnd();
         }
         function playerDie(att) { const p = player; $('sub').textContent = ''; $('msg').textContent = ''; /* alte Hinweise (z.B. „Taste [5]“) weg */ p.scoped = false; setScoped(false); p.weapons[5] = null; if (DM.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Gestorben') + '<div id="dmresp" style="font-size:16px;margin-top:10px;color:var(--hl)">Respawn in 3</div>'; closeBuy(); return; } if (GL.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> eliminiert` : 'Eliminiert') + '<div style="font-size:13px;color:#aaa;margin-top:8px">🚁 Freecam: WASD fliegen · Leertaste/Strg hoch/runter</div>'; startFreecam(); return; } $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Du wurdest von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Du bist gestorben') + '<div id="specname" style="font-size:16px;margin-top:6px;color:var(--hl)"></div><div style="font-size:12px;color:#aab4c0;margin-top:4px">' + (IS_TOUCH ? '◀ ▶ oder Tippen: Spieler wechseln' : 'Linksklick: nächsten Spieler beobachten') + '</div>'; closeBuy(); specTarget = null; cycleSpec(); }
         // beim Zuschauen das Modell des Beobachteten ausblenden, beim Wechsel/Ende wieder zeigen
@@ -6963,6 +7177,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             msg('🧭 Erkunden', IS_TOUCH ? 'Map-Editor: ☰ antippen' : 'Map-Editor: Esc drücken', 5);
         }
         function exEdit() { // aus dem Erkunden direkt in den Editor (eingebaute Karten werden als Kopie gespeichert)
+            if (!EX.ar) { toast('🛠 Map-Editor pausiert', 'Die Karten haben ein neues Raster mit Stockwerken – der Editor folgt später.'); return; } // Karten-Editor vorübergehend aus
             const ar = !!EX.ar, k = EX.ar || MAPNAME, own = ar ? CARS[k] : CMAPS[k]; sessionStorage.setItem('exret', '1'); paused = true; showMapEditor(k, own ? k : null, ar ? 1 : 0);
         }
         function exPickArena() {
@@ -7046,25 +7261,25 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         function foe(a, b) { return DM.on ? a !== b : a.team !== b.team; }
         function dmSpot(self) {
-            const ok = openCells.filter(o => '.ABTK'.includes(cell(o.r, o.c))), others = ents.filter(e => e !== self && e.alive); let best = null, bd = -1;
-            for (let i = 0; i < 24; i++) { const o = rnd(ok), x = cx(o.c), z = cx(o.r); const d = others.reduce((m, e) => Math.min(m, Math.hypot(e.x - x, e.z - z)), 1e9); if (d > bd) { bd = d; best = { x, z }; } }
+            const ok = openCells.filter(o => '.ABTK=_'.includes(chAt(o.r, o.c, o.l | 0))), others = ents.filter(e => e !== self && e.alive); let best = null, bd = -1;
+            for (let i = 0; i < 24; i++) { const o = rnd(ok), x = cx(o.c), z = cx(o.r); const d = others.reduce((m, e) => Math.min(m, Math.hypot(e.x - x, e.z - z)), 1e9); if (d > bd) { bd = d; best = { x, z, y: lvY(o.l) }; } }
             return best;
         }
         function dmRespawn(e) {
-            const s = dmSpot(e); e.x = s.x + (Math.random() - 0.5); e.z = s.z + (Math.random() - 0.5); e.y = 0; e.vy = 0; e.alive = true; e.health = 100; e.armor = 100; e.helmet = true; e.dmT = 0; e.dmProt = now + 1.5; e.yaw = Math.random() * Math.PI * 2;
+            const s = dmSpot(e), jit = Math.min(1, MS * 0.4); e.x = s.x + (Math.random() - 0.5) * jit; e.z = s.z + (Math.random() - 0.5) * jit; e.y = s.y || 0; e.vy = 0; e.alive = true; e.health = 100; e.armor = 100; e.helmet = true; e.dmT = 0; e.dmProt = now + 1.5; e.yaw = Math.random() * Math.PI * 2;
             if (e.isPlayer) {
                 e.vx = e.vz = 0; e.money = 16000; e.weapons[5] = null; if (e.dmLast) e.weapons[1] = mkWeapon(e.dmLast); if (!e.weapons[2]) e.weapons[2] = mkWeapon(e.team === 'T' ? W.glock : W.usp);
                 for (const k of [1, 2]) { const w = e.weapons[k]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } }
                 funLoadout(e); e.slot = e.weapons[1] ? 1 : 2; e.pitch = 0; setScoped(false); specTarget = null; $('dead').style.display = 'none'; updateVM();
             } else {
                 e.money = 16000; e.weapon = e.team === 'T' ? W.glock : W.usp; botBuy(e); funLoadout(e); e.target = null; e.path = []; e.goal = null; e.waitT = 0; e.fireT = 0.5; e.reloadT = 0; e.stuckT = 0; e.lastX = e.x; e.lastZ = e.z;
-                e.mesh.rotation.set(0, e.yaw, 0); e.mesh.scale.y = 1; e.mesh.position.set(e.x, 0, e.z);
+                e.mesh.rotation.set(0, e.yaw, 0); e.mesh.scale.y = 1; e.mesh.position.set(e.x, e.y || 0, e.z);
             }
         }
         function dmDeadTick(e, dt) { if (e.alive || !(e.dmT > 0)) return; e.dmT -= dt; if (e.isPlayer) { const el = $('dmresp'); if (el) el.textContent = 'Respawn in ' + Math.max(1, Math.ceil(e.dmT)); } if (e.dmT <= 0) dmRespawn(e); }
         function dmBotRoam(b, dt) {
             const mv = followPath(b, dt); if (!mv) b.waitT -= dt;
-            if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 0.5 + Math.random() * 1.5; const fs = ents.filter(e => e !== b && e.alive), f = fs.length && Math.random() < 0.6 ? rnd(fs) : null; const c = f ? randomNear(cr(f.z), cr(f.x), 3) : rnd(openCells); setGoal(b, c.r, c.c); }
+            if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 0.5 + Math.random() * 1.5; const fs = ents.filter(e => e !== b && e.alive), f = fs.length && Math.random() < 0.6 ? rnd(fs) : null; const c = f ? randomNear(cr(f.z), cr(f.x), 3, lvOf(f)) : rnd(openCells); setGoal(b, c.r, c.c, c.l); }
         }
         function dmRank() { return ents.slice().sort((a, b) => b.kills - a.kills || a.deaths - b.deaths); }
         function dmReport() {
@@ -7074,7 +7289,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e === player ? 'color:var(--acc);font-weight:bold' : ''}"><span>${i + 1}. ${e.name}${e === player ? ' (Du)' : ''}</span><b>${e.kills} / ${e.deaths}</b></div>`).join('')}
 <div class="row" style="justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px"><span style="color:var(--mut)">BELOHNUNG</span><b style="color:var(--acc)">📦 +1 CASE</b></div></div><div><button onclick="location.reload()" style="margin-top:16px">Neues Spiel</button><a class="dcbtn" href="${DISCORD_INV}" target="_blank" rel="noopener" style="margin-top:16px">💬 Komm auf unseren Discord</a></div>`);
         }
-        function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; const sb = $('sub'); sb.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .55s cubic-bezier(.2, .8, .3, 1) both'; if (b) sb.style.animation = 'subin .45s .15s ease-out both'; } function placeTeam(team) { const cells = shuffle(spawnCells[team].slice()); let i = 0; for (const e of ents) { if (e.team !== team) continue; const c = cells[i++ % cells.length]; e.x = cx(c.c) + (Math.random() - 0.5); e.z = cx(c.r) + (Math.random() - 0.5); e.y = 0; e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
+        function msg(a, b = '', t = 3) { const m = $('msg'); m.textContent = a; $('sub').textContent = b; G.msgT = t; m.style.animation = 'none'; const sb = $('sub'); sb.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'msgin .55s cubic-bezier(.2, .8, .3, 1) both'; if (b) sb.style.animation = 'subin .45s .15s ease-out both'; } function placeTeam(team) { const gs = spawnGroups[team], gi = team === 'T' ? G.tsp || 0 : 0; useSpawn(team, gi); const cells = shuffle((gs.length > 1 ? gs[gi % gs.length] : spawnCells[team]).slice()), jit = Math.min(1, MS * 0.4); let i = 0; for (const e of ents) { if (e.team !== team) continue; const c = cells[i++ % cells.length]; e.x = cx(c.c) + (Math.random() - 0.5) * jit; e.z = cx(c.r) + (Math.random() - 0.5) * jit; e.y = lvY(c.l); e.vy = 0; const dx = WORLD_W / 2 - e.x, dz = WORLD_D / 2 - e.z; e.yaw = e.isPlayer ? Math.atan2(-dx, -dz) : Math.atan2(dx, dz); } }
         // Spaß-Modus „Waffen": 1 = nur Pistolen (Primärwaffe weg), 2 = nur AWP (gratis für alle)
         function funLoadout(e) { if (!CFG.wpn) return; if (e.isPlayer) e.weapons[1] = CFG.wpn === 2 ? mkWeapon(W.awp) : null; else if (!e.remote) { e.weapon = CFG.wpn === 2 ? W.awp : e.weapon.slot === 1 ? (e.team === 'T' ? W.glock : W.usp) : e.weapon; e.ammo = e.weapon.mag; } }
         function botBuy(b) {
@@ -7111,11 +7326,11 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             later(() => { for (const fq of seq.slice(-3)) tone(fq, 0.8, 0.05, 0, 'sine'); }, seq.length * 95); }
         function startRound() {
             roundKills = 0; G.aw = null; G.eqv = null;
-            clearDrops(); clearNades(); clearBlood(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear();
+            clearDrops(); clearNades(); clearBlood(); G.state = 'freeze'; G.t = FREEZE_TIME; G.timer = ROUND_TIME; G.bomb = { state: DM.on ? 'none' : 'carried', x: 0, y: 0, z: 0, t: BOMB_TIME, carrier: null }; G.beepT = 0; bombMesh.visible = false; if (DM.on) G.timer = DM.time; G.site = Math.random() < 0.5 ? 'A' : 'B'; G.spotted.clear(); G.tsp = cellHash(G.round, G.score.CT * 31 + G.score.T * 7) % 3; // T-Spawn-Zone dieser Runde (online überall gleich)
             const p = player; if (!p.alive) { p.weapons[1] = null; p.weapons[4] = null; p.nades = { he: 0, flash: 0, smoke: 0, molly: 0 }; p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp); p.armor = 0; p.helmet = false; p.kit = false; } funLoadout(p); p.weapons[5] = null; p.alive = true; p.health = 100;
             for (const s of [1, 2]) { const w = p.weapons[s]; if (w) { w.ammo = w.def.mag; w.res = w.def.res; w.reloading = false; w.reloadT = 0; } } p.rk = 0; p.rushT = 0; p.immune = false; STK.on = false; p.pitch = 0; setScoped(false); p.slot = p.weapons[1] ? 1 : 2; p.plantT = p.defuseT = 0; p.vy = 0; $('dead').style.display = 'none'; specTarget = null; for (const b of bots) { if (!b.alive) { b.weapon = b.team === 'T' ? W.glock : W.usp; b.armor = 0; b.helmet = false; b.kit = false; } b.alive = true; b.health = 100; b.target = null; b.path = []; b.goal = null; b.waitT = 0; b.plantT = b.defuseT = 0; b.reloadT = 0; b.fireT = 0.5; b.mesh.rotation.set(0, 0, 0); botBuy(b); funLoadout(b); }
             placeTeam('T'); placeTeam('CT');
-            bots.forEach(b => { b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; b.lastX = b.x; b.lastZ = b.z; });
+            bots.forEach(b => { b.mesh.position.set(b.x, b.y || 0, b.z); b.mesh.rotation.y = b.yaw; b.lastX = b.x; b.lastZ = b.z; });
             if (DM.on) for (const e of ents) if (!e.remote) dmRespawn(e);
             const car = DM.on ? null : rnd(ents.filter(e => e.team === 'T' && !(NET.spec && e === player))); G.bomb.carrier = car; if (car && car.isPlayer) p.weapons[5] = mkWeapon(W.c4);
             if (DM.on) msg('💀 Deathmatch', `Jeder gegen jeden · ${DM.limit} Kills oder 10 Min · Waffen gratis`, 4); else msg(`Runde ${G.round}`, p.team === 'T' ? `Taktik: Angriff auf Bombsite ${G.site}${car.isPlayer ? ' – Du trägst die Bombe!' : ''}` : 'Verteidigt die Bombsites A und B', 4); sfx('start');
@@ -7132,13 +7347,13 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function nextRound() { if (G.score.CT >= WIN_SCORE || G.score.T >= WIN_SCORE || G.round >= MAX_ROUNDS) gameOver(); else { G.round++; startRound(); } }
         function checkRoundEnd() { if (GL.on || DM.on || DH.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; awClutch(aT, aCT); if (aCT === 0) endRound('T', 'Alle Defender eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Attacker eliminiert'); }
         function plantBomb(e) {
-            if (G.state !== 'live') return; G.bomb.state = 'planted'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.t = BOMB_TIME; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, 0, e.z); bombMesh.rotation.set(0, 0, 0); e.plantT = 0; e.money = Math.min(16000, e.money + 300);
+            if (G.state !== 'live') return; G.bomb.state = 'planted'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.y = e.y || 0; G.bomb.t = BOMB_TIME; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, G.bomb.y, e.z); bombMesh.rotation.set(0, 0, 0); e.plantT = 0; e.money = Math.min(16000, e.money + 300);
             if (e.isPlayer) { ultAdd(1); e.weapons[5] = null; e.slot = e.weapons[1] ? 1 : 2; e.switchT = 1; updateVM(); } else botUltAdd(e);
             msg('Die Bombe wurde platziert!', '', 3); sfx('plant'); bots.forEach(b => { b.goal = null; b.path = []; });
         }
         function defuseBomb(e) { if (G.state !== 'live') return; G.bomb.state = 'defused'; bombMesh.visible = false; e.defuseT = 0; e.money = Math.min(16000, e.money + 300); if (e.isPlayer) ultAdd(1); else botUltAdd(e); endRound('CT', 'Die Bombe wurde entschärft'); }
         function pickupBomb(e) { G.bomb.state = 'carried'; G.bomb.carrier = e; bombMesh.visible = false; if (e.remote && NET.on && NET.host) netSend({ type: 'c4', pid: e.pid }); if (e.isPlayer) { e.weapons[5] = mkWeapon(W.c4); msg('Du hast die Bombe aufgenommen', '', 2); } } function explode() {
-            G.bomb.state = 'exploded'; bombMesh.visible = false; sfx('explosion'); whiteFlash = 1; shake = 1; boomMesh.position.set(G.bomb.x, 1, G.bomb.z); boomMesh.visible = true; boomT = 0.7;
+            G.bomb.state = 'exploded'; bombMesh.visible = false; sfx('explosion'); whiteFlash = 1; shake = 1; boomMesh.position.set(G.bomb.x, (G.bomb.y || 0) + 1, G.bomb.z); boomMesh.visible = true; boomT = 0.7;
             endRound('T', 'Die Bombe ist explodiert');
             for (const e of ents) { if (!e.alive || e.remote) continue; const d = Math.hypot(e.x - G.bomb.x, e.z - G.bomb.z); if (d < 16) applyDamage(e, 400 * (1 - d / 16), null, null, false); }
         }
@@ -7161,7 +7376,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             else if (G.state === 'live') {
                 if (G.bomb.state === 'planted') { G.bomb.t -= dt; G.beepT -= dt; bombRing.position.set(G.bomb.x, 0.05, G.bomb.z); bombRing.material.opacity = Math.max(0.12, bombRing.material.opacity - dt * 1.2); if (G.beepT <= 0) { sfx('beep', G.bomb.x, G.bomb.z); bombRing.material.opacity = 0.6; if (G.bomb.t < 10) tone(700 + (1 - G.bomb.t / 10) * 900, 0.07, 0.06, 0, 'triangle'); G.beepT = 0.15 + (G.bomb.t / BOMB_TIME) * 0.85; bombLed.material.color.setHex(0xff2020); setTimeout(() => bombLed.material.color.setHex(0x400000), 90); } if (G.bomb.t <= 0) explode(); }
                 else { G.timer -= dt; if (G.timer <= 0) endRound('CT', 'Zeit abgelaufen'); }
-                if (G.bomb.state === 'dropped') for (const e of ents) { if (e.alive && e.team === 'T' && Math.hypot(e.x - G.bomb.x, e.z - G.bomb.z) < 1.4) { pickupBomb(e); break; } }
+                if (G.bomb.state === 'dropped') for (const e of ents) { if (e.alive && e.team === 'T' && Math.hypot(e.x - G.bomb.x, e.z - G.bomb.z) < 1.4 && Math.abs((e.y || 0) - (G.bomb.y || 0)) < 1.8) { pickupBomb(e); break; } }
             }
             else if (G.state === 'end') { G.t -= dt; if (G.t <= 0) nextRound(); }
             if (G.msgT > 0) { G.msgT -= dt; if (G.msgT <= 0) { $('msg').textContent = ''; $('sub').textContent = ''; } }
@@ -7186,20 +7401,20 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         function botObjective(b, dt) {
             const bomb = G.bomb, live = G.state === 'live';
             if (b.team === 'T') {
-                if (bomb.state === 'planted') { const mv = followPath(b, dt); if (!mv) b.waitT -= dt; if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 2 + Math.random() * 4; const c = randomNear(cr(bomb.z), cr(bomb.x), 3); setGoal(b, c.r, c.c); } }
-                else if (bomb.state === 'dropped') { const gr = cr(bomb.z), gc = cr(bomb.x); if (!b.goal || b.goal.r !== gr || b.goal.c !== gc) setGoal(b, gr, gc); if (!followPath(b, dt)) botMoveToward(b, bomb.x, bomb.z, dt, BOT_SPEED); }
+                if (bomb.state === 'planted') { const mv = followPath(b, dt); if (!mv) b.waitT -= dt; if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 2 + Math.random() * 4; const c = randomNear(cr(bomb.z), cr(bomb.x), 3, lvXY(bomb.x, bomb.z, bomb.y)); setGoal(b, c.r, c.c, c.l); } }
+                else if (bomb.state === 'dropped') { const gr = cr(bomb.z), gc = cr(bomb.x); if (!b.goal || b.goal.r !== gr || b.goal.c !== gc) setGoal(b, gr, gc, lvXY(bomb.x, bomb.z, bomb.y)); if (!followPath(b, dt)) botMoveToward(b, bomb.x, bomb.z, dt, BOT_SPEED); }
                 else if (bomb.carrier === b) {
-                    if (cell(cr(b.z), cr(b.x)) === G.site) { if (live) { b.plantT += dt; if (Math.floor(b.plantT * 3) !== Math.floor((b.plantT - dt) * 3)) sfx('plant', b.x, b.z); if (b.plantT >= 3) plantBomb(b); } }
-                    else { b.plantT = 0; if (!b.goal || cell(b.goal.r, b.goal.c) !== G.site) { const c = rnd(siteCells[G.site]); setGoal(b, c.r, c.c); } if (!followPath(b, dt)) b.goal = null; }
+                    if (siteAt(b) === G.site) { if (live) { b.plantT += dt; if (Math.floor(b.plantT * 3) !== Math.floor((b.plantT - dt) * 3)) sfx('plant', b.x, b.z); if (b.plantT >= 3) plantBomb(b); } }
+                    else { b.plantT = 0; if (!b.goal || chAt(b.goal.r, b.goal.c, b.goal.l | 0) !== G.site) { const c = rnd(siteCells[G.site]); setGoal(b, c.r, c.c, c.l); } if (!followPath(b, dt)) b.goal = null; }
                 }
-                else { const mv = followPath(b, dt); if (!mv) b.waitT -= dt; if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 1.5 + Math.random() * 3; const car = bomb.carrier; let c; if (car && car.alive && Math.hypot(car.x - b.x, car.z - b.z) > 14 && Math.random() < 0.6) c = randomNear(cr(car.z), cr(car.x), 2); else c = rnd(siteCells[G.site]); setGoal(b, c.r, c.c); } }
+                else { const mv = followPath(b, dt); if (!mv) b.waitT -= dt; if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 1.5 + Math.random() * 3; const car = bomb.carrier; let c; if (car && car.alive && Math.hypot(car.x - b.x, car.z - b.z) > 14 && Math.random() < 0.6) c = randomNear(cr(car.z), cr(car.x), 2, lvOf(car)); else c = rnd(siteCells[G.site]); setGoal(b, c.r, c.c, c.l); } }
             } else {
                 if (bomb.state === 'planted') {
-                    const d = Math.hypot(bomb.x - b.x, bomb.z - b.z);
+                    const d = Math.hypot(bomb.x - b.x, bomb.z - b.z) + (Math.abs((b.y || 0) - (bomb.y || 0)) > 1.8 ? 9 : 0); // andere Etage → erst hinlaufen
                     if (d < 1.8) { b.yaw = lerpAngle(b.yaw, Math.atan2(bomb.x - b.x, bomb.z - b.z), Math.min(1, dt * 8)); if (live) { const nd = b.kit ? 5 : 10; if (G.bomb.half && b.defuseT < nd / 2) b.defuseT = nd / 2; b.defuseT += dt; if (b.defuseT >= nd / 2) G.bomb.half = true; if (b.defuseT >= nd) defuseBomb(b); } /* Checkpoint 50 % */ }
-                    else { b.defuseT = 0; const gr = cr(bomb.z), gc = cr(bomb.x); if (!b.goal || b.goal.r !== gr || b.goal.c !== gc) setGoal(b, gr, gc); if (!followPath(b, dt)) botMoveToward(b, bomb.x, bomb.z, dt, BOT_SPEED); }
+                    else { b.defuseT = 0; const gr = cr(bomb.z), gc = cr(bomb.x); if (!b.goal || b.goal.r !== gr || b.goal.c !== gc) setGoal(b, gr, gc, lvXY(bomb.x, bomb.z, bomb.y)); if (!followPath(b, dt)) botMoveToward(b, bomb.x, bomb.z, dt, BOT_SPEED); }
                 }
-                else { const mv = followPath(b, dt); if (!mv) b.waitT -= dt; if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 2 + Math.random() * 4; const c = (G.timer < 70 || Math.random() < 0.55) ? rnd(siteCells[Math.random() < 0.5 ? 'A' : 'B']) : rnd(openCells); setGoal(b, c.r, c.c); } }
+                else { const mv = followPath(b, dt); if (!mv) b.waitT -= dt; if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 2 + Math.random() * 4; const c = (G.timer < 70 || Math.random() < 0.55) ? rnd(siteCells[Math.random() < 0.5 ? 'A' : 'B']) : rnd(openCells); setGoal(b, c.r, c.c, c.l); } }
             }
             if (!b.moving) b.yaw += Math.sin(now * 0.8 + b.id * 1.7) * dt * 0.5;
         }
@@ -7237,10 +7452,10 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         function botPickup(b, dt) {
             if (G.bomb.state === 'planted' || G.bomb.carrier === b) return false;
             let best = null, bd = 20;
-            for (const d of drops) { if (d.def.slot !== 1) continue; if (b.weapon.slot === 1 && d.def.price <= (b.weapon.price || 0) + 500) continue; const dist = Math.hypot(d.x - b.x, d.z - b.z); if (dist < bd) { best = d; bd = dist; } }
+            for (const d of drops) { if (d.def.slot !== 1) continue; if (b.weapon.slot === 1 && d.def.price <= (b.weapon.price || 0) + 500) continue; const dist = Math.hypot(d.x - b.x, d.z - b.z) + (Math.abs((b.y || 0) - (d.y || 0)) > 1.5 ? 6 : 0); if (dist < bd) { best = d; bd = dist; } }
             if (!best) return false;
-            if (bd < 1.4) { if (NET.on && NET.host && best.did) netSend({ type: 'wtake', did: best.did }); if (b.weapon.slot === 1) { const dd = dropWeapon(b.weapon, b.x, b.z, b.weapon.mag, 0, null); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } } b.weapon = best.def; b.ammo = best.def.mag; b.reloadT = 0; scene.remove(best.mesh); drops.splice(drops.indexOf(best), 1); sfx('reload', b.x, b.z); return false; } const gr = cr(best.z), gc = cr(best.x);
-            if (!b.goal || b.goal.r !== gr || b.goal.c !== gc) setGoal(b, gr, gc);
+            if (bd < 1.4) { if (NET.on && NET.host && best.did) netSend({ type: 'wtake', did: best.did }); if (b.weapon.slot === 1) { const dd = dropWeapon(b.weapon, b.x, b.z, b.weapon.mag, 0, null, b.y); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, y: dd.y, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } } b.weapon = best.def; b.ammo = best.def.mag; b.reloadT = 0; scene.remove(best.mesh); drops.splice(drops.indexOf(best), 1); sfx('reload', b.x, b.z); return false; } const gr = cr(best.z), gc = cr(best.x);
+            if (!b.goal || b.goal.r !== gr || b.goal.c !== gc) setGoal(b, gr, gc, lvXY(best.x, best.z, best.y));
             if (!followPath(b, dt)) botMoveToward(b, best.x, best.z, dt, BOT_SPEED);
             return true;
         }
@@ -7254,7 +7469,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 const fighting = m.isPlayer || m.remote ? (now - m.lastShotT) < 2 : !!m.target;
                 if (!fighting) continue;
                 const d = Math.hypot(m.x - b.x, m.z - b.z);
-                if (d > 8 && d < 30 && Math.random() < 0.7) { const c = randomNear(cr(m.z), cr(m.x), 2); setGoal(b, c.r, c.c); b.waitT = 3; return; }
+                if (d > 8 && d < 30 && Math.random() < 0.7) { const c = randomNear(cr(m.z), cr(m.x), 2, lvOf(m)); setGoal(b, c.r, c.c, c.l); b.waitT = 3; return; }
             }
         }
 
@@ -7262,7 +7477,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         // Zuschauer = Team „SPEC“ im Netz: unsichtbar, nie lebendig, kein Ziel für Bots, sendet keinen Spielerstatus. Lokal bleibt player.team gültig (Spawn-/Kauflogik).
         const SPV = new THREE.Vector3(); let specUiT = 0;
         function specSet(on) { NET.spec = on; netSend({ type: 'team', pid: NET.pid, team: on ? 'SPEC' : player.team }); if (NET.inLobby) renderLobby(); }
-        function specFree() { FC.on = true; specTarget = null; FC.x = MAP[0].length * S / 2; FC.z = MAP.length * S + 6; FC.y = 32; FC.yaw = 0; FC.pitch = -0.8; } // von Süden schräg über die Karte
+        function specFree() { FC.on = true; specTarget = null; FC.x = WORLD_W / 2; FC.z = WORLD_D + 6; FC.y = 32; FC.yaw = 0; FC.pitch = -0.8; } // von Süden schräg über die Karte
         function specToggle() { if (FC.on) { stopFreecam(); specTarget = null; cycleSpec(); if (!specTarget) specFree(); } else specFree(); specUiT = 0; }
         function specStart() { document.body.classList.add('specmode'); specRound(); specFree(); msg('👁 Du schaust zu', IS_TOUCH ? '🎥 Freecam/Ego · ◀ ▶ Spieler wechseln' : 'F / Rechtsklick: Freecam ↔ Ego', 5); }
         function specRound() { const p = player; p.alive = false; p.health = 0; p.weapons[5] = null; closeBuy(); $('dead').style.display = 'none'; if (!FC.on && (!specTarget || !specTarget.alive)) cycleSpec(); }
@@ -7303,7 +7518,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             FC.y += Math.sin(FC.pitch) * f * spd + ((down('jump') ? 1 : 0) - (down('crouch') ? 1 : 0)) * 10 * dt;
             FC.y = clamp(FC.y, 1, 40);
             if (GA.cur) { const A = GA.cur; FC.x = clamp(FC.x, A.ox - 10, A.ox + A.C * S + 10); FC.z = clamp(FC.z, -10, A.R * S + 10); }
-            else if (NET.spec) { FC.x = clamp(FC.x, -10, MAP[0].length * S + 10); FC.z = clamp(FC.z, -10, MAP.length * S + 10); } // Customs-Zuschauer: Kartengrenzen
+            else if (NET.spec) { FC.x = clamp(FC.x, -10, WORLD_W + 10); FC.z = clamp(FC.z, -10, WORLD_D + 10); } // Customs-Zuschauer: Kartengrenzen
             camera.position.set(FC.x, FC.y, FC.z);
             camera.rotation.set(FC.pitch, FC.yaw, 0);
         }
@@ -7316,7 +7531,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             if (!b.goal || (!mv && (b.waitT -= dt) <= 0)) {
                 b.waitT = 1 + Math.random() * 2;
                 let cell;
-                if (foe && Math.random() < 0.7) cell = { r: cr(foe.z), c: cr(foe.x - GA.cur.ox) };
+                if (foe && Math.random() < 0.7) cell = { r: acr(foe.z), c: acr(foe.x - GA.cur.ox) };
                 else cell = rnd(GA.cur.cells);
                 setGoal(b, cell.r, cell.c);
             }
@@ -7325,9 +7540,9 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         function updateBot(b, dt) {
             if (b.flashT > 0) { b.flashT -= dt; if (b.flashT <= 0) b.flash.visible = false; }
             if (!b.alive) return;
-            if (G.state === 'freeze') { b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; return; }
+            if (G.state === 'freeze') { b.mesh.position.set(b.x, b.y || 0, b.z); b.mesh.rotation.y = b.yaw; return; }
             b.moving = false; b.wantMove = false; const ox = b.x, oz = b.z;
-            if (b.blindT > 0) { b.blindT -= dt; b.target = null; b.yaw += Math.sin(now * 3 + b.id) * dt * 2; b.mesh.position.set(b.x, 0, b.z); b.mesh.rotation.y = b.yaw; return; }
+            if (b.blindT > 0) { b.blindT -= dt; b.target = null; b.yaw += Math.sin(now * 3 + b.id) * dt * 2; b.mesh.position.set(b.x, b.y || 0, b.z); b.mesh.rotation.y = b.yaw; return; }
             b.losT -= dt; if (b.losT <= 0) { b.losT = 0.22 + Math.random() * 0.1; const t = findEnemy(b); if (t !== b.target) { b.target = t; if (t) b.reaction = BOT_LV ? 0.75 - 0.58 * BLF() + Math.random() * (0.5 - 0.36 * BLF()) : 0.3 + Math.random() * 0.5; } }
             if (b.target && !b.target.alive) b.target = null;
             if (b.reloadT > 0) { b.reloadT -= dt; if (b.reloadT <= 0) b.ammo = b.weapon.mag; }
@@ -7483,7 +7698,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             if (vl > 0.02) collideMove(p, p.vx * dt, p.vz * dt); else { p.vx = 0; p.vz = 0; }
             if (p.dashT > 0) { const step = Math.min(dt, p.dashT); const n = Math.ceil(step * 60); for (let s = 0; s < n; s++) collideMove(p, p.dashVX * step / n, p.dashVZ * step / n); p.dashT -= dt; if (p.dashT <= 0) { p.vx = p.dashVX * 0.12; p.vz = p.dashVZ * 0.12; } }
             p.speed = Math.hypot(p.vx, p.vz);
-            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ p.y += p.vy * dt; const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { p.landK = clamp(-p.vy / 11, 0.25, 1); sfx('land'); shake = Math.max(shake, 0.02 * p.landK); fovKick = Math.max(fovKick, 1.5); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
+            if (canMove && down('jump') && p.onGround && !p.crouch) { p.vy = 6.9 * Math.sqrt(CFG.jump / 100 * CFG.grav / 100); p.onGround = false; } p.vy -= 20 * CFG.grav / 100 * dt; /* schnellerer, knackiger Sprung – gleiche Sprunghöhe */ const py0 = p.y; p.y += p.vy * dt; if (p.vy > 0) { const cb = ceilAt(p, py0); if (p.y + 1.85 > cb) { p.y = Math.max(py0, cb - 1.85); p.vy = 0; } } /* Kopf an der Decke */ const g = groundAt(p); if (p.y <= g) { if (!p.onGround && p.vy < -3) { p.landK = clamp(-p.vy / 11, 0.25, 1); sfx('land'); shake = Math.max(shake, 0.02 * p.landK); fovKick = Math.max(fovKick, 1.5); } p.y = g; p.vy = 0; p.onGround = true; } else p.onGround = false;
             const te = p.alive ? (p.crouch ? 1.15 : 1.7) : 0.35; p.eyeH += (te - p.eyeH) * Math.min(1, dt * 12);
             if (p.speed > 4 && p.onGround && !p.walk) { p.stepT -= dt; if (p.stepT <= 0) { p.stepT = 0.39 + Math.random() * 0.06; sfx('step'); } } else p.stepT = 0.1;
             if (p.speed > 0 && p.onGround) p.bob += dt * p.speed * 1.6;
@@ -7505,9 +7720,9 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         function updatePlayerObjectives(dt) {
             const p = player; let prog = null;
             if (p.alive && G.state === 'live') {
-                const nearBomb = G.bomb.state === 'planted' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2.0;
+                const nearBomb = G.bomb.state === 'planted' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2.0 && Math.abs((p.y || 0) - (G.bomb.y || 0)) < 1.8;
                 if (p.team === 'CT' && nearBomb && down('use') && p.speed === 0) { const need = p.kit ? 5 : 10; if (G.bomb.half && p.defuseT < need / 2) p.defuseT = need / 2; p.defuseT += dt; if (p.defuseT >= need / 2 && !G.bomb.half) { G.bomb.half = true; tone(1100, 0.12, 0.12, 0, 'sine'); } prog = { v: p.defuseT / need, txt: G.bomb.half ? 'Entschärfe Bombe… · Checkpoint 50 % ✓' : 'Entschärfe Bombe…', cp: 1 }; if (p.defuseT >= need) { prog = null; xpEvent('defuse'); if (NET.on && !NET.host) { p.defuseT = 0; netSend({ type: 'defuse' }); p.money = Math.min(16000, p.money + 300); } else defuseBomb(p); } } else p.defuseT = 0;
-                if (p.team === 'CT' && nearBomb && G.msgT <= 0) $('sub').textContent = `Halte [${keyName(BIND.use)}] zum Entschärfen` + (p.kit ? ' (Kit)' : ''); const inSite = ['A', 'B'].includes(cell(cr(p.z), cr(p.x)));
+                if (p.team === 'CT' && nearBomb && G.msgT <= 0) $('sub').textContent = `Halte [${keyName(BIND.use)}] zum Entschärfen` + (p.kit ? ' (Kit)' : ''); const inSite = ['A', 'B'].includes(siteAt(p));
                 if (p.team === 'T' && p.slot === 5 && p.weapons[5] && mouseDown && inSite && p.speed === 0) { p.plantT += dt; prog = { v: p.plantT / 3, txt: 'Platziere Bombe…' }; if (Math.floor(p.plantT * 3) !== Math.floor((p.plantT - dt) * 3)) sfx('plant'); if (p.plantT >= 3) { prog = null; xpEvent('plant'); if (NET.on && !NET.host) { p.plantT = 0; netSend({ type: 'plant', x: p.x, z: p.z }); p.money = Math.min(16000, p.money + 300); p.weapons[5] = null; p.slot = p.weapons[1] ? 1 : 2; p.switchT = 1; updateVM(); } else plantBomb(p); } } else p.plantT = 0;
                 if (p.team === 'T' && p.weapons[5] && inSite && G.msgT <= 0) $('sub').textContent = p.slot === 5 ? 'Halte Feuertaste zum Platzieren' : (IS_TOUCH ? '⇄: Bombe auswählen' : 'Mausrad: Bombe auswählen');
             } else p.defuseT = p.plantT = 0;
@@ -8466,6 +8681,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function showMapList() { gridList(false); }
         function pickArenas(go, back) { gridList(true, { go, back }); }
         function showMapEditor(src, editKey, ar, blank) {
+            if (!ar) { toast('🛠 Map-Editor pausiert', 'Die Karten haben ein neues Raster mit Stockwerken – der Editor folgt später.'); if (EX.on || started) return; return showMenu(); } // vorübergehend aus (neues Kartenformat)
             setTimeout(() => $('overlay').classList.add('oldui')); /* Editor in Originalgröße */
             const ST = ar ? CARS : CMAPS, W = ar ? 11 : 28, H = ar ? 18 : 28, N = H; // ar: Arena-Modus (11×18, ohne Bombsites)
             const grid = (ar ? ARENAS[src].rows : MAPS[src]).map(r => r.split('')); let tool = '#', name = editKey ? ST[editKey].n : blank ? (ar ? 'Neue Arena' : 'Neue Karte') : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace(/^(de|ar)_/, '')) + ' Kopie').slice(0, 20);
@@ -8631,7 +8847,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <a data-nav="shop">SHOP</a>
  <a data-nav="career">KARRIERE</a>
  <a data-nav="news">NEWS</a>
- <a data-nav="editor">EDITOR</a>
+ <a data-nav="editor" style="display:none">EDITOR</a>
  </nav>
  <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}"><span class="lvchip" title="${rankOf(lvlOf(PRG.xp))}">Lv ${lvlOf(PRG.xp)}</span>${ACC ? `<b>Eingeloggt als <span style="color:var(--hl)">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
  </div>
@@ -9725,8 +9941,9 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const d = Object.assign({ dh: 1, id: ++DH.id, t, look: Math.random() * 3 | 0, x, z, y: fly ? 6 + Math.random() * 3 : 0, fly, alive: true, r: T.boss ? 1.0 : T.chick ? 0.25 : 0.35, life: T.boss ? 45 : 12 + Math.random() * 6, yaw: a, vx: Math.sin(a), vz: Math.cos(a), ph: Math.random() * 6, tx: x, tz: z, retarget: 0, flee: 0 }, o);
             if (T.hp && !d.maxhp) d.maxhp = d.hp = T.hp; dhMesh(d); DH.ducks.push(d); return d;
         }
+        let OPEN_G = null; const openGround = () => OPEN_G || (OPEN_G = openCells.filter(o => !o.l)); // Enten nur auf dem Erdgeschoss
         function dhSpawn() {
-            const c = rnd(openCells), x = cx(c.c), z = cx(c.r);
+            const c = rnd(openGround()), x = cx(c.c), z = cx(c.r);
             if (DH.rush > 0) return dhNew('g', x, z); // Goldrausch
             if (Math.random() < 0.07) { // Entenfamilie: Mutter + 3 Küken im Gänsemarsch
                 const fid = ++DH.id, mom = dhNew('n', x, z, { fly: false, fam: fid, life: 22 }); let lead = mom; DH.fams[fid] = { left: 4, by: {} };
@@ -9823,7 +10040,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             for (const d of DH.ducks) scene.remove(d.mesh); Object.assign(DH, { on: true, w: DH_WEAPONS[w] ? w : 'ak47', ducks: [], t: DH_TIME, id: 0, spawnT: 0, sendT: 0, sc: {}, ice: 0, frz: {}, combo: {}, fin: 0, rush: 0, ev: {}, fams: {}, me: { n: 0, gold: 0, sp: 0, cb: 0 }, ended: false, wave: 0, pw: {}, pwT: 16, myc: { n: 0, t: 0 } });
             DH.sc[dhMe()] = 0; for (const rp of NET.players.values()) DH.sc[rp.pid] = 0;
             player.team = 'CT'; player.alive = true; player.health = 100; player.weapons[1] = mkWeapon(W[DH.w]); player.weapons[2] = mkWeapon(W.deagle); player.weapons[4] = player.weapons[5] = null; player.slot = 1; updateVM();
-            const c = rnd(spawnCells.CT.length ? spawnCells.CT : openCells); player.x = cx(c.c); player.z = cx(c.r); player.y = 0; player.vx = player.vz = player.vy = 0;
+            const c = rnd(spawnCells.CT.length ? spawnCells.CT : openCells); player.x = cx(c.c); player.z = cx(c.r); player.y = lvY(c.l); player.vx = player.vz = player.vy = 0;
             ents = [player, ...NET.players.values()]; G.state = 'live'; G.timer = DH_TIME; G.bomb = { state: 'none', x: 0, z: 0, t: 0, carrier: null };
             started = true; gameEnded = false; $('overlay').style.display = 'none'; $('hud').style.display = 'block'; if (menuChar) menuChar.group.visible = false;
             document.body.classList.add('dh'); if (!$('dhHud')) { const h = document.createElement('div'); h.id = 'dhHud'; $('top').appendChild(h); for (const id of ['dhPop', 'dhBan']) { const p = document.createElement('div'); p.id = id; $('hud').appendChild(p); } const c = document.createElement('div'); c.id = 'dhCb'; c.innerHTML = '<b>0</b><span>COMBO</span><u><i></i></u><em></em>'; $('hud').appendChild(c); }
@@ -9834,10 +10051,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             DH.rush = Math.max(0, DH.rush - dt); const e = DH.ev, t = DH.t;
             while (DH.wave < DH_WAVES.length && t <= DH_WAVES[DH.wave].at) { DH.wave++; dhAnnounce('🌊 WELLE ' + DH.wave + '/' + DH_WAVES.length + ' · ' + DH_WAVES[DH.wave - 1].n); if (DH.wave > 1) DH.pwT = Math.min(DH.pwT, 1.5); }
             for (const k in DH.pw) DH.pw[k].t = Math.max(0, DH.pw[k].t - dt);
-            DH.pwT -= dt; if (DH.pwT <= 0 && DH.ducks.filter(d => d.t === 'P').length < 2) { DH.pwT = 13 + Math.random() * 6; const c = rnd(openCells); dhNew('P', cx(c.c), cx(c.r), { fly: true, look: Math.random() * DH_PW.length | 0, life: 11 }); }
+            DH.pwT -= dt; if (DH.pwT <= 0 && DH.ducks.filter(d => d.t === 'P').length < 2) { DH.pwT = 13 + Math.random() * 6; const c = rnd(openGround()); dhNew('P', cx(c.c), cx(c.r), { fly: true, look: Math.random() * DH_PW.length | 0, life: 11 }); }
             if (t <= 95 && !e.g1) { e.g1 = 1; DH.rush = 8; dhAnnounce('⭐ GOLDRAUSCH! 8 Sekunden nur goldene Enten'); }
-            if (t <= 75 && !e.boss) { e.boss = 1; const c = rnd(openCells), b = dhNew('B', cx(c.c), cx(c.r), { fly: false }); b.maxhp = b.hp = 30 + 12 * NET.players.size; dhAnnounce('👑 Eine RIESEN-ENTE ist aufgetaucht!'); }
-            if (t <= 50 && !e.swarm) { e.swarm = 1; for (let i = 0; i < 15; i++) { const c = rnd(openCells); dhNew('n', cx(c.c), cx(c.r), { fly: true }); } dhAnnounce('🦆 SCHWARM im Anflug!'); }
+            if (t <= 75 && !e.boss) { e.boss = 1; const c = rnd(openGround()), b = dhNew('B', cx(c.c), cx(c.r), { fly: false }); b.maxhp = b.hp = 30 + 12 * NET.players.size; dhAnnounce('👑 Eine RIESEN-ENTE ist aufgetaucht!'); }
+            if (t <= 50 && !e.swarm) { e.swarm = 1; for (let i = 0; i < 15; i++) { const c = rnd(openGround()); dhNew('n', cx(c.c), cx(c.r), { fly: true }); } dhAnnounce('🦆 SCHWARM im Anflug!'); }
             if (t <= 15 && !e.fin) { e.fin = 1; DH.fin = 1; dhAnnounce('⏱ FINALE! Doppelte Punkte'); }
         }
         function dhTick(dt) {
@@ -10026,7 +10243,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const solidDeco = (w2, h2, d2, x2, y2, z2, m2) => { const mm = new THREE.Mesh(new THREE.BoxGeometry(w2, h2, d2), m2); mm.position.set(x2, y2, z2); mm.castShadow = mm.receiveShadow = true; grp.add(mm); };
             for (let r = 0; r < R; r++) {
                 for (let c = 0; c < C; c++) {
-                    const ch = aCell(r, c), x = ox + cx(c), z = cx(r);
+                    const ch = aCell(r, c), x = ox + acx(c), z = acx(r);
                     if (!solid(ch)) info.cells.push({ r, c });
                     if (ch === 'T') info.spawnT.push({ x, z }); if (ch === 'K') info.spawnK.push({ x, z });
                     if (ch === 'c') { const hh = cellHash(r, c), cm = DSV ? crateMats[hh % 2] : aCrateM; tiltFit(box(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, cm), tiltOf(hh, 5, 7, 0.08)); tiltFit(box(x - 0.7, x + 0.7, CRATE_H, CRATE_H * 2, z - 0.7, z + 0.7, cm), tiltOf(hh, 9, 9, 0.1)); }
@@ -10058,7 +10275,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const wd = (r, c) => { for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (aCell(r + dr, c + dc) === '#') return [dc, dr]; return null; };
                 const cand = shuffle(info.cells.filter(o => aCell(o.r, o.c) === '.' && wd(o.r, o.c)));
                 let pi = 0;
-                const place = g2 => { const o = cand[pi++]; if (!o) return; const [dx2, dz2] = wd(o.r, o.c); g2.position.set(ox + cx(o.c) + dx2 * 1.25, 0, cx(o.r) + dz2 * 1.25); g2.rotation.y = Math.random() * Math.PI * 2; g2.traverse(m2 => { if (m2.isMesh) m2.castShadow = true; }); grp.add(g2); };
+                const place = g2 => { const o = cand[pi++]; if (!o) return; const [dx2, dz2] = wd(o.r, o.c); g2.position.set(ox + acx(o.c) + dx2 * 1.25, 0, acx(o.r) + dz2 * 1.25); g2.rotation.y = Math.random() * Math.PI * 2; g2.traverse(m2 => { if (m2.isMesh) m2.castShadow = true; }); grp.add(g2); };
                 for (let n = 0; n < 2; n++) {
                     const g2 = new THREE.Group();
                     const pal = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.14, 1.1), M2(DSV ? 0x3a3f48 : 0x9a7b52)); pal.position.y = 0.07; g2.add(pal);
@@ -11143,7 +11360,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'plant': if (NET.host) plantBomb({ x: m.x, z: m.z, isPlayer: false, money: 0, plantT: 0 }); break;
                 case 'defuse': if (NET.host && G.bomb.state === 'planted') defuseBomb({ isPlayer: false, money: 0, defuseT: 0 }); break;
                 case 'c4': if (!NET.host && m.pid === NET.pid) { player.weapons[5] = mkWeapon(W.c4); msg('Du trägst die Bombe!', `Angriff auf Bombsite ${G.site}`, 4); } break;
-                case 'nade': { const ow = m.ap ? (m.ap === NET.pid ? player : NET.players.get(m.ap)) : null; launchNade(m.k, m.x, m.y, m.z, m.dx, m.dy, m.dz, ow || { name: m.on, team: m.ot, isPlayer: false }, m.lv || 1, m.g || null); break; } case 'wdrop': { const d = dropWeapon(W[m.w], m.x, m.z, m.a ?? (W[m.w].mag || 0), m.rs ?? 0, m.sk ?? null); if (d) d.did = m.did; break; } case 'wtake': { const i = drops.findIndex(d => d.did === m.did); if (i >= 0) { scene.remove(drops[i].mesh); drops.splice(i, 1); } break; }
+                case 'nade': { const ow = m.ap ? (m.ap === NET.pid ? player : NET.players.get(m.ap)) : null; launchNade(m.k, m.x, m.y, m.z, m.dx, m.dy, m.dz, ow || { name: m.on, team: m.ot, isPlayer: false }, m.lv || 1, m.g || null); break; } case 'wdrop': { const d = dropWeapon(W[m.w], m.x, m.z, m.a ?? (W[m.w].mag || 0), m.rs ?? 0, m.sk ?? null, m.y || 0); if (d) d.did = m.did; break; } case 'wtake': { const i = drops.findIndex(d => d.did === m.did); if (i >= 0) { scene.remove(drops[i].mesh); drops.splice(i, 1); } break; }
                 case 'start': if (m.dm) DM.on = true;
                     if (m.cfg && !NET.host) { Object.assign(CFG, m.cfg); applyCfg(); if (!started) player.money = CFG.money; remeshAll(); }
                     if (netMapChanged(m)) { localStorage.setItem('map', m.map); sessionStorage.setItem('mpjoin', JSON.stringify({ srv: NET.srv, room: NET.room, team: player.team, name: player.name })); location.reload(); break; }
@@ -11159,7 +11376,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     const rp = NET.players.get(m.pid); if (!rp) break;
                     rp.tx = m.x; rp.ty = m.y; rp.tz = m.z; rp.tyaw = m.yaw;
                     rp.kills = m.k || 0; rp.deaths = m.d || 0; rp.money = m.mo || 0;
-                    if (rp.alive && !m.al) { rp.mesh.rotation.x = -Math.PI / 2; if (NET.host && G.bomb.carrier === rp && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = rp.x; G.bomb.z = rp.z; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(rp.x, 0, rp.z); } } if (!rp.alive && m.al) rp.mesh.rotation.set(0, 0, 0);
+                    if (rp.alive && !m.al) { rp.mesh.rotation.x = -Math.PI / 2; if (NET.host && G.bomb.carrier === rp && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = rp.x; G.bomb.z = rp.z; G.bomb.y = rp.y || 0; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(rp.x, G.bomb.y, rp.z); } } if (!rp.alive && m.al) rp.mesh.rotation.set(0, 0, 0);
                     rp.alive = m.al; rp.mesh.scale.y = m.c ? 0.72 : 1; if (m.h !== undefined) rp.health = m.h; break;
                 }
                 case 'fx': {
@@ -11314,22 +11531,22 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             p.alive = true; p.health = 100; p.vx = p.vz = 0; p.vy = 0; p.pitch = 0; setScoped(false); p.weapons[5] = null; if (!p.weapons[2]) p.weapons[2] = mkWeapon(p.team === 'T' ? W.glock : W.usp);
             if (CFG.wpn) { funLoadout(p); p.slot = p.weapons[1] ? 1 : 2; updateVM(); }
             p.slot = p.weapons[1] ? 1 : 2; updateVM();
-            if (DM.on) dmRespawn(p); else { const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = 0; } $('dead').style.display = 'none';
+            if (DM.on) dmRespawn(p); else { const c = rnd(spawnCells[p.team]); p.x = cx(c.c); p.z = cx(c.r); p.y = lvY(c.l); } $('dead').style.display = 'none';
             G.state = FREEZE_TIME > 0 ? 'freeze' : 'live'; G.t = FREEZE_TIME; G.timer = DM.on ? DM.time : ROUND_TIME; msg(DM.on ? '💀 Deathmatch' : 'Runde ' + G.round, DM.on ? 'Jeder gegen jeden · Waffen gratis' : '', 3); openBuy(true); if (NET.spec) specRound();
         }
         function applySnap(m) {
             const prev = G.bomb.state;
             if (m.gs === 'freeze' || m.gs === 'live') { G.state = m.gs; G.t = m.gt; }
-            G.timer = m.tm; G.score = m.sc; G.round = m.rd; G.bomb.state = m.bs; G.bomb.x = m.bx; G.bomb.z = m.bz;
+            G.timer = m.tm; G.score = m.sc; G.round = m.rd; G.bomb.state = m.bs; G.bomb.x = m.bx; G.bomb.z = m.bz; G.bomb.y = m.by || 0;
             if (m.bs === 'planted' && prev !== 'planted') msg('Die Bombe wurde platziert!', '', 3);
-            if (m.bs === 'exploded' && prev !== 'exploded') { sfx('explosion'); whiteFlash = 1; shake = 1; boomMesh.position.set(m.bx, 1, m.bz); boomMesh.visible = true; boomT = 0.7; if (player.alive) { const d = Math.hypot(player.x - m.bx, player.z - m.bz); if (d < 16) applyDamage(player, 400 * (1 - d / 16), null, null, false); } } bombMesh.visible = (m.bs === 'planted' || m.bs === 'dropped'); bombMesh.position.set(m.bx, 0, m.bz);
+            if (m.bs === 'exploded' && prev !== 'exploded') { sfx('explosion'); whiteFlash = 1; shake = 1; boomMesh.position.set(m.bx, (m.by || 0) + 1, m.bz); boomMesh.visible = true; boomT = 0.7; if (player.alive) { const d = Math.hypot(player.x - m.bx, player.z - m.bz); if (d < 16) applyDamage(player, 400 * (1 - d / 16), null, null, false); } } bombMesh.visible = (m.bs === 'planted' || m.bs === 'dropped'); bombMesh.position.set(m.bx, m.by || 0, m.bz);
             m.b.forEach((a, i) => {
                 const b = bots[i]; if (!b) return; const was = b.alive;
-                b.x = a[0]; b.z = a[1]; b.yaw = a[2]; b.alive = !!a[3]; b.health = a[4]; if (a[7] !== undefined) { b.kills = a[7]; b.deaths = a[8]; }
+                b.x = a[0]; b.z = a[1]; b.y = a[9] || 0; b.yaw = a[2]; b.alive = !!a[3]; b.health = a[4]; if (a[7] !== undefined) { b.kills = a[7]; b.deaths = a[8]; }
                 if (a[5]) { b.lastShotT = now; sfx(b.weapon ? b.weapon.snd : 'rifle', b.x, b.z); }
                 if (was && !b.alive) b.mesh.rotation.x = -Math.PI / 2;
                 if (!was && b.alive) b.mesh.rotation.set(0, 0, 0);
-                b.mesh.position.set(b.x, b.alive ? 0 : 0.3, b.z); b.mesh.rotation.y = b.yaw; b.mesh.scale.y = a[6] ? 0.72 : 1;
+                b.mesh.position.set(b.x, b.y + (b.alive ? 0 : 0.3), b.z); b.mesh.rotation.y = b.yaw; b.mesh.scale.y = a[6] ? 0.72 : 1;
             });
         }
         function netTick(dt) {
@@ -11341,8 +11558,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 NET.snapT -= dt; if (NET.snapT <= 0) {
                     NET.snapT = 0.1;
                     netSend({
-                        type: 'snap', gs: G.state, gt: +G.t.toFixed(1), rd: G.round, tm: G.timer, sc: G.score, bs: G.bomb.state, bx: G.bomb.x, bz: G.bomb.z,
-                        b: bots.map(b => [+b.x.toFixed(1), +b.z.toFixed(1), +b.yaw.toFixed(2), b.alive ? 1 : 0, b.health, (now - b.lastShotT) < 0.15 ? 1 : 0, b.crouch ? 1 : 0, b.kills, b.deaths])
+                        type: 'snap', gs: G.state, gt: +G.t.toFixed(1), rd: G.round, tm: G.timer, sc: G.score, bs: G.bomb.state, bx: G.bomb.x, by: +(G.bomb.y || 0).toFixed(2), bz: G.bomb.z,
+                        b: bots.map(b => [+b.x.toFixed(1), +b.z.toFixed(1), +b.yaw.toFixed(2), b.alive ? 1 : 0, b.health, (now - b.lastShotT) < 0.15 ? 1 : 0, b.crouch ? 1 : 0, b.kills, b.deaths, +(b.y || 0).toFixed(2)])
                     });
                 }
             }
@@ -11350,7 +11567,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function updateRemotes(dt) {
             const k = Math.min(1, dt * 12);
             for (const rp of NET.players.values()) {
-                if (!rp.alive) { rp.mesh.position.set(rp.x, 0.3, rp.z); continue; }
+                if (!rp.alive) { rp.mesh.position.set(rp.x, (rp.y || 0) + 0.3, rp.z); continue; }
                 const ox = rp.x, oz = rp.z; rp.x += (rp.tx - rp.x) * k; rp.y += (rp.ty - rp.y) * k; rp.z += (rp.tz - rp.z) * k; { const dd = Math.hypot(rp.x - ox, rp.z - oz), sp = dd / Math.max(0.001, now - (rp._nt || now)); rp._nt = now; if (sp > 4) { rp._sd = (rp._sd || 0) + dd; if (rp._sd > 2.3) { rp._sd = 0; sfx('step', rp.x, rp.z); } } } rp.yaw = lerpAngle(rp.yaw, rp.tyaw, k); // Schritte von Mitspielern/Gegnern online; Blickrichtung weich übernehmen (stand versehentlich im Kommentar)
                 rp.mesh.position.set(rp.x, rp.y, rp.z); rp.mesh.rotation.y = rp.yaw + Math.PI; /* Kamera-Blick → Modell-Vorderseite (um 180° gedreht) */
             }
@@ -11362,7 +11579,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // =====================================================================
         let menuChar = null, menuT = 0;
         function setupMenuScene() {
-            if (!menuChar) { menuChar = makeBotMesh(player.team || 'CT', myLook(), true, duckHat()); const c = spawnCells.CT[0] || { r: 2, c: 2 }; menuChar.group.position.set(cx(c.c), 0, cx(c.r)); }
+            if (!menuChar) { menuChar = makeBotMesh(player.team || 'CT', myLook(), true, duckHat()); const c = spawnCells.CT[0] || { r: 2, c: 2 }; menuChar.group.position.set(cx(c.c), lvY(c.l), cx(c.r)); }
             menuChar.group.visible = true;
         }
         // FPS-Anzeige: Bilder pro Sekunde + langsamster Frame der letzten Sekunde (zeigt Ruckler)
