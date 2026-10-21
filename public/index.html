@@ -5558,116 +5558,158 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 stairs: (...a) => ST.push(a), _stairs: (x, y, dx, dy, w = 2) => { for (let i = 0; i < 5; i++) for (let k = 0; k < w; k++) { const X = x + dx * i + (dy ? k : 0), Y = y + dy * i + (dx ? k : 0); put(lo, String(i + 1), X, Y); put(hi, ' =i'.includes(hi[Y][X]) ? ' ' : ':', X, Y); } } };
             f(M); for (const a of ST) M._stairs(...a); widen(lo, hi, W, H); const m = lo.map(r => r.join('')); m.hi = hi.map(r => r.join('')); m.top = tp.some(r => r.some(ch => ch !== ' ')) ? tp.map(r => r.join('')) : null; m.core = CORE; return m;
         }
-        // ── Trainingshalle: alle Karten 64×64 Felder (80 m), Kartenrand = Hallenwand · jede Karte eigene Architektur im Kartenthema ──
-        //    A oben · B unten · CT im Hauptgebäude (core) · T: Dach-Annex mit Luken (Ebene 2) · Verladedock (Mitte) · Tunnel (Rand) · z = Industriezaun
-        MAPS.de_foundry = lmap(64, 64, M => { // Ironworks – Industriegelände: erhöhter Container-Platz mit Garage darunter, Werkhalle (CT) im Norden, Markt-Lager mit Dachterrasse im Westen, Lagerhaus im Osten, Gitterstege
-            M.yard(1, 1, 62, 62);
-            M.mass(1, 1, 57, 15); M.room(2, 2, 56, 14); M.core(2, 2, 56, 14); M.mass(16, 2, 16, 14); M.mass(30, 2, 30, 14); M.mass(44, 2, 44, 14); // Werkhalle Nord (CT): 4 Hallen, 2 Etagen
-            M.stairs(19, 12, 1, 0); M.stairs(41, 12, -1, 0);
-            for (const [x, y] of [[16, 5], [16, 10], [30, 4], [30, 9], [44, 5], [44, 10]]) M.L('D', x, y); for (const [x, y] of [[16, 7], [30, 5], [30, 9], [44, 6], [44, 10]]) M.U('D', x, y);
-            M.L('B', 3, 3, 15, 13); M.L('K', 20, 4, 27, 7); M.U('A', 45, 2, 56, 13);
-            M.L('D', 8, 15); M.L('D', 23, 15, 24, 15); M.L('D', 36, 15); M.L('D', 50, 15); M.U('D', 52, 15, 53, 15);                        // Außentüren · OG-Tür zum Steg
-            M.L('W', 12, 15); M.L('W', 28, 15); M.L('W', 40, 15); M.L('W', 46, 15);
-            M.L('f', 4, 3, 5, 4); M.L('c', 13, 5); M.L('c', 8, 11); M.L('x', 12, 12); M.L('o', 3, 12); M.L('b', 15, 3); M.L('c', 9, 6);         // B: Werkstatt
-            M.L('l', 17, 2, 19, 2); M.L('t', 26, 10); M.L('l', 29, 2, 29, 3); M.L('k', 32, 2, 34, 2); M.L('m', 37, 7); M.L('k', 40, 2, 42, 2); M.L('c', 32, 10); M.L('f', 52, 3, 53, 4); M.L('c', 55, 9); M.L('x', 47, 12);
-            M.U('m', 47, 2, 49, 2); M.U('k', 56, 4, 56, 6); M.U('t', 50, 8); M.U('c', 46, 12); M.U('l', 3, 2, 5, 2); M.U('t', 8, 8); M.U('t', 34, 4); M.U('c', 25, 3); M.U('h', 38, 7, 39, 7);
-            M.R('=', 1, 1, 57, 15); M.mass(58, 1, 62, 12); M.R('=', 58, 1, 62, 12); M.R('T', 59, 2, 61, 10);                                     // Dach + Annex (T hoch)
-            M.R('H', 9, 8); M.R('H', 25, 11); M.R('H', 27, 3); M.R('#', 20, 3, 21, 4); M.R('#', 48, 5, 49, 6); M.R('#', 40, 11, 41, 12); M.R('#', 4, 12, 5, 13);
-            M.mass(20, 23, 43, 39); M.U('=', 20, 23, 43, 39); M.L('.', 21, 24, 42, 38);                                                        // Container-Platz (OG-Höhe) mit Garage darunter
-            M.L('D', 31, 23, 32, 23); M.L('D', 31, 39, 32, 39); M.L('D', 20, 30, 20, 31); M.L('D', 43, 29, 43, 30);
-            M.L('p', 26, 27); M.L('p', 26, 34); M.L('p', 37, 27); M.L('p', 37, 34); M.L('C', 22, 24, 23, 27); M.L('x', 30, 26); M.L('c', 34, 33); M.L('c', 35, 33); M.L('o', 41, 37); M.L('b', 22, 37);
-            M.U('C', 24, 25, 27, 26); M.U('C', 35, 27, 36, 30); M.U('C', 27, 33, 30, 34); M.U('c', 39, 24); M.U('c', 40, 24); M.U('c', 31, 29); M.U('x', 22, 33); M.U('c', 41, 36);
-            M.stairs(22, 18, 0, 1); M.stairs(40, 18, 0, 1); M.stairs(22, 44, 0, -1); M.stairs(40, 44, 0, -1);         // Außentreppen auf den Platz
-            M.mass(2, 18, 13, 48); M.U(' ', 2, 18, 13, 48); M.deck(3, 19, 12, 47); M.L('#', 3, 33, 12, 33);                                        // Markt-Lager West mit Dachterrasse
-            M.stairs(10, 21, 0, 1); M.stairs(5, 45, 0, -1); M.L('D', 13, 22); M.L('D', 13, 41); M.L('D', 7, 33); M.L('D', 8, 18); M.L('D', 3, 48, 4, 48);
-            M.L('l', 3, 27, 3, 31); M.L('x', 8, 29); M.L('c', 11, 30); M.L('c', 4, 36); M.L('x', 10, 38); M.L('l', 12, 43, 12, 46);
-            M.U('v', 4, 28); M.U('v', 4, 31); M.U('v', 8, 37); M.U('v', 10, 37); M.U('c', 11, 29); M.U('x', 6, 42);
-            M.U('=', 13, 34, 19, 35); M.U('i', 14, 33, 19, 33); M.U('i', 14, 36, 19, 36);                                                        // Gittersteg West → Platz
-            M.mass(50, 18, 62, 48); M.room(51, 19, 61, 47); M.mass(51, 33, 61, 33); M.stairs(59, 21, 0, 1); M.stairs(52, 45, 0, -1);              // Lagerhaus Ost, 2 Etagen
-            M.L('D', 50, 28, 50, 29); M.L('D', 50, 38); M.L('D', 56, 33); M.U('D', 57, 33); M.L('D', 56, 48, 57, 48); M.U('D', 50, 24, 50, 25); M.U('D', 52, 18, 53, 18);
-            M.L('l', 61, 28, 61, 31); M.L('x', 54, 23); M.L('f', 55, 29, 56, 30); M.L('c', 60, 36); M.L('c', 58, 40); M.L('x', 55, 44); M.L('C', 59, 44, 60, 47);
-            M.U('t', 56, 22); M.U('l', 51, 30, 51, 31); M.U('k', 61, 36, 61, 38); M.U('t', 55, 42); M.U('c', 60, 30);
-            M.U('=', 44, 24, 49, 25); M.U('i', 44, 23, 49, 23); M.U('i', 44, 26, 49, 26); M.U('=', 52, 16, 53, 17); M.U('i', 51, 16, 51, 17); M.U('i', 54, 16, 54, 17); // Gitterstege Ost → Platz, Ost → Werkhalle (A)
-            M.mass(1, 49, 13, 54); M.tunnel(3, 49, 4, 54); M.L('T', 2, 56, 8, 61); M.L('z', 10, 55, 10, 62);                                    // Tunnel + T (tief)
-            M.L('T', 24, 56, 39, 60); M.L('z', 14, 50, 21, 50); M.L('z', 42, 50, 49, 50); M.L('C', 16, 52, 17, 55); M.L('C', 30, 47, 33, 48); M.L('C', 45, 53, 48, 54); M.L('c', 26, 52); M.L('c', 27, 52); M.L('x', 37, 52); // Verladehof + T (Mitte)
-            M.L('C', 58, 52, 59, 55); M.L('C', 53, 58, 56, 59); M.L('c', 59, 14); M.L('c', 60, 15); M.L('o', 61, 61); M.L('b', 51, 61);
-        });
-        MAPS.de_dusty = lmap(64, 64, M => { // Sienna – Villa: große Flügel um einen Innenhof mit Balkon, wenige große Räume
-            M.yard(1, 1, 62, 62); M.mass(14, 12, 49, 45); M.core(15, 13, 48, 44);
-            M.room(15, 13, 48, 20); M.room(15, 21, 22, 44); M.room(41, 21, 48, 44); M.room(24, 37, 39, 44);                                 // Nord-, West-, Ost-, Südflügel
-            M.mass(23, 21, 23, 44); M.mass(40, 21, 40, 44); M.mass(23, 21, 40, 21); M.mass(23, 36, 40, 36); M.yard(24, 22, 39, 35);           // Innenhof
-            M.deck(24, 22, 39, 23); M.U('i', 24, 24, 39, 24);                                                                                 // Balkon über dem Hof
-            M.mass(24, 13, 24, 20); M.mass(39, 13, 39, 20); M.mass(15, 21, 22, 21); M.mass(41, 21, 48, 21); M.mass(15, 32, 22, 32); M.mass(41, 32, 48, 32); M.mass(32, 37, 32, 44);
-            M.stairs(18, 29, 0, -1); M.stairs(44, 35, 0, 1); M.stairs(42, 13, 1, 0);
-            for (const [x, y] of [[24, 16], [39, 17], [19, 21], [44, 21], [19, 32], [44, 32], [23, 41], [40, 41]]) { M.L('D', x, y); M.U('D', x, y); }
-            M.L('D', 31, 21); M.L('D', 23, 27); M.L('D', 40, 27); M.L('D', 27, 36); M.L('D', 36, 36); M.U('D', 28, 21); M.U('D', 35, 21);   // Hoftüren, Balkontüren
-            M.U('A', 25, 13, 38, 20); M.L('B', 24, 37, 31, 44); M.L('K', 28, 15, 35, 18);
-            M.L('D', 31, 12, 32, 12); M.L('D', 14, 26); M.L('D', 14, 40); M.L('W', 49, 27); M.L('D', 49, 40); M.L('W', 27, 45); M.L('D', 36, 45); // Außentüren
-            M.L('W', 20, 12); M.L('W', 43, 12); M.L('W', 14, 35); M.L('W', 49, 35); M.L('W', 45, 45);
-            M.L('o', 31, 28, 32, 29); M.L('g', 24, 25); M.L('g', 39, 25); M.L('g', 24, 35); M.L('g', 39, 35); M.L('h', 27, 31, 28, 31); M.L('h', 35, 31, 36, 31); // Brunnen, Kübel, Hecken
-            M.L('t', 30, 16); M.L('t', 34, 16); M.L('l', 15, 13, 15, 15); M.L('b', 15, 44); M.L('b', 26, 44); M.L('b', 30, 44); M.L('x', 39, 44); M.L('l', 48, 22, 48, 24); M.L('c', 41, 44);
-            M.U('t', 31, 16); M.U('m', 25, 13, 27, 13); M.U('h', 33, 18, 34, 18); M.U('l', 15, 33, 15, 35); M.U('t', 45, 26);
-            M.L('f', 16, 20); M.L('m', 16, 17, 18, 17); M.L('t', 17, 19); M.L('h', 21, 22, 22, 22); M.L('t', 21, 30); M.L('l', 22, 37, 22, 39); M.L('l', 15, 42, 15, 43); M.L('t', 18, 38); M.L('m', 19, 43); // Salon mit Kamin, Küche, Bibliothek
-            M.L('t', 43, 26, 44, 26); M.L('f', 41, 30); M.L('m', 47, 42); M.L('t', 36, 40); M.L('f', 39, 38); M.L('k', 24, 37, 24, 39); M.L('k', 31, 41, 31, 43);                // Speisesaal, Kaminzimmer, Küche, Weinkeller (B)
-            M.U('m', 16, 14); M.U('t', 20, 15); M.U('l', 15, 30, 15, 31); M.U('m', 47, 29); M.U('t', 19, 40); M.U('m', 25, 43); M.U('t', 28, 40); M.U('l', 39, 38, 39, 40); // Schlaf- & Gästezimmer im OG
-            M.R('=', 14, 12, 49, 21); M.R('=', 14, 21, 23, 45); M.R('=', 40, 21, 49, 45); M.R('=', 23, 36, 40, 45); M.mass(6, 4, 18, 11); M.R('=', 6, 4, 18, 11); M.R('T', 7, 5, 12, 9);
-            M.R('H', 17, 28); M.R('H', 19, 38); M.R('H', 44, 28); M.R('H', 35, 41); M.R('#', 28, 15, 29, 16); M.R('#', 45, 16, 46, 17);
-            M.mass(50, 10, 62, 44); M.tunnel(57, 10, 58, 41); M.tunnel(50, 40, 56, 41); M.L('T', 55, 3, 61, 8);                            // Tunnel + T (tief)
-            M.L('T', 26, 56, 37, 60); M.L('z', 1, 51, 22, 51); M.L('z', 41, 51, 62, 51); M.L('h', 26, 51, 28, 51); M.L('h', 35, 51, 37, 51); M.L('b', 20, 48); M.L('b', 44, 48); // Kelterei-Hof + T (Mitte)
-            M.L('g', 4, 18); M.L('g', 4, 30); M.L('g', 4, 42); M.L('h', 8, 22, 8, 27); M.L('h', 8, 36, 8, 41); M.L('#', 3, 48, 5, 49); M.L('g', 25, 3); M.L('g', 38, 3); M.L('h', 30, 6, 33, 6); M.L('z', 20, 9, 26, 9); M.L('z', 36, 9, 45, 9); // Garten
-        });
-        MAPS.de_bazaar = lmap(64, 64, M => { // Kasbah – Medina: 8 Häuser an Gassen, Marktplatz, Brücken auf OG-Höhe, begehbare Dächer
-            M.yard(1, 1, 62, 62); M.mass(8, 8, 55, 9); M.mass(8, 48, 55, 49); M.mass(8, 8, 9, 49); M.mass(54, 8, 55, 49); M.core(10, 10, 53, 47); // Stadtmauer (2 Felder)
-            const house = (x0, y0, x1, y1) => { M.mass(x0, y0, x1, y1); M.room(x0 + 1, y0 + 1, x1 - 1, y1 - 1); M.stairs(x0 + 3, y0 + 1, 1, 0); };
-            house(10, 10, 21, 20); house(42, 10, 53, 20); house(10, 24, 21, 33); house(25, 24, 38, 33); house(42, 24, 53, 33); house(10, 37, 21, 47); house(25, 37, 38, 47); house(42, 37, 53, 47);
-            for (const [x, y] of [[16, 20], [21, 16], [47, 20], [42, 16], [21, 29], [16, 33], [25, 29], [38, 29], [28, 33], [42, 29], [47, 33], [21, 42], [20, 37], [25, 42], [35, 37], [42, 42], [52, 37], [34, 24]]) M.L('D', x, y); // EG-Türen zu den Gassen
-            M.deck(22, 14, 24, 15); M.U('D', 21, 14, 21, 15); M.deck(39, 14, 41, 15); M.U('D', 42, 14, 42, 15);                                 // Brücken über die Gassen (OG)
-            M.deck(22, 27, 24, 28); M.U('D', 21, 27, 21, 28); M.U('D', 25, 27, 25, 28); M.deck(39, 27, 41, 28); M.U('D', 38, 27, 38, 28); M.U('D', 42, 27, 42, 28);
-            M.deck(19, 34, 20, 36); M.U('D', 19, 33, 20, 33); M.U('D', 19, 37, 20, 37); M.deck(50, 34, 51, 36); M.U('D', 50, 33, 51, 33); M.U('D', 50, 37, 51, 37);
-            M.L('v', 25, 10); M.L('v', 29, 10); M.L('v', 34, 10); M.L('v', 38, 10); M.L('v', 25, 20); M.L('v', 38, 20); M.L('h', 30, 15, 33, 15); M.L('o', 31, 18); M.L('x', 27, 16); M.L('x', 36, 16); // Marktplatz
-            M.U('A', 43, 11, 52, 19); M.L('B', 11, 38, 20, 46); M.L('K', 27, 27, 30, 32); M.L('K', 33, 27, 36, 32);
-            M.L('l', 52, 12, 52, 13); M.L('t', 46, 16); M.U('m', 43, 11, 45, 11); M.U('k', 52, 15, 52, 17); M.U('h', 47, 18, 48, 18); M.L('k', 13, 44, 15, 44); M.L('m', 20, 46); M.L('c', 11, 46); M.L('t', 49, 30); M.L('l', 11, 30, 11, 31); M.L('b', 52, 46); M.L('x', 37, 46); M.U('t', 16, 30); M.U('c', 52, 46); M.U('l', 11, 45, 11, 46);
-            M.L('D', 31, 8, 32, 9); M.L('D', 39, 48, 40, 49); M.L('D', 8, 35, 9, 36); M.L('D', 54, 22, 55, 22);                                 // Stadttore
-            M.R('=', 8, 8, 55, 49); M.R(' ', 22, 10, 41, 23); M.R(' ', 10, 21, 53, 23); M.R(' ', 22, 24, 24, 47); M.R(' ', 39, 24, 41, 47); M.R(' ', 10, 34, 53, 36); M.R(' ', 25, 10, 38, 20); // Dächer der Häuser + Mauerkrone
-            M.R(' ', 25, 24, 38, 33); M.R('=', 8, 8, 55, 9); M.R('=', 8, 48, 55, 49); M.R('=', 8, 8, 9, 49); M.R('=', 54, 8, 55, 49);
-            M.mass(56, 2, 62, 12); M.R('=', 56, 2, 62, 12); M.R('T', 57, 3, 61, 7); M.R('H', 15, 15); M.R('H', 15, 29); M.R('H', 48, 43); M.R('H', 48, 29); M.R('#', 33, 41, 34, 42); M.R('#', 12, 42, 13, 43);
-            M.mass(1, 30, 7, 53); M.tunnel(3, 37, 4, 53); M.tunnel(5, 35, 7, 36); M.tunnel(3, 35, 4, 36); M.L('T', 2, 55, 6, 61);             // Tunnel + T (tief)
-            M.L('T', 26, 55, 37, 59); M.L('z', 10, 52, 27, 52); M.L('z', 36, 52, 53, 52); M.L('v', 14, 56); M.L('v', 46, 56); M.L('C', 19, 58, 20, 61); M.L('C', 43, 58, 44, 61); // Karawanen-Hof + T (Mitte)
-            M.L('C', 2, 15, 3, 18); M.L('v', 5, 24); M.L('z', 12, 4, 25, 4); M.L('z', 38, 4, 51, 4); M.L('v', 30, 3); M.L('C', 58, 20, 59, 23); M.L('x', 60, 35); M.L('v', 58, 44); // Hallenfläche
-        });
-        MAPS.de_frost = lmap(64, 64, M => { // Tundra – Hangar mit Bürotrakt & Laufsteg, Containerfeld mit langen Sichtlinien
-            M.yard(1, 1, 62, 62); M.mass(16, 14, 47, 41); M.hall(17, 23, 46, 40); M.room(17, 15, 46, 21); M.mass(17, 22, 46, 22); M.core(17, 15, 46, 40);
-            M.mass(26, 15, 26, 21); M.mass(37, 15, 37, 21); M.stairs(19, 15, 1, 0); M.U('_', 45, 23, 46, 33); M.U('r', 44, 23, 44, 33); M.stairs(45, 38, 0, -1); // Büros, Laufsteg
-            M.L('D', 21, 22); M.L('D', 31, 22); M.L('D', 41, 22); M.L('D', 26, 18); M.U('D', 26, 18); M.L('D', 37, 18); M.U('D', 37, 18); M.U('D', 45, 22, 46, 22);
-            M.U('A', 38, 15, 46, 21); M.L('B', 17, 23, 26, 31); M.L('K', 28, 17, 35, 20); M.stairs(29, 15, 1, 0);
-            M.L('D', 30, 41, 33, 41); M.L('D', 38, 41, 41, 41); M.L('D', 16, 30, 16, 31); M.L('D', 47, 28, 47, 29); M.L('D', 42, 14, 43, 14);  // Hangartore
-            M.L('W', 20, 14); M.L('W', 43, 14); M.L('W', 16, 18); M.L('W', 47, 18);
-            M.L('C', 21, 25, 24, 26); M.L('C', 31, 27, 32, 30); M.L('C', 37, 34, 40, 35); M.L('o', 41, 26); M.L('o', 42, 26); M.L('k', 19, 33, 21, 33); M.L('k', 19, 37, 21, 37); M.L('m', 17, 40); M.L('c', 25, 32); M.L('c', 26, 32); M.L('h', 33, 38, 34, 38); M.L('f', 17, 24, 18, 25); M.L('x', 43, 39);
-            M.L('t', 31, 16); M.L('l', 46, 16, 46, 18); M.L('c', 25, 15); M.U('m', 39, 15, 41, 15); M.U('k', 46, 15, 46, 17); M.U('t', 42, 18); M.U('l', 17, 20, 17, 21); M.U('t', 31, 18);
-            M.R('=', 16, 14, 47, 41); M.mass(4, 16, 15, 24); M.R('=', 4, 16, 15, 24); M.R('T', 5, 17, 10, 22); M.R('H', 19, 19); M.R('H', 45, 27); M.R('H', 30, 35); M.R('H', 23, 37); M.R('#', 24, 30, 25, 31); M.R('#', 40, 35, 41, 36);
-            M.mass(48, 24, 62, 52); M.tunnel(57, 29, 58, 52); M.tunnel(48, 28, 56, 29); M.L('T', 55, 53, 61, 60);                               // Tunnel + T (tief)
-            M.L('T', 24, 55, 39, 59); M.L('C', 18, 45, 21, 46); M.L('C', 28, 47, 29, 50); M.L('C', 34, 44, 37, 45); M.L('C', 42, 48, 43, 51); M.L('z', 1, 52, 22, 52); M.L('z', 41, 52, 47, 52); // Containerfeld + T (Mitte)
-            M.L('C', 4, 30, 5, 33); M.L('C', 9, 38, 12, 39); M.L('C', 3, 46, 4, 49); M.L('C', 21, 4, 24, 5); M.L('C', 34, 6, 35, 9); M.L('C', 44, 3, 47, 4); M.L('C', 53, 9, 54, 12); M.L('o', 58, 15); M.L('o', 59, 15); M.L('z', 14, 9, 30, 9); M.L('z', 38, 9, 50, 9); // Hallenfläche
-        });
-        MAPS.de_moisty = lmap(64, 64, M => { // Mire – Pumpwerk: Halle mit Steg-Netz, zentrale Plattform (A), Pumpenflügel
-            M.yard(1, 1, 62, 62); M.mass(12, 10, 51, 43); M.hall(13, 11, 38, 42); M.mass(39, 10, 39, 43); M.room(40, 11, 50, 42); M.core(13, 11, 50, 42);
-            M.U('_', 13, 11, 14, 42); M.U('_', 13, 11, 38, 12); M.U('_', 13, 41, 38, 42); M.U('r', 15, 13, 15, 40); M.U('r', 15, 13, 38, 13); M.U('r', 15, 40, 38, 40); // Steg-Ring
-            M.U('r', 16, 25, 38, 25); M.U('r', 16, 28, 38, 28); M.U('_', 15, 26, 38, 27);                                                        // Quersteg
-            M.U('A', 22, 19, 31, 34); M.U('r', 21, 19, 21, 24); M.U('r', 21, 29, 21, 34); M.U('r', 32, 19, 32, 24); M.U('r', 32, 29, 32, 34); M.U('r', 22, 18, 31, 18); M.U('r', 22, 35, 31, 35); // Plattform A
-            M.stairs(20, 37, -1, 0); M.U('_', 15, 37, 15, 38); M.stairs(34, 33, 0, -1); M.U('_', 34, 28, 35, 28);
-            M.mass(40, 21, 50, 21); M.mass(40, 32, 50, 32); M.stairs(48, 22, -1, 0);                                                             // Pumpenflügel
-            M.L('D', 39, 16); M.L('D', 39, 27); M.L('D', 39, 37); M.L('D', 49, 21); M.U('D', 49, 21); M.L('D', 45, 32); M.U('D', 45, 32); M.U('D', 39, 11, 39, 12); M.U('D', 39, 41, 39, 42); M.U('D', 39, 26, 39, 27);
-            M.L('B', 40, 33, 50, 42); M.L('K', 42, 13, 48, 18);
-            M.L('D', 25, 10, 26, 10); M.L('D', 20, 43, 21, 43); M.L('D', 30, 43, 31, 43); M.L('D', 12, 20, 12, 21); M.L('D', 51, 27, 51, 28); // Außentüren
-            M.L('W', 18, 10); M.L('W', 33, 10); M.L('W', 12, 32); M.L('W', 51, 16);
-            M.L('f', 24, 22, 25, 23); M.L('o', 28, 21); M.L('o', 28, 31); M.L('f', 24, 31, 25, 32); M.L('b', 17, 15); M.L('b', 36, 15); M.L('o', 17, 31); M.L('c', 35, 21); M.L('h', 26, 26, 27, 27); M.L('x', 13, 26); // Pumpen unter der Plattform
-            M.L('k', 42, 35, 44, 35); M.L('k', 42, 39, 44, 39); M.L('o', 49, 34); M.L('o', 49, 37); M.L('m', 50, 42); M.L('l', 50, 12, 50, 14); M.L('t', 45, 15); M.L('b', 40, 31); M.L('c', 50, 31);
-            M.U('h', 25, 21, 26, 21); M.U('m', 28, 33, 30, 33); M.U('c', 22, 30); M.U('k', 31, 22, 31, 23); M.U('t', 45, 14); M.U('l', 50, 34, 50, 36);
-            M.R('=', 12, 10, 51, 43); M.mass(2, 2, 13, 9); M.R('=', 2, 2, 13, 9); M.R('T', 3, 3, 8, 7); M.R('H', 36, 20); M.R('H', 14, 30); M.R('H', 45, 37); M.R('H', 26, 12); M.R('#', 40, 24, 41, 25); M.R('#', 19, 16, 20, 17);
-            M.mass(52, 24, 62, 53); M.tunnel(56, 29, 57, 53); M.tunnel(52, 27, 55, 28); M.tunnel(56, 27, 57, 28); M.L('T', 55, 54, 61, 61);  // Tunnel + T (tief)
-            M.L('T', 18, 55, 33, 59); M.L('z', 1, 51, 15, 51); M.L('z', 37, 51, 51, 51); M.L('b', 18, 47); M.L('b', 33, 47); M.L('o', 10, 47); M.L('h', 24, 48, 27, 48); // Anleger + T (Mitte)
-            M.L('o', 5, 15); M.L('o', 6, 15); M.L('b', 4, 25); M.L('z', 8, 12, 8, 30); M.L('b', 4, 40); M.L('x', 30, 4); M.L('z', 18, 5, 40, 5); M.L('b', 46, 5); M.L('o', 58, 12); M.L('b', 58, 19); // Sumpfufer
-        });
+        // ── Trainingslager: Original-Karten (Stand 20.10., 28×28 Felder à 4 m) in der Lagerhalle – erweitert um Plattformen/Stege (mehr Höhe) und zusätzliche Durchgänge (mehr Routen) ──
+        //    # Wand, c Kiste, C hohe Kiste, h Halbwand, 1–6 Treppe, = Steg (2,8 m), R Innenraum, D Tür, W Fenster, A/B Bombsites, T/K Spawns
+        MAPS.de_dusty = [
+            "############################",
+            "#.........#.KKKKKK.#......c#",
+            "#..BBBB...#.KKKKKK.#.AAAA..#",
+            "#..BBBB.c.D........D.AAAA..#",
+            "#.CBBBB...#........#.AAAA..#",
+            "#..BBBB...#..c..c..#.AAAA..#",
+            "#......hh.##......##..hh...#",
+            "##..####.#####..####..##..##",
+            "#....#RDRR#..c..c..#==#....#",
+            "#.c..#R##R#........#==#..C.#",
+            "#.c..#RRcR#..##....#44#D##.#",
+            "#....#RRRR#...C....#33#RRRR#",
+            "#.#..#RRRRD........#22#hRRR#",
+            "#..c.######..#.....#11#RRRR#",
+            "#..c.######..#..........##.#",
+            "#.........#..c.....====W#..#",
+            "#....#..c....c.1234====....#",
+            "#C...W.............====..c.#",
+            "##...######......h.====....#",
+            "#..h.######...##...####....#",
+            "##..#######W#....#######..##",
+            "#....c..#....hh....#..c....#",
+            "#..##...#..........#...##..#",
+            "#..........TTTTTT..........#",
+            "#..#.......TTTTTT.......#..#",
+            "#....c..##.TTTTTT.##..c....#",
+            "#.......#..........#.......#",
+            "############################"
+        ];
+        MAPS.de_bazaar = [
+            "############################",
+            "#......#..........#.#......#",
+            "#...C....c..#..............#",
+            "#.BBBB.......c.c...h..#.#..#",
+            "#.BBBB.#.....c.c....#.#C...#",
+            "#.BBBB.########.#W###.c...c#",
+            "#.BBBB.#RDRRR##...###......#",
+            "#.b...h#R#RRR##...###......#",
+            "#.....h.R#RcR##..c#####..###",
+            "#......#RRRRR##...###....#.#",
+            "###.########D###D####......#",
+            "#.....##.........#..#..TTT.#",
+            "#KK.c..#1234========#..TTT.#",
+            "#KK....#.c#..##c.c...h.TTT.#",
+            "#KK.......#....c.c.#.h.TTT.#",
+            "#KK.h..............#...TTT.#",
+            "#KK...c#.c..s..........TTT.#",
+            "#KK....#............#......#",
+            "#.....##............#....#.#",
+            "###D####D#####.########..###",
+            "#.......==4321.######......#",
+            "#.AAAA..==4321.######......#",
+            "#.AAAAh#######D######.c...c#",
+            "#.AAAAh#...RhRR#....#.#C...#",
+            "#.AAAA....#RRR##......#.#..#",
+            "#..C.....C#RRR#...c........#",
+            "#.c....#............#......#",
+            "############################"
+        ];
+        MAPS.de_frost = [
+            "############################",
+            "#.c......#...c.#...#.KKKKK.#",
+            "#.AAAAAs.........b...KKKKK.#",
+            "#.AAAAA....#.........KKKKK.#",
+            "#.AAAAA..####...####.......#",
+            "#.AAAAA..####...#####.....##",
+            "#....hh..####...#####..c..##",
+            "##..###..####...#####.....##",
+            "#....W..==..D.c...###.....##",
+            "#.c..#..==..###...###.....##",
+            "###..#..=====4321.W.....c..#",
+            "#RRRR#c.==........#.BBBBB..#",
+            "#RRRR#..==.c..c.#...BBBBB..#",
+            "#RR###..==....c.....BBBBB..#",
+            "#RhRR#..==........#.BBBBBC.#",
+            "#RRRRD..==........#...#....#",
+            "#RRRRD.#44#.......##....#.##",
+            "#RRcR#.#33#.s..##D##.c....##",
+            "#RRRR#.#22#.......####....##",
+            "#..###D#11##......##......##",
+            "#....#............##......##",
+            "##..#######...#######...#W##",
+            "#....c...#........#........#",
+            "#..##..h...TTTTTT...s..#...#",
+            "#..........TTTTTT.....hh...#",
+            "#.b......##TTTTTT##........#",
+            "#......c.....#........c....#",
+            "############################"
+        ];
+        MAPS.de_moisty = [
+            "############################",
+            "#......#.KKKK......#.......#",
+            "#....c...KKKK........h...c.#",
+            "#......#.KKKK#####.#.......#",
+            "#......#.....#.....#.......#",
+            "###D####.....#...b.####D####",
+            "#.AAAA.#.....#.............#",
+            "#.AAAA.#####D#........c....#",
+            "#.AAAA.#RRRRR#.1234====4321#",
+            "#.AAAA.#RRcRR#######...#####",
+            "#......WRRcRR#.........C...#",
+            "#..c...#..####...C.BBBB....#",
+            "#..c...#..#..D...c.BBBB....#",
+            "#......#.....######BBBB#W###",
+            "##W#.###..####.#...BBBB....#",
+            "#......#.......#.C..123=...#",
+            "#...c..##12344##...#########",
+            "#...c..##.....######..1....#",
+            "#1234======4321#.....#2....#",
+            "#..............#..s..#3.c..#",
+            "##.###.#########.....#4....#",
+            "#RRRRRRRRRRRRRR#.....#=====#",
+            "#RRcRRRRsRRRRRR#.....#=====#",
+            "#..c......hh.......hh......#",
+            "#......#.....h...c.......h.#",
+            "#......#.TTTTT.#...........#",
+            "#......#.TTTTT.#...........#",
+            "############################"
+        ];
+        MAPS.de_foundry = [
+            "############################",
+            "#...KKKK.#........1234=====#",
+            "#...KKKK....c......###=====#",
+            "#......c....c........cC##..#",
+            "#......c.#.................#",
+            "#........#.........#.##44#.#",
+            "#..hh....##D####D###.......#",
+            "#........#............s....#",
+            "###D###..#...c.....##AAAA###",
+            "###.###..#...c.....##AAAA###",
+            "#..BBBB..#.........#.AAAA==#",
+            "#..BBBc..W.........#D#####3#",
+            "######44##h...######......2#",
+            "#..1234==========4321.C...1#",
+            "#.........h...#............#",
+            "#....##...#RRR#...####D#####",
+            "#.........WRRc#...#....====#",
+            "#.........#RRc#.b.#1234====#",
+            "#.........#RRR#...#....====#",
+            "#.........#RRR#............#",
+            "#......h.....hh............#",
+            "#.........#W##.####........#",
+            "#..c......#RRRRRRR#...c....#",
+            "#..c......#RRRCRRR#...c....#",
+            "#.........#RRRRRRR#........#",
+            "#......h.....TTT........h..#",
+            "#............TTTT..........#",
+            "############################"
+        ];
         MAPS.de_training = lmap(48, 60, M => { // Training Center – Layout laut Konzept: Spawn A (Nord), Spawn B (Süd), offene Haupthalle mit Laufgang-Ring (1. OG), Treppen an beiden Hallenseiten, Site A West, Site B Ost, Eckräume
             M.mass(1, 1, 46, 58);
             M.hall(17, 2, 30, 8); M.core(17, 2, 30, 8); M.L('K', 18, 3, 29, 7); M.L('D', 22, 9, 25, 9);                                     // Spawn A (Verteidiger) mit Rolltor zur Halle
@@ -5743,7 +5785,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
         const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 4, CRATE_H = 1.0, TALL_H = 3;
-        const LAY = !!MAP.hi, HIG = MAP.hi || null, TOPG = MAP.top || null, CORE = MAP.core || [], MS = LAY ? LMS : S; // Gebäude-Karte: 1,25-m-Raster mit Obergeschoss (HIG) · Arenen & eigene Karten bleiben bei 4 m
+        const LAY = !!MAP.hi, HALLMAP = !LAY && /^de_/.test(MAPNAME), HIG = MAP.hi || null, TOPG = MAP.top || null, CORE = MAP.core || [], MS = LAY ? LMS : S; // Gebäude-Karte: 1,25-m-Raster mit Obergeschoss (HIG) · Arenen & eigene Karten bleiben bei 4 m
         const WORLD_W = COLS * MS, WORLD_D = ROWS * MS;
         const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, bots: 1, agTheme: 0, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
         const CFG = Object.assign({}, CFG_DEF, JSON.parse(localStorage.getItem('gamecfg') || '{}'));
@@ -5790,7 +5832,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         // =====================================================================
         //  THREE.JS SETUP & TEXTUREN
         // =====================================================================
-        const scene = new THREE.Scene(); scene.background = new THREE.Color(THEME.sky); scene.fog = new THREE.Fog(THEME.fog, 45, 170); const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.05, 400); camera.rotation.order = 'YXZ'; scene.add(camera);
+        const scene = new THREE.Scene(); scene.background = new THREE.Color(THEME.sky); scene.fog = new THREE.Fog(THEME.fog, 45, 170); if (HALLMAP) { scene.background = new THREE.Color(0x3b4249); scene.fog = new THREE.Fog(0xa3a8ad, 80, 300); } /* Trainingslager: in der Lagerhalle statt unter freiem Himmel */ const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.05, 400); camera.rotation.order = 'YXZ'; scene.add(camera);
         const INK_PP = (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } })(); // Konturen als Nachbearbeitung (WebGL2: Tiefen-Textur) – sonst Linien-Geometrie
         const renderer = new THREE.WebGLRenderer({ antialias: !INK_PP }); renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); renderer.setSize(innerWidth, innerHeight);
         renderer.shadowMap.enabled = true; renderer.shadowMap.type = MAPNAME === 'de_training' ? THREE.PCFSoftShadowMap : THREE.PCFShadowMap; /* Comic: harte Schattenkanten (Training: weich) */ document.body.appendChild(renderer.domElement);
@@ -6334,10 +6376,38 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 [spots[0], spots[spots.length >> 1]].forEach(sp => sp && P(sp[2], sp[3], 0.06, 1.4, 1.4, 0.03, 2.6, sp[0], sp[1], m));
             }
             const bw = [0, 1, 2].map(k => new THREE.MeshLambertMaterial({ map: vWallTex(THEME, k) })); // Stadtkulisse rund um die Karte
-            if (full) for (let side = 0; side < 4; side++) for (let i = 0; i < 9; i++) { const t = (i + 0.5) / 9, hh = cellHash(side * 9, i) % 100, H = 8 + hh % 14, W2 = 8 + hh % 5, o = 9 + (hh % 3) * 5, x = side < 2 ? t * WORLD_W : side === 2 ? -o : WORLD_W + o, z = side < 2 ? (side ? WORLD_D + o : -o) : t * WORLD_D;
+            if (full && !HALLMAP) for (let side = 0; side < 4; side++) for (let i = 0; i < 9; i++) { const t = (i + 0.5) / 9, hh = cellHash(side * 9, i) % 100, H = 8 + hh % 14, W2 = 8 + hh % 5, o = 9 + (hh % 3) * 5, x = side < 2 ? t * WORLD_W : side === 2 ? -o : WORLD_W + o, z = side < 2 ? (side ? WORLD_D + o : -o) : t * WORLD_D;
                 D(W2, H, W2, x, H / 2, z, bw[hh % 3]); D(W2 + 0.4, 0.4, W2 + 0.4, x, H + 0.2, z, wallTop); if (hh % 2) D(2, 1.2, 1.6, x + 1, H + 1, z - 1, ac); if (hh % 5 === 0) D(1.6, 2.4, 1.6, x - 2, H + 1.6, z + 1.5, pipe); }
         }
         if (DSV && !LAY) cityDeco(cell, ROWS, COLS, 0, scene, 1, true);
+        if (HALLMAP) trainingHall();
+        function trainingHall() { // Trainingslager: Lagerhalle um die offiziellen 4-m-Karten (statt Himmel & Stadtkulisse) + Trainings-Elemente in der Karte
+            const HH = 16, MG = 8, x0 = -MG, x1 = WORLD_W + MG, z0 = -MG, z1 = WORLD_D + MG, L = [], M = c => new THREE.MeshLambertMaterial({ color: c });
+            const B = (a, b, y0, y1, c0, c1, m) => { const o = new THREE.Mesh(new THREE.BoxGeometry(b - a, y1 - y0, c1 - c0), m); o.position.set((a + b) / 2, (y0 + y1) / 2, (c0 + c1) / 2); L.push(o); return o; };
+            const Pl = (w, h, m, x, y, z, ry = 0, rx = 0) => { const g = new THREE.PlaneGeometry(w, h); if (rx) g.rotateX(rx); if (ry) g.rotateY(ry); const o = new THREE.Mesh(g, m); o.position.set(x, y, z); L.push(o); return o; };
+            const panel = makeTex(128, 128, g => { g.fillStyle = '#c9c5be'; g.fillRect(0, 0, 128, 128); g.fillStyle = 'rgba(60,55,50,.18)'; g.fillRect(0, 0, 128, 2); g.fillRect(0, 0, 2, 128); g.fillStyle = 'rgba(60,55,50,.25)'; for (const [a, b] of [[16, 16], [112, 16], [16, 112], [112, 112], [64, 16], [64, 112]]) { g.beginPath(); g.arc(a, b, 3, 0, 7); g.fill(); } const gr = g.createLinearGradient(0, 96, 0, 128); gr.addColorStop(0, 'rgba(70,60,50,0)'); gr.addColorStop(1, 'rgba(70,60,50,.12)'); g.fillStyle = gr; g.fillRect(0, 96, 128, 32); });
+            const wallM = len => { const t = panel.clone(); t.needsUpdate = true; t.repeat.set(len / 4, HH / 4); return new THREE.MeshLambertMaterial({ map: t }); };
+            const floorT = makeTex(128, 128, g => { g.fillStyle = '#8e9094'; g.fillRect(0, 0, 128, 128); g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(0, 0, 128, 2); g.fillRect(0, 0, 2, 128); }); floorT.repeat.set((x1 - x0) / 8, (z1 - z0) / 8);
+            Pl(x1 - x0, z1 - z0, new THREE.MeshLambertMaterial({ map: floorT }), WORLD_W / 2, -0.03, WORLD_D / 2, 0, -Math.PI / 2); // Hallenboden rund um die Karte
+            for (const [a, b, c0, c1, len] of [[x0 - 0.5, x0, z0, z1, z1 - z0], [x1, x1 + 0.5, z0, z1, z1 - z0], [x0, x1, z0 - 0.5, z0, x1 - x0], [x0, x1, z1, z1 + 0.5, x1 - x0]]) B(a, b, 0, HH, c0, c1, wallM(len)); // Hallenwände: Betonpaneele
+            const red = M(0xb8423a), blue = M(0x3f6690), dark = M(0x2f343a), steel = M(0x4a5058), lampM = new THREE.MeshBasicMaterial({ color: 0xfff4dc }), skyM = new THREE.MeshBasicMaterial({ color: 0xdcecf6 });
+            for (const [m, ya, yb] of [[dark, 0, 0.5], [blue, 6.0, 6.6], [red, 6.6, 7.4]]) { B(x0, x0 + 0.06, ya, yb, z0, z1, m); B(x1 - 0.06, x1, ya, yb, z0, z1, m); B(x0, x1, ya, yb, z0, z0 + 0.06, m); B(x0, x1, ya, yb, z1 - 0.06, z1, m); } // Sockel + blau-rotes Wandband
+            for (let x = x0; x <= x1 + 0.1; x += 16) { B(x - 0.35, x + 0.35, 0, HH, z0, z0 + 0.6, steel); B(x - 0.35, x + 0.35, 0, HH, z1 - 0.6, z1, steel); B(x - 0.25, x + 0.25, HH - 1.6, HH, z0, z1, steel); } // Stützen + Fachwerkträger
+            for (let z = z0; z <= z1 + 0.1; z += 16) { B(x0, x0 + 0.6, 0, HH, z - 0.35, z + 0.35, steel); B(x1 - 0.6, x1, 0, HH, z - 0.35, z + 0.35, steel); B(x0, x1, HH - 0.9, HH - 0.6, z - 0.12, z + 0.12, steel); } // Pfetten
+            Pl(x1 - x0, z1 - z0, M(0x41474e), WORLD_W / 2, HH, WORLD_D / 2, 0, Math.PI / 2); // Hallendach (Unterseite)
+            for (let x = x0 + 8; x < x1 - 4; x += 16) { B(x - 2.5, x + 2.5, HH - 0.12, HH - 0.02, z0 + 10, z1 - 10, skyM); // Oberlicht-Streifen
+                for (let z = z0 + 12; z < z1 - 8; z += 16) { B(x - 0.2, x + 0.2, HH - 4.2, HH - 4.05, z - 4, z + 4, lampM); B(x - 0.03, x + 0.03, HH - 4.05, HH - 0.9, z - 0.03, z + 0.03, steel); } } // Lichtbänder
+            const bt = makeTex(512, 128, g => { g.fillStyle = '#1d2a3a'; g.fillRect(0, 0, 512, 128); g.fillStyle = '#c23b33'; g.fillRect(0, 110, 512, 18); g.fillStyle = '#ece8e1'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = 'bold 64px Arial'; g.fillText('CLUTCH', 256, 48); g.font = 'bold 22px Arial'; g.fillText('T R A I N I N G   C E N T E R', 256, 92); }), bm = new THREE.MeshBasicMaterial({ map: bt }); bm.userData.keep = 1;
+            for (const [x, z, ry] of [[WORLD_W / 2, z0 + 0.1, 0], [WORLD_W / 2, z1 - 0.1, Math.PI], [x0 + 0.1, WORLD_D / 2, Math.PI / 2], [x1 - 0.1, WORLD_D / 2, -Math.PI / 2]]) Pl(28, 7, bm, x, 10.6, z, ry); // Banner an allen Hallenwänden
+            // Trainings-Elemente in der Karte: Zielscheiben an Wänden, gelbe Markierungen um die Spawns
+            const tgt = new THREE.MeshLambertMaterial({ map: makeTex(128, 160, g => { g.fillStyle = '#e9e3d6'; g.fillRect(0, 0, 128, 160); g.fillStyle = '#2b2f36'; g.beginPath(); g.ellipse(64, 34, 16, 18, 0, 0, 7); g.fill(); g.beginPath(); g.moveTo(30, 150); g.quadraticCurveTo(26, 62, 64, 56); g.quadraticCurveTo(102, 62, 98, 150); g.fill(); g.strokeStyle = '#e9e3d6'; g.lineWidth = 3; for (const r of [14, 26, 38]) { g.beginPath(); g.ellipse(64, 104, r * 0.8, r, 0, 0, 7); g.stroke(); } g.fillStyle = '#c23b33'; g.beginPath(); g.arc(64, 104, 6, 0, 7); g.fill(); }) }); tgt.userData.keep = 1;
+            let nT = 0; for (let r = 1; r < ROWS - 1 && nT < 10; r++) for (let c = 1; c < COLS - 1 && nT < 10; c++) { if (cell(r, c) !== '.' || cellHash(r + 3, c + 11) % 9) continue;
+                for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { if (cell(r + dr, c + dc) !== '#') continue; Pl(1.1, 1.4, tgt, cx(c) + dc * (S / 2 - 0.03), 1.55, cx(r) + dr * (S / 2 - 0.03), Math.atan2(-dc, -dr)); nT++; break; } }
+            const tape = M(0xe8c02e); for (const tm of ['T', 'CT']) for (const left = spawnCells[tm].slice(); left.length;) { const cs = [left.pop()]; for (let i = 0; i < cs.length; i++) for (let j = left.length - 1; j >= 0; j--) if (Math.abs(left[j].r - cs[i].r) + Math.abs(left[j].c - cs[i].c) === 1) cs.push(left.splice(j, 1)[0]); // je zusammenhängender Spawn-Fläche
+                const ra = Math.min(...cs.map(o => o.r)) * S, rb = (Math.max(...cs.map(o => o.r)) + 1) * S, ca = Math.min(...cs.map(o => o.c)) * S, cb = (Math.max(...cs.map(o => o.c)) + 1) * S, w = 0.16, y = 0.014;
+                Pl(cb - ca, w, tape, (ca + cb) / 2, y, ra + w, 0, -Math.PI / 2); Pl(cb - ca, w, tape, (ca + cb) / 2, y, rb - w, 0, -Math.PI / 2); Pl(w, rb - ra, tape, ca + w, y, (ra + rb) / 2, 0, -Math.PI / 2); Pl(w, rb - ra, tape, cb - w, y, (ra + rb) / 2, 0, -Math.PI / 2); }
+            for (const o of L) o.updateMatrixWorld(true); const hg = new THREE.Group(); mergeStatic(L, hg); hg.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } }); scene.add(hg);
+        }
         let HSG = null; if (LAY) { const a0 = aabbs.length, m0 = mapMeshes.length, c0 = scene.children.length; buildLayered(); HSG = layScale(a0, m0, c0); }
         function layScale(a0, m0, c0) { // Gebäude-Karte wird in Feld-Einheiten gebaut → waagerecht auf LMS Meter je Feld strecken (Höhen bleiben): Grafik, Kollision, Treffer-Meshes
             const k = LMS, g = new THREE.Group(); g.scale.set(k, 1, k);
@@ -11831,7 +11901,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             requestAnimationFrame(loop); const t = performance.now(); { const cap = fpsCap(); if (cap && t - last < 1000 / cap - 2) return; } const fdt = t - last; const dt = Math.min(0.05, fdt / 1000); if (OPT.fps) fpsTick(fdt); dynRes(fdt); last = t; now = t / 1000;
             if (!started) {
                 menuT += dt; const a = menuT * 0.07, r = Math.min(WORLD_W, WORLD_D) * (LAY ? 0.4 : 0.42); // Gebäude-Karte: unter dem Hallendach, schräg auf die Fassaden
-                if (MAPNAME === 'de_training') camera.position.set(WORLD_W / 2 + Math.cos(a) * 8, HALL_H - 1.8, WORLD_D / 2 + Math.sin(a) * 12); else camera.position.set(WORLD_W / 2 + Math.cos(a) * r, LAY ? HALL_H - 4 : 22, WORLD_D / 2 + Math.sin(a) * r); // Training: Rundflug in der Haupthalle
+                if (MAPNAME === 'de_training') camera.position.set(WORLD_W / 2 + Math.cos(a) * 8, HALL_H - 1.8, WORLD_D / 2 + Math.sin(a) * 12); else camera.position.set(WORLD_W / 2 + Math.cos(a) * r, LAY ? HALL_H - 4 : HALLMAP ? 12 : 22, WORLD_D / 2 + Math.sin(a) * r); // Training: Rundflug in der Haupthalle
                 camera.lookAt(WORLD_W / 2, LAY ? 0 : 1, WORLD_D / 2);
                 if (menuChar) menuChar.group.visible = false;
             }
