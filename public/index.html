@@ -3037,24 +3037,25 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Tippe auf „Weiter\", um ins Spiel zurückzukehren.":"Tap “Resume” to return to the game.",
 "Klicke auf „Weiter\", um ins Spiel zurückzukehren.":"Click “Resume” to return to the game.",
 ", um ins Spiel zurückzukehren.":" to return to the game.",
-"Halte [*] zum Entschärfen":"Hold [*] to defuse",
-"Halte [*] zum Entschärfen (Kit)":"Hold [*] to defuse (kit)",
-"] zum Entschärfen":"] to defuse",
+"Halte [*] zum Hack-Stoppen":"Hold [*] to stop the hack",
+"Halte [*] zum Hack-Stoppen (Kit)":"Hold [*] to stop the hack (kit)",
+"] zum Hack-Stoppen":"] to stop the hack",
 "1V1 · Erster mit # Siegen":"1V1 · First to # wins",
 "1V1 · Erster mit # Siegen · *":"1V1 · First to # wins · *",
 "Stage # · Dein Team: *":"Stage # · Your team: *",
 "· Dein Team:":"· Your team:",
 "1V1 · Erster mit":"1V1 · First to",
 "– Runde":"– Round",
-"– Du trägst die Bombe!":"– you are carrying the bomb!",
-"Du trägst die Bombe!":"You are carrying the bomb!",
+"– Du trägst das Hack-Gerät!":"– you are carrying the hack device!",
+"Du trägst das Hack-Gerät!":"You are carrying the hack device!",
 "Verteidigt die Bombsites A und B":"Defend bombsites A and B",
-"Die Bombe wurde entschärft":"The bomb has been defused",
-"Du hast die Bombe aufgenommen":"You picked up the bomb",
-"Die Bombe ist explodiert":"The bomb has exploded",
-"Entschärfe Bombe…":"Defusing bomb…",
-"Halte Feuertaste zum Platzieren":"Hold fire to plant",
-"Taste [5]: Bombe auswählen":"Key [5]: select bomb",
+"Der Hack wurde gestoppt":"The hack has been stopped",
+"Du hast das Hack-Gerät aufgenommen":"You picked up the hack device",
+"Der Geldautomat ist explodiert":"The ATM has exploded",
+"Stoppe Hack…":"Stopping hack…",
+"Hacke Geldautomat…":"Hacking ATM…",
+"Halte Feuertaste am Geldautomaten zum Hacken":"Hold fire at the ATM to hack",
+"Taste [5]: Hack-Gerät auswählen":"Key [5]: select hack device",
 "Linksklick: nächsten Spieler beobachten":"Left click: spectate next player",
 "◀ ▶ oder Tippen: Spieler wechseln":"◀ ▶ or tap: switch player",
 "Map-Editor: Esc drücken":"Map editor: press Esc",
@@ -3725,7 +3726,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Alle Attacker eliminiert":"All attackers eliminated",
 "Alle Defender eliminiert":"All defenders eliminated",
 "Zeit abgelaufen":"Time ran out",
-"Die Bombe wurde platziert!":"The bomb has been planted!",
+"Der Geldautomat wird gehackt!":"The ATM is being hacked!",
 "KAUFPHASE · #":"BUY PHASE · #",
 "LOS!":"GO!",
 "RUNDE # · KAUFPHASE":"ROUND # · BUY PHASE",
@@ -4120,7 +4121,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Elite, Wüstenfuchs, Arktis, Neon, Schatten und Dschungel gibt es jetzt im":"Elite, Desert Fox, Arctic, Neon, Shadow and Jungle are now available in the",
 "Endbildschirm: „Zurück zum Menü\" ist wieder klickbar.":"End screen: “Back to menu” is clickable again.",
 "Enten fliehen vor Schüssen,":"Ducks flee from shots,",
-"Entschärfe Bombe… · Checkpoint 50 % ✓":"Defusing bomb… · checkpoint 50 % ✓",
+"Stoppe Hack… · Checkpoint 50 % ✓":"Stopping hack… · checkpoint 50 % ✓",
 "Entspannt für zwischendurch:":"Relaxed, for a quick break:",
 "Erstelle eigene Skins: Waffe, Name, Muster (Tiger, Carbon, Doppler, Asiimov …), drei Farben und Seltenheit – mit Live-Vorschau.":"Create your own skins: weapon, name, pattern (Tiger, Carbon, Doppler, Asiimov …), three colors and rarity – with live preview.",
 "Es zählt nur":"All that counts is",
@@ -5218,8 +5219,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "# · UNENTSCHIEDEN":"# · DRAW",
 "Tode":"Deaths",
 "Pingen (Markierung fürs Team)":"Ping (marker for your team)",
-"Mausrad: Bombe auswählen":"Mouse wheel: select bomb",
-"⇄: Bombe auswählen":"⇄: select bomb",
+"Mausrad: Hack-Gerät auswählen":"Mouse wheel: select hack device",
+"⇄: Hack-Gerät auswählen":"⇄: select hack device",
 "· Pingen":"· Ping",
 "Pingen":"Ping",
 "= Pingen: markiert die Stelle unter dem Fadenkreuz fürs Team (Gegner rot).":"= Ping: marks the spot under your crosshair for your team (enemies in red).",
@@ -5924,12 +5925,23 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 g.fillStyle = 'rgba(255,255,255,.07)'; if (k === 1) { g.fillRect(2, 0, 3, h); g.fillRect(w / 2 + 1, 0, 3, h); } g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(0, 0, w, 5); });
         }
         if (DSV) { const VW = [0, 1, 2].map(k => vWallTex(THEME, k)); for (const k in WALL_SETS) WALL_SETS[k] = VW; }
-        if (HALLMAP) { const T = THEME, H = T.wallHue, SA = T.wallSat, L = T.wallLight, AC = HS(H, Math.min(46, SA * 0.9 + 12), Math.max(40, Math.min(58, L - 4))), B0 = [HS(H, SA * 0.3, 92), HS(H, SA * 0.3, 89), HS(H, SA * 0.35, 83)], B1 = [HS(H, SA * 0.18, 97), HS(H, SA * 0.18, 95), HS(H, SA * 0.22, 90)]; // Minimal-Architektur (Mirror's Edge): fast weiße Flächen im Farbton der Karte, selten eine gedämpfte Farbfläche
-            const pan = k => makeTex(128, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); if (k === 1) { gr.addColorStop(0, AC); gr.addColorStop(1, AC); } else { const B = k === 3 ? B1 : B0; gr.addColorStop(0, B[0]); gr.addColorStop(0.75, B[1]); gr.addColorStop(1, B[2]); } g.fillStyle = gr; g.fillRect(0, 0, w, h);
+        if (HALLMAP) { const T = THEME, H = T.wallHue, SA = T.wallSat, L = T.wallLight, S2 = Math.max(SA, 18), AC = HS(H, Math.min(58, S2 + 18), Math.max(40, Math.min(56, L - 6))), B0 = [HS(H, S2 * 0.6, 86), HS(H, S2 * 0.6, 82), HS(H, S2 * 0.65, 75)], B1 = [HS(H, S2 * 0.35, 94), HS(H, S2 * 0.35, 91), HS(H, S2 * 0.4, 85)], NAME = (MAP_NAMES[MAPNAME] || '').toUpperCase(), NI = Object.keys(MAP_NAMES).indexOf(MAPNAME) + 1; // Minimal-Architektur (Mirror's Edge) in den Farben der Karte: helle Grundtöne, Farbflächen & Wandgrafiken
+            const SURF = (g, w, h) => { let sd = 7; const rn = () => (sd = (sd * 16807) % 2147483647) / 2147483647, F = (c, x, y, ww, hh) => { g.fillStyle = c; g.fillRect(x, y, ww, hh); }; // Oberfläche je Karte
+                if (MAPNAME === 'de_dusty') { for (let n = 0; n < 900; n++) F('rgba(' + (rn() < 0.5 ? '255,255,255' : '90,60,40') + ',' + (0.04 + rn() * 0.05) + ')', rn() * w, rn() * h, 2, 2); F('rgba(90,60,40,.12)', 0, 0, 2, h); F('rgba(90,60,40,.1)', 0, 84, w, 2); F('rgba(255,255,255,.25)', 0, 86, w, 1); } // Putz mit Scheinfuge
+                else if (MAPNAME === 'de_bazaar') { for (let y = 0, row = 0; y < h; y += 32, row++) for (let x = row % 2 ? -32 : 0; x < w; x += 64) { F('rgba(' + (rn() < 0.5 ? '255,250,235' : '120,90,50') + ',' + (rn() * 0.08) + ')', x + 2, y + 2, 60, 28); F('rgba(110,80,45,.22)', x, y, 2, 32); } for (let y = 0; y < h; y += 32) { F('rgba(110,80,45,.22)', 0, y, w, 2); F('rgba(255,255,255,.18)', 0, y + 2, w, 1); } } // Sandsteinquader
+                else if (MAPNAME === 'de_frost') { for (let y = 0; y < h; y += 48) { F('rgba(40,60,80,.16)', 0, y, w, 2); F('rgba(255,255,255,.45)', 0, y + 2, w, 1); F('rgba(40,60,80,.06)', 0, y + 30, w, 18); for (const x of [10, 64, 118]) F('rgba(40,60,80,.25)', x - 1, y + 8, 3, 3); } } // gedämmte Metallpaneele
+                else if (MAPNAME === 'de_moisty') { for (let x = 0; x < w; x += 16) { F('rgba(' + (x / 16 % 2 ? '60,40,20' : '255,250,235') + ',' + (0.05 + rn() * 0.05) + ')', x, 0, 16, h - 48); F('rgba(40,30,20,.22)', x, 0, 2, h - 48); } F('rgba(40,40,40,.1)', 0, h - 48, w, 48); F('rgba(40,30,20,.3)', 0, h - 50, w, 3); } // Holzverschalung über Betonsockel
+                else if (MAPNAME === 'de_foundry') { for (let x = 0; x < w; x += 8) { F('rgba(255,255,255,.22)', x, 0, 2, h); F('rgba(20,25,30,.14)', x + 4, 0, 3, h); } for (let y = 30; y < h; y += 96) { F('rgba(20,25,30,.22)', 0, y, w, 3); for (let x = 6; x < w; x += 16) F('rgba(20,25,30,.4)', x, y + 6, 3, 3); } } // Wellblech mit Nietreihen
+                else { F('rgba(30,40,50,.08)', 0, 0, 2, h); F('rgba(30,40,50,.08)', w / 2 - 1, 0, 1, h); F('rgba(30,40,50,.08)', 0, h * 0.5, w, 1); } };
+            const pan = (k, txt) => makeTex(128, 256, (g, w, h) => { const sx = 0.58, TXT = (t, x, y, px, c, al = 'left', st) => { g.save(); g.translate(x, y); g.scale(sx, 1); g.font = 'bold ' + px + 'px Arial'; g.textAlign = al; g.textBaseline = 'middle'; if (st) { g.lineWidth = st; g.strokeStyle = c; g.strokeText(t, 0, 0); } else { g.fillStyle = c; g.fillText(t, 0, 0); } g.restore(); }; /* Schrift entzerrt (Textur ist 4 m breit, ~4,6 m hoch) */ const gr = g.createLinearGradient(0, 0, 0, h); if (k === 1) { gr.addColorStop(0, AC); gr.addColorStop(1, AC); } else { const B = k === 3 ? B1 : B0; gr.addColorStop(0, B[0]); gr.addColorStop(0.75, B[1]); gr.addColorStop(1, B[2]); } g.fillStyle = gr; g.fillRect(0, 0, w, h); SURF(g, w, h);
                 if (k === 1) { g.fillStyle = 'rgba(0,0,0,.12)'; g.fillRect(0, h - 26, w, 26); g.fillStyle = 'rgba(255,255,255,.85)'; g.fillRect(0, 54, w, 6); } // Farbfläche mit weißer Linie
                 if (k === 2) { const q = g.createLinearGradient(0, 70, 0, 122); q.addColorStop(0, '#b9d3e2'); q.addColorStop(1, '#7c9fb4'); g.fillStyle = q; g.fillRect(0, 70, w, 52); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(0, 70, w, 6); g.fillStyle = 'rgba(255,255,255,.9)'; for (let x = 0; x < w; x += 32) g.fillRect(x, 70, 2, 52); g.fillStyle = AC; g.fillRect(0, 124, w, 4); } // Fensterband
-                g.fillStyle = 'rgba(30,40,50,.08)'; g.fillRect(0, 0, 2, h); g.fillRect(w / 2 - 1, 0, 1, h); g.fillRect(0, h * 0.5, w, 1); g.fillStyle = 'rgba(30,40,50,.1)'; for (const [x, y] of [[10, 10], [w / 2 + 10, 10], [10, h * 0.5 + 10], [w / 2 + 10, h * 0.5 + 10]]) g.fillRect(x, y, 3, 3); }); // Paneelfugen & Anker
-            const P = [0, 1, 2, 3].map(pan); WALL_SETS[MAPNAME] = [P[0], P[3], P[2], P[0], P[3], P[0], P[1], P[3]]; }
+                if (k === 4) { TXT(txt, w / 2, 152, 118, AC, 'center', 5); g.fillStyle = AC; g.fillRect(12, 82, 44, 5); TXT('SECTOR', 14, 70, 16, 'rgba(30,40,50,.55)'); } // große Kennziffer (Supergrafik)
+                if (k === 5) { g.fillStyle = AC; g.beginPath(); g.moveTo(0, 200); g.lineTo(w, 98); g.lineTo(w, 132); g.lineTo(0, 234); g.fill(); g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 4; for (let i = 0; i < 3; i++) { const x = 26 + i * 38, y = 217 - x * 102 / w; g.beginPath(); g.moveTo(x - 6, y - 9); g.lineTo(x + 5, y); g.lineTo(x - 6, y + 9); g.stroke(); } } // diagonales Farbband mit Pfeilen
+                if (k === 6) { g.fillStyle = '#1f2a36'; g.fillRect(0, 96, w, 30); g.fillStyle = AC; g.fillRect(0, 126, w, 4); TXT(NAME + ' · ' + txt, 8, 111, 17, '#ece8e1'); } // Schriftband mit Kartenname
+                if (k === 7) { g.fillStyle = 'rgba(30,40,50,.18)'; g.fillRect(20, 40, 88, 120); for (let y = 46; y < 156; y += 8) { g.fillStyle = 'rgba(30,40,50,.35)'; g.fillRect(24, y, 80, 3); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(24, y + 3, 80, 1); } g.fillStyle = AC; g.fillRect(20, 34, 88, 5); TXT('V-' + txt, 22, 172, 14, 'rgba(30,40,50,.6)'); } // Lüftungsgitter mit Kennung
+                }); // Oberfläche kommt aus SURF (je Karte)
+            const P = [0, 1, 2, 3].map(k => pan(k)), N2 = n => String(n).padStart(2, '0'); WALL_SETS[MAPNAME] = [P[0], P[3], P[2], pan(4, N2(NI * 3)), P[0], pan(7, N2(NI)), P[3], pan(5), P[1], pan(6, 'ZONE ' + N2(NI)), P[0], pan(4, N2(NI * 3 + 4)), P[3], pan(6, 'DISTRICT')]; }
         const wallSet = WALL_SETS[MAPNAME] || WALL_SETS[(CMAP_INFO[MAPNAME] || {}).th] || WALL_SETS.de_dusty;
         const texCrateDark = makeTex(128, 128, (g, w, h2) => {
             for (let i = 0; i < 6; i++) { g.fillStyle = HS(THEME.crateHue, THEME.crateSat * 0.8, THEME.crateLight - 10 + Math.random() * 6); g.fillRect(0, i * 22, w, 21); }
@@ -6392,6 +6404,28 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         if (DSV && !LAY) cityDeco(cell, ROWS, COLS, 0, scene, 1, true);
         if (HALLMAP) skyMap();
+        const ATMS = []; // Geldautomaten statt Bombe: je Bombsite einer an einer Wand – der zuerst gehackte wird zur „Bombe“, der andere schaltet ab
+        { const scr = (bg, f) => { const m = new THREE.MeshBasicMaterial({ map: makeTex(256, 160, g => { g.fillStyle = bg; g.fillRect(0, 0, 256, 160); g.textAlign = 'center'; g.textBaseline = 'middle'; f(g); g.fillStyle = 'rgba(0,0,0,.15)'; for (let y = 0; y < 160; y += 3) g.fillRect(0, y, 256, 1); }) }); m.userData.keep = 1; return m; };
+            const T = (g, t, y, px, c) => { g.fillStyle = c; g.font = 'bold ' + px + 'px Arial'; g.fillText(t, 128, y); }, logo = (g, x, y, k) => { g.strokeStyle = '#ece8e1'; g.lineWidth = k * 0.27; g.beginPath(); g.arc(x, y, k * 0.37, Math.PI * 0.24, Math.PI * 1.76); g.stroke(); g.fillStyle = '#8aa1b8'; g.beginPath(); g.moveTo(x, y - k * 0.1); g.lineTo(x + k * 0.1, y); g.lineTo(x, y + k * 0.1); g.lineTo(x - k * 0.1, y); g.fill(); };
+            const SCR = { idle: scr('#0f1923', g => { logo(g, 128, 56, 64); T(g, 'CLUTCH BANK', 112, 24, '#ece8e1'); T(g, 'READY', 140, 16, '#8aa1b8'); }), hack: scr('#8a1616', g => { T(g, '⚠ HACK', 62, 42, '#ffe1e1'); T(g, 'IN PROGRESS', 110, 22, '#ffc0c0'); }), hack2: scr('#3a0808', g => { T(g, '⚠ HACK', 62, 42, '#ff5a5a'); T(g, 'IN PROGRESS', 110, 22, '#ff8080'); }),
+                off: scr('#22262b', g => { T(g, 'OFFLINE', 80, 34, '#6b737c'); }), safe: scr('#0f3a24', g => { T(g, 'SECURED', 80, 34, '#9fe8b8'); }), dead: scr('#050505', g => { g.strokeStyle = '#4a5058'; g.lineWidth = 3; g.beginPath(); g.moveTo(30, 20); g.lineTo(120, 90); g.lineTo(90, 150); g.moveTo(120, 90); g.lineTo(230, 60); g.stroke(); }) };
+            const mat = c => { const m = new THREE.MeshLambertMaterial({ color: c }); m.userData.keep = 1; return m; }, body = mat(0x2b3440), panel = mat(0xc9ced4), trim = mat(0x8aa1b8), dark = mat(0x14181d), D = 0.62;
+            const letter = L => { const m = new THREE.MeshBasicMaterial({ map: makeTex(64, 64, g => { g.fillStyle = '#0f1923'; g.fillRect(0, 0, 64, 64); g.fillStyle = '#ece8e1'; g.font = 'bold 46px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(L, 32, 35); }) }); m.userData.keep = 1; return m; };
+            for (const L of ['A', 'B']) { const cells = siteCells[L]; if (!cells.length) continue; const mr = cells.reduce((a, q) => a + q.r, 0) / cells.length, mc = cells.reduce((a, q) => a + q.c, 0) / cells.length; let best = null;
+                for (const q of cells) for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { if (chAt(q.r + dr, q.c + dc, q.l) !== '#') continue; const d = Math.hypot(q.r - mr, q.c - mc); if (!best || d < best.d) best = { q, dr, dc, d }; } // Wandplatz nahe der Site-Mitte
+                const q = best ? best.q : cells.reduce((a, b) => Math.hypot(b.r - mr, b.c - mc) < Math.hypot(a.r - mr, a.c - mc) ? b : a), dr = best ? best.dr : 1, dc = best ? best.dc : 0, y = lvY(q.l || 0), qx = (q.c + 0.5) * MS, qz = (q.r + 0.5) * MS;
+                const wx = best ? qx + dc * MS / 2 : qx + dc * 0.3, wz = best ? qz + dr * MS / 2 : qz + dr * 0.3, ax = wx - dc * D / 2, az = wz - dr * D / 2, g = new THREE.Group(); g.position.set(ax, y, az); g.rotation.y = Math.atan2(-dc, -dr); scene.add(g);
+                const B = (w, h, d, x, yy, z, m) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, yy, z); o.castShadow = o.receiveShadow = true; g.add(o); return o; };
+                B(1.0, 2.1, D, 0, 1.05, 0, body); B(0.9, 1.3, 0.04, 0, 1.25, D / 2 + 0.02, panel); B(1.06, 0.34, D + 0.08, 0, 2.27, 0.02, trim); B(0.5, 0.05, 0.06, 0, 0.86, D / 2 + 0.05, dark); B(0.2, 0.04, 0.06, -0.24, 1.12, D / 2 + 0.05, dark);
+                const kp = B(0.34, 0.06, 0.24, 0.17, 1.1, D / 2 + 0.12, dark); kp.rotation.x = 0.35; for (const sx of [-0.5, 0.5]) B(0.04, 1.9, 0.04, sx, 1.1, D / 2 + 0.01, trim); // Tastatur, Leuchtkanten
+                const sm = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.4), SCR.idle); sm.position.set(0, 1.58, D / 2 + 0.045); g.add(sm); const lp = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.26), letter(L)); lp.position.set(0, 2.27, D / 2 + 0.065); g.add(lp);
+                const hx = ax - dc * (D / 2 + 0.9), hz = az - dr * (D / 2 + 0.9); if (!LAY) aabbs.push({ minX: ax - (dr ? 0.5 : D / 2), maxX: ax + (dr ? 0.5 : D / 2), minZ: az - (dr ? D / 2 : 0.5), maxZ: az + (dr ? D / 2 : 0.5), top: y + 2.45, bot: y, wall: 1 }); // Kollision (Gebäude-Karte: ohne, enge Felder)
+                ATMS.push({ L, scr: sm, y, hx, hz, r: Math.floor(hz / MS), c: Math.floor(hx / MS), l: q.l || 0, st: 'idle' }); }
+            ATMS.near = (e, d = 2.2) => ATMS.find(a => Math.hypot(e.x - a.hx, e.z - a.hz) < d && (e.y == null || Math.abs(e.y - a.y) < 1.8)); // Automat in Reichweite
+            ATMS.of = L => ATMS.find(a => a.L === L);
+            ATMS.tick = () => { const b = G.bomb, act = ['planted', 'defused', 'exploded'].includes(b.state) ? ATMS.reduce((m, a) => !m || Math.hypot(a.hx - b.x, a.hz - b.z) < Math.hypot(m.hx - b.x, m.hz - b.z) ? a : m, null) : null; // Bildschirme: bereit / Hack (blinkt) / offline / gesichert / zerstört
+                for (const a of ATMS) { const k = !act ? 'idle' : a !== act ? 'off' : b.state === 'planted' ? ((now * 2.5 | 0) % 2 ? 'hack' : 'hack2') : b.state === 'defused' ? 'safe' : 'dead'; if (a.st !== k) { a.st = k; a.scr.material = SCR[k]; } }
+                const hide = b.state === 'planted' || b.state === 'defused'; for (const ch of bombMesh.children) if (ch !== bombLed) ch.visible = !hide; else if (hide) ch.visible = false; }; } // gehackter Automat ersetzt das Bombenmodell
         function stadiumWorld(grp, O) { // THE FINALS-Arena unter freiem Himmel: runde, schwebende Plattform (Rand mit Geländer & LED, Unterseite mit Stahlschüssel, Rippen, Kern & Schwebe-Triebwerken), Stadionring mit Publikum, Logen, LED-Banden, Flutlichtmasten, Großbildschirmen, CLUTCH-Bannern, Skyline, Luftschiff, Wolkenhimmel
             const K = m => { m.userData.keep = 1; return m; }, YE = '#8aa1b8', NV = '#0f1923', CR = '#ece8e1', cx = WORLD_W / 2, cz = WORLD_D / 2, PR = WORLD_W / 2, SEED = O.seed || 0, ROT = O.rot || 0, NAME = O.name || 'CLUTCH', SKY = O.sky, GY = -260;
             const rnd = (a, b) => { let h = cellHash(a * 7 + 3 + SEED * 131, b * 11 + 5 + SEED * 17); h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0; return (h ^ (h >>> 13)) >>> 0; };
@@ -6834,7 +6868,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             recon: { key: 'recon', name: 'Recon-Pfeil', slot: 4, nade: true, price: 300, speed: 6.8 }, // markiert Gegner (2 Scan-Pulse)
             cluster: { key: 'cluster', name: 'Cluster-Granate', slot: 4, nade: true, price: 400, speed: 6.8 }, // Explosion + 4 Bomblets
             slow: { key: 'slow', name: 'Kälteschaum', slot: 4, nade: true, price: 250, speed: 6.8 }, // Eisfeld: halbes Tempo
-            c4: { key: 'c4', name: 'C4', slot: 5, plant: true, speed: 6.5 }
+            c4: { key: 'c4', name: 'HACK', slot: 5, plant: true, speed: 6.5 }
         };
         const mkWeapon = def => ({ def, ammo: def.mag || 0, res: def.res || 0, reloading: false, reloadT: 0, last: -9 });
 
@@ -7802,7 +7836,7 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
             bots.forEach(b => { b.mesh.position.set(b.x, b.y || 0, b.z); b.mesh.rotation.y = b.yaw; b.lastX = b.x; b.lastZ = b.z; });
             if (DM.on) for (const e of ents) if (!e.remote) dmRespawn(e);
             const car = DM.on ? null : rnd(ents.filter(e => e.team === 'T' && !(NET.spec && e === player))); G.bomb.carrier = car; if (car && car.isPlayer) p.weapons[5] = mkWeapon(W.c4);
-            if (DM.on) msg('💀 Deathmatch', `Jeder gegen jeden · ${DM.limit} Kills oder 10 Min · Waffen gratis`, 4); else msg(`Runde ${G.round}`, p.team === 'T' ? `Taktik: Angriff auf Bombsite ${G.site}${car.isPlayer ? ' – Du trägst die Bombe!' : ''}` : 'Verteidigt die Bombsites A und B', 4); sfx('start');
+            if (DM.on) msg('💀 Deathmatch', `Jeder gegen jeden · ${DM.limit} Kills oder 10 Min · Waffen gratis`, 4); else msg(`Runde ${G.round}`, p.team === 'T' ? `Taktik: Angriff auf Bombsite ${G.site}${car.isPlayer ? ' – Du trägst das Hack-Gerät!' : ''}` : 'Verteidigt die Bombsites A und B', 4); sfx('start');
             if (!EX.on) openBuy(true); updateVM(); if (NET.spec) specRound(); // zuschauender Host: jede Runde wieder „tot“
             if (NET.on && NET.host) { netSend({ type: 'round', rd: G.round, site: G.site }); if (G.bomb.carrier && G.bomb.carrier.remote) netSend({ type: 'c4', pid: G.bomb.carrier.pid }); }
         }
@@ -7816,14 +7850,14 @@ ${rk.map((e, i) => `<div class="row" style="justify-content:space-between;${e ==
         function nextRound() { if (G.score.CT >= WIN_SCORE || G.score.T >= WIN_SCORE || G.round >= MAX_ROUNDS) gameOver(); else { G.round++; startRound(); } }
         function checkRoundEnd() { if (GL.on || DM.on || DH.on) return; if (NET.on && !NET.host) return; if (G.state !== 'live') return; const aT = ents.filter(e => e.alive && e.team === 'T').length, aCT = ents.filter(e => e.alive && e.team === 'CT').length; awClutch(aT, aCT); if (aCT === 0) endRound('T', 'Alle Defender eliminiert'); else if (aT === 0 && G.bomb.state !== 'planted') endRound('CT', 'Alle Attacker eliminiert'); }
         function plantBomb(e) {
-            if (G.state !== 'live') return; G.bomb.state = 'planted'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.y = e.y || 0; G.bomb.t = BOMB_TIME; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, G.bomb.y, e.z); bombMesh.rotation.set(0, 0, 0); e.plantT = 0; e.money = Math.min(16000, e.money + 300);
+            if (G.state !== 'live') return; G.bomb.state = 'planted'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.y = e.y || 0; if (!GA.cur) { const A = ATMS.near(e, 4) || ATMS.reduce((m, a) => !m || Math.hypot(a.hx - e.x, a.hz - e.z) < Math.hypot(m.hx - e.x, m.hz - e.z) ? a : m, null); if (A) { G.bomb.x = A.hx; G.bomb.z = A.hz; G.bomb.y = A.y; } } /* gehackter Geldautomat = Bombe */ G.bomb.t = BOMB_TIME; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, G.bomb.y, e.z); bombMesh.rotation.set(0, 0, 0); e.plantT = 0; e.money = Math.min(16000, e.money + 300);
             if (e.isPlayer) { ultAdd(1); e.weapons[5] = null; e.slot = e.weapons[1] ? 1 : 2; e.switchT = 1; updateVM(); } else botUltAdd(e);
-            msg('Die Bombe wurde platziert!', '', 3); sfx('plant'); bots.forEach(b => { b.goal = null; b.path = []; });
+            msg('Der Geldautomat wird gehackt!', '', 3); sfx('plant'); bots.forEach(b => { b.goal = null; b.path = []; });
         }
-        function defuseBomb(e) { if (G.state !== 'live') return; G.bomb.state = 'defused'; bombMesh.visible = false; e.defuseT = 0; e.money = Math.min(16000, e.money + 300); if (e.isPlayer) ultAdd(1); else botUltAdd(e); endRound('CT', 'Die Bombe wurde entschärft'); }
-        function pickupBomb(e) { G.bomb.state = 'carried'; G.bomb.carrier = e; bombMesh.visible = false; if (e.remote && NET.on && NET.host) netSend({ type: 'c4', pid: e.pid }); if (e.isPlayer) { e.weapons[5] = mkWeapon(W.c4); msg('Du hast die Bombe aufgenommen', '', 2); } } function explode() {
+        function defuseBomb(e) { if (G.state !== 'live') return; G.bomb.state = 'defused'; bombMesh.visible = false; e.defuseT = 0; e.money = Math.min(16000, e.money + 300); if (e.isPlayer) ultAdd(1); else botUltAdd(e); endRound('CT', 'Der Hack wurde gestoppt'); }
+        function pickupBomb(e) { G.bomb.state = 'carried'; G.bomb.carrier = e; bombMesh.visible = false; if (e.remote && NET.on && NET.host) netSend({ type: 'c4', pid: e.pid }); if (e.isPlayer) { e.weapons[5] = mkWeapon(W.c4); msg('Du hast das Hack-Gerät aufgenommen', '', 2); } } function explode() {
             G.bomb.state = 'exploded'; bombMesh.visible = false; sfx('explosion'); whiteFlash = 1; shake = 1; boomMesh.position.set(G.bomb.x, (G.bomb.y || 0) + 1, G.bomb.z); boomMesh.visible = true; boomT = 0.7;
-            endRound('T', 'Die Bombe ist explodiert');
+            endRound('T', 'Der Geldautomat ist explodiert');
             for (const e of ents) { if (!e.alive || e.remote) continue; const d = Math.hypot(e.x - G.bomb.x, e.z - G.bomb.z); if (d < 16) applyDamage(e, 400 * (1 - d / 16), null, null, false); }
         }
         function gameOver() {
@@ -7872,8 +7906,8 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 if (bomb.state === 'planted') { const mv = followPath(b, dt); if (!mv) b.waitT -= dt; if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 2 + Math.random() * 4; const c = randomNear(cr(bomb.z), cr(bomb.x), 3, lvXY(bomb.x, bomb.z, bomb.y)); setGoal(b, c.r, c.c, c.l); } }
                 else if (bomb.state === 'dropped') { const gr = cr(bomb.z), gc = cr(bomb.x); if (!b.goal || b.goal.r !== gr || b.goal.c !== gc) setGoal(b, gr, gc, lvXY(bomb.x, bomb.z, bomb.y)); if (!followPath(b, dt)) botMoveToward(b, bomb.x, bomb.z, dt, BOT_SPEED); }
                 else if (bomb.carrier === b) {
-                    if (siteAt(b) === G.site) { if (live) { b.plantT += dt; if (Math.floor(b.plantT * 3) !== Math.floor((b.plantT - dt) * 3)) sfx('plant', b.x, b.z); if (b.plantT >= 3) plantBomb(b); } }
-                    else { b.plantT = 0; if (!b.goal || chAt(b.goal.r, b.goal.c, b.goal.l | 0) !== G.site) { const c = rnd(siteCells[G.site]); setGoal(b, c.r, c.c, c.l); } if (!followPath(b, dt)) b.goal = null; }
+                    if (ATMS.length && !GA.cur ? (ATMS.of(G.site) && Math.hypot(b.x - ATMS.of(G.site).hx, b.z - ATMS.of(G.site).hz) < 1.6) : siteAt(b) === G.site) { if (live) { b.plantT += dt; if (Math.floor(b.plantT * 3) !== Math.floor((b.plantT - dt) * 3)) sfx('plant', b.x, b.z); if (b.plantT >= 3) plantBomb(b); } }
+                    else { b.plantT = 0; const A = GA.cur ? null : ATMS.of(G.site); if (A) { if (!b.goal || b.goal.r !== A.r || b.goal.c !== A.c) setGoal(b, A.r, A.c, A.l); if (!followPath(b, dt)) { b.goal = null; botMoveToward(b, A.hx, A.hz, dt, BOT_SPEED); } } else { if (!b.goal || chAt(b.goal.r, b.goal.c, b.goal.l | 0) !== G.site) { const c = rnd(siteCells[G.site]); setGoal(b, c.r, c.c, c.l); } if (!followPath(b, dt)) b.goal = null; } } /* Bot läuft zum Geldautomaten */
                 }
                 else { const mv = followPath(b, dt); if (!mv) b.waitT -= dt; if (!b.goal || (!mv && b.waitT <= 0)) { b.waitT = 1.5 + Math.random() * 3; const car = bomb.carrier; let c; if (car && car.alive && Math.hypot(car.x - b.x, car.z - b.z) > 14 && Math.random() < 0.6) c = randomNear(cr(car.z), cr(car.x), 2, lvOf(car)); else c = rnd(siteCells[G.site]); setGoal(b, c.r, c.c, c.l); } }
             } else {
@@ -8192,10 +8226,10 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             const p = player; let prog = null;
             if (p.alive && G.state === 'live') {
                 const nearBomb = G.bomb.state === 'planted' && Math.hypot(p.x - G.bomb.x, p.z - G.bomb.z) < 2.0 && Math.abs((p.y || 0) - (G.bomb.y || 0)) < 1.8;
-                if (p.team === 'CT' && nearBomb && down('use') && p.speed === 0) { const need = p.kit ? 5 : 10; if (G.bomb.half && p.defuseT < need / 2) p.defuseT = need / 2; p.defuseT += dt; if (p.defuseT >= need / 2 && !G.bomb.half) { G.bomb.half = true; tone(1100, 0.12, 0.12, 0, 'sine'); } prog = { v: p.defuseT / need, txt: G.bomb.half ? 'Entschärfe Bombe… · Checkpoint 50 % ✓' : 'Entschärfe Bombe…', cp: 1 }; if (p.defuseT >= need) { prog = null; xpEvent('defuse'); if (NET.on && !NET.host) { p.defuseT = 0; netSend({ type: 'defuse' }); p.money = Math.min(16000, p.money + 300); } else defuseBomb(p); } } else p.defuseT = 0;
-                if (p.team === 'CT' && nearBomb && G.msgT <= 0) $('sub').textContent = `Halte [${keyName(BIND.use)}] zum Entschärfen` + (p.kit ? ' (Kit)' : ''); const inSite = ['A', 'B'].includes(siteAt(p));
-                if (p.team === 'T' && p.slot === 5 && p.weapons[5] && mouseDown && inSite && p.speed === 0) { p.plantT += dt; prog = { v: p.plantT / 3, txt: 'Platziere Bombe…' }; if (Math.floor(p.plantT * 3) !== Math.floor((p.plantT - dt) * 3)) sfx('plant'); if (p.plantT >= 3) { prog = null; xpEvent('plant'); if (NET.on && !NET.host) { p.plantT = 0; netSend({ type: 'plant', x: p.x, z: p.z }); p.money = Math.min(16000, p.money + 300); p.weapons[5] = null; p.slot = p.weapons[1] ? 1 : 2; p.switchT = 1; updateVM(); } else plantBomb(p); } } else p.plantT = 0;
-                if (p.team === 'T' && p.weapons[5] && inSite && G.msgT <= 0) $('sub').textContent = p.slot === 5 ? 'Halte Feuertaste zum Platzieren' : (IS_TOUCH ? '⇄: Bombe auswählen' : 'Mausrad: Bombe auswählen');
+                if (p.team === 'CT' && nearBomb && down('use') && p.speed === 0) { const need = p.kit ? 5 : 10; if (G.bomb.half && p.defuseT < need / 2) p.defuseT = need / 2; p.defuseT += dt; if (p.defuseT >= need / 2 && !G.bomb.half) { G.bomb.half = true; tone(1100, 0.12, 0.12, 0, 'sine'); } prog = { v: p.defuseT / need, txt: G.bomb.half ? 'Stoppe Hack… · Checkpoint 50 % ✓' : 'Stoppe Hack…', cp: 1 }; if (p.defuseT >= need) { prog = null; xpEvent('defuse'); if (NET.on && !NET.host) { p.defuseT = 0; netSend({ type: 'defuse' }); p.money = Math.min(16000, p.money + 300); } else defuseBomb(p); } } else p.defuseT = 0;
+                if (p.team === 'CT' && nearBomb && G.msgT <= 0) $('sub').textContent = `Halte [${keyName(BIND.use)}] zum Hack-Stoppen` + (p.kit ? ' (Kit)' : ''); const inSite = ATMS.length && !GA.cur ? !!ATMS.near(p) : ['A', 'B'].includes(siteAt(p)); /* Hacken nur am Geldautomaten */
+                if (p.team === 'T' && p.slot === 5 && p.weapons[5] && mouseDown && inSite && p.speed === 0) { p.plantT += dt; prog = { v: p.plantT / 3, txt: 'Hacke Geldautomat…' }; if (Math.floor(p.plantT * 3) !== Math.floor((p.plantT - dt) * 3)) sfx('plant'); if (p.plantT >= 3) { prog = null; xpEvent('plant'); if (NET.on && !NET.host) { p.plantT = 0; netSend({ type: 'plant', x: p.x, z: p.z }); p.money = Math.min(16000, p.money + 300); p.weapons[5] = null; p.slot = p.weapons[1] ? 1 : 2; p.switchT = 1; updateVM(); } else plantBomb(p); } } else p.plantT = 0;
+                if (p.team === 'T' && p.weapons[5] && inSite && G.msgT <= 0) $('sub').textContent = p.slot === 5 ? 'Halte Feuertaste am Geldautomaten zum Hacken' : (IS_TOUCH ? '⇄: Hack-Gerät auswählen' : 'Mausrad: Hack-Gerät auswählen');
             } else p.defuseT = p.plantT = 0;
             $('prog').classList.toggle('cp', !!(prog && prog.cp)); // 50-%-Marke beim Entschärfen
             if (prog) { $('prog').style.display = 'block'; $('prog').firstElementChild.style.width = (prog.v * 100) + '%'; $('progtxt').style.display = 'block'; $('progtxt').textContent = prog.txt; } else hideProgress();
@@ -8507,7 +8541,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             whiteFlash = Math.max(0, whiteFlash - dt * 0.8); dmgFlash = Math.max(0, dmgFlash - dt * 2); hitT = Math.max(0, hitT - dt); shake = Math.max(0, shake - dt * 1.5);
             fovKick = Math.max(0, fovKick - dt * 35);
             const wantFov = (player.scoped ? 20 : OPT.fov / (IS_TOUCH ? clamp(OPT.mzoom || 1, 1, 1.25) : 1)) + fovKick; // Handy: leicht reingezoomt
-            if (Math.abs(camera.fov - wantFov) > 0.01) { camera.fov = wantFov; camera.updateProjectionMatrix(); } bombLed.visible = G.bomb.state === 'planted' || G.bomb.state === 'dropped';
+            if (Math.abs(camera.fov - wantFov) > 0.01) { camera.fov = wantFov; camera.updateProjectionMatrix(); } bombLed.visible = G.bomb.state === 'planted' || G.bomb.state === 'dropped'; if (ATMS.length && !GA.cur) ATMS.tick();
         }
 
         // =====================================================================
@@ -9379,6 +9413,24 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <div class="rchips" id="ruleChips" title="Klick zum Bearbeiten">${ruleChips(CFG)}</div>
  </div>
  <div id="csnews" style="display:none">
+ <div class="cspanel newscard"><h3><span style="background:#d9643a;color:#0f1923;border-radius:4px;padding:1px 6px;margin-right:6px;font-size:11px;vertical-align:middle">TEST</span>SKYWAY-ARENA</h3>
+ <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
+ <i>Test-Build – noch nicht final. Feedback ist willkommen!</i><br><br>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏟 RUNDE ARENA ÜBER DER STADT</p>
+ Die Hauptkarten schweben als runde Plattform hoch über der Stadt – mitten in einem offenen Stadion unter freiem Himmel.<br>
+ Rundherum: Ränge voller Publikum, VIP-Logen, LED-Banden, Großbildschirme, Flutlichtmasten, Skyline und ein Luftschiff.<br>
+ Die Außenmauern sind weg – Glasgeländer markieren die Grenze, der Blick nach draußen bleibt frei.<br><br>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🕳 LÖCHER &amp; BRÜCKEN</p>
+ Auf jeder Karte gibt es Löcher im Boden und Gitterbrücken über dem Abgrund. Wer hineinfällt, ist raus.<br><br>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏧 GELDAUTOMAT STATT BOMBE</p>
+ Auf jeder Bombsite steht ein Geldautomat. Angreifer tragen das <b>Hack-Gerät</b> und hacken damit einen Automaten.<br>
+ Der zuerst gehackte Automat wird zur „Bombe“, der andere schaltet sich ab.<br>
+ Defender müssen den Hack stoppen (wie Entschärfen) – sonst fliegt der Automat in die Luft.<br><br>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎨 NEUER LOOK</p>
+ Minimal-Architektur im Stil von Mirror’s Edge: helle Flächen, klare Kanten, Wandgrafiken mit Kennziffern, Farbbändern und Schriftzügen.<br>
+ Jede Karte hat ihre eigene Wandoberfläche: Sienna Putz, Kasbah Sandstein, Tundra Metallpaneele, Mire Holz, Ironworks Wellblech.<br>
+ Werbung im Stadion mit dem CLUTCH-Logo in den Farben des Menüs. Die Kamera im Hauptmenü schwebt höher.<br>
+ </div></div>
  <div class="cspanel newscard"><h3>NEU · PATCH 3.6 „KARRIERE"</h3>
  <div style="font-size:12px;line-height:1.7;color:#cfd8e3">
 
@@ -11978,7 +12030,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'leave': { const rp = NET.players.get(m.pid); if (rp) { scene.remove(rp.mesh); NET.players.delete(m.pid); ents = ents.filter(e => e !== rp); } if (NET.inLobby) renderLobby(); break; }
                 case 'plant': if (NET.host) plantBomb({ x: m.x, z: m.z, isPlayer: false, money: 0, plantT: 0 }); break;
                 case 'defuse': if (NET.host && G.bomb.state === 'planted') defuseBomb({ isPlayer: false, money: 0, defuseT: 0 }); break;
-                case 'c4': if (!NET.host && m.pid === NET.pid) { player.weapons[5] = mkWeapon(W.c4); msg('Du trägst die Bombe!', `Angriff auf Bombsite ${G.site}`, 4); } break;
+                case 'c4': if (!NET.host && m.pid === NET.pid) { player.weapons[5] = mkWeapon(W.c4); msg('Du trägst das Hack-Gerät!', `Angriff auf Bombsite ${G.site}`, 4); } break;
                 case 'nade': { const ow = m.ap ? (m.ap === NET.pid ? player : NET.players.get(m.ap)) : null; launchNade(m.k, m.x, m.y, m.z, m.dx, m.dy, m.dz, ow || { name: m.on, team: m.ot, isPlayer: false }, m.lv || 1, m.g || null); break; } case 'wdrop': { const d = dropWeapon(W[m.w], m.x, m.z, m.a ?? (W[m.w].mag || 0), m.rs ?? 0, m.sk ?? null, m.y || 0); if (d) d.did = m.did; break; } case 'wtake': { const i = drops.findIndex(d => d.did === m.did); if (i >= 0) { scene.remove(drops[i].mesh); drops.splice(i, 1); } break; }
                 case 'start': if (m.dm) DM.on = true;
                     if (m.cfg && !NET.host) { Object.assign(CFG, m.cfg); applyCfg(); if (!started) player.money = CFG.money; remeshAll(); }
@@ -12157,7 +12209,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const prev = G.bomb.state;
             if (m.gs === 'freeze' || m.gs === 'live') { if (G.state === 'freeze' && m.gs === 'live') goMsg(); G.state = m.gs; G.t = m.gt; }
             G.timer = m.tm; G.score = m.sc; G.round = m.rd; G.bomb.state = m.bs; G.bomb.x = m.bx; G.bomb.z = m.bz; G.bomb.y = m.by || 0;
-            if (m.bs === 'planted' && prev !== 'planted') msg('Die Bombe wurde platziert!', '', 3);
+            if (m.bs === 'planted' && prev !== 'planted') msg('Der Geldautomat wird gehackt!', '', 3);
             if (m.bs === 'exploded' && prev !== 'exploded') { sfx('explosion'); whiteFlash = 1; shake = 1; boomMesh.position.set(m.bx, (m.by || 0) + 1, m.bz); boomMesh.visible = true; boomT = 0.7; if (player.alive) { const d = Math.hypot(player.x - m.bx, player.z - m.bz); if (d < 16) applyDamage(player, 400 * (1 - d / 16), null, null, false); } } bombMesh.visible = (m.bs === 'planted' || m.bs === 'dropped'); bombMesh.position.set(m.bx, m.by || 0, m.bz);
             m.b.forEach((a, i) => {
                 const b = bots[i]; if (!b) return; const was = b.alive;
