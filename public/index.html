@@ -5711,6 +5711,36 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             "#............TTTT..........#",
             "############################"
         ];
+        MAPS.de_skyway = [ // Skyway: runde Arena aus schwebenden Plattformen (Spawns Nord/Süd, Sites West/Ost, Mitte mit Hochsteg), verbunden durch schmale Stege über dem Abgrund (O)
+            "############################",
+            "#OOOOOOOOOOOOOOOOOOOOOOOOOO#",
+            "#OOOOOOOO..........OOOOOOOO#",
+            "#OOOOOOO...KKKKKK.C.OOOOOOO#",
+            "#OOOO......KKKKKK...OOOOOOO#",
+            "#OOO.....c........h....OOOO#",
+            "#OO...OOO.......h..OOO...OO#",
+            "#OO...OOOOOOO.OOOOOOOO...OO#",
+            "#OOO.OOOOOOOO.OOOOOOOOO.OOO#",
+            "#O....OOOOOOO.OOOOOOOO....O#",
+            "#...h..OOO........OOO..h...#",
+            "##BBBB.........c......AAAA##",
+            "##BcBB.OO..h.......OO.AAAA##",
+            "##BBBB.OO1234==4321OO.AAcA##",
+            "##BBBB.OO..........OO.AAAA##",
+            "###....OO.......h..OO....###",
+            "#..c.......c............c..#",
+            "#....h.OOO........OOO.h....#",
+            "#O....OOOOOOOO.OOOOOOO....O#",
+            "#OOO.OOOOOOOOO.OOOOOOOO.OOO#",
+            "#OO...OOOOOOOO.OOOOOOO...OO#",
+            "#OO...OOO..h.......OOO...OO#",
+            "#OOOO....h........c....OOOO#",
+            "#OOOOOOO...TTTTTT...OOOOOOO#",
+            "#OOOOOOO.C.TTTTTT...OOOOOOO#",
+            "#OOOOOOOO..........OOOOOOOO#",
+            "#OOOOOOOOOOOOOOOOOOOOOOOOOO#",
+            "############################"
+        ]; MAPS.de_skyway.isl = 1; // isl: Plattform bleibt 28×28 (kein Ring drumherum)
         MAPS.de_training = lmap(48, 60, M => { // Training Center – Layout laut Konzept: Spawn A (Nord), Spawn B (Süd), offene Haupthalle mit Laufgang-Ring (1. OG), Treppen an beiden Hallenseiten, Site A West, Site B Ost, Eckräume
             M.mass(1, 1, 46, 58);
             M.hall(17, 2, 30, 8); M.core(17, 2, 30, 8); M.L('K', 18, 3, 29, 7); M.L('D', 22, 9, 25, 9);                                     // Spawn A (Verteidiger) mit Rolltor zur Halle
@@ -5747,6 +5777,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             de_frost: { sky: 0x9db8d8, fog: 0xdbe5ee, floor: '#dce2e8', wallBase: '#9fb0c0', wallHue: 210, wallSat: 16, wallLight: 60, crateHue: 208, crateSat: 20, crateLight: 38 },
             de_moisty: { sky: 0x4a6b5d, fog: 0x2d4237, floor: '#3a4d39', wallBase: '#2f4032', wallHue: 135, wallSat: 25, wallLight: 35, crateHue: 85, crateSat: 35, crateLight: 28 },
             de_foundry: { sky: 0x9fb4c4, fog: 0xaab8c0, floor: '#8f949a', wallBase: '#7d8288', wallHue: 210, wallSat: 8, wallLight: 52, crateHue: 24, crateSat: 55, crateLight: 40 },
+            de_skyway: { sky: 0xa9c8e8, fog: 0xcfd8e0, floor: '#b8c0c8', wallBase: '#9fb0c0', wallHue: 195, wallSat: 22, wallLight: 62, crateHue: 24, crateSat: 50, crateLight: 40 },
             de_training: { sky: 0xbfd0dc, fog: 0xc6cacd, floor: '#9b9792', wallBase: '#b9b2a8', wallHue: 28, wallSat: 10, wallLight: 64, crateHue: 26, crateSat: 42, crateLight: 42 }
         };
         // Eigene Karten (Map-Editor): lokal gespeichert + ggf. vom Online-Host übertragene Karte (nur für die Sitzung)
@@ -5777,9 +5808,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? Object.assign({ k: MAPNAME, g: MAP }, i) : null; }
         function netMapChanged(m) { if (m.cmap) sessionStorage.setItem('netmap', JSON.stringify(m.cmap)); return !!m.map && (m.map !== MAPNAME ? !!(MAPS[m.map] || m.cmap) : !!(m.cmap && m.cmap.g.join() !== MAP.join())); }
         const MAPNAME = (k => MAPS[k] ? k : 'de_dusty')(localStorage.getItem('map') || 'de_dusty');
-        const MAP_NAMES = { de_dusty: 'Sienna', de_bazaar: 'Kasbah', de_frost: 'Tundra', de_moisty: 'Mire', de_foundry: 'Ironworks', de_training: 'Training', ar_dustyard: 'Sienna Yard', ar_frostbox: 'Tundra Box', ar_moistpit: 'Mire Pit', ar_skyline: 'Skyline' }; // Anzeigenamen der eingebauten Karten
+        const MAP_NAMES = { de_dusty: 'Sienna', de_bazaar: 'Kasbah', de_frost: 'Tundra', de_moisty: 'Mire', de_foundry: 'Ironworks', de_skyway: 'Skyway', de_training: 'Training', ar_dustyard: 'Sienna Yard', ar_frostbox: 'Tundra Box', ar_moistpit: 'Mire Pit', ar_skyline: 'Skyline' }; // Anzeigenamen der eingebauten Karten
         const MAPLABEL = CMAP_INFO[MAPNAME] ? CMAP_INFO[MAPNAME].n : (MAP_NAMES[MAPNAME] || MAPNAME); // Anzeigename (eigene Karten: selbst vergebener Name)
-        const MAP = (m => { if (m.hi || !/^de_/.test(MAPNAME)) return m; /* Hauptkarten: runde Plattform – Raster wächst um E Felder je Seite; die Karte selbst bleibt wie im Original (Außenmauern, Wege & Gänge), ringsum bis zum Kreisrand gesperrte Kulisse (off) */
+        const MAP = (m => { if (m.hi || m.isl || !/^de_/.test(MAPNAME)) return m; /* Hauptkarten: runde Plattform – Raster wächst um E Felder je Seite; die Karte selbst bleibt wie im Original (Außenmauern, Wege & Gänge), ringsum bis zum Kreisrand gesperrte Kulisse (off) */
             const E = 6, R0 = m.length, C0 = m[0].length, N = R0 + 2 * E, M = C0 + 2 * E, off = new Set(), out = [];
             for (let r = 0; r < N; r++) { let row = ''; for (let c = 0; c < M; c++) { const r0 = r - E, c0 = c - E, ins = r0 >= 0 && r0 < R0 && c0 >= 0 && c0 < C0; if (!ins || r0 === 0 || c0 === 0 || r0 === R0 - 1 || c0 === C0 - 1) off.add(r * 1000 + c); /* Außenmauer der Karte: nur unsichtbare Kollision, nach außen offen */ row += ins ? m[r0][c0] || '.' : '#'; } out.push(row); }
             out.off = off; return out; })(MAPS[MAPNAME] || MAPS.de_dusty);
@@ -5871,7 +5902,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const DSV = document.documentElement.classList.contains('dsV'); // neues Design: ruhigere Texturen + Radar in Designfarben
         if (DSV) { TILE_M.frame.color.set(0x262a31); TILE_M.ring.color.set(0x262a31); [0xde8650, 0x4d6f93, 0x3a4250].forEach((c2, i) => TILE_M.barrel[i].color.set(c2)); } // Tür-/Fensterrahmen + Fässer passend zu den Kisten
         function radarWalk(g, R, C, at, w) { // neues Design: Radar zeigt nur begehbare Wege (Wände/Kisten bleiben leer)
-            for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { const ch = at(r, c); if ('#cCbhsW'.includes(ch)) continue; g.fillStyle = ch === 'R' ? '#8c9299' : ch === 'A' || ch === 'B' ? '#8197ad' : (ch >= '1' && ch <= '6') || ch === '=' ? '#7d8791' : '#a3a9b0'; const x0 = Math.round(c * w), y0 = Math.round(r * w); g.fillRect(x0, y0, Math.round((c + 1) * w) - x0, Math.round((r + 1) * w) - y0); }
+            for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { const ch = at(r, c); if ('#cCbhsWO'.includes(ch)) continue; g.fillStyle = ch === 'R' ? '#8c9299' : ch === 'A' || ch === 'B' ? '#8197ad' : (ch >= '1' && ch <= '6') || ch === '=' ? '#7d8791' : '#a3a9b0'; const x0 = Math.round(c * w), y0 = Math.round(r * w); g.fillRect(x0, y0, Math.round((c + 1) * w) - x0, Math.round((r + 1) * w) - y0); }
         }
         function speckle(g, w, h, n, a) { for (let i = 0, nn = DSV ? n * 0.06 : n; i < nn; i++) { g.fillStyle = `rgba(${60 + Math.random() * 120 | 0},${50 + Math.random() * 90 | 0},${20 + Math.random() * 60 | 0},${a * Math.random()})`; g.fillRect(Math.random() * w, Math.random() * h, 1 + Math.random() * 2, 1 + Math.random() * 2); } }
         const texSand = makeTex(256, 256, (g, w, h) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h); speckle(g, w, h, 5000, 0.35); g.strokeStyle = 'rgba(90,70,40,.18)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 4); i++) { g.beginPath(); g.moveTo(i * 64, 0); g.lineTo(i * 64, h); g.moveTo(0, i * 64); g.lineTo(w, i * 64); g.stroke(); } }, WORLD_W / 2, WORLD_D / 2);
@@ -6492,6 +6523,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                     g.globalCompositeOperation = 'destination-in'; const m = g.createRadialGradient(256, 256, 120, 256, 256, 256); m.addColorStop(0, 'rgba(0,0,0,1)'); m.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = m; g.fillRect(0, 0, 512, 512); });
                 for (const [y, s, op] of [[-150, 900, 0.35]]) { flatP(s, s, bas(mistT, { transparent: true, depthWrite: false, opacity: op, side: DS }), cx, y, cz); } } // Dunst in der Tiefe
             // ── Runde Plattform: Rand mit Warnkante, Glasgeländer & LED-Band, Unterseite als Stahlschüssel mit Rippen, Kern & Schwebe-Triebwerken
+            if (!O.islands) { // Inselkarte: keine gemeinsame Plattform (Lücken mit freiem Himmel)
             strip([[PR - 0.7, 0.035, 0], [PR, 0.035, 1]], hazM, 0.24); strip([[PR, 0.3, 0], [PR, -0.5, 1]], yelM, 1); strip([[PR, -3.6, 0], [PR, -0.5, 1]], ledM, -0.115); /* von außen lesbar */ strip([[PR, -3.6, 0], [PR, -4.4, 1]], steelM, 1);
             strip([[PR, -4.4, 0], [PR - 4, -6.8, 0.4], [63, -12.4, 1.8]], concM, 0.25); strip([[63, -12.4, 0], [63, -9.4, 0.3]], steelM, 1); strip([[PR - 0.35, 0, 0], [PR - 0.35, 1.1, 1]], railM, 1); // Rand & Schüssel
             { const pos = []; for (let i = 0; i < NS; i++) { const a = i / NS * Math.PI * 2, b = (i + 1) / NS * Math.PI * 2; pos.push(...at(a, PR - 0.35, 1.12), ...at(b, PR - 0.35, 1.12), ...at(a, PR - 0.35, 0.5), ...at(b, PR - 0.35, 0.5)); if (i % 2 === 0) pos.push(...at(a, PR - 0.35, 0), ...at(a, PR - 0.35, 1.12)); } lines(pos, 0x9aa4ae); } // Handlauf & Pfosten
@@ -6499,6 +6531,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             for (let i = 0; i < 16; i++) { const a = (i + 0.5) / 16 * Math.PI * 2, [x, , z] = at(a, 38, 0); box(51, 2.4, 1.4, x, -11, z, steelM, -a); } for (const r of [22, 44]) strip([[r, -9.8], [r, -12.2], [r + 1.4, -12.2], [r + 1.4, -9.8]], steelM, 1); // Rippen & Ringträger
             cyl(13, 7, 22, cx, -21, cz, steelM, 32); cyl(13.4, 13.4, 1.4, cx, -10.6, cz, yelM, 32); cyl(7.3, 7.3, 1.2, cx, -32.4, cz, blueM, 32); flatP(36, 36, glowB, cx, -33.3, cz).rotation.x = Math.PI / 2; // zentraler Kern
             for (let i = 0; i < 6; i++) { const a = (i + 0.5) / 6 * Math.PI * 2 + ROT, [x, , z] = at(a, 70, 0); cyl(3.4, 2.6, 6, x, -12.4, z, steel2, 16); cyl(2.7, 2.7, 0.8, x, -15.5, z, blueM, 16); flatP(16, 16, glowB, x, -16.2, z).rotation.x = Math.PI / 2; } // Schwebe-Triebwerke
+            }
             // ── Stadionring unter freiem Himmel: Front mit LED-Bande, Unterrang, Umgang mit VIP-Logen, Oberrang, Rückwand, Stützen bis zum Boden
             strip([[106, -46, 0], [106, -9, 4]], concM, 0.6); strip([[105.85, -9, 0], [105.85, -5, 1]], ledM, 0.12); strip([[106, -5, 0], [106, -3.6, 0.2]], concM, 0.6); // Front mit LED-Bande
             strip([[106, -3.6, 0], [107.5, -3.6, 0.2], [142, 16, 2.5]], concM, 0.6); strip([[107.5, -3.4, 0], [142, 16.2, 5.6]], crowdM, 0.22); // Unterrang mit Publikum
@@ -6536,14 +6569,14 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         function skyMap() { // Hauptkarten: runde, schwebende Outdoor-Arena (THE FINALS-Stil) – Bodenplatte mit Löchern & Gitterbrücken; Stadion, Stadt & Himmel in stadiumWorld – je Karte eigener Himmel, Sitzfarbe & Anordnung
             const O = ({ de_dusty: { seed: 1, rot: 0.5, name: 'SIENNA', seat: '#c0563a', sky: ['#3f7fcf', '#7fb0e2', '#cfdeea', '#8d9bab'], haze: 0xb4c8dd, sun: 0xfff3e6, clouds: 16 }, de_bazaar: { seed: 2, rot: 1.7, name: 'KASBAH', seat: '#d08a2e', sky: ['#3a78c4', '#86b2dc', '#e2d8c4', '#9c9a90'], haze: 0xbcc4ca, sun: 0xfff0dc, clouds: 10 },
-                de_frost: { seed: 3, rot: 2.9, name: 'TUNDRA', seat: '#3a7fc0', sky: ['#2d6cc8', '#79abe6', '#d6e6f4', '#8fa2b6'], haze: 0xb8cde2, sun: 0xf4f7ff, clouds: 20 }, de_moisty: { seed: 4, rot: 4.1, name: 'MIRE', seat: '#3f8a6a', sky: ['#3e7aa8', '#87b3c8', '#d0e0de', '#8a9c9c'], haze: 0xb2c4c4, sun: 0xf8f8f0, clouds: 24 }, de_foundry: { seed: 5, rot: 5.3, name: 'IRONWORKS', seat: '#9a3b34', sky: ['#3b6fb6', '#8fb0d4', '#e8d4bf', '#9a928c'], haze: 0xb6bfc8, sun: 0xfff4ea, clouds: 14 } })[MAPNAME] || {};
+                de_frost: { seed: 3, rot: 2.9, name: 'TUNDRA', seat: '#3a7fc0', sky: ['#2d6cc8', '#79abe6', '#d6e6f4', '#8fa2b6'], haze: 0xb8cde2, sun: 0xf4f7ff, clouds: 20 }, de_moisty: { seed: 4, rot: 4.1, name: 'MIRE', seat: '#3f8a6a', sky: ['#3e7aa8', '#87b3c8', '#d0e0de', '#8a9c9c'], haze: 0xb2c4c4, sun: 0xf8f8f0, clouds: 24 }, de_foundry: { seed: 5, rot: 5.3, name: 'IRONWORKS', seat: '#9a3b34', sky: ['#3b6fb6', '#8fb0d4', '#e8d4bf', '#9a928c'], haze: 0xb6bfc8, sun: 0xfff4ea, clouds: 14 }, de_skyway: { seed: 6, rot: 0.9, name: 'SKYWAY', seat: '#2f8fa8', sky: ['#2f6fc4', '#7fb2e6', '#d8e8f4', '#8fa2b6'], haze: 0xb8cde2, sun: 0xfff6ec, clouds: 20, islands: 1 } })[MAPNAME] || {};
             const grp = new THREE.Group(); skyMap.O = O; stadiumWorld(grp, O);
             const K = m => { m.userData.keep = 1; return m; }, slabM = K(new THREE.MeshLambertMaterial({ color: 0x3a414b })), yel = K(new THREE.MeshLambertMaterial({ color: 0xf5b400 })), beam = K(new THREE.MeshLambertMaterial({ color: 0x4a5058 })), shaft = K(new THREE.MeshLambertMaterial({ color: 0x353b42 }));
             const grate = K(new THREE.MeshLambertMaterial({ map: makeTex(64, 64, g => { g.fillStyle = '#5b636b'; g.fillRect(0, 0, 64, 64); g.fillStyle = '#3a4047'; for (let i = 0; i < 64; i += 8) { g.fillRect(i, 0, 2, 64); g.fillRect(0, i, 64, 2); } g.fillStyle = '#f5b400'; g.fillRect(0, 0, 64, 4); g.fillRect(0, 60, 64, 4); }) }));
-            const B = (x0, x1, y0, y1, z0, z1, m) => { const o = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), m); o.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); grp.add(o); }, isO = (r, c) => cell(r, c) === 'O' && r >= 0 && c >= 0 && r < ROWS && c < COLS;
-            grp.add(new THREE.Mesh(holeFloorGeo(-1.2, true), slabM)); // Unterseite der runden Bodenplatte (mit Löchern)
+            const B = (x0, x1, y0, y1, z0, z1, m) => { const o = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), m); o.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); grp.add(o); }, isO = (r, c) => (cell(r, c) === 'O' && r >= 0 && c >= 0 && r < ROWS && c < COLS) || (!!O.islands && rimCell(r, c)); /* Inselkarte: Rand zählt als Abgrund (kein eckiger Rahmen) */
+            const SD = O.islands ? 3 : 9; grp.add(new THREE.Mesh(holeFloorGeo(-SD + (O.islands ? 0 : 7.8), true), slabM)); // Unterseite der Bodenplatte (mit Löchern) · Inselkarte: 3 m dicke Plattformen, darunter freier Himmel
             for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { if (!isO(r, c)) continue; const x0 = c * S, z0 = r * S; // gelbe Warnkante rund um jedes Loch
-                if (!isO(r - 1, c)) { B(x0, x0 + S, 0, 0.03, z0 - 0.3, z0, yel); B(x0, x0 + S, -9, -0.03, z0, z0 + 0.12, shaft); } if (!isO(r + 1, c)) { B(x0, x0 + S, 0, 0.03, z0 + S, z0 + S + 0.3, yel); B(x0, x0 + S, -9, -0.03, z0 + S - 0.12, z0 + S, shaft); } if (!isO(r, c - 1)) { B(x0 - 0.3, x0, 0, 0.03, z0, z0 + S, yel); B(x0, x0 + 0.12, -9, -0.03, z0, z0 + S, shaft); } if (!isO(r, c + 1)) { B(x0 + S, x0 + S + 0.3, 0, 0.03, z0, z0 + S, yel); B(x0 + S - 0.12, x0 + S, -9, -0.03, z0, z0 + S, shaft); } } /* dunkle Schachtwände: Tiefe erkennbar */
+                if (!isO(r - 1, c)) { B(x0, x0 + S, 0, 0.03, z0 - 0.3, z0, yel); B(x0, x0 + S, -SD, -0.03, z0, z0 + 0.12, shaft); } if (!isO(r + 1, c)) { B(x0, x0 + S, 0, 0.03, z0 + S, z0 + S + 0.3, yel); B(x0, x0 + S, -SD, -0.03, z0 + S - 0.12, z0 + S, shaft); } if (!isO(r, c - 1)) { B(x0 - 0.3, x0, 0, 0.03, z0, z0 + S, yel); B(x0, x0 + 0.12, -SD, -0.03, z0, z0 + S, shaft); } if (!isO(r, c + 1)) { B(x0 + S, x0 + S + 0.3, 0, 0.03, z0, z0 + S, yel); B(x0 + S - 0.12, x0 + S, -SD, -0.03, z0, z0 + S, shaft); } } /* dunkle Schachtwände: Tiefe erkennbar */
             for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { if (isO(r, c) || solid(cell(r, c))) continue; const h = (isO(r, c - 1) || isO(r, c - 2)) && (isO(r, c + 1) || isO(r, c + 2)), v = (isO(r - 1, c) || isO(r - 2, c)) && (isO(r + 1, c) || isO(r + 2, c)); if (!h && !v) continue; const x0 = c * S, z0 = r * S; // Wege übers Freie: Gitterbrücke mit Trägern
                 const g = new THREE.PlaneGeometry(S, S); g.rotateX(-Math.PI / 2); if (h) g.rotateY(Math.PI / 2); const o = new THREE.Mesh(g, grate); o.position.set(x0 + S / 2, 0.015, z0 + S / 2); grp.add(o);
                 if (v) { B(x0 - 0.05, x0 + 0.25, -1.6, 0.05, z0, z0 + S, beam); B(x0 + S - 0.25, x0 + S + 0.05, -1.6, 0.05, z0, z0 + S, beam); } else { B(x0, x0 + S, -1.6, 0.05, z0 - 0.05, z0 + 0.25, beam); B(x0, x0 + S, -1.6, 0.05, z0 + S - 0.25, z0 + S + 0.05, beam); } }
