@@ -3441,6 +3441,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Fenster":"Window",
 "Kiste":"Crate",
 "Kisten":"Crates",
+"Waffen-Look:":"Weapon look:",
+"Klassisch":"Classic",
 "Container":"Container",
 "Stufe":"Step",
 "Stufen":"Steps",
@@ -7062,7 +7064,26 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 
 
             //  if (SP[key]) { const [sx, sy, sz, sw, sh] = SP[key]; const pl = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), new THREE.MeshBasicMaterial({ transparent: true })); pl.rotation.y = -Math.PI / 2; pl.position.set(-sx - 0.003, sy, sz); pl.visible = false; g.userData.stickerMesh = pl; g.add(pl); }
-            g.visible = false; return g;
+            if (gunFx()) finalsGun(g, key); g.visible = false; return g;
+        }
+        function gunFx() { try { const v = JSON.parse(localStorage.getItem('cs_opts') || '{}').gunFx; return v === undefined ? 1 : +v; } catch (e) { return 1; } } // Waffen-Look: 1 = THE FINALS, 0 = Klassisch
+        function finalsGun(g, key) { // THE-FINALS-Look: mattschwarzes Polymer, gelber Branding-Aufdruck (Logo, Schriftzug, Textzeile), Holo-Visier, zweite Hand vorne am Lauf
+            const YE = '#8aa1b8', M = c => new THREE.MeshLambertMaterial({ color: c }), done = new Map(), ns = o => { o.userData.ns = true; g.add(o); return o; };
+            const body = key === 'knife' ? { 0x2a6b4f: 0x2b2e34, 0x2b2b30: 0x2b2e34 } : { 0x1e1e1e: 0x2b2e34, 0x3c3f44: 0x34383f, 0x1f2124: 0x272a2f, 0x6e4423: 0x2a2d33, 0x3f4a35: 0x2b2e34, 0x5a6470: 0x2b2e34, 0x3a3d42: 0x30333a, 0x26282b: 0x30333a, 0x9aa0a6: 0x383c43, 0x121416: 0x1f2125 }, small = { 0x121416: 0x18191c, 0x1e1e1e: 0x18191c, 0x3c3f44: 0x30343a, 0x9aa0a6: 0x8a9099 };
+            g.traverse(o => { if (!o.isMesh || !o.material.color) return; const t = (o.userData.ns ? small : body)[o.material.color.getHex()]; if (t === undefined) return; const k = o.material.uuid + (o.userData.ns ? 'n' : 'b'); if (!done.has(k)) { const m = o.material.clone(); m.color.setHex(t); done.set(k, m); } o.material = done.get(k); }); // alles mattschwarz
+            const glove = M(0x6b7380), sleeve = M(0x3d5a78); if (g.userData.hand) { g.userData.hand.material = glove; g.userData.hand.userData.ns = true; } // Handschuhe statt Haut
+            const P = { usp: [0.046, -0.1, 0.035, 0.12], glock: [0.046, -0.09, 0.035, 0.11], deagle: [0.056, -0.13, 0.04, 0.16], pump: [0.055, -0.04, 0.0, 0.14], mp5: [0.055, -0.075, 0.02, 0.13], ak47: [0.052, -0.09, 0.008, 0.15], m4a1: [0.05, -0.05, 0.024, 0.13], scout: [0.05, -0.2, 0.003, 0.14], awp: [0.062, -0.22, 0.005, 0.16] }[key]; if (!P) return; // [Breite, Aufdruck z, y, Länge]
+            const tx = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d')); const t = new THREE.CanvasTexture(c); t.anisotropy = 4; return new THREE.MeshBasicMaterial({ map: t, transparent: true, alphaTest: 0.3, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }); };
+            const T = finalsGun.T || (finalsGun.T = { logo: tx(512, 96, x => { x.fillStyle = YE; x.font = 'bold 84px Impact, "Arial Narrow", Arial'; x.textBaseline = 'middle'; x.fillText('CLUTCH', 96, 52); x.strokeStyle = YE; x.lineWidth = 11; x.beginPath(); x.arc(46, 48, 34, 0, 7); x.stroke(); x.beginPath(); x.moveTo(46, 30); x.lineTo(64, 48); x.lineTo(46, 66); x.lineTo(28, 48); x.fill(); }), /* großer Schriftzug + Logo */
+                line: tx(512, 32, x => { x.fillStyle = YE; x.font = 'bold 20px monospace'; x.textBaseline = 'middle'; x.fillText('CLUTCH  |  REACH THE FINAL  |  00:00:00', 6, 17); }) }); /* kleine Textzeile */
+            const [w, dz, dy, dl] = P, side = (m, ww, hh, z, y) => { for (const sx of [-1, 1]) { const d = ns(new THREE.Mesh(new THREE.PlaneGeometry(ww, hh), m)); d.position.set(sx * (w / 2 + 0.0016), y, z); d.rotation.y = sx * Math.PI / 2; } };
+            side(T.logo, dl, dl * 96 / 512, dz, dy); side(T.line, dl * 0.9, dl * 0.9 / 16, dz - dl * 0.05, dy + dl * 96 / 512 * 0.5 + 0.007); // Aufdruck auf beiden Seiten
+            const HS = { ak47: [0.056, -0.06], m4a1: [0.066, -0.0], mp5: [0.05, -0.1] }[key]; if (HS) { const [hy, hz] = HS, dk = M(0x16181b), B = (a, b, c, x, y, z, m = dk) => { const o = ns(new THREE.Mesh(new THREE.BoxGeometry(a, b, c), m)); o.position.set(x, y, z); return o; }; // Holo-Visier
+                B(0.03, 0.01, 0.06, 0, hy + 0.005, hz); B(0.006, 0.042, 0.06, -0.02, hy + 0.03, hz); B(0.006, 0.042, 0.06, 0.02, hy + 0.03, hz); B(0.046, 0.008, 0.064, 0, hy + 0.054, hz); B(0.046, 0.03, 0.02, 0, hy + 0.024, hz + 0.03); B(0.03, 0.003, 0.03, 0, hy + 0.059, hz, new THREE.MeshBasicMaterial({ color: 0xe9e9e9 }));
+                const ln = ns(new THREE.Mesh(new THREE.PlaneGeometry(0.034, 0.034), new THREE.MeshBasicMaterial({ color: 0x7fd8ff, transparent: true, opacity: 0.3, depthWrite: false }))); ln.position.set(0, hy + 0.031, hz - 0.02); }
+            const H = { ak47: [-0.055, -0.36], m4a1: [-0.045, -0.33], mp5: [-0.06, -0.3], pump: [-0.07, -0.385], scout: [-0.05, -0.3], awp: [-0.055, -0.33], usp: [-0.1, 0.03, 1], glock: [-0.1, 0.03, 1], deagle: [-0.11, 0.03, 1] }[key]; // zweite Hand: vorne am Lauf (Pistolen: Stützhand am Griff)
+            if (H) { const [hy, hz, pis] = H, hx = pis ? -0.04 : 0, hand = ns(new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.06, 0.1), glove)); hand.position.set(hx, hy, hz);
+                const a = new THREE.Vector3(hx - 0.01, hy - 0.025, hz + 0.04), b = new THREE.Vector3(pis ? -0.32 : -0.46, -0.32, pis ? 0.3 : 0.06), arm = ns(new THREE.Mesh(new THREE.BoxGeometry(0.068, 0.068, a.distanceTo(b)), sleeve)); arm.position.copy(a).add(b).multiplyScalar(0.5); arm.lookAt(b); g.userData.hand2 = [hand, arm]; }
         }
         const vm = new THREE.Group(); camera.add(vm); const vmModels = {}; for (const k in W) { vmModels[k] = makeViewModel(k); vm.add(vmModels[k]); }
         for (const k in vmModels) vmModels[k].traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679 && !o.userData.ns) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } }); for (const k in vmModels) inkify(vmModels[k], 0.35, 1);// ================= SKINS & CASES =================
@@ -7339,6 +7360,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function makeDropModel(key, sid, own) {
             const g = makeViewModel(key);
             if (g.userData.hand && g.userData.hand.parent) g.userData.hand.parent.remove(g.userData.hand); // (beim Messer sitzt die Hand in der Haltungs-Gruppe)
+            for (const o of g.userData.hand2 || []) g.remove(o); // THE-FINALS-Look: Stützhand & Arm
             g.visible = true; g.scale.setScalar(1.8);
             const sk = own ? skinOf(key) : (sid ? SKINS.find(s => s.id === sid) : null); let i = 0;
             g.traverse(o => { if (o.isMesh) { o.castShadow = true; if (sk && !o.userData.ns && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial)) { o.material = o.material.clone(); skinMat(o, sk, i); i++; } } });
@@ -8133,7 +8155,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         // =====================================================================
         const BIND_DEF = { fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', crouch: 'ControlLeft', jump: 'Space', use: 'KeyE', reload: 'KeyR', buy: 'KeyB', lastw: 'KeyQ', drop: 'KeyG', board: 'Tab', abil: 'KeyF', walk: 'ShiftLeft', inspect: 'KeyF', ping: 'Digit5' }; const BIND_LBL = { fwd: 'Vorwärts', back: 'Rückwärts', left: 'Links', right: 'Rechts', crouch: 'Ducken', jump: 'Springen', use: 'Benutzen / Entschärfen', reload: 'Nachladen', buy: 'Kaufmenü', lastw: 'Letzte Waffe', drop: 'Waffe fallen lassen', board: 'Scoreboard', abil: 'Fähigkeit (Gauntlet)', walk: 'Langsam gehen (leise)', inspect: 'Waffe inspizieren', ping: 'Pingen (Markierung fürs Team)' };
         const BIND = Object.assign({}, BIND_DEF, JSON.parse(localStorage.getItem('cs_binds') || '{}'));
-        const OPT = Object.assign({ mzoom: 1.1, outCol: '#ff3b4a', outOn: true, tsens: 1.8, sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 80, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
+        const OPT = Object.assign({ mzoom: 1.1, outCol: '#ff3b4a', outOn: true, tsens: 1.8, sens: 1, vol: 1, gfx: 1, chCol: '#2eff2e', chLen: 7, chGap: 4, chThick: 2, chDot: false, chDyn: true, fov: 80, vmX: 0, vmY: 0, vmZ: 0, hudCol: '#e8c98a', fps: 0, radar: 1, kf: 1, hitSnd: 0, killSnd: 1, tbs: 1, tba: 1, gunFx: 1 }, JSON.parse(localStorage.getItem('cs_opts') || '{}'));
         const OUT_MAT = new THREE.MeshBasicMaterial({ color: OPT.outCol, side: THREE.BackSide }); // Gegner-Umrandung: leicht größere Rückseiten-Hülle je Körperteil (nur sichtbar, wo der Gegner sichtbar ist)
         function enemyOutline(g) { const L = g.userData.outl = [], list = []; g.traverse(o => { if (o.isMesh && o.geometry && o.geometry.type === 'BoxGeometry' && !o.userData.isOut) list.push(o); });
             for (const o of list) { const P = o.geometry.parameters; if ([P.width, P.height, P.depth].filter(v => v >= 0.12).length < 2) continue; const m = new THREE.Mesh(new THREE.BoxGeometry(P.width + 0.055, P.height + 0.055, P.depth + 0.055), OUT_MAT); m.userData.isOut = 1; m.visible = false; o.add(m); L.push(m); } }
@@ -8359,6 +8381,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             for (const s of shells) { if (!s.m.visible) continue; s.t -= dt; s.v.y -= 7 * dt; s.m.position.addScaledVector(s.v, dt); s.m.rotation.x += 14 * dt; s.m.rotation.z += 9 * dt; if (s.t <= 0) s.m.visible = false; }
         }
         function knifeNames() { for (const sk of SKINS) if (sk.w === 'knife' && !sk.km) sk.n = sk.n.replace(/^(Butterfly|Karambit)/, W.knife.name); }
+        function rebuildVM() { for (const k in vmModels) { const old = vmModels[k], g = makeViewModel(k); g.traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679 && !o.userData.ns) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } }); inkify(g, 0.35, 1); g.visible = old.visible; vm.remove(old); vm.add(g); vmModels[k] = g; } applySkins(); if (started && player.weapons[player.slot]) updateVM(); } // Waffen-Look gewechselt
         function setKnife(t) { // Messer wechseln: Viewmodel neu bauen, Namen anpassen
             if (!KNIVES[t]) return; localStorage.setItem('knifetype', t); W.knife.name = KNIVES[t]; knifeNames();
             const old = vmModels.knife, g = makeViewModel('knife'); g.traverse(o => { if (o.isMesh && (o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) && o.material.color.getHex() !== 0xd2a679 && !o.userData.ns) { o.material = o.material.clone(); o.userData.oc = o.material.color.getHex(); } });
@@ -9047,6 +9070,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
  <label style="display:block">Waffe links/rechts: <b id="vmXV">${OPT.vmX}</b><input data-opt="vmX" type="range" min="-0.3" max="0.2" step="0.02" value="${OPT.vmX}" style="width:100%"></label>
  <label style="display:block">Waffe hoch/runter: <b id="vmYV">${OPT.vmY}</b><input data-opt="vmY" type="range" min="-0.2" max="0.15" step="0.02" value="${OPT.vmY}" style="width:100%"></label>
  <label style="display:block">Waffe nah/fern: <b id="vmZV">${OPT.vmZ}</b><input data-opt="vmZ" type="range" min="-0.2" max="0.2" step="0.02" value="${OPT.vmZ}" style="width:100%"></label>
+ <label style="display:block;margin:4px 0">Waffen-Look: <select data-opt="gunFx" style="font:bold 13px Arial;padding:4px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px">${[[1, 'THE FINALS'], [0, 'Klassisch']].map(([v, l]) => `<option value="${v}" ${OPT.gunFx === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
  <label style="display:block;margin:4px 0">HUD-Farbe: <input data-opt="hudCol" type="color" value="${OPT.hudCol}" style="vertical-align:middle;width:40px;height:22px;padding:0;border:0;background:none"></label>
  <label style="display:block;margin:4px 0">Radar: <select data-opt="radar" style="font:bold 13px Arial;padding:4px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px">${[[0, 'Aus'], [0.7, 'Klein'], [1, 'Normal'], [1.4, 'Groß']].map(([v, l]) => `<option value="${v}" ${OPT.radar === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
  <input data-opt="kf" type="checkbox" ${OPT.kf ? 'checked' : ''} style="margin-left:12px"> Killfeed <input data-opt="fps" type="checkbox" ${OPT.fps ? 'checked' : ''} style="margin-left:12px"> FPS anzeigen</label>${window.cswoApp ? '<label title="Für Monitore mit 144 Hz und mehr – die App startet dafür neu"><input type="checkbox" id="appFps" ' + (window.cswoApp.fpsUnlock ? 'checked' : '') + '> 💻 FPS-Limit aufheben (PC-App, Neustart)</label>' : ''}
@@ -9064,7 +9088,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const setTab = k => { SETTAB = k; document.querySelectorAll('.setsec').forEach(d => d.style.display = d.dataset.sec === k ? '' : 'none'); document.querySelectorAll('[data-stab]').forEach(b => b.classList.toggle('on', b.dataset.stab === k)); };
             document.querySelectorAll('[data-stab]').forEach(b => b.onclick = () => setTab(b.dataset.stab)); setTab(rebindKey ? 'keys' : SETTAB);
  const beg = $('btnEditGo'); if (beg) beg.onclick = () => btnEditStart();
-            document.querySelectorAll('[data-opt]').forEach(el => el.oninput = el.onchange = () => { const k = el.dataset.opt; OPT[k] = el.type === 'checkbox' ? (el.checked ? 1 : 0) : el.type === 'color' ? el.value : +el.value; const v = $(k + 'V'); if (v) v.textContent = el.value; saveOpts(); applyLook(); if (k === 'hitSnd' && el.type !== 'range') { initAudio(); sfx('hit'); } });            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
+            document.querySelectorAll('[data-opt]').forEach(el => el.oninput = el.onchange = () => { const k = el.dataset.opt; OPT[k] = el.type === 'checkbox' ? (el.checked ? 1 : 0) : el.type === 'color' ? el.value : +el.value; const v = $(k + 'V'); if (v) v.textContent = el.value; saveOpts(); applyLook(); if (k === 'hitSnd' && el.type !== 'range') { initAudio(); sfx('hit'); } if (k === 'gunFx') rebuildVM(); });            document.querySelectorAll('[data-bind]').forEach(el => el.onclick = () => { rebindKey = el.dataset.bind; showSettings(); });
             $('outCol').oninput = e => { OPT.outCol = e.target.value; OUT_MAT.color.set(OPT.outCol); saveOpts(); }; $('outOn').onchange = e => { OPT.outOn = e.target.checked; saveOpts(); };
             $('langSel').onchange = e => setLang(e.target.value);
             if ($('mzoomSlider')) $('mzoomSlider').oninput = e => { OPT.mzoom = +e.target.value; $('mzoomval').textContent = Math.round(OPT.mzoom * 100) + ' %'; saveOpts(); };
