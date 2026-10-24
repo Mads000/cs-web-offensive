@@ -308,7 +308,7 @@ function matchView(mt, key) {
   const r = rooms.get(room); if (r) for (const old of r.clients.filter(c => c.acc === ws.acc)) { r.clients.splice(r.clients.indexOf(old), 1); try { old.close(); } catch { } }
   ws.rk = L; return true;
  }
- function joined(L) { const c = connected(L); if (!L.started) for (const cl of roomOf(L).clients) tx(cl, { type: 'rkst', n: c.size, N: L.keys.length }); }
+ function joined(L) { const c = connected(L); for (const cl of roomOf(L).clients) tx(cl, Object.assign({ type: 'rkst', n: c.size, N: L.keys.length }, L.started ? { st: 1, sc: L.sc } : {})); } // läuft schon: Wiederkehrer (ggf. allein = neuer Host) startet sofort mit dem Server-Spielstand
  const HOST_ONLY = new Set(['start', 'glstart', 'roster', 'round', 'end', 'over', 'snap', 'glphase', 'glduel', 'glend', 'glstand', 'glover', 'glsd', 'glsabx', 'raw', 'dhstart', 'dhend', 'dhs', 'dhev', 'dhbh', 'dhdie', 'dhhit']);
  // Nachricht im Ranked-Raum: false = verwerfen, String = (umgeschriebene) Nachricht weiterleiten
  function msg(ws, r, m, raw) {

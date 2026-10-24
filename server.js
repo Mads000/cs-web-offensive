@@ -46,7 +46,7 @@ const avOf = u => !u ? -1 : u.avImg ? 'u' + (u.avV || 1) : Number.isInteger(u.av
 const AV_MAX = 24000, AV_SIG = { 'image/png': b => b.length > 24 && b.readUInt32BE(0) === 0x89504e47 && b.readUInt32BE(4) === 0x0d0a1a0a, 'image/jpeg': b => b.length > 4 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff, 'image/webp': b => b.length > 12 && b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP' };
 function avImg(s) { const m = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(String(s || '')); if (!m || m[2].length > AV_MAX) return null; const buf = Buffer.from(m[2], 'base64'); return AV_SIG[m[1]](buf) ? { mime: m[1], data: m[2] } : null; }
 const isCreator = u => !!(u && u.cr && !u.cr.rv && Object.keys(u.cr.maps || {}).length);
-const bdOf = u => (isCreator(u) ? 'm' : '') + (u && (u.earnT || 0) >= SKIN_BADGE ? 's' : ''); // Kurzform für Listen: m = Map-Creator, s = Skin-Creator
+const bdOf = u => (isCreator(u) ? 'm' : '') + (u && (u.earnT || 0) >= SKIN_BADGE ? 's' : '') + (u && u.pt ? 'p' : ''); // Kurzform für Listen: m = Map-Creator, s = Skin-Creator, p = Playtester
 const rooms = new Map(), rk = require('./ranked').createRanked({ RK, persist: () => persist(), rooms, auth: tok => byTok(tok),
  user: n => USERS[String(n).toLowerCase()] || null, friends: (a, b) => !!USERS[a] && (USERS[a].fr || []).some(x => x.toLowerCase() === b),
  info: k => ({ av: avOf(USERS[k]), bd: bdOf(USERS[k]) }), maps: () => Object.keys(PUB).filter(k => /^pub_/.test(k) && PUB[k].off), mapData: k => PUB[k] && PUB[k].off ? PUB[k] : null });
@@ -90,7 +90,7 @@ function api(p, b, ip) {
  if (pw.length < 4 || pw.length > 64) return { err: 'Passwort: 4–64 Zeichen' };
  if (p === '/api/register') {
  if (USERS[key]) return { err: 'Name ist schon vergeben.' };
- const salt = crypto.randomBytes(16).toString('hex'), u = USERS[key] = { name, salt, hash: hashPw(pw, salt), toks: [], ver: 1, data: cleanData(b.data) };
+ const salt = crypto.randomBytes(16).toString('hex'), u = USERS[key] = { name, salt, hash: hashPw(pw, salt), toks: [], ver: 1, data: cleanData(b.data), ct: Date.now() }; // ct = Erstellungsdatum (ältere Accounts haben keins)
  const tok = newTok(u); persist(); return { ok: 1, u: name, tok, ver: u.ver, av: -1 };
  }
  const u = USERS[key]; if (!u || !crypto.timingSafeEqual(Buffer.from(hashPw(pw, u.salt), 'hex'), Buffer.from(u.hash, 'hex'))) return { err: 'Name oder Passwort falsch.' };
@@ -99,6 +99,10 @@ function api(p, b, ip) {
  // ── Weitere Codes (Code nur als Render-Umgebungsvariable, Inhalt als Render-Secret-File) ──
  if (p === '/api/code') {
  if (limited(ip)) return { err: 'Zu viele Versuche – bitte kurz warten.' };
+ if (String(b.code || '').toLowerCase() === String(process.env.PLAYTEST_CODE || 'clutchplaytest').toLowerCase()) { // 🧪 Playtester-Code → Abzeichen dauerhaft am Account
+ const u = byTok(b.tok); if (!u) return { err: 'Bitte zuerst einloggen – das Abzeichen hängt am Account.' };
+ if (u.pt) return { ok: 1, pt: 1 }; u.pt = Date.now(); persist(); return { ok: 1, pt: 1, neu: 1 };
+ }
  const want = Buffer.from(String(process.env.DEBUG_CODE || '')), c = Buffer.from(String(b.code || '').toLowerCase());
  if (!want.length || c.length !== want.length || !crypto.timingSafeEqual(c, want)) return { err: 1 };
  for (const f of ['/etc/secrets/cheats.js', path.join(__dirname, 'cheats.js')]) { try { return { ok: 1, js: fs.readFileSync(f, 'utf8') }; } catch { } }
@@ -114,7 +118,7 @@ function api(p, b, ip) {
  const t = USERS[String(b.n || '').trim().toLowerCase()]; if (!t) return { err: 'Spieler nicht gefunden.' }; const key = t.name.toLowerCase();
  let xp = null; try { const v = Math.floor(+JSON.parse(t.data.prog || 'null').xp); if (v >= 0) xp = v; } catch { } // Level-XP kommt aus dem Spielstand (wie im eigenen Profil)
  const maps = Object.entries((t.cr && t.cr.maps) || {}).map(([k, x]) => ({ n: x.n, t: x.t, now: !!(PUB[k] && PUB[k].off && PUB[k].cr === key) }));
- return Object.assign({ ok: 1, n: t.name, av: avOf(t), xp, badges: { map: isCreator(t) ? { maps } : null, skin: (t.earnT || 0) >= SKIN_BADGE ? { coins: t.earnT, goal: SKIN_BADGE } : null } }, rk.pub(key));
+ return Object.assign({ ok: 1, n: t.name, av: avOf(t), xp, ct: t.ct || null, badges: { map: isCreator(t) ? { maps } : null, skin: (t.earnT || 0) >= SKIN_BADGE ? { coins: t.earnT, goal: SKIN_BADGE } : null, pt: t.pt ? { t: t.pt } : null } }, rk.pub(key));
  }
  // ── Hochgeladenes Profilbild eines Spielers entfernen (Moderation, nur mit Code) → zurück zum Standard-Avatar ──
  if (p === '/api/rmav') {
