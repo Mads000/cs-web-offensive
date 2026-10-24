@@ -94,7 +94,7 @@ function api(p, b, ip) {
  const tok = newTok(u); persist(); return { ok: 1, u: name, tok, ver: u.ver, av: -1 };
  }
  const u = USERS[key]; if (!u || !crypto.timingSafeEqual(Buffer.from(hashPw(pw, u.salt), 'hex'), Buffer.from(u.hash, 'hex'))) return { err: 'Name oder Passwort falsch.' };
- const tok = newTok(u); persist(); return { ok: 1, u: u.name, tok, ver: u.ver, data: u.data, av: avOf(u) };
+ const tok = newTok(u); persist(); return { ok: 1, u: u.name, tok, ver: u.ver, data: u.data, av: avOf(u), pt: u.pt ? 1 : 0 };
  }
  // ── Weitere Codes (Code nur als Render-Umgebungsvariable, Inhalt als Render-Secret-File) ──
  if (p === '/api/code') {
