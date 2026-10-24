@@ -5411,7 +5411,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
     <script>
         const NIGHT = (() => { const rn = () => Math.random() < 0.5; try { const f = sessionStorage.getItem('dnforce'); sessionStorage.removeItem('dnforce'); if (f === '0' || f === '1') return f === '1'; // Online: Tageszeit des Hosts übernehmen
             const a = JSON.parse(localStorage.getItem('cs_acc') || 'null'), c = JSON.parse(localStorage.getItem('gamecfg') || '{}'); if (a && a.pt && !sessionStorage.getItem('rk') && (c.dn === 0 || c.dn === 1)) return c.dn === 1; return rn(); } catch (e) { return rn(); } })(); // 🎲 Tag oder Nacht per Zufall · 🧪 Playtester: in Customs fest wählbar
-        const REAL_LOOK = (() => { try { return NIGHT && ['de_dusty', 'de_bazaar', 'de_frost', 'de_moisty', 'de_foundry', 'de_skyway'].includes(localStorage.getItem('map') || 'de_dusty'); } catch (e) { return false; } })(); // Grafikstil Realistisch (nur Hauptkarten)
+        const HIDE_MAPS = ['de_training', 'de_skyway', 'ar_skyline']; try { if (HIDE_MAPS.includes(localStorage.getItem('map'))) localStorage.setItem('map', 'de_dusty'); } catch (e) { } // ausgeblendet (Code bleibt): nicht mehr wählbar
+        const REAL_LOOK = (() => { try { return NIGHT &&['de_dusty', 'de_bazaar', 'de_frost', 'de_moisty', 'de_foundry', 'de_skyway'].includes(localStorage.getItem('map') || 'de_dusty'); } catch (e) { return false; } })(); // Grafikstil Realistisch (nur Hauptkarten)
         if (document.documentElement.classList.contains('dsV') && REAL_LOOK) THREE.MeshLambertMaterial = class extends THREE.MeshStandardMaterial { constructor(p) { super(p); if (!p || p.roughness === undefined) this.roughness = 0.6; if (!p || p.metalness === undefined) this.metalness = 0.0; this.envMapIntensity = 0.34; } }; // Realistisch: physikalische Materialien (Rauheit, Spiegelung des Himmels)
         else if (document.documentElement.classList.contains('dsV')) { // Comic-Look (neues Design): Cel-Shading – alle Lambert-Materialien werden Toon-Materialien mit 3 harten Lichtstufen
             const grad = new THREE.DataTexture(new Uint8Array([89, 89, 89, 255, 166, 166, 166, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat); grad.minFilter = grad.magFilter = THREE.NearestFilter; /* Comic: 3 harte Lichtstufen */ grad.generateMipmaps = false; grad.needsUpdate = true;
@@ -5955,7 +5956,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (CRT.rt.width !== db.x || CRT.rt.height !== db.y) CRT.rt.setSize(db.x, db.y); CRT.mat.uniforms.res.value.copy(db); return CRT.rt; }
         function crtPass() { if (!OPT.crt || !CRT.rt) return; CRT.mat.uniforms.time.value = performance.now() / 1000; renderer.setRenderTarget(null); renderer.render(CRT.sc, CRT.cam); }
         function renderMain() {
-            if (!started) { menuStudio(); return; } // alle Menüs (Hauptmenü, Karriere, Einstellungen …): Studio statt Kartenansicht
+            if (!started || gameEnded) { menuStudio(); return; } // alle Menüs + Endscreens (Hauptmenü, Karriere, Einstellungen …): Studio statt Kartenansicht
             if (skyMap.tick) skyMap.tick(); // Stadion: Laufschrift, Bildschirme, Hologramme
             if (!INK_PP) { renderer.setRenderTarget(crtRT()); renderer.render(scene, camera); crtPass(); return; }
             if (!INK.rt) { const dt = new THREE.DepthTexture(); dt.format = THREE.DepthStencilFormat; dt.type = THREE.UnsignedInt248Type; INK.rt = new THREE.WebGLRenderTarget(1, 1, { depthTexture: dt, depthBuffer: true, stencilBuffer: true, /* Stencil: Mitspieler-Silhouette nur hinter Wänden */ minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
@@ -6905,7 +6906,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function skyMap() { // Hauptkarten: runde, schwebende Outdoor-Arena (THE FINALS-Stil) – Bodenplatte mit Löchern & Gitterbrücken; Stadion, Stadt & Himmel in stadiumWorld – je Karte eigener Himmel, Sitzfarbe & Anordnung
             const O = ({ de_dusty: { seed: 1, rot: 0.5, name: 'SIENNA', seat: '#c0563a', sky: ['#3f7fcf', '#7fb0e2', '#cfdeea', '#8d9bab'], haze: 0xb4c8dd, sun: 0xfff3e6, clouds: 16 }, de_bazaar: { seed: 2, rot: 1.7, name: 'KASBAH', seat: '#d08a2e', sky: ['#3a78c4', '#86b2dc', '#e2d8c4', '#9c9a90'], haze: 0xbcc4ca, sun: 0xfff0dc, clouds: 10 },
                 de_frost: { seed: 3, rot: 2.9, name: 'TUNDRA', seat: '#3a7fc0', sky: ['#2d6cc8', '#79abe6', '#d6e6f4', '#8fa2b6'], haze: 0xb8cde2, sun: 0xf4f7ff, clouds: 20 }, de_moisty: { seed: 4, rot: 4.1, name: 'MIRE', seat: '#3f8a6a', sky: ['#3e7aa8', '#87b3c8', '#d0e0de', '#8a9c9c'], haze: 0xb2c4c4, sun: 0xf8f8f0, clouds: 24 }, de_foundry: { seed: 5, rot: 5.3, name: 'IRONWORKS', seat: '#9a3b34', sky: ['#3b6fb6', '#8fb0d4', '#e8d4bf', '#9a928c'], haze: 0xb6bfc8, sun: 0xfff4ea, clouds: 14 }, de_skyway: { seed: 6, rot: 0.9, name: 'SKYWAY', seat: '#2f8fa8', sky: ['#2f6fc4', '#7fb2e6', '#d8e8f4', '#8fa2b6'], haze: 0xb8cde2, sun: 0xfff6ec, clouds: 20, islands: 1 } })[MAPNAME] || {};
-            const grp = new THREE.Group(); skyMap.O = O; stadiumWorld(grp, O);
+            const grp = skyMap.grp = new THREE.Group(); skyMap.O = O; stadiumWorld(grp, O);
             const K = m => { m.userData.keep = 1; return m; }, slabM = K(new THREE.MeshLambertMaterial({ color: 0x3a414b })), yel = K(HALLMAP ? new THREE.MeshBasicMaterial({ color: new THREE.Color(O.seat || '#8aa1b8').lerp(new THREE.Color(0xffffff), 0.2) }) : new THREE.MeshLambertMaterial({ color: 0xf5b400 })), beam = K(new THREE.MeshLambertMaterial({ color: 0x4a5058 })), shaft = K(new THREE.MeshLambertMaterial({ color: 0x353b42 }));
             const grate = K(new THREE.MeshLambertMaterial({ map: makeTex(64, 64, g => { g.fillStyle = '#5b636b'; g.fillRect(0, 0, 64, 64); g.fillStyle = '#3a4047'; for (let i = 0; i < 64; i += 8) { g.fillRect(i, 0, 2, 64); g.fillRect(0, i, 64, 2); } g.fillStyle = HALLMAP ? (O.seat || '#8aa1b8') : '#f5b400'; g.fillRect(0, 0, 64, 4); g.fillRect(0, 60, 64, 4); }) }));
             const B = (x0, x1, y0, y1, z0, z1, m) => { const o = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), m); o.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); grp.add(o); }, isO = (r, c) => (cell(r, c) === 'O' && r >= 0 && c >= 0 && r < ROWS && c < COLS) || (!!O.islands && rimCell(r, c)); /* Inselkarte: Rand zählt als Abgrund (kein eckiger Rahmen) */
@@ -7618,7 +7619,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function remeshAll() { for (const e of [...bots, ...NET.players.values()]) { if (!e.mesh) continue; const m = makeBotMesh(e.team, e.ag, false, e.hat); m.group.position.copy(e.mesh.position); m.group.rotation.copy(e.mesh.rotation); m.group.visible = e.mesh.visible; scene.remove(e.mesh); e.mesh = m.group; e.hit = m.hit; e.flash = m.flash; e.robo = false; m.hit.forEach(h => h.userData.ent = e); } }
         { const v = localStorage.getItem('agent'); store.agent = AGENTS.some(a => a.id === v) || v === 'fit' ? v : 'std'; }
         const duckHat = () => 0; // Zubehör entfernt (ersetzt durch Kleidung)
-        function makeBotMesh(team, agentId, raw, hat) {
+        const CHAR_W = 1.22, CHAR_H = 1.05; // Spielfiguren im Spiel breiter & etwas größer (aus der Ferne besser erkennbar) – Trefferzonen wachsen mit
+        function makeBotMesh(team, agentId, raw, hat) { const m = makeBotMesh0(team, agentId, raw, hat); if (!raw) { const k = new THREE.Group(); m.group.children.slice().forEach(o => k.add(o)); k.scale.set(CHAR_W, CHAR_H, CHAR_W); m.group.add(k); m.group.userData.inner = k; } return m; } // innere Gruppe: scale.y der Hauptgruppe bleibt fürs Ducken frei
+        function makeBotMesh0(team, agentId, raw, hat) {
             if (!raw) agentId = agentFor(team, agentId); // raw: Menü-Vorschau zeigt immer den eigenen Agenten
             const F = typeof agentId === 'string' && agentId.startsWith('fit:') ? parseFit(agentId) : null; // 👕 eigene Kleidung
             const g = new THREE.Group(), T = team === 'T'; const M = c => new THREE.MeshLambertMaterial({ color: c }), AG = AGENTS.find(a => a.id === agentId && a.id !== 'std');
@@ -8131,7 +8134,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         function exPickArena() {
             const nmA = k => CMAP_INFO[k] ? CMAP_INFO[k].n : (MAP_NAMES[k] || k.replace(/^ar_/, ''));
-            showOverlay(`<h1>🏟 ARENA ERKUNDEN<small>WÄHLE EINE ARENA</small></h1><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:700px">${Object.keys(ARENAS).map(k => `<button data-xa="${k}">${nmA(k)}</button>`).join('')}</div><div><button id="xaBack">Zurück</button></div>`);
+            showOverlay(`<h1>🏟 ARENA ERKUNDEN<small>WÄHLE EINE ARENA</small></h1><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:700px">${Object.keys(ARENAS).filter(k => !HIDE_MAPS.includes(k)).map(k => `<button data-xa="${k}">${nmA(k)}</button>`).join('')}</div><div><button id="xaBack">Zurück</button></div>`);
             document.querySelectorAll('[data-xa]').forEach(b => b.onclick = () => exStart(b.dataset.xa));
             $('xaBack').onclick = () => { sessionStorage.setItem('opentab', 'play'); showMenu(); };
         }
@@ -9027,7 +9030,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on && !AL.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
         document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button,.mapc,[data-cat],.subnav b,#cstabs a,.inv,.gltb')) { initAudio(); sfx('ui'); } }, true);
         addEventListener('beforeunload', e => { if (!window.cswoApp && started && !gameEnded && NET.on && !NET.inLobby) { e.preventDefault(); e.returnValue = ''; } }); // Browser: Strg+W / Neuladen mitten im Online-Match erst nachfragen (Verlassen-Knopf setzt NET.on = false → keine Frage)
-        function showOverlay(html, trans) { const o = $('overlay'); o.classList.remove('oldui'); o.innerHTML = html; o.style.display = 'flex'; o.style.background = trans ? 'none' : 'rgba(8,11,15,.82)'; } function leaveGame() {
+        function showOverlay(html, trans) { const o = $('overlay'); o.classList.remove('oldui'); o.innerHTML = html; o.style.display = 'flex'; o.style.background = trans ? 'none' : started && gameEnded ? 'rgba(8,11,15,.4)' : 'rgba(8,11,15,.82)'; } /* Endscreen: TV-Studio scheint durch */ function leaveGame() {
             if (NET.ws) { NET.on = false; NET.ws.close(); }
             location.reload();
         }
@@ -9631,7 +9634,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function gridList(ar, pick) {
             listArgs = [ar, pick];
             setTimeout(() => $('overlay').classList.add('oldui')); /* Editor-Listen in Originalgröße */
-            const keys = Object.keys(ar ? ARENAS : MAPS), own = k => !!(ar ? CARS : CMAPS)[k], pub = k => /^puba?_/.test(k), nm = k => CMAP_INFO[k] ? CMAP_INFO[k].n : (MAP_NAMES[k] || k.replace(/^(ar|de)_/, '')), CH = ar ? 180 : 110;
+            const keys = Object.keys(ar ? ARENAS : MAPS).filter(k => !HIDE_MAPS.includes(k)), own = k => !!(ar ? CARS : CMAPS)[k], pub = k => /^puba?_/.test(k), nm = k => CMAP_INFO[k] ? CMAP_INFO[k].n : (MAP_NAMES[k] || k.replace(/^(ar|de)_/, '')), CH = ar ? 180 : 110;
             if (!ar) edFrom = 'maps';
             showOverlay(`<h1 style="font-size:32px">${pick ? '🏟 ARENEN WÄHLEN<small>WELCHE SOLLEN GESPIELT WERDEN?</small>' : ar ? '🏟 ARENA-EDITOR<small>GAUNTLET & 1V1</small>' : '🗺️ MAP-EDITOR<small>WETTKAMPF & DEATHMATCH</small>'}</h1>
  <p style="font-size:12px;color:#8fa3b8;margin:0 0 8px">${pick ? 'Angehakte Arenen kommen in die Zufallsauswahl · Klick auf eine Arena schaltet um' : 'Klick (oder Rechtsklick) auf eine ' + (ar ? 'Arena' : 'Karte') + ' für Bearbeiten, Teilen & mehr'}</p>
@@ -9809,7 +9812,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             edFrom = 'play';
             $('hud').style.display = 'none'; setupMenuScene();
             const savedName = localStorage.getItem('pname') || '';
-            const mapCards = Object.keys(MAPS).map(m => {
+            const mapCards = Object.keys(MAPS).filter(m => !HIDE_MAPS.includes(m)).map(m => {
                 const nice = CMAP_INFO[m] ? CMAP_INFO[m].n : (MAP_NAMES[m] || m.replace('de_', '')), Nice = nice[0].toUpperCase() + nice.slice(1);
                 const wt = '0' + (1 + Math.floor(Math.random() * 2)) + ':' + String(10 + Math.floor(Math.random() * 49)).padStart(2, '0');
                 return `<div class="mapc ${m === MAPNAME ? 'sel' : ''}" data-map="${m}"><canvas width="200" height="300"></canvas><div class="chk"></div><div class="emb">${Nice[0]}</div><b>${Nice}</b><span>🕓 Wait Time ${wt}</span></div>`;
@@ -11331,10 +11334,11 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const info = { key, ox, rows, R, C, aabbs: [], meshes: [], spawnT: [], spawnK: [], cells: [], fx: [] }; const grp = new THREE.Group(); scene.add(grp);
             const aCell = (r, c) => (r < 0 || c < 0 || r >= R || c >= C) ? '#' : (rows[r][c] || '.');
             const box = (x0, x1, y0, y1, z0, z1, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), mat); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); m.castShadow = m.receiveShadow = true; grp.add(m); info.meshes.push(m); info.aabbs.push({ minX: x0, maxX: x1, minZ: z0, maxZ: z1, top: y1, bot: y0 }); return m; };
+            const MLK = HALLMAP && key !== 'ar_skyline'; // Karten-Look: Arena nutzt Materialien, Licht & Stadion der Hauptkarte
             const aCrateM = new THREE.MeshLambertMaterial({ color: new THREE.Color().setHSL(th.crateHue / 360, th.crateSat / 100, th.crateLight / 100) });
-            const aStepM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.floor).multiplyScalar(0.82) });
-            const aStegM = new THREE.MeshLambertMaterial({ color: 0x4a5058 });
-            const aHalfM = DSV ? new THREE.MeshLambertMaterial({ map: makeTex(128, 64, (g, w, h2) => { g.fillStyle = HS(th.wallHue, th.wallSat * 0.35, th.wallLight + 10); g.fillRect(0, 0, w, h2); g.fillStyle = HS(th.wallHue, th.wallSat * 0.4, th.wallLight - 4); g.fillRect(0, h2 - 12, w, 12); g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(0, 0, w, 3); }) }) : new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(0.88) }); // neues Design: Betonblöcke wie auf den Karten
+            const aStepM = MLK ? stepMat : new THREE.MeshLambertMaterial({ color: new THREE.Color(th.floor).multiplyScalar(0.82) });
+            const aStegM = MLK ? stegMat : new THREE.MeshLambertMaterial({ color: 0x4a5058 });
+            const aHalfM = MLK ? halfMat : DSV ? new THREE.MeshLambertMaterial({ map: makeTex(128, 64, (g, w, h2) => { g.fillStyle = HS(th.wallHue, th.wallSat * 0.35, th.wallLight + 10); g.fillRect(0, 0, w, h2); g.fillStyle = HS(th.wallHue, th.wallSat * 0.4, th.wallLight - 4); g.fillRect(0, h2 - 12, w, 12); g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(0, 0, w, 3); }) }) : new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(0.88) }); // neues Design: Betonblöcke wie auf den Karten
             const aTexWall = makeTex(128, 256, (g, w, h) => {
                 g.fillStyle = `hsl(${th.wallHue},${th.wallSat * 0.4}%,${th.wallLight * 0.72}%)`; g.fillRect(0, 0, w, h);
                 const pw = 64, ph = 52;
@@ -11345,13 +11349,13 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 const bw = 32, bh = 16;
                 for (let y = 0; y < h; y += bh) { const off = ((y / bh) % 2) * bw / 2; for (let x = -bw; x < w + bw; x += bw) { g.fillStyle = `hsl(${8 + Math.random() * (DSV ? 3 : 12)},${16 + Math.random() * (DSV ? 4 : 14)}%,${58 + Math.random() * (DSV ? 4 : 14)}%)`; g.fillRect(x + off + 1, y + 1, bw - 2, bh - 2); } }
             });
-            const aEndM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase) });
-            const aTopM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(1.18) });
-            const aTrimM = new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(0.45) });
+            const aEndM = MLK ? wallEnd : new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase) });
+            const aTopM = MLK ? wallTop : new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(1.18) });
+            const aTrimM = MLK ? trimMat : new THREE.MeshLambertMaterial({ color: new THREE.Color(th.wallBase).multiplyScalar(0.45) });
             const aGlassM = new THREE.MeshLambertMaterial({ color: 0x9fc0d4 });
             const vA = DSV ? [0, 1, 2].map(k => vWallTex(th, k)) : null; // Comic-Look
-            const aSideMat = len => { const t = (vA ? vA[len % 3] : aTexWall).clone(); t.needsUpdate = true; t.repeat.set(len, 1); return new THREE.MeshLambertMaterial({ map: t }); };
-            const aBrickMat = len => { if (DSV) return new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(th.wallHue, th.wallSat * 0.6, th.wallLight - 16)) }); const t = aTexBrick.clone(); t.needsUpdate = true; t.repeat.set(len * 2, 1); return new THREE.MeshLambertMaterial({ map: t }); };
+            const aSideMat = len => { if (MLK) return sideMat(len, wallSet[len % wallSet.length]); const t = (vA ? vA[len % 3] : aTexWall).clone(); t.needsUpdate = true; t.repeat.set(len, 1); return new THREE.MeshLambertMaterial({ map: t }); };
+            const aBrickMat = len => { if (MLK) return brickMat(len); if (DSV) return new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(th.wallHue, th.wallSat * 0.6, th.wallLight - 16)) }); const t = aTexBrick.clone(); t.needsUpdate = true; t.repeat.set(len * 2, 1); return new THREE.MeshLambertMaterial({ map: t }); };
             const solidDeco = (w2, h2, d2, x2, y2, z2, m2) => { const mm = new THREE.Mesh(new THREE.BoxGeometry(w2, h2, d2), m2); mm.position.set(x2, y2, z2); mm.castShadow = mm.receiveShadow = true; grp.add(mm); };
             const FIN = key === 'ar_skyline' ? finStyle(ox, R, C) : null; // Skyline: Gameshow-/Minimal-Architektur-Look
             for (let r = 0; r < R; r++) {
@@ -11359,8 +11363,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     const ch = aCell(r, c), x = ox + acx(c), z = acx(r);
                     if (!solid(ch)) info.cells.push({ r, c });
                     if (ch === 'T') info.spawnT.push({ x, z }); if (ch === 'K') info.spawnK.push({ x, z });
-                    if (ch === 'c') { const hh = cellHash(r, c), cm = FIN ? FIN.crate[hh % 3] : DSV ? crateMats[hh % 2] : aCrateM; tiltFit(box(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, cm), tiltOf(hh, 5, 7, 0.08)); tiltFit(box(x - 0.7, x + 0.7, CRATE_H, CRATE_H * 2, z - 0.7, z + 0.7, cm), tiltOf(hh, 9, 9, 0.1)); }
-                    if (ch === 'C') box(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, FIN ? FIN.cont : DSV ? contMats[cellHash(r, c) % 2] : aCrateM);
+                    if (ch === 'c') { const hh = cellHash(r, c), cm = FIN ? FIN.crate[hh % 3] : MLK ? crateMats[hh % 3] : DSV ? crateMats[hh % 2] : aCrateM; tiltFit(box(x - 1.4, x + 1.4, 0, CRATE_H, z - 1.4, z + 1.4, cm), tiltOf(hh, 5, 7, 0.08)); tiltFit(box(x - 0.7, x + 0.7, CRATE_H, CRATE_H * 2, z - 0.7, z + 0.7, cm), tiltOf(hh, 9, 9, 0.1)); }
+                    if (ch === 'C') box(x - 1.5, x + 1.5, 0, TALL_H, z - 1.5, z + 1.5, FIN ? FIN.cont : MLK ? contMats[cellHash(r, c) % contMats.length] : DSV ? contMats[cellHash(r, c) % 2] : aCrateM);
                     if (ch >= '1' && ch <= '6') stairBoxes(aCell, r, c, x, z, ch, (a, b, y0, y1, c0, c1) => box(a, b, y0, y1, c0, c1, FIN ? FIN.step : aStepM));
                     if (ch === 'h') box(x - S / 2 + 0.3, x + S / 2 - 0.3, 0, 1.2, z - S / 2 + 0.3, z + S / 2 - 0.3, FIN ? FIN.half : aHalfM);
                     if ('sbDW'.includes(ch)) tileExtras(ch, r, c, x, z, aCell, box, info.aabbs, m => { grp.add(m); info.meshes.push(m); }, () => { const wm = FIN ? FIN.wall(1) : aSideMat(1); return [wm, wm, FIN ? FIN.top : aTopM, FIN ? FIN.end : aEndM, wm, wm]; }, FIN ? FIN.half : aHalfM);
@@ -11374,7 +11378,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                         edge ? FIN.edgeBox(box, r, s0, c) : box(ox + s0 * S, ox + c * S, 0, hv, r * S, (r + 1) * S, (FIN ? [FIN.end, FIN.end, FIN.top, FIN.end, sm, sm] : [aEndM, aEndM, aTopM, aEndM, sm, sm])); info.aabbs[info.aabbs.length - 1].wall = 1;
                         edge ? FIN.rail(grp, r, s0, c) : FIN ? FIN.wallDeco(grp, len, s0, c, r, hv) : solidDeco(len * S + 0.1, 1.05, S + 0.12, ox + (s0 + c) / 2 * S, 0.525, (r + 0.5) * S, aBrickMat(len));
                         FIN || solidDeco(len * S + 0.16, 0.22, S + 0.16, ox + (s0 + c) / 2 * S, hv + 0.11, (r + 0.5) * S, aTrimM);
-                        if (len >= 3 && hv > WALL_H) for (const zz of [r * S - 0.02, (r + 1) * S + 0.02]) {
+                        if (!MLK && len >= 3 && hv > WALL_H) for (const zz of [r * S - 0.02, (r + 1) * S + 0.02]) {
                             const win = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.5), edge ? FIN.inv : FIN ? FIN.glass : aGlassM);
                             win.position.set(ox + (s0 + len / 2) * S, hv - 1.4, zz);
                             if (zz < (r + 0.5) * S) win.rotation.y = Math.PI;
@@ -11404,9 +11408,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     const g2 = new THREE.Group();
                     for (let b3 = 0; b3 < 3; b3++) { const bl = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.4 + Math.random() * 0.25, 4), M2(0x7a8f4a)); bl.position.set((Math.random() - 0.5) * 0.4, 0.2, (Math.random() - 0.5) * 0.4); bl.rotation.z = (Math.random() - 0.5) * 0.4; g2.add(bl); } place(g2);
                 }
-            } const fl = new THREE.Mesh(new THREE.PlaneGeometry(C * S, R * S), FIN ? FIN.floor : new THREE.MeshLambertMaterial(DSV ? { map: (t => { vFloorPaint(t); return t; })(makeTex(256, 256, (g, w, h) => { g.fillStyle = th.floor; g.fillRect(0, 0, w, h); }, C / 2, R / 2)) } : { color: new THREE.Color(th.floor) })); fl.rotation.x = -Math.PI / 2; fl.position.set(ox + C * S / 2, 0.01, R * S / 2); fl.receiveShadow = true; grp.add(fl); info.meshes.push(fl);
+            } const fl = new THREE.Mesh(new THREE.PlaneGeometry(C * S, R * S), FIN ? FIN.floor : MLK ? (m => { m.vertexColors = false; if (m.map) { m.map = m.map.clone(); m.map.needsUpdate = true; m.map.repeat.set(C * S / 8, R * S / 8); } m.needsUpdate = true; return m; })(floor.material.clone()) /* Boden der Hauptkarte */ : new THREE.MeshLambertMaterial(DSV ? { map: (t => { vFloorPaint(t); return t; })(makeTex(256, 256, (g, w, h) => { g.fillStyle = th.floor; g.fillRect(0, 0, w, h); }, C / 2, R / 2)) } : { color: new THREE.Color(th.floor) })); fl.rotation.x = -Math.PI / 2; fl.position.set(ox + C * S / 2, 0.01, R * S / 2); fl.receiveShadow = true; grp.add(fl); info.meshes.push(fl);
             if (FIN) FIN.deco(grp, info); else if (DSV) cityDeco(aCell, R, C, ox, grp, 0.4, false); // Arena: dezente Deko
-            { const st = grp.children.filter(o => o.isMesh && o !== fl); grp.updateMatrixWorld(true); if (DSV && !INK_PP && !FIN) outlines(st, grp); mergeStatic(st, grp); st.forEach(o => grp.remove(o)); } // Rendern zusammengefasst, Treffer weiter über info.meshes
+            { const st = grp.children.filter(o => o.isMesh && o !== fl); grp.updateMatrixWorld(true); if (DSV && !INK_PP && !FIN) outlines(st, grp); const old = new Set(grp.children); mergeStatic(st, grp); st.forEach(o => grp.remove(o));
+                if (MLK) grp.children.filter(o => !old.has(o)).forEach(o => { if (!o.isMesh || o.geometry.attributes.color || !o.geometry.attributes.normal) return; o.geometry = polyTess(o.geometry, 4.2); const p = o.geometry.attributes.position, nr = o.geometry.attributes.normal, ca = new Float32Array(p.count * 3); // wie Hauptkarten: Poly-Facetten, Wände etwas dunkler + Kontaktschatten, Glanz
+                    for (let k = 0; k < p.count; k++) ca[k * 3] = ca[k * 3 + 1] = ca[k * 3 + 2] = Math.abs(nr.getY(k)) > 0.7 ? 1 : 0.88 * (0.78 + 0.22 * Math.min(1, Math.max(0, p.getY(k)) / 2.6));
+                    polyShade(ca, p, 0.05); o.geometry.setAttribute('color', new THREE.BufferAttribute(ca, 3)); o.material = o.material.clone(); o.material.vertexColors = true; shinyPoly(o, true); }); } // Rendern zusammengefasst, Treffer weiter über info.meshes
             info.grp = grp; info.fin = !!FIN; grp.visible = false;
             GA.built[key] = info; return info;
         }
@@ -11414,20 +11421,24 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             for (const k in GA.built) GA.built[k].grp.visible = false;
             GA.cur = key ? buildArena(key) : null;
             if (GA.cur) GA.cur.grp.visible = true;
-            const th2 = GA.cur ? (THEMES[ARENAS[key].theme] || THEME) : THEME; if (!GA.c0) GA.c0 = [scene.background.getHex(), scene.fog.color.getHex()]; scene.background.set(GA.cur || !HALLMAP ? th2.sky : GA.c0[0]); scene.fog.color.set(GA.cur || !HALLMAP ? th2.fog : GA.c0[1]); if (!GA.f0) GA.f0 = [scene.fog.near, scene.fog.far]; if (GA.cur && GA.cur.fin) { scene.background.set(0xeef2f3); scene.fog.color.set(0xf3f6f8); scene.fog.near = 90; scene.fog.far = 480; } else { scene.fog.near = GA.f0[0]; scene.fog.far = GA.f0[1]; } // Skyline: heller, dunstiger Himmel
+            const th2 = GA.cur ? (THEMES[ARENAS[key].theme] || THEME) : THEME; if (!GA.c0) GA.c0 = [scene.background.getHex(), scene.fog.color.getHex()]; scene.background.set(!HALLMAP ? th2.sky : GA.c0[0]); scene.fog.color.set(!HALLMAP ? th2.fog : GA.c0[1]); /* Hauptkarten: Arena übernimmt Himmel & Nebel der Karte */ if (!GA.f0) GA.f0 = [scene.fog.near, scene.fog.far]; if (GA.cur && GA.cur.fin) { scene.background.set(0xeef2f3); scene.fog.color.set(0xf3f6f8); scene.fog.near = 90; scene.fog.far = 480; } else { scene.fog.near = GA.f0[0]; scene.fog.far = GA.f0[1]; } // Skyline: heller, dunstiger Himmel
             { const hm = scene.children.find(o => o.isHemisphereLight), fin = !!(GA.cur && GA.cur.fin); if (hm && !GA.l0) GA.l0 = { sc: sun.color.getHex(), si: sun.intensity, hs: hm.color.getHex(), hg: hm.groundColor.getHex(), hi: hm.intensity }; // Skyline: kühles, klares Weißlicht · sonst Licht der Karte
                 if (hm) { const L0 = GA.l0; sun.color.setHex(fin ? 0xffffff : L0.sc); sun.intensity = fin ? 0.66 : L0.si; hm.color.setHex(fin ? 0xe8f1fa : L0.hs); hm.groundColor.setHex(fin ? 0x9aa3ab : L0.hg); hm.intensity = fin ? 0.4 : L0.hi; } } // Arena: Himmel & Nebel wie die Karte
+            { const g = skyMap.grp, A = GA.cur, on = !!(g && A && !A.fin); if (g) { // Karten-Look: Stadion, runde Bodenplatte & Sonne (Schatten) wandern mit zur Arena
+                const d = new THREE.Vector3(on ? A.ox + A.C * S / 2 - WORLD_W / 2 : 0, 0, on ? A.R * S / 2 - WORLD_D / 2 : 0); g.position.copy(d); if (!GA.sun0) GA.sun0 = [sun.position.clone(), sun.target.position.clone()]; sun.position.copy(GA.sun0[0]).add(d); sun.target.position.copy(GA.sun0[1]).add(d); sun.target.updateMatrixWorld();
+                if (on && !GA.disc) { GA.disc = new THREE.Mesh(new THREE.CircleGeometry(WORLD_W / 2, 96), (m => { m.vertexColors = false; if (m.map) { m.map = m.map.clone(); m.map.needsUpdate = true; m.map.repeat.set(WORLD_W / 8, WORLD_D / 8); } m.needsUpdate = true; return m; })(floor.material.clone())); GA.disc.rotation.x = -Math.PI / 2; GA.disc.receiveShadow = true; scene.add(GA.disc); } // Plattform rund um die Arena (nur Optik)
+                if (GA.disc) { GA.disc.visible = on; GA.disc.position.set(WORLD_W / 2 + d.x, -0.03, WORLD_D / 2 + d.z); } } }
         }
 
         function roboize(e, accent) {
             if (!e || !e.mesh || e.isPlayer || e.robo) return; e.robo = true;
             e.mesh.traverse(o => { if (o.isMesh && o.material && o.material.color && !o.userData.keep && !o.userData.isOut) { o.material = o.material.clone(); const p = o.userData.part; o.material.color.setHex(p === 'head' ? 0x15181c : p === 'legs' ? 0x23272c : 0x3a3f46); } });
             const vis = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.07, 0.03), new THREE.MeshBasicMaterial({ color: accent }));
-            vis.position.set(0, 1.67, 0.18); e.mesh.add(vis);
+            vis.position.set(0, 1.67, 0.18); (e.mesh.userData.inner || e.mesh).add(vis);
             const core = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.03), new THREE.MeshBasicMaterial({ color: accent }));
-            core.position.set(0, 1.12, 0.22); e.mesh.add(core);
+            core.position.set(0, 1.12, 0.22); (e.mesh.userData.inner || e.mesh).add(core);
             const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.22, 6), new THREE.MeshBasicMaterial({ color: accent }));
-            ant.position.set(0.12, 1.94, 0); e.mesh.add(ant);
+            ant.position.set(0.12, 1.94, 0); (e.mesh.userData.inner || e.mesh).add(ant);
         }
         function glRoboAll() { GL.teams.forEach(t => { const acc = new THREE.Color().setHSL((0.62 + t.id * 0.125) % 1, 1, 0.6).getHex(); t.members.forEach(m => roboize(m, acc)); }); }
 
@@ -11808,7 +11819,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             const pick = (up.length && Math.random() < 0.6) ? rnd(up) : offs[0];
             if (pick) glLevelUp(m, pick);
         }
-        const glPickArena = () => { const pool = Object.keys(ARENAS).filter(k => RK.cur || BR.on ? !isArKey(k) : !AOFF.includes(k)); /* Ranked & Bot-Rang: nur offizielle Arenen */ return rnd(pool.length ? pool : Object.keys(ARENAS)); }; // nur angehakte Arenen
+        const glPickArena = () => { const pool = Object.keys(ARENAS).filter(k => HIDE_MAPS.includes(k) ? false : RK.cur || BR.on ? !isArKey(k) : !AOFF.includes(k)); /* Ranked & Bot-Rang: nur offizielle Arenen */ return rnd(pool.length ? pool : Object.keys(ARENAS).filter(k => !HIDE_MAPS.includes(k))); }; // nur angehakte Arenen
         const glArenaData = k => CMAP_INFO[k] ? Object.assign({ k, g: ARENAS[k].rows }, CMAP_INFO[k]) : null;
         // Arena des nächsten Duells schon während der Auswahl zeigen: Spieler steht an seinem Spawn (eingefroren bis Duellstart)
         function glPrepArena(akey) {
