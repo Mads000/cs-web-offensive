@@ -5336,7 +5336,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         addEventListener('error', () => { const t = document.getElementById('ldTxt'); if (t && document.getElementById('loader')) t.textContent = 'Fehler beim Laden – bitte Seite neu laden.'; });
     </script>
     <div id="hud">
-        <canvas id="radar" width="170" height="170"></canvas>
+        <canvas id="radar" width="510" height="510"></canvas>
         <div id="aliveL"></div>
         <div id="aliveR"></div>
         <div id="top">
@@ -6990,14 +6990,14 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             const dm = c => new THREE.MeshLambertMaterial({ color: c }), soil = dm(0x5b4636), leaf = dm(0x5f9a52), bloom = [dm(0xe0683a), dm(0xf2c230), dm(0xe8e2d6)], dark = dm(0x2b2f36), lamp = dm(0xffe6b0); lamp.emissive = new THREE.Color(0xffc060);
             const D = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = true; scene.add(o); };
             const plantAt = []; for (let r = 1; r < ROWS - 1; r++) for (let c = 1; c < COLS - 1; c++) { if (cell(r, c) !== 'h') continue; let ok = true; for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) if ((a || b) && cell(r + a, c + b) !== '.') ok = false; if (ok) plantAt.push([r, c]); } // freistehende Deckung = Pflanzinsel
-            const capM = dm(0x1d232b), ledH = REAL ? new THREE.MeshBasicMaterial({ color: new THREE.Color(skyMap.O.seat || '#8aa1b8').lerp(new THREE.Color(0xffffff), 0.35) }) : null;
-            for (const [r, c] of plantAt) { const x = (c + 0.5) * S, z = (r + 0.5) * S; if (REAL) { D(new THREE.BoxGeometry(S - 0.5, 0.05, S - 0.5), capM, x, 1.225, z); for (const sg of [-1, 1]) { D(new THREE.BoxGeometry(S - 0.62, 0.05, 0.03), ledH, x, 0.95, z + sg * (S / 2 - 0.285)); D(new THREE.BoxGeometry(0.03, 0.05, S - 0.62), ledH, x + sg * (S / 2 - 0.285), 0.95, z); } continue; } // Realistisch: Arena-Deckung statt Pflanzinsel
+            const capM = dm(0x1d232b), ledH = HALLMAP ? new THREE.MeshBasicMaterial({ color: new THREE.Color((skyMap.O && skyMap.O.seat) || '#8aa1b8').lerp(new THREE.Color(0xffffff), 0.35) }) : null;
+            for (const [r, c] of plantAt) { const x = (c + 0.5) * S, z = (r + 0.5) * S; if (HALLMAP) { /* Tag & Nacht: Kiste statt Blumeninsel */ D(new THREE.BoxGeometry(S - 0.5, 0.05, S - 0.5), capM, x, 1.225, z); for (const sg of [-1, 1]) { D(new THREE.BoxGeometry(S - 0.62, 0.05, 0.03), ledH, x, 0.95, z + sg * (S / 2 - 0.285)); D(new THREE.BoxGeometry(0.03, 0.05, S - 0.62), ledH, x + sg * (S / 2 - 0.285), 0.95, z); } continue; } // Realistisch: Arena-Deckung statt Pflanzinsel
                 D(new THREE.BoxGeometry(S - 0.8, 0.06, S - 0.8), soil, x, 1.23, z);
                 for (const [i, [a, b]] of [[-1, -1], [1, -1], [-1, 1], [1, 1]].entries()) D(new THREE.IcosahedronGeometry(0.3, 0), i % 2 ? leaf : bloom[(r + c + i) % 3], x + a * 0.9, 1.45, z + b * 0.9);
                 D(new THREE.BoxGeometry(0.12, 2.7, 0.12), dark, x, 2.6, z); D(new THREE.BoxGeometry(0.9, 0.08, 0.1), dark, x, 3.9, z); for (const a of [-0.42, 0.42]) D(new THREE.BoxGeometry(0.26, 0.3, 0.26), lamp, x + a, 3.72, z); }
             const inlay = new THREE.MeshLambertMaterial({ map: makeTex(128, 128, g => { g.translate(64, 64); for (let i = 0; i < 3; i++) { g.strokeStyle = i % 2 ? 'rgba(255,248,235,.35)' : 'rgba(30,25,20,.18)'; g.lineWidth = 6; g.beginPath(); g.arc(0, 0, 58 - i * 16, 0, 7); g.stroke(); } g.rotate(Math.PI / 4); g.fillStyle = 'rgba(255,248,235,.3)'; g.fillRect(-10, -10, 20, 20); }), transparent: true, depthWrite: false });
             const manM = dm(0x3a3d42), grate = dm(0x26282c), freeC = (r, c) => { for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) if (cell(r + a, c + b) !== '.') return false; return true; };
-            for (let r = 1; r < ROWS - 1; r++) for (let c = 1; c < COLS - 1; c++) { if (REAL || !freeC(r, c)) continue; const h = cellHash(c + 7, r + 3) % 31, x = (c + 0.5) * S, z = (r + 0.5) * S;
+            for (let r = 1; r < ROWS - 1; r++) for (let c = 1; c < COLS - 1; c++) { if (HALLMAP || !freeC(r, c)) continue; const h = cellHash(c + 7, r + 3) % 31, x = (c + 0.5) * S, z = (r + 0.5) * S;
                 if (h === 0) { const m = new THREE.Mesh(new THREE.PlaneGeometry(5.5, 5.5), inlay); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.015, z); scene.add(m); } // Bodenmosaik
                 else if (h < 3) D(new THREE.CylinderGeometry(0.45, 0.45, 0.03, 14), manM, x + 0.8, 0.015, z - 0.6); // Kanaldeckel
                 else if (h < 5) D(new THREE.BoxGeometry(0.9, 0.025, 0.35), grate, x - 0.7, 0.013, z + 0.9); } // Abflussgitter
@@ -7157,10 +7157,10 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             g.globalAlpha = 1;
         }
         // Radar-Basis
-        const radar = $('radar'), rctx = radar.getContext('2d'), RS = radar.width / WORLD_W;
+        const radar = $('radar'), rctx = radar.getContext('2d'), RD = radar.width / 170, RS = 170 / WORLD_W; // Minimap: logisch 170 px, gezeichnet in RD-facher Auflösung (scharf trotz Zoom)
         const radarBase = document.createElement('canvas'); radarBase.width = radarBase.height = radar.width;
         {
-            const g = radarBase.getContext('2d'); if (LAY) radarLay(g, MS * RS, 0); else if (DSV) radarWalk(g, ROWS, COLS, cell, S * RS); else for (let r = 0; r < ROWS; r++)for (let c = 0; c < COLS; c++) { const ch = cell(r, c), x = c * S * RS, y = r * S * RS, w = S * RS; if (ch === '#' && !rimCell(r, c)) { g.fillStyle = DSV ? 'rgba(236,232,225,.72)' : 'rgba(232,201,138,.75)'; g.fillRect(x, y, w, w); } else if (ch === 'c' || ch === 'C' || ch === 'b') { g.fillStyle = DSV ? 'rgba(138,161,184,.8)' : 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'W') { g.fillStyle = 'rgba(160,200,230,.6)'; g.fillRect(x, y, w, w); } else if (ch === 'O') { g.fillStyle = 'rgba(8,12,18,.9)'; g.fillRect(x, y, w, w); } else if (ch === 's') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'A' || ch === 'B') { g.fillStyle = DSV ? 'rgba(138,161,184,.3)' : 'rgba(220,130,40,.45)'; g.fillRect(x, y, w, w); } else if (ch === 'h') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch >= '1' && ch <= '6') { g.fillStyle = 'rgba(185,195,205,.5)'; g.fillRect(x, y, w, w); } else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); } }
+            const g = radarBase.getContext('2d'); g.scale(RD, RD); if (LAY) radarLay(g, MS * RS, 0); else if (DSV) radarWalk(g, ROWS, COLS, cell, S * RS); else for (let r = 0; r < ROWS; r++)for (let c = 0; c < COLS; c++) { const ch = cell(r, c), x = c * S * RS, y = r * S * RS, w = S * RS; if (ch === '#' && !rimCell(r, c)) { g.fillStyle = DSV ? 'rgba(236,232,225,.72)' : 'rgba(232,201,138,.75)'; g.fillRect(x, y, w, w); } else if (ch === 'c' || ch === 'C' || ch === 'b') { g.fillStyle = DSV ? 'rgba(138,161,184,.8)' : 'rgba(150,100,50,.85)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'W') { g.fillStyle = 'rgba(160,200,230,.6)'; g.fillRect(x, y, w, w); } else if (ch === 'O') { g.fillStyle = 'rgba(8,12,18,.9)'; g.fillRect(x, y, w, w); } else if (ch === 's') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch === 'A' || ch === 'B') { g.fillStyle = DSV ? 'rgba(138,161,184,.3)' : 'rgba(220,130,40,.45)'; g.fillRect(x, y, w, w); } else if (ch === 'h') { g.fillStyle = DSV ? 'rgba(236,232,225,.3)' : 'rgba(232,201,138,.4)'; g.fillRect(x + 1, y + 1, w - 2, w - 2); } else if (ch >= '1' && ch <= '6') { g.fillStyle = 'rgba(185,195,205,.5)'; g.fillRect(x, y, w, w); } else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); } }
             g.fillStyle = '#fff'; g.font = 'bold 13px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle';[['A', siteCells.A], ['B', siteCells.B]].forEach(([l, cells]) => { const mx = cells.reduce((a, c) => a + cx(c.c), 0) / cells.length, mz = cells.reduce((a, c) => a + cx(c.r), 0) / cells.length; g.fillText(l, mx * RS, mz * RS); });
         }
 
@@ -8954,7 +8954,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         let RB = null;
         function buildArenaRadar() {
             const A = GA.cur; if (!A) { RB = null; return; }
-            const g = arenaBase.getContext('2d'), W2 = arenaBase.width;
+            const g = arenaBase.getContext('2d'), W2 = 170; g.setTransform(RD, 0, 0, RD, 0, 0);
             const s = Math.min(W2 / (A.C * S), W2 / (A.R * S));
             RB = { minX: A.ox, minZ: 0, s };
             g.clearRect(0, 0, W2, W2);
@@ -8969,13 +8969,13 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 else if (ch === '=') { g.fillStyle = 'rgba(130,145,160,.6)'; g.fillRect(x, y, w, w); }
             }
         }
-        const radarLv = LAY ? [0, 1, 2].map(l => { const cv = document.createElement('canvas'); cv.width = cv.height = radar.width; const g = cv.getContext('2d'); radarLay(g, MS * RS, l); g.fillStyle = '#fff'; g.font = 'bold 13px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; [['A', siteCells.A], ['B', siteCells.B]].forEach(([n, cs]) => { if (cs.length) g.fillText(n, cs.reduce((q, o) => q + cx(o.c), 0) / cs.length * RS, cs.reduce((q, o) => q + cx(o.r), 0) / cs.length * RS); }); return cv; }) : null; // Minimap je Ebene (EG / OG / Dach)
+        const radarLv = LAY ? [0, 1, 2].map(l => { const cv = document.createElement('canvas'); cv.width = cv.height = radar.width; const g = cv.getContext('2d'); g.scale(RD, RD); radarLay(g, MS * RS, l); g.fillStyle = '#fff'; g.font = 'bold 13px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; [['A', siteCells.A], ['B', siteCells.B]].forEach(([n, cs]) => { if (cs.length) g.fillText(n, cs.reduce((q, o) => q + cx(o.c), 0) / cs.length * RS, cs.reduce((q, o) => q + cx(o.r), 0) / cs.length * RS); }); return cv; }) : null; // Minimap je Ebene (EG / OG / Dach)
         function radarXY(x, z) { return (GA.cur && RB) ? [(x - RB.minX) * RB.s, (z - RB.minZ) * RB.s] : [x * RS, z * RS]; }
         function drawRadar() {
-            rctx.clearRect(0, 0, radar.width, radar.height);
+            rctx.setTransform(RD, 0, 0, RD, 0, 0); rctx.clearRect(0, 0, 170, 170);
             const rl = radarLv && !GA.cur ? lvOf(player.alive || !specTarget ? player : specTarget) : -1; // eigene Ebene → passende Minimap
-            { const pv = player.alive || !specTarget ? player : specTarget, h = radar.width / 2, [cx, cz] = radarXY(pv.x, pv.z); rctx.save(); rctx.translate(h, h); rctx.beginPath(); rctx.arc(0, 0, h, 0, Math.PI * 2); rctx.clip(); rctx.rotate(pv.yaw || 0); rctx.scale(1.9, 1.9); rctx.translate(-cx, -cz); } /* reingezoomt: eigene Position in der Mitte */ // Minimap dreht mit der Blickrichtung um ihre Mitte (Karte bleibt zentriert, rund ausgeschnitten statt verkleinert), vorne = oben
-            rctx.drawImage(GA.cur && RB ? arenaBase : rl >= 0 ? radarLv[rl] : radarBase, 0, 0);
+            { const pv = player.alive || !specTarget ? player : specTarget, h = 85, [cx, cz] = radarXY(pv.x, pv.z); rctx.save(); rctx.translate(h, h); rctx.beginPath(); rctx.arc(0, 0, h, 0, Math.PI * 2); rctx.clip(); rctx.rotate(pv.yaw || 0); rctx.scale(1.5, 1.5); rctx.translate(-cx, -cz); } /* reingezoomt: eigene Position in der Mitte */ // Minimap dreht mit der Blickrichtung um ihre Mitte (Karte bleibt zentriert, rund ausgeschnitten statt verkleinert), vorne = oben
+            rctx.drawImage(GA.cur && RB ? arenaBase : rl >= 0 ? radarLv[rl] : radarBase, 0, 0, 170, 170);
             if (rl >= 0) { const pe = player.alive || !specTarget ? player : specTarget, zi = ZN.g && rl < 2 ? ZN.g[rl][cr(pe.z) * ZN.C + cr(pe.x)] : -1; if (zi >= 0) ZN.last = ZN.n[zi]; else if (rl === 2) ZN.last = ''; const lb = ['EG', 'OG', 'DACH'][rl] + (ZN.last ? ' · ' + ZN.last : ''); // Ebene + Raumname
                 radar.lb = lb; } // Beschriftung: wird am Ende gerade & ohne Ausschnitt gezeichnet
             const dot = (e, col, r) => { const [x, y] = radarXY(e.x, e.z); rctx.globalAlpha = rl >= 0 && lvOf(e) !== rl ? 0.4 : 1; rctx.fillStyle = col; rctx.beginPath(); rctx.arc(x, y, r * 1.05, 0, Math.PI * 2); rctx.fill(); rctx.lineWidth = 1; rctx.strokeStyle = 'rgba(0,0,0,.75)'; rctx.stroke(); rctx.globalAlpha = 1; }; // größere Punkte mit dunklem Rand (Minimap ist verkleinert) // andere Ebene: blasser
@@ -8986,7 +8986,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                 const [px, pz] = radarXY(player.x, player.z), fx = -Math.sin(player.yaw), fz = -Math.cos(player.yaw), rx = Math.cos(player.yaw), rz = -Math.sin(player.yaw);
                 rctx.fillStyle = '#fff'; rctx.beginPath(); rctx.moveTo(px + fx * 7, pz + fz * 7); rctx.lineTo(px - fx * 4 + rx * 4, pz - fz * 4 + rz * 4); rctx.lineTo(px - fx * 4 - rx * 4, pz - fz * 4 - rz * 4); rctx.closePath(); rctx.fill();
             }
-            rctx.restore(); if (radar.lb) { const lb = radar.lb; radar.lb = ''; rctx.font = 'bold 11px Arial'; rctx.fillStyle = 'rgba(0,0,0,.55)'; const lw = rctx.measureText(lb).width + 12, lx = (radar.width - lw) / 2; rctx.fillRect(lx, 6, lw, 16); rctx.fillStyle = '#f2c230'; rctx.textAlign = 'center'; rctx.textBaseline = 'middle'; rctx.fillText(lb, radar.width / 2, 14); } // oben mittig (runde Minimap)
+            rctx.restore(); if (radar.lb) { const lb = radar.lb; radar.lb = ''; rctx.font = 'bold 11px Arial'; rctx.fillStyle = 'rgba(0,0,0,.55)'; const lw = rctx.measureText(lb).width + 12, lx = (170 - lw) / 2; rctx.fillRect(lx, 6, lw, 16); rctx.fillStyle = '#f2c230'; rctx.textAlign = 'center'; rctx.textBaseline = 'middle'; rctx.fillText(lb, 85, 14); } // oben mittig (runde Minimap)
         }
         function updateFX(dt) {
             for (const tr of tracerPool) if (tr.t > 0) { tr.t -= dt; if (tr.t <= 0) tr.line.visible = false; }
