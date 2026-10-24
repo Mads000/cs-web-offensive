@@ -110,6 +110,7 @@ function api(p, b, ip) {
  }
  // ── Community-Skins: Liste für alle ──
  // ── Ranked: Profil, Rang, Historie (Warteschlange läuft über WebSocket) ──
+ if (p === '/api/ptrank') { const u = byTok(b.tok); if (!u) return { err: 'Bitte neu einloggen.', relog: 1 }; if (!u.pt) return { err: 'Nur für Playtester.' }; if (!rk.setRank(u, String(b.mode || ''), +b.r)) return { err: 'Ungültiger Modus oder Wert.' }; return Object.assign({ ok: 1 }, rk.profile(u)); } // 🧪 Playtester: Rang setzen
  if (p === '/api/ranked') { const u = byTok(b.tok); if (!u) return { err: 'Bitte neu einloggen.', relog: 1 }; return Object.assign({ ok: 1 }, rk.profile(u)); }
  if (p === '/api/rklb') { const u = byTok(b.tok); return Object.assign({ ok: 1 }, rk.board(String(b.mode || ''), u ? u.name.toLowerCase() : null)); } // Ranked-Bestenliste
  if (p === '/api/skins') return { ok: 1, skins: Object.values(CSK), prices: PRICES };

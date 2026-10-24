@@ -142,6 +142,7 @@ function createRanked({ RK, persist, rooms, auth, user = () => null, friends = (
   const id = BY.get(key), L = id && LIVE.get(id); if (L && L.st === 'live') out.live = goMsg(L, key);
   const q = Q.get(key); if (q) out.queue = { mode: q.mode, t: q.t };
   if (BAN.get(key) > Date.now()) out.ban = BAN.get(key);
+  if (u.pt) out.pt = 1; // 🧪 Playtester: darf den eigenen Rang setzen
   return out;
  }
  const psPub = p => p ? { k: p.k, d: p.d, a: p.a, adr: p.adr } : null; // eigene Match-Werte fürs öffentliche Profil (Letzte Matches)
@@ -253,7 +254,7 @@ function matchView(mt, key) {
   const L = LIVE.get(BY.get(k)); if (L && L.st === 'accept' && L.qws[k] === ws && !L.acc.has(k)) { L.dec.add(k); cancelAccept(L); } }
  function dodge(key, now) { // Ablehnen/Verpassen zählen → gestufte Suchsperre, nie länger als 5 Min
   const W = CFG.dodge.windowMin * 60000, t = (DODGE.get(key) || []).filter(x => now - x < W); t.push(now); DODGE.set(key, t);
-  const sec = CFG.dodge.ban[Math.min(t.length, CFG.dodge.ban.length) - 1]; if (sec) BAN.set(key, now + sec * 1000); return sec;
+  const sec = (user(key) || {}).pt ? 0 : CFG.dodge.ban[Math.min(t.length, CFG.dodge.ban.length) - 1]; if (sec) BAN.set(key, now + sec * 1000); return sec; // 🧪 Playtester: keine Suchsperre
  }
  function cancelAccept(L) { // jemand lehnt ab / Zeit abgelaufen → Annehmende zurück in die Schlange (Wartezeit bleibt), Rest raus
   if (L.st !== 'accept') return; L.st = 'cancel'; LIVE.delete(L.id); const now = Date.now(), ban = {}; if (MODES.includes(L.mode)) for (const k of L.dec) ban[k] = dodge(k, now); // Unranked: keine Suchsperre
@@ -416,7 +417,11 @@ function matchView(mt, key) {
   const pos = all.findIndex(x => x.k === key);
   return { mode, season: RK.season, total: all.length, top: all.slice(0, 50).map(x => ({ n: x.n, r: x.r, rank: rankOf(x.r).name, w: x.w, l: x.l })), me: pos < 0 ? null : { pos: pos + 1, r: all[pos].r } };
  }
- return { init, queueMsg, wsClose, tick, join, joined: ws => ws.rk && joined(ws.rk), msg, leave, profile, pub, pinv: invsFor, board, newSeason, _: { Q, LIVE, BY, BAN, PT, end } };
+ function setRank(u, md, r) { // 🧪 Playtester: eigenes Rating je Modus frei setzen (gilt sofort als platziert)
+  if (!u || !u.pt || !MODES.includes(md) || !Number.isFinite(r)) return false;
+  const M = rec(u.name.toLowerCase(), u.name).m[md]; M.r = Math.max(0, Math.min(3000, Math.round(r))); M.pl = Math.max(M.pl, M.pq); M.peak = Math.max(M.peak, M.r); BAN.delete(u.name.toLowerCase()); persist(); return true;
+ }
+ return { init, setRank, queueMsg, wsClose, tick, join, joined: ws => ws.rk && joined(ws.rk), msg, leave, profile, pub, pinv: invsFor, board, newSeason, _: { Q, LIVE, BY, BAN, PT, end } };
 }
 
 module.exports = { CFG, MODES, QMODES, QUICK, seasonNow, fillMatches, units, split, expected, kFactor, rankOf, rateTeams, balance, pickMatches, softReset, winOf, createRanked };
