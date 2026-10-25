@@ -1030,15 +1030,13 @@
         .eort { margin-top: 9px; padding-top: 7px; border-top: 1px dashed rgba(255, 255, 255, .1); font-size: 12px }
         .eocard.bot { --c: #3a4250; display: flex; flex-direction: column; justify-content: center; opacity: .8 } .eobot { font-size: 40px }
         .mob .eocards { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch } .mob .eocard { flex-basis: 160px } .mob .eost b { font-size: 21px } .mob .eoscore b, .mob .eores { font-size: 20px }
-        /* 📺 Endscreen-Spielerkarten im TV-Look wie das Hauptmenü: LED-Raster, Scanlines, RGB-Versatz, Vignette, Glanz-Sweep, leichtes Flimmern */
-        .eocard, .eoc { position: relative; overflow: hidden; isolation: isolate; animation: eoTvOn .45s ease-out both, eoTvFl 4s steps(1) infinite }
-        .eocard::before, .eoc::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .22) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(255, 60, 60, .05) 0 1px, rgba(60, 255, 90, .05) 1px 2px, rgba(70, 110, 255, .05) 2px 3px); mix-blend-mode: multiply }
-        .eocard::after, .eoc::after { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .5) 100%), linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .07) 45%, transparent 55%) no-repeat; background-size: 100% 100%, 300% 100%; animation: eoTvSw 6s linear infinite }
-        .eocard .eonm, .eocard .eost b, .eoc .eosc { text-shadow: 1.2px 0 rgba(255, 50, 70, .55), -1.2px 0 rgba(60, 200, 255, .55), 0 0 10px rgba(255, 255, 255, .18) }
-        @keyframes eoTvSw { from { background-position: 0 0, 150% 0 } to { background-position: 0 0, -150% 0 } }
-        @keyframes eoTvFl { 0%, 100% { filter: none } 47% { filter: brightness(1.06) } 48% { filter: brightness(.94) } 49% { filter: none } }
-        @keyframes eoTvOn { 0% { transform: scaleY(.02); filter: brightness(3) } 60% { transform: scaleY(1); filter: brightness(1.4) } 100% { transform: none; filter: none } }
-        @media (prefers-reduced-motion: reduce) { .eocard, .eoc, .eocard::after, .eoc::after { animation: none } }
+        /* 📺 Endscreen-Spielerkarten im TV-Look wie das Hauptmenü: LED-Raster, Scanlines, RGB-Versatz, Vignette, Glanzstreifen (statisch) */
+        .eocard, .eoc { position: relative; overflow: hidden; animation: eoTvOn .35s ease-out both } /* nur einmaliges Einschalten – keine Dauer-Animationen (Endscreen ruckelte) */
+        .eocard::before, .eoc::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .16) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(255, 60, 60, .04) 0 1px, rgba(60, 255, 90, .04) 1px 2px, rgba(70, 110, 255, .04) 2px 3px) }
+        .eocard::after, .eoc::after { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .45) 100%), linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .06) 45%, transparent 55%) }
+        .eocard .eonm, .eocard .eost b, .eoc .eosc { text-shadow: 1px 0 rgba(255, 50, 70, .5), -1px 0 rgba(60, 200, 255, .5) }
+        @keyframes eoTvOn { 0% { transform: scaleY(.02); opacity: 0 } 100% { transform: none; opacity: 1 } }
+        @media (prefers-reduced-motion: reduce) { .eocard, .eoc { animation: none } }
         #csfriends .fr {
             width: 44px;
             height: 44px;
@@ -2572,12 +2570,8 @@ body.mob .mapc.custom::after{ font-size:8px; top:5px; left:5px; }
 
         /* Handy: Kaufmenü über das ganze Display für bessere Übersicht */
         body.mob #buy { position: fixed; left: 0; top: 0; right: 0; bottom: 0; width: auto; max-width: none; max-height: none; transform: none; border-radius: 0; z-index: 50; box-sizing: border-box; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) }
-        body.mob #buy .bhead { position: sticky; top: 0; z-index: 1; padding: 10px 16px; background: rgba(12, 16, 22, .97) }
-        body.mob #buy .bgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; padding: 8px 12px }
-        body.mob #buy .bcol { min-width: 0; gap: 6px }
-        body.mob #buy .card { padding: 9px 10px; min-height: 0 }
-        body.mob #buy .card b { font-size: 13px }
-        body.mob #buy .cprice { font-size: 12px }
+        body.mob #buy .bhead { position: sticky; top: 0; z-index: 1; padding: 6px 14px; background: rgba(12, 16, 22, .97) }
+        body.mob #buy .bgrid { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr) } /* alle Kategorien nebeneinander in einer Reihe (Anzahl egal) → kein Scrollen; Kartengröße siehe „Handy-Kaufmenü“ oben */
 
         /* ───── ALIVE-LEISTE OBEN ───── */
         #aliveL,
@@ -3279,7 +3273,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "🔍 Handy-Zoom:":"🔍 Phone zoom:",
 "🎯 Gegner-Umrandung:":"🎯 Enemy outline:",
 "🔊 Lautstärke:":"🔊 Volume:",
-"🎸 Menümusik (Britpop):":"🎸 Menu music (Britpop):",
+"🎧 Menümusik:":"🎧 Menu music:",
 "Länge:":"Length:",
 "Waffe links/rechts:":"Weapon left/right:",
 "Waffe hoch/runter:":"Weapon up/down:",
@@ -5329,11 +5323,15 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "📺 NEUER ENDSCREEN":"📺 NEW END SCREEN",
 "Nach jedem Match läuft im Hintergrund das ruhige TV-Studio aus dem Hauptmenü.":"After every match the calm TV studio from the main menu runs in the background.",
 "Die Spielerkarten sehen aus wie auf einem Bildschirm – auch im Deathmatch, mit Platzierung, MVP und Auszeichnungen.":"Player cards look like they are on a screen – in Deathmatch too, with placement, MVP and awards.",
-"🎸 MENÜMUSIK":"🎸 MENU MUSIC",
-"Im Menü und auf dem Endscreen läuft jetzt eigene Gitarrenmusik im Britpop-Stil. Lautstärke in ⚙️ Einstellungen, ganz links = aus.":"The menu and end screen now play original Britpop-style guitar music. Volume in ⚙️ Settings, far left = off.",
+"🎧 MENÜMUSIK":"🎧 MENU MUSIC",
+"Im Menü und auf dem Endscreen läuft jetzt eigene, dunkle Elektro-Musik mit pulsierendem Synth-Bass. Lautstärke in ⚙️ Einstellungen, ganz links = aus.":"The menu and end screen now play original dark electronic music with a pulsing synth bass. Volume in ⚙️ Settings, far left = off.",
 "🧹 RUHIGER":"🧹 CALMER",
 "Bildschirme und Hologramme im Stadion flackern nicht mehr.":"Screens and holograms in the stadium no longer flicker.",
 "Die Kartenwahl zeigt nur noch schlichte Kacheln.":"The map selection now only shows simple tiles.",
+"Das Kaufmenü passt am Handy ohne Scrollen auf den Bildschirm.":"The buy menu now fits on phone screens without scrolling.",
+"Jeder Kill lädt Deine Waffen sofort nach – wie in Valorant.":"Every kill instantly reloads your weapons – like in Valorant.",
+"Wo ein Spieler stirbt, erscheint 15 Sekunden lang eine kleine Heilzone (+50 HP).":"Where a player dies, a small healing zone appears for 15 seconds (+50 HP).",
+"Neue Bodenbeläge: Bombsites mit großen Steinplatten, Spawns mit feinem Raster, Gänge mit Streifenplatten.":"New floor surfaces: bombsites with large stone slabs, spawns with a fine grid, corridors with strip tiles.",
 "Die Werbetafel im Menü zeigt die aktuelle Saison.":"The billboard in the menu shows the current season.",
 "Training, Skyway und die Skyline-Arena sind vorerst nicht mehr wählbar.":"Training, Skyway and the Skyline arena can no longer be selected for now.",
 "PATCH 3.5 „SHOWTIME\"":"PATCH 3.5 “SHOWTIME”"}; // Deutsch → Englisch · # = beliebige Zahl
@@ -5961,7 +5959,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 MST.pts = new THREE.Points(pg, new THREE.PointsMaterial({ size: 0.03, color: 0xfff0d8, transparent: true, opacity: 0.7, depthWrite: false, blending: THREE.AdditiveBlending })); } // (Staub-Partikel nicht angezeigt)
             if (t - MST.chT > 1) { MST.chT = t; const k = (player.team || 'CT') + '|' + myLook() + '|' + duckHat(); if (k !== MST.ck) { MST.ck = k; if (MST.ch) { MST.st.remove(MST.ch); disposeGroup(MST.ch); } const m = makeBotMesh(player.team || 'CT', myLook(), true, duckHat()); scene.remove(m.group); MST.ch = m.group; MST.st.add(m.group); } } // eigener Agent (wechselt mit der Ausrüstung)
             if (MST.ch) MST.ch.rotation.y = -0.3 + Math.sin(t * 0.35) * 0.25; MST.pts.rotation.y = t * 0.05; MST.st.position.set(wide ? 1.75 : 0, 0, wide ? 0 : -0.6);
-            if (t - MST.lt > 0.05) { MST.lt = t; const calm = started && gameEnded, g = MST.cv.getContext('2d'), cx = wide ? W * 0.31 : W / 2, ly = wide ? H * 0.38 : H * 0.16, fs = wide ? 1 : Math.min(1, Math.min(1, ar / (16 / 9)) * W / 860); g.clearRect(0, 0, W, H); // fs: Text passt in den sichtbaren Ausschnitt (Hochformat) // Werbetafel ~20 Bilder/s, durchscheinend
+            if (t - MST.lt > (started && gameEnded ? 0.25 : 0.05)) { MST.lt = t; const calm = started && gameEnded, /* Endscreen: Werbetafel seltener neu zeichnen (spart Leistung) */ g = MST.cv.getContext('2d'), cx = wide ? W * 0.31 : W / 2, ly = wide ? H * 0.38 : H * 0.16, fs = wide ? 1 : Math.min(1, Math.min(1, ar / (16 / 9)) * W / 860); g.clearRect(0, 0, W, H); // fs: Text passt in den sichtbaren Ausschnitt (Hochformat) // Werbetafel ~20 Bilder/s, durchscheinend
                 const gr = g.createLinearGradient(0, 0, W, 0); gr.addColorStop(0, 'rgba(15,25,35,.55)'); gr.addColorStop(wide ? 0.6 : 1, 'rgba(15,25,35,.12)'); gr.addColorStop(1, 'rgba(15,25,35,.12)'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
                 g.save(); for (let i = 0; i < (calm ? 0 : 5); i++) { const x = ((t * 40 + i * 420) % (W + 900)) - 450, w = 120 + (i % 3) * 90; g.globalAlpha = 0.06 + (i % 2) * 0.05; g.fillStyle = AC; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + w, 0); g.lineTo(x + w - 520, H); g.lineTo(x - 520, H); g.fill(); } g.restore(); // diagonale Lichtbänder in der Kartenfarbe
                 g.save(); if (calm) g.globalAlpha = 0; /* Endscreen: ruhiger Hintergrund ohne Schriftzug & Slogan */ g.translate(cx, ly); g.scale(fs, fs); g.translate(-cx, -ly); g.textBaseline = 'middle'; g.textAlign = 'center'; g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 34; g.font = 'bold 170px Rajdhani, Barlow, Arial'; g.fillStyle = '#ffffff'; g.fillText('CLUTCH', cx, ly + 8); // Schriftzug, komplett weiß
@@ -6500,10 +6498,10 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             Object.assign(LMOOD, { on: true, sun: P.sun, hemi: P.hemi, fog: P.fog, bg: P.bg });
         }
         const staticFrom = scene.children.length;
-        let rimM = null; function edgeWall(r, c) { if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => !solid(cell(r + a, c + b)))) { aabbs.push({ minX: c * S, maxX: (c + 1) * S, minZ: r * S, maxZ: (r + 1) * S, top: 40, bot: 0, wall: 1 }); // runder Rand: Wand auf Randfeldern neben begehbaren Feldern
+        let rimM = null; function edgeWall(r, c) { const nb = (rr, cc) => { const ch = cell(rr, cc); return !!ch && ch !== '#' && ch !== 'O' && !rimCell(rr, cc); }; /* Nachbar ist Spielfläche (auch mit Kiste/Deckung – man kann daran vorbei) */ if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => nb(r + a, c + b))) { aabbs.push({ minX: c * S, maxX: (c + 1) * S, minZ: r * S, maxZ: (r + 1) * S, top: 40, bot: 0, wall: 1 }); // runder Rand: Wand auf Randfeldern neben begehbaren Feldern
                 if (!rimM) { const H = THEME.wallHue, SA = THEME.wallSat; rimM = { body: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.25), 84)) }), base: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.3), 52)) }), cap: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.15), 94)) }), pil: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.25), 74)) }), led: new THREE.MeshBasicMaterial({ color: new THREE.Color(({ de_dusty: '#c0563a', de_bazaar: '#d08a2e', de_frost: '#3a7fc0', de_moisty: '#3f8a6a', de_foundry: '#9a3b34' })[MAPNAME] || '#8aa1b8') }) }; }
                 const RH = 2.2, B = (w, h, d, x, y, z, m) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; scene.add(o); return o; }; // Randwand: niedrig (Blick aufs Stadion bleibt), Sockel, Abdeckung, Pfeiler, Leuchtleiste in Kartenfarbe
-                for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const n = cell(r + dr, c + dc); if (!n || solid(n) || rimCell(r + dr, c + dc)) continue; // je Seite zu einem begehbaren Feld ein Wandstück an der Feldkante
+                for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { if (!nb(r + dr, c + dc)) continue; // je Seite zu einem begehbaren Feld ein Wandstück an der Feldkante
                     const ex = (c + 0.5 + dc * 0.5) * S - dc * 0.2, ez = (r + 0.5 + dr * 0.5) * S - dr * 0.2, al = !!dr, L = S + 0.4, sx = (a, t) => al ? a : t, sz = (a, t) => al ? t : a;
                     mapMeshes.push(B(sx(L, 0.4), RH, sz(L, 0.4), ex, RH / 2, ez, rimM.body)); B(sx(L + 0.04, 0.5), 0.35, sz(L + 0.04, 0.5), ex, 0.175, ez, rimM.base); B(sx(L + 0.1, 0.56), 0.14, sz(L + 0.1, 0.56), ex, RH + 0.07, ez, rimM.cap);
                     B(sx(L, 0.04), 0.06, sz(L, 0.04), ex + dc * 0.2, RH - 0.25, ez + dr * 0.2, rimM.led); // Leuchtleiste zur Spielfläche
@@ -6919,7 +6917,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             // ── Kulisse zwischen Karte und Plattformrand (nicht begehbar): Deck, Baumreihe entlang des Rands, Lichtstelen, Logo-Plätze
             { const deckM = lam(makeTex(128, 128, HALLMAP ? g => { g.fillStyle = '#' + new THREE.Color(THEME.floor).multiplyScalar(0.62).getHexString(); g.fillRect(0, 0, 128, 128); } /* Realistisch: Fläche um die Karte in Bodenfarbe */ : g => { g.fillStyle = '#2a3542'; g.fillRect(0, 0, 128, 128); g.fillStyle = 'rgba(138,161,184,.35)'; for (let i = 0; i <= 128; i += 32) { g.fillRect(i - 1, 0, 2, 128); g.fillRect(0, i - 1, 128, 2); } g.fillStyle = 'rgba(236,232,225,.06)'; g.fillRect(4, 4, 56, 56); }), { side: DS });
                 const potM = col(0xd9dcdf), leafM = col(0x4f8a4a), leaf2 = col(0x3f7540), trunkM = col(0x5a4636), offC = (x, z) => { const r = Math.floor(z / S), c = Math.floor(x / S); return !!(MAP.off && MAP.off.has(r * 1000 + c)); }, inP = (r, c) => Math.max(...[[0, 0], [1, 0], [0, 1], [1, 1]].map(([a, b]) => Math.hypot((c + a) * S - cx, (r + b) * S - cz))) <= PR + 0.01;
-                for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (MAP.off && MAP.off.has(r * 1000 + c) && inP(r, c)) { const x = (c + 0.5) * S, z = (r + 0.5) * S; flatP(S, S, deckM, x, 0.03, z); for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const n = cell(r + dr, c + dc); if (!n || solid(n) || MAP.off.has((r + dr) * 1000 + c + dc)) continue; const ex = x + dc * S / 2, ez = z + dr * S / 2, ry = Math.atan2(dc, dr); if (HALLMAP) continue; /* Hauptkarten: Randwand kommt aus edgeWall (statt Glasgeländer) */ plane(S, 1.1, railM, ex, 0.55, ez, ry); box(dr ? S : 0.1, 0.08, dr ? 0.1 : S, ex, 1.12, ez, steel2); if (HALLMAP) box(dr ? S : 0.14, 0.1, dr ? 0.14 : S, ex, 0.05, ez, emitM); } } // Deck & Glasgeländer an der unsichtbaren Kartengrenze
+                for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (MAP.off && MAP.off.has(r * 1000 + c) && inP(r, c)) { const x = (c + 0.5) * S, z = (r + 0.5) * S; if (!HALLMAP) flatP(S, S, deckM, x, 0.03, z); /* Hauptkarten: draußen liegt einfach der Kartenboden (keine Flecken) */ for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const n = cell(r + dr, c + dc); if (!n || solid(n) || MAP.off.has((r + dr) * 1000 + c + dc)) continue; const ex = x + dc * S / 2, ez = z + dr * S / 2, ry = Math.atan2(dc, dr); if (HALLMAP) continue; /* Hauptkarten: Randwand kommt aus edgeWall (statt Glasgeländer) */ plane(S, 1.1, railM, ex, 0.55, ez, ry); box(dr ? S : 0.1, 0.08, dr ? 0.1 : S, ex, 1.12, ez, steel2); if (HALLMAP) box(dr ? S : 0.14, 0.1, dr ? 0.14 : S, ex, 0.05, ez, emitM); } } // Deck & Glasgeländer an der unsichtbaren Kartengrenze
                 const lensK = col(0x0b0d10); if (!O.islands) for (const [r0, c] of [[PR - 1.9, 0x15181d], [PR - 2.3, 0x2a2f36]]) strip([[r0, 0.05], [r0 + 0.2, 0.05]], col(c, { side: DS }), 1); // Kabelstränge auf dem Deck entlang des Rands
                 const clear = (x, z, d) => [[d, 0], [-d, 0], [0, d], [0, -d], [0, 0]].every(([a, b]) => offC(x + a, z + b)); // Abstand zur Außenmauer der Karte
                 for (let i = 0; i < 64; i++) { const a = (i + 0.5) / 64 * Math.PI * 2, [x, , z] = at(a, PR - 6, 0); if (!clear(x, z, 3)) continue; if (i % 4 === 2) { box(0.5, 3.4, 0.5, x, 1.7, z, steelM); box(0.56, 2.4, 0.56, x, 2.2, z, lampM); box(0.42, 0.32, 0.7, x - Math.cos(a) * 0.3, 3.62, z - Math.sin(a) * 0.3, steelM, face(a)); box(0.22, 0.22, 0.1, x - Math.cos(a) * 0.7, 3.6, z - Math.sin(a) * 0.7, lensK, face(a)); continue; } /* Überwachungskamera auf der Stele */ box(2.2, 0.7, 2.2, x, 0.35, z, potM, -a); cyl(0.12, 0.16, 1.8, x, 1.5, z, trunkM, 8); const t = new THREE.Mesh(new THREE.IcosahedronGeometry(1.05, 1), i % 2 ? leafM : leaf2); t.position.set(x, 2.9, z); t.scale.set(1, 1.15, 1); grp.add(t); } // Baumreihe & Lichtstelen entlang des Rands
@@ -7124,6 +7122,17 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         function vFloorPaint(tex) { const g = tex.image.getContext('2d'); g.fillStyle = 'rgba(70,55,45,.16)'; g.fillRect(0, 0, 256, 256); for (let i = 0; i < 18; i++) { const x = Math.random() * 256, y = Math.random() * 256, r = 40 + Math.random() * 70, lt = i % 2; for (const [ox, oy] of [[0, 0], [256, 0], [-256, 0], [0, 256], [0, -256]]) { const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); gr.addColorStop(0, lt ? 'rgba(255,250,240,.07)' : 'rgba(40,30,20,.06)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); } } tex.needsUpdate = true; } // nahtlos gekachelt
         if (DSV && !LAY) vFloorPaint(texFloor); // Gebäude-Karten: glatter Hallenboden
         const floor = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W, WORLD_D), new THREE.MeshLambertMaterial({ map: texFloor })); floor.rotation.x = -Math.PI / 2; floor.position.set(WORLD_W / 2, 0, WORLD_D / 2); if (HOLES || HALLMAP) { floor.geometry.dispose(); floor.geometry = holeFloorGeo(); floor.rotation.x = 0; floor.position.set(0, 0, 0); } floor.receiveShadow = true; scene.add(floor); mapMeshes.push(floor); if (TOPG && LMOOD.floorTex) { const t = LMOOD.floorTex.clone(); t.needsUpdate = true; t.repeat.set(WORLD_W / (LMOOD.floorTile || 2 * MS), WORLD_D / (LMOOD.floorTile || 2 * MS)); floor.material.map = t; floor.material.color.setHex(LMOOD.groundC); } else if (TOPG) floor.material.color.setScalar(0.85); // Hallenboden nicht überstrahlt · Ironworks: Asphalt
+        if (HALLMAP && !LAY) { // Bodenbeläge je Bereich (im Stil der Betonplatten: gleiche Farbpalette, ruhige Fugen) – Sites: große Steinplatten · Spawns: feines Raster · Gänge: Streifenplatten in Laufrichtung · offene Flächen: Grundboden
+            const FC = new THREE.Color({ de_dusty: '#e0d9d0', de_bazaar: '#e2dacb', de_frost: '#e1e6eb', de_moisty: '#d2d8cf', de_foundry: '#d5d8db' }[MAPNAME] || '#b9bec3'), hx = (k, warm) => '#' + FC.clone().lerp(new THREE.Color(0xc8a888), warm || 0).multiplyScalar(k).getHexString();
+            const T = { site: makeTex(256, 256, g => { g.fillStyle = hx(0.95); g.fillRect(0, 0, 256, 256); const gl = g.createLinearGradient(0, 0, 256, 256); gl.addColorStop(0, 'rgba(255,255,255,.06)'); gl.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gl; g.fillRect(0, 0, 256, 256); g.fillStyle = 'rgba(30,40,50,.26)'; g.fillRect(0, 0, 256, 2); g.fillRect(0, 0, 2, 256); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(2, 2, 252, 1); g.fillRect(2, 2, 1, 252); }), // eine große Platte je Feld, Lichtkante
+                spawn: makeTex(256, 256, g => { g.fillStyle = hx(0.8); g.fillRect(0, 0, 256, 256); g.fillStyle = 'rgba(30,40,50,.1)'; for (let k = 32; k < 256; k += 32) { g.fillRect(k, 0, 1, 256); g.fillRect(0, k, 256, 1); } g.fillStyle = 'rgba(30,40,50,.28)'; g.fillRect(0, 0, 256, 2); g.fillRect(0, 0, 2, 256); }), // feines Raster (Gitter-Anmutung, hell)
+                corr: makeTex(256, 256, g => { for (let i = 0; i < 4; i++) { g.fillStyle = hx(0.86 + (i % 2) * 0.025, 0.12); g.fillRect(i * 64, 0, 64, 256); } g.fillStyle = 'rgba(30,40,50,.2)'; for (let i = 0; i <= 4; i++) g.fillRect(i * 64 - 1, 0, 2, 256); g.fillStyle = 'rgba(30,40,50,.12)'; for (let i = 0; i < 4; i++) g.fillRect(i * 64, (i * 97) % 256, 64, 1); }) }; // Streifenplatten, leicht wärmer
+            const open = (r, c) => { const ch = cell(r, c); return !!ch && !solid(ch) && ch !== 'O' && !rimCell(r, c) && !(ch >= '1' && ch <= '6'); }, wall = (r, c) => { const ch = cell(r, c); return !ch || ch === '#' || rimCell(r, c); };
+            const zoneOf = new Map(); for (const k of ['A', 'B']) for (const q of siteCells[k] || []) zoneOf.set(q.r * 1000 + q.c, 'site'); for (const k of ['T', 'CT']) for (const q of spawnCells[k] || []) zoneOf.set(q.r * 1000 + q.c, 'spawn');
+            const Q = { site: [], spawn: [], corr: [] }; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { if (!open(r, c)) continue; let z = zoneOf.get(r * 1000 + c), rot = 0; if (!z) { const ew = wall(r, c - 1) && wall(r, c + 1), ns = wall(r - 1, c) && wall(r + 1, c); if (ew !== ns) { z = 'corr'; rot = ew ? 0 : 1; } } if (z) Q[z].push([r, c, rot]); } // Gang: Wände auf genau zwei gegenüberliegenden Seiten
+            for (const z in Q) { if (!Q[z].length) continue; const P = [], U = []; for (const [r, c, rot] of Q[z]) { const x0 = c * S, x1 = x0 + S, z0 = r * S, z1 = z0 + S, y = 0.006, uv = rot ? [[0, 0], [0, 1], [1, 1], [1, 0]] : [[0, 0], [1, 0], [1, 1], [0, 1]], V = [[x0, z0], [x0, z1], [x1, z1], [x1, z0]]; for (const i of [0, 1, 2, 0, 2, 3]) { P.push(V[i][0], y, V[i][1]); U.push(...uv[i]); } } // Streifen laufen entlang des Gangs
+                const gm = new THREE.BufferGeometry(); gm.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); gm.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2)); gm.computeVertexNormals(); const ca = new Float32Array(P.length).fill(1); polyShade(ca, gm.attributes.position, 0.05); gm.setAttribute('color', new THREE.BufferAttribute(ca, 3)); // Facetten wie der Grundboden
+                const m = new THREE.MeshLambertMaterial({ map: T[z], vertexColors: true, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }); m.userData.keep = 1; m.userData.matte = 1; KEEPIMG.add(T[z].image); const o = new THREE.Mesh(gm, m); o.receiveShadow = true; scene.add(o); } }
         function siteMarker(cells, letter) {
             let minR = 99, maxR = -1, minC = 99, maxC = -1; cells.forEach(({ r, c }) => { minR = Math.min(minR, r); maxR = Math.max(maxR, r); minC = Math.min(minC, c); maxC = Math.max(maxC, c); }); const w = (maxC - minC + 1) * MS, d = (maxR - minR + 1) * MS;
             const tex = makeTex(256, 256, g => { g.fillStyle = 'rgba(200,120,40,0.35)'; g.fillRect(0, 0, 256, 256); g.strokeStyle = 'rgba(255,230,180,.8)'; g.lineWidth = 8; g.strokeRect(6, 6, 244, 244); g.fillStyle = 'rgba(255,240,200,.85)'; g.font = 'bold 170px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(letter, 128, 135); });
@@ -7234,23 +7243,25 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (d > 8) { const dl = Math.max(1500, 20000 - d * 260); lp = lp ? Math.min(lp, dl) : dl; } return { vol, pan, lp }; }
         function noise(dur, f0, vol, pan, type = 'lowpass', f1) { const s = AC.createBufferSource(); s.buffer = noiseBuf; s.loop = true; const f = AC.createBiquadFilter(); f.type = type; f.frequency.setValueAtTime(f0, AC.currentTime); if (f1) f.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol * SF.g * (started ? 1 : MENU_VOL)), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; s.connect(f).connect(g).connect(p).connect(sndOut()); s.start(); s.stop(AC.currentTime + dur); }
         function tone(fr, dur, vol, pan, type = 'sine', f1) { const o = AC.createOscillator(); o.type = type; o.frequency.setValueAtTime(fr, AC.currentTime); if (f1) o.frequency.exponentialRampToValueAtTime(f1, AC.currentTime + dur); const g = AC.createGain(); g.gain.setValueAtTime(Math.max(0.0001, vol * OPT.vol * SF.g * (started ? 1 : MENU_VOL)), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur); const p = AC.createStereoPanner(); p.pan.value = pan; o.connect(g).connect(p).connect(sndOut()); o.start(); o.stop(AC.currentTime + dur); }
-        // 🎸 Menümusik: eigene Britpop-Gitarrenmusik im 90er-Manchester-Stil, live erzeugt (kein fremder Song) – läuft im Menü & auf dem Endscreen, Lautstärke in ⚙️ (OPT.mus)
+        // 🎧 Menümusik: eigene dunkle Elektro-Musik im Taktik-Shooter-Stil (pulsierender Synth-Bass, Flächen, Arpeggio, Half-Time-Beat), live erzeugt – läuft im Menü & auf dem Endscreen, Lautstärke in ⚙️ (OPT.mus)
         const MUS = { g: null, t: 0, s: 0 }, mtof = m => 440 * 2 ** ((m - 69) / 12), mrn = k => Math.abs(Math.sin(k * 12.9898 + 4.1) * 43758.5453) % 1;
-        const MCH = [{ n: [43, 47, 50, 55, 59, 67], b: 31 }, { n: [50, 57, 62, 66, 69], b: 38 }, { n: [40, 47, 52, 55, 59, 64], b: 28 }, { n: [48, 52, 55, 62, 67], b: 36 }, { n: [43, 47, 50, 55, 59, 67], b: 31 }, { n: [50, 57, 62, 66, 69], b: 38 }, { n: [48, 52, 55, 62, 67], b: 36 }, { n: [50, 57, 62, 67, 69], b: 38 }]; // G · D · Em · Cadd9 · G · D · Cadd9 · Dsus4
-        function musEnv(t, peak, dec, dst, out) { const g = AC.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + dec); g.connect(dst || MUS.g); return g; }
-        function musOsc(type, f, t, dur, peak, dst, f1) { const o = AC.createOscillator(); o.type = type; o.frequency.setValueAtTime(f, t); if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.6); o.connect(musEnv(t, peak, dur, dst)); o.start(t); o.stop(t + dur + 0.05); }
+        const MCH = [{ n: [57, 60, 64, 69], b: 33 }, { n: [53, 57, 60, 65], b: 29 }, { n: [50, 53, 57, 62], b: 38 }, { n: [52, 56, 59, 64], b: 28 }, { n: [57, 60, 64, 69], b: 33 }, { n: [53, 57, 60, 65], b: 29 }, { n: [55, 60, 64, 67], b: 36 }, { n: [52, 56, 59, 64], b: 28 }]; // a-Moll: Am · F · Dm · E · Am · F · C · E
+        function musEnv(t, peak, dec, dst, att = 0.006) { const g = AC.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + att); g.gain.exponentialRampToValueAtTime(0.0001, t + dec); g.connect(dst || MUS.g); return g; }
+        function musOsc(type, f, t, dur, peak, dst, f1, att) { const o = AC.createOscillator(); o.type = type; o.frequency.setValueAtTime(f, t); if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.6); o.connect(musEnv(t, peak, dur, dst, att)); o.start(t); o.stop(t + dur + 0.05); }
         function musNoise(t, dur, peak, type, f) { const s = AC.createBufferSource(); s.buffer = noiseBuf; const fl = AC.createBiquadFilter(); fl.type = type; fl.frequency.value = f; s.connect(fl); fl.connect(musEnv(t, peak, dur)); s.start(t, Math.random()); s.stop(t + dur + 0.05); }
+        function musBass(f, t, dur, peak) { const o = AC.createOscillator(), lp = AC.createBiquadFilter(); o.type = 'sawtooth'; o.frequency.value = f; lp.type = 'lowpass'; lp.Q.value = 6; lp.frequency.setValueAtTime(1400, t); lp.frequency.exponentialRampToValueAtTime(180, t + dur); o.connect(lp); lp.connect(musEnv(t, peak, dur)); o.start(t); o.stop(t + dur + 0.05); } // Synth-Bass mit Filter-Hüllkurve
         function musStep(t, s) { const B = MUS.B, e = s % 8, bar = Math.floor(s / 8) % 8, ch = MCH[bar], cyc = Math.floor(s / 64);
-            if (e === 0 || e === 4 || (e === 5 && bar % 2)) musOsc('sine', 120, t, 0.28, 0.9, null, 42); // Bassdrum
-            if (e === 2 || e === 6) { musNoise(t, 0.18, 0.32, 'bandpass', 1900); musOsc('triangle', 190, t, 0.1, 0.25); } // Snare
-            musNoise(t, e === 7 ? 0.2 : 0.045, e % 2 ? 0.06 : 0.09, 'highpass', 7000); // Hi-Hat (letzte Achtel offen)
-            musOsc('triangle', mtof(ch.b + (e === 7 && bar % 2 ? 7 : 0)), t, B * 0.9, 0.3); // Bass in Achteln
-            const P = [1, 0, 1, 2, 0, 2, 1, 2][e]; if (P) { const ns = P === 2 ? ch.n.slice(-4).reverse() : ch.n; ns.forEach((m, i) => { musOsc('sawtooth', mtof(m) * (1 + (mrn(s * 7 + i) - 0.5) * 0.004), t + i * 0.011, B * 1.8, P === 2 ? 0.05 : 0.075, MUS.gtr); }); } // Gitarre: Ab-/Aufschlag
-            if (cyc % 2 === 1 && e % 2 === 0 && mrn(s) < 0.55) { const pool = ch.n.filter(m => m >= 55).map(m => m < 64 ? m + 12 : m), m = pool[Math.floor(mrn(s + 99) * pool.length)]; musOsc('square', mtof(m), t, B * (mrn(s + 7) < 0.3 ? 3.6 : 1.8), 0.035, MUS.ld); } } // Melodie (zufällig aus Akkordtönen, jede 2. Runde)
+            if (e === 0) ch.n.forEach((m, i) => { for (const d of [-0.006, 0.006]) musOsc('sawtooth', mtof(m) * (1 + d), t + i * 0.02, B * 8.4, 0.022, MUS.pad, 0, 0.6); }); // Fläche: verstimmte Sägezähne, weich einblendend
+            if (e === 0 || e === 5 || (e === 3 && bar % 2)) musOsc('sine', 140, t, 0.32, 0.95, null, 40); // Kick (Half-Time)
+            if (e === 4) { musNoise(t, 0.22, 0.38, 'bandpass', 1500); musNoise(t + 0.012, 0.12, 0.2, 'highpass', 3000); } // Clap
+            musNoise(t, 0.04, e % 2 ? 0.07 : 0.035, 'highpass', 8000); // Hi-Hat auf den Offbeats
+            musBass(mtof(ch.b + (e === 7 ? 12 : 0)), t, B * 0.85, e === 0 || e === 5 ? 0.12 : 0.26); // pulsierender Bass (bei Kick „geduckt“)
+            if (cyc >= 1 && (cyc % 4 !== 3 || bar < 4)) { const ar = [0, 2, 1, 3, 2, 1, 3, 2][e]; musOsc('square', mtof(ch.n[ar % ch.n.length] + 12), t, B * 0.8, 0.028, MUS.ld); } // Arpeggio mit Echo (ab der 2. Runde, mit Pausen)
+            if (bar === 7 && e === 4 && cyc % 2 === 1) musNoise(t, B * 4, 0.05, 'bandpass', 2400); } // Übergang: Rauschen vor dem Neustart der Schleife
         function musTick() { if (!AC || AC.state !== 'running' || !noiseBuf || typeof OPT === 'undefined') return; const now = AC.currentTime, vol = OPT.mus === undefined ? 0.5 : +OPT.mus;
-            if (!MUS.g) { MUS.g = AC.createGain(); MUS.g.gain.value = 0; MUS.g.connect(OUT); MUS.B = 60 / 92 / 2; // 92 BPM
-                const ws = AC.createWaveShaper(), cv = new Float32Array(256); for (let i = 0; i < 256; i++) cv[i] = Math.tanh((i / 128 - 1) * 3); ws.curve = cv; const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400; ws.connect(lp); lp.connect(MUS.g); MUS.gtr = ws; // angezerrte Rhythmusgitarre
-                const ll = AC.createBiquadFilter(); ll.type = 'lowpass'; ll.frequency.value = 1800; const dl = AC.createDelay(1), fb = AC.createGain(); dl.delayTime.value = MUS.B * 3; fb.gain.value = 0.3; ll.connect(MUS.g); ll.connect(dl); dl.connect(fb); fb.connect(dl); fb.connect(MUS.g); MUS.ld = ll; } // Melodie mit Echo
+            if (!MUS.g) { MUS.g = AC.createGain(); MUS.g.gain.value = 0; MUS.g.connect(OUT); MUS.B = 60 / 100 / 2; // 100 BPM
+                const pl = AC.createBiquadFilter(); pl.type = 'lowpass'; pl.frequency.value = 1100; pl.connect(MUS.g); MUS.pad = pl; // dunkle Fläche
+                const ll = AC.createBiquadFilter(); ll.type = 'lowpass'; ll.frequency.value = 2200; const dl = AC.createDelay(1), fb = AC.createGain(); dl.delayTime.value = MUS.B * 3; fb.gain.value = 0.35; ll.connect(MUS.g); ll.connect(dl); dl.connect(fb); fb.connect(dl); fb.connect(MUS.g); MUS.ld = ll; } // Arpeggio mit Echo
             const on = vol > 0 && (!started || gameEnded) && !document.hidden; MUS.g.gain.setTargetAtTime(on ? 0.16 * vol * OPT.vol : 0, now, on ? 0.8 : 0.25);
             if (!on && MUS.g.gain.value < 0.002) return; if (MUS.t < now) MUS.t = now + 0.05; while (MUS.t < now + 0.35) { musStep(MUS.t, MUS.s++); MUS.t += MUS.B; } }
         setInterval(musTick, 100);
@@ -7688,8 +7699,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         { const v = localStorage.getItem('agent'); store.agent = AGENTS.some(a => a.id === v) || v === 'fit' ? v : 'std'; }
         const duckHat = () => 0; // Zubehör entfernt (ersetzt durch Kleidung)
         const CHAR_W = 1.1, CHAR_H = 1.0; // Spielfiguren im Spiel etwas breiter (aus der Ferne besser erkennbar) – Trefferzonen wachsen mit
-        const charPoly = g => g.traverse(o => { if (!o.isMesh || o.userData.isOut || Array.isArray(o.material) || !(o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial) || !o.geometry.attributes.normal) return; // Poly-Look wie die Karten: Facetten + Glanz
-            o.geometry = polyTess(o.geometry, 0.2); const p = o.geometry.attributes.position, ca = new Float32Array(p.count * 3).fill(1); polyShade(ca, p, 0.07); o.geometry.setAttribute('color', new THREE.BufferAttribute(ca, 3)); shinyPoly(o, true); });
+        const charPoly = g => g.traverse(o => { if (!o.isMesh || o.userData.isOut || Array.isArray(o.material) || !(o.material.isMeshLambertMaterial || o.material.isMeshToonMaterial || o.material.isMeshStandardMaterial) || !o.geometry.attributes.normal) return; // Poly-Look wie die Karten: Facetten + Glanz (auch im Realistisch-Modus)
+            o.geometry = polyTess(o.geometry, 0.16); const p = o.geometry.attributes.position, ca = new Float32Array(p.count * 3).fill(1); polyShade(ca, p, 0.18); o.geometry.setAttribute('color', new THREE.BufferAttribute(ca, 3)); if (o.material.isMeshStandardMaterial) { o.material = o.material.clone(); o.material.vertexColors = true; } shinyPoly(o, true); });
         function makeBotMesh(team, agentId, raw, hat) { const m = makeBotMesh0(team, agentId, raw, hat); if (!raw) { const k = new THREE.Group(); m.group.children.slice().forEach(o => k.add(o)); k.scale.set(CHAR_W, CHAR_H, CHAR_W); m.group.add(k); m.group.userData.inner = k; charPoly(k); } else charPoly(m.group); return m; } // Poly-Look auch für den eigenen Agenten (Menü & Vorschau, ohne Verbreiterung) // innere Gruppe: scale.y der Hauptgruppe bleibt fürs Ducken frei
         function makeBotMesh0(team, agentId, raw, hat) {
             if (!raw) agentId = agentFor(team, agentId); // raw: Menü-Vorschau zeigt immer den eigenen Agenten
@@ -8155,14 +8166,25 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             if (e.isPlayer) { dmgFlash = 1; sfx('hurt'); shake = Math.max(shake, Math.min(0.22, 0.04 + dmg / 300)); if (att && att !== e && att.x !== undefined) dmgDir(att); } else bleed(e, hs);
             if (att && att.isPlayer && att !== e) { hitT = 0.12; hitHS = !!hs; sfx(hs ? 'hs' : 'hit'); } if (e.health <= 0) { e.health = 0; kill(e, att, w, hs); }
         }
+        // 💀 Deathmatch wie Valorant: Kill lädt die Waffen sofort nach · am Todesort erscheint eine kleine Heilzone (+50 HP, 15 s)
+        function dmRefill(a) { if (!DM.on || !a) return; if (a.isPlayer) { for (const s of [1, 2]) { const w = a.weapons[s]; if (w && !w.def.melee) { w.ammo = w.def.mag; w.reloading = false; w.reloadT = 0; } } } else if (a.weapon) { a.ammo = a.weapon.mag; a.reloadT = 0; } }
+        const DMH = []; let dmhM = null;
+        function dmHealSpawn(x, y, z) { if (!DM.on || DMH.some(h => Math.hypot(h.x - x, h.z - z) < 0.3)) return; if (!dmhM) dmhM = { g: new THREE.MeshBasicMaterial({ color: 0x4fe08a }), r: new THREE.MeshBasicMaterial({ color: 0x4fe08a, transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide }), d: new THREE.MeshBasicMaterial({ color: 0x4fe08a, transparent: true, opacity: 0.14, depthWrite: false, blending: THREE.AdditiveBlending }) };
+            const g = new THREE.Group(), cr = new THREE.Group(); cr.add(new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.1, 0.1), dmhM.g), new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.34, 0.1), dmhM.g)); cr.position.y = 0.75; g.add(cr); // schwebendes Plus
+            const ring = new THREE.Mesh(new THREE.RingGeometry(0.62, 0.7, 32), dmhM.r); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.03; g.add(ring); const disc = new THREE.Mesh(new THREE.CircleGeometry(0.62, 32), dmhM.d); disc.rotation.x = -Math.PI / 2; disc.position.y = 0.025; g.add(disc); // Bodenring
+            g.position.set(x, y || 0, z); scene.add(g); DMH.push({ x, y: y || 0, z, g, cr, t: 15 }); }
+        function dmHealGone(i) { const h = DMH[i]; scene.remove(h.g); h.g.traverse(o => { if (o.geometry) o.geometry.dispose(); }); DMH.splice(i, 1); }
+        function dmHealTick(dt) { for (let i = DMH.length - 1; i >= 0; i--) { const h = DMH[i]; h.t -= dt; if (h.t <= 0) { dmHealGone(i); continue; } h.cr.rotation.y += dt * 2; h.cr.position.y = 0.75 + Math.sin(now * 3 + i) * 0.08; h.g.visible = h.t > 3 || Math.floor(h.t * 6) % 2 === 0; // läuft ab: blinkt in den letzten 3 s
+            for (const e of ents) { if (!e.alive || e.decoy || e.remote || (!e.isPlayer && NET.on && !NET.host) || Math.hypot(e.x - h.x, e.z - h.z) > 0.9 || Math.abs((e.y || 0) - h.y) > 1.6 || e.health >= (e.maxHP || 100)) continue;
+                e.health = Math.min(e.maxHP || 100, e.health + 50); if (e.isPlayer) sfx('buy'); if (NET.on) netSend({ type: 'dmhp', x: h.x, z: h.z }); dmHealGone(i); break; } } } // aufheben: nur wer nicht volle HP hat
         function kill(e, att, w, hs) {
             if (att && att !== e && att.name && att.team && att.team !== e.team) awKill(att.name, att.team); // Ace-Zählung
             if (att && att !== e && hs) att.hsK = (att.hsK || 0) + 1; if (e.dmgBy) { for (const o of e.dmgBy) if (o !== att && o !== e) o.ast = (o.ast || 0) + 1; e.dmgBy = null; } // Endbildschirm: HS & Assists
             if (e.isPlayer) { roundKills = 0; if (!EX.on) { PRG.st.deaths = (PRG.st.deaths || 0) + 1; localStorage.setItem('prog', JSON.stringify(PRG)); } } e.alive = false; e.deaths++; if (DM.on) { e.dmT = 3; if (e.isPlayer && e.weapons[1]) e.dmLast = e.weapons[1].def; }
             if (DM.on || (GL.on && GL.v1)) { /* Deathmatch & 1v1: keine Waffen-Drops */ } else if (e.isPlayer) { if (e.weapons[1]) { const dd = dropWeapon(e.weapons[1].def, e.x, e.z, e.weapons[1].ammo, e.weapons[1].res, e.weapons[1].sk, e.y); if (dd && NET.on) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, y: dd.y, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: dd.sk }); } e.weapons[1] = null; } }
             else if (!e.remote && e.weapon && e.weapon.slot === 1) { const dd = dropWeapon(e.weapon, e.x, e.z, e.weapon.mag, 0, null, e.y); if (dd && NET.on && NET.host) { dd.did = NET.pid + '-' + dropSeq++; netSend({ type: 'wdrop', w: dd.def.key, x: dd.x, y: dd.y, z: dd.z, a: dd.ammo, rs: dd.res, did: dd.did, sk: null }); } }
-            if (att && att !== e) { if (att.team !== e.team || GL.on || DM.on) { att.kills++; botUltAdd(att); att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); killBanner(); ultAdd(1); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
-            if (NET.on && (e.isPlayer || (NET.host && !e.remote))) netSend({ type: 'kf', ap: att ? (att.isPlayer ? NET.pid : att.pid || null) : null, an: att ? att.name : null, at: att ? att.team : '', vn: e.name, vt: e.team, w: w ? w.name : null, hs: !!hs, rw: w && (w.key === 'knife' || w.name === 'Butterfly' || w.name === 'Karambit') ? 1500 : w && (w.key === 'awp' || w.name === 'AWP') ? 100 : 300 }); if (G.bomb.carrier === e && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.y = e.y || 0; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, G.bomb.y, e.z); if (e.isPlayer) e.weapons[5] = null; }
+            if (att && att !== e) { if (att.team !== e.team || GL.on || DM.on) { att.kills++; botUltAdd(att); att.money = Math.min(16000, att.money + (w && w.key === 'knife' ? 1500 : w && w.key === 'awp' ? 100 : 300)); dmRefill(att); if (att.isPlayer) { sfx('kill'); killPop(e.name, hs); killBanner(); ultAdd(1); } if (GL.on && att.glP && att.glP.vamp && att.alive) att.health = Math.min(att.maxHP || 100, att.health + 10 * att.glP.vamp); } else att.kills--; } killfeed(att, e, w, hs);
+            if (NET.on && (e.isPlayer || (NET.host && !e.remote))) netSend({ type: 'kf', ap: att ? (att.isPlayer ? NET.pid : att.pid || null) : null, an: att ? att.name : null, at: att ? att.team : '', vn: e.name, vt: e.team, w: w ? w.name : null, hs: !!hs, rw: w && (w.key === 'knife' || w.name === 'Butterfly' || w.name === 'Karambit') ? 1500 : w && (w.key === 'awp' || w.name === 'AWP') ? 100 : 300, x: e.x, y: e.y || 0, z: e.z }); dmHealSpawn(e.x, e.y, e.z); if (G.bomb.carrier === e && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = e.x; G.bomb.z = e.z; G.bomb.y = e.y || 0; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(e.x, G.bomb.y, e.z); if (e.isPlayer) e.weapons[5] = null; }
             if (e.isPlayer) playerDie(att); else { e.mesh.rotation.x = -Math.PI / 2; e.mesh.scale.y = 1; e.crouch = false; e.mesh.position.set(e.x, (e.y || 0) + 0.3, e.z); e.target = null; e.flash.visible = false; } checkRoundEnd();
         }
         function playerDie(att) { const p = player; $('sub').textContent = ''; $('msg').textContent = ''; /* alte Hinweise (z.B. „Taste [5]“) weg */ p.scoped = false; setScoped(false); p.weapons[5] = null; if (DM.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Gestorben') + '<div id="dmresp" style="font-size:16px;margin-top:10px;color:var(--hl)">Respawn in 3</div>'; closeBuy(); return; } if (GL.on) { $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> eliminiert` : 'Eliminiert') + '<div style="font-size:13px;color:#aaa;margin-top:8px">🚁 Freecam: WASD fliegen · Leertaste/Strg hoch/runter</div>'; startFreecam(); return; } $('dead').style.display = 'block'; $('dead').firstElementChild.innerHTML = (att ? `Du wurdest von <span class="${att.team === 'CT' ? 'ct' : 't'}">${att.name}</span> getötet` : 'Du bist gestorben') + '<div id="specname" style="font-size:16px;margin-top:6px;color:var(--hl)"></div><div style="font-size:12px;color:#aab4c0;margin-top:4px">' + (IS_TOUCH ? '◀ ▶ oder Tippen: Spieler wechseln' : 'Linksklick: nächsten Spieler beobachten') + '</div>'; closeBuy(); specTarget = null; cycleSpec(); }
@@ -9483,7 +9505,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
  <label style="display:block;margin:6px 0">🌐 Sprache / Language: <select id="langSel" style="vertical-align:middle"><option value="de"${getLang() === 'de' ? ' selected' : ''}>Deutsch</option><option value="en"${getLang() === 'en' ? ' selected' : ''}>English</option></select></label>
  <label style="display:block;margin:6px 0">🔊 Lautstärke: <b id="volval">${Math.round(OPT.vol * 100)}%</b><br>
  <input id="volSlider" type="range" min="0" max="1" step="0.05" value="${OPT.vol}" style="width:100%"></label>
- <label style="display:block;margin:6px 0">🎸 Menümusik (Britpop):<br>
+ <label style="display:block;margin:6px 0">🎧 Menümusik:<br>
  <input data-opt="mus" type="range" min="0" max="1" step="0.05" value="${OPT.mus}" style="width:100%"></label>
  <label style="display:block;margin:6px 0">🖥️ Grafik:
  <select id="gfxSel" style="font:bold 13px Arial;padding:5px;background:#141e28;color:var(--hl);border:1px solid rgba(var(--hl-rgb), .5);border-radius:4px">
@@ -9969,7 +9991,8 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧱 KARTENRAND ALS WAND</p>
  Der Rand der Hauptkarten ist jetzt eine echte, niedrige Wand mit Sockel, Pfeilern und Leuchtleiste in der Kartenfarbe.<br>
- Keine unsichtbaren Grenzen mehr: Du bleibst genau dort stehen, wo die Wand beginnt – auch in den Ecken.<br><br>
+ Keine unsichtbaren Grenzen mehr: Du bleibst genau dort stehen, wo die Wand beginnt – auch in den Ecken.<br>
+ Neue Bodenbeläge: Bombsites mit großen Steinplatten, Spawns mit feinem Raster, Gänge mit Streifenplatten.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🏟 ARENEN IM KARTEN-LOOK</p>
  Gauntlet- und 1v1-Arenen stehen jetzt im Stadion – mit Wänden, Kisten, Boden, Licht und Schatten der Hauptkarte.<br><br>
@@ -9978,18 +10001,21 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  Spielfiguren sind etwas breiter und aus der Ferne besser zu sehen. Alle Spieler, Gauntlet-Gegner und Klone haben jetzt den Poly-Look der Karten.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">💀 DEATHMATCH</p>
- Keine Ultimates, Taktiken und Granaten mehr – nur noch Waffen und Ausrüstung. Auch Bots werfen nichts mehr.<br><br>
+ Keine Ultimates, Taktiken und Granaten mehr – nur noch Waffen und Ausrüstung. Auch Bots werfen nichts mehr.<br>
+ Jeder Kill lädt Deine Waffen sofort nach – wie in Valorant.<br>
+ Wo ein Spieler stirbt, erscheint 15 Sekunden lang eine kleine Heilzone (+50 HP).<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">📺 NEUER ENDSCREEN</p>
  Nach jedem Match läuft im Hintergrund das ruhige TV-Studio aus dem Hauptmenü.<br>
  Die Spielerkarten sehen aus wie auf einem Bildschirm – auch im Deathmatch, mit Platzierung, MVP und Auszeichnungen.<br><br>
 
- <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎸 MENÜMUSIK</p>
- Im Menü und auf dem Endscreen läuft jetzt eigene Gitarrenmusik im Britpop-Stil. Lautstärke in ⚙️ Einstellungen, ganz links = aus.<br><br>
+ <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🎧 MENÜMUSIK</p>
+ Im Menü und auf dem Endscreen läuft jetzt eigene, dunkle Elektro-Musik mit pulsierendem Synth-Bass. Lautstärke in ⚙️ Einstellungen, ganz links = aus.<br><br>
 
  <p style="margin:6px 0;color:var(--hl);font:bold 13px Arial">🧹 RUHIGER</p>
  Bildschirme und Hologramme im Stadion flackern nicht mehr.<br>
  Die Kartenwahl zeigt nur noch schlichte Kacheln.<br>
+ Das Kaufmenü passt am Handy ohne Scrollen auf den Bildschirm.<br>
  Die Werbetafel im Menü zeigt die aktuelle Saison.<br>
  Training, Skyway und die Skyline-Arena sind vorerst nicht mehr wählbar.<br>
  </div></div>
@@ -12614,11 +12640,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                     if (rp) { rp.lastShotT = now; rp.flash.visible = true; setTimeout(() => rp.flash.visible = false, 60); } break;
                 }
                 case 'dmg': if (m.to === NET.pid && player.alive && NET.players.has(m.from) && dmgOk(m.from, m.d, m.w)) applyDamage(player, m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
+                case 'dmhp': { const i = DMH.findIndex(h => Math.hypot(h.x - m.x, h.z - m.z) < 0.5); if (i >= 0) dmHealGone(i); break; } // Heilzone wurde woanders aufgehoben
                 case 'kf': {
                     if (NET.host && m.an && m.at && m.at !== m.vt) awKill(m.an, m.at); // Kills der Mitspieler (Ace)
                     killfeed(m.an ? { name: m.an, team: m.at } : null, { name: m.vn, team: m.vt }, m.w ? { name: m.w } : null, m.hs);
                     if (NET.host && !m.ap && m.an && (DM.on || m.at !== m.vt)) { const kb = bots.find(x => x.name === m.an); if (kb) kb.kills++; }
-                    if (m.ap === NET.pid) { if (m.at !== m.vt || GL.on || DM.on) { player.kills++; killBanner(); ultAdd(1); player.money = Math.min(16000, player.money + m.rw); sfx('kill'); killPop(m.vn, m.hs); if (GL.on && player.glP && player.glP.vamp && player.alive) player.health = Math.min(player.maxHP || 100, player.health + 10 * player.glP.vamp); } else player.kills--; } break;
+                    if (m.x !== undefined) dmHealSpawn(m.x, m.y, m.z); if (m.ap === NET.pid) { if (m.at !== m.vt || GL.on || DM.on) { player.kills++; dmRefill(player); killBanner(); ultAdd(1); player.money = Math.min(16000, player.money + m.rw); sfx('kill'); killPop(m.vn, m.hs); if (GL.on && player.glP && player.glP.vamp && player.alive) player.health = Math.min(player.maxHP || 100, player.health + 10 * player.glP.vamp); } else player.kills--; } break;
                 }
 
                 case 'botdmg2': if (m.to === NET.pid && player.alive && dmgOk('bot:' + m.bn, m.d, m.w)) applyDamage(player, m.d, { name: m.bn, team: m.bt, isPlayer: false }, { name: m.w, key: '' }, m.hs); break; case 'botdmg': if (NET.host && bots[m.id] && bots[m.id].alive && NET.players.has(m.from) && dmgOk(m.from, m.d, m.w)) applyDamage(bots[m.id], m.d, NET.players.get(m.from) || null, { name: m.w, key: '' }, m.hs); break;
@@ -12828,7 +12855,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (paused) { for (const k in keys) keys[k] = false; mouseDown = false; clickQueued = false; }
                 if (AL.on) alTick(dt); if (DH.on) dhTick(dt); else if (GL.on) { if (!NET.on || NET.host) glTick(dt); else glTickClient(dt); glFxTick(dt); }
                 else if (!NET.on || NET.host) { updateRound(dt); for (const b of bots) updateBot(b, dt); }
-                updatePlayer(dt); if (IS_TOUCH && OPT.aim !== false) aimAssist(dt); if (DM.on) dmDeadTick(player, dt); updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
+                updatePlayer(dt); if (IS_TOUCH && OPT.aim !== false) aimAssist(dt); if (DM.on) { dmDeadTick(player, dt); dmHealTick(dt); } updatePlayerObjectives(dt); updateDrops(); updateNades(dt); updateDecoys(dt); if (player.glA && player.glA.cd > 0) player.glA.cd = Math.max(0, player.glA.cd - dt); tryShoot(); updateWeapon(dt); if (NET.on) { netTick(dt); updateRemotes(dt); }
                 separate(); updateFX(dt); updateMates(); updPings(dt); animChars(dt); updateHUD(); if (OPT.radar && ((frameN = (frameN + 1) & 1) === 0 || OPT.gfx === 2)) drawRadar(); if (buyOpen) renderBuy();
             }
             if (renderer.shadowMap.enabled) { renderer.shadowMap.autoUpdate = false; const st = started && !paused ? 'g' : 'm';
