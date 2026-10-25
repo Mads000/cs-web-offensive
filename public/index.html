@@ -2250,6 +2250,20 @@ body.dh #score, body.dh #roundlbl, body.dh #money, body.dh #aliveL, body.dh #ali
 .dhlb h4{ margin:0 0 6px; color:#ffd84a; font:bold 12px Arial; letter-spacing:2px; } .dhlb > div{ min-width:150px; } .dhlb > div > div{ padding:2px 0; }
 .mob .dhbig{ font-size:44px; }
 body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy { display: none !important } /* Erkunden */
+#bldHud { display: none } body.bld #bldHud { display: block } body.bld #bl, body.bld #br, body.bld #abil, body.bld #wlist { display: none !important } /* 🧱 3D-Baumodus */
+#bldHud .bdtop { position: fixed; top: 64px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; background: rgba(10,15,20,.82); border: 1px solid #ffd84a; padding: 5px 14px; font: 700 14px Rajdhani, sans-serif; letter-spacing: .08em; color: #fff; white-space: nowrap }
+#bldHud i { display: inline-block; width: 12px; height: 12px; border: 1px solid rgba(255,255,255,.6) }
+#bldHud .bdbar { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px }
+#bldHud .bdbar div { position: relative; width: 64px; height: 64px; background: rgba(10,15,20,.75); border: 2px solid rgba(255,255,255,.15); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; transition: transform .12s }
+#bldHud .bdbar div.on { border-color: #ffd84a; background: rgba(60,50,10,.85); transform: translateY(-5px) }
+#bldHud .bdbar span { font-size: 24px; line-height: 1 } #bldHud .bdbar s { text-decoration: none; font: 600 10px Rajdhani, sans-serif; margin-top: 4px } #bldHud .bdbar u { position: absolute; top: 2px; left: 5px; text-decoration: none; font: 700 10px Rajdhani, sans-serif; opacity: .7 } #bldHud .bdbar div i { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px }
+#bldHud .bdhint { position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%); font: 600 12px Rajdhani, sans-serif; color: #cfd8e2; text-shadow: 0 1px 2px #000; white-space: nowrap }
+#bldCat { position: fixed; z-index: 70; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(780px, 94vw); max-height: 82vh; overflow-y: auto; box-sizing: border-box; padding: 14px 18px; background: rgba(10,15,20,.95); border: 1px solid #ffd84a; color: #fff; font-family: Rajdhani, sans-serif } /* 🧱 Baumodus-Katalog */
+#bldCat h3 { margin: 0 0 6px; font-size: 22px; letter-spacing: .1em } #bldCat h3 small, #bldCat h4 small { display: block; font-size: 12px; color: #8fa3b8; letter-spacing: .04em; font-weight: 600 } #bldCat h4 small { display: inline } #bldCat h4 { margin: 10px 0 5px; font-size: 13px; letter-spacing: .12em; color: #ffd84a; text-transform: uppercase }
+#bldCat .bcg { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px } #bldCat .bcg button { position: relative; margin: 0; padding: 8px 4px 6px; display: flex; flex-direction: column; align-items: center; gap: 3px; background: #17202b; border: 2px solid rgba(255,255,255,.12); color: #fff; cursor: pointer } #bldCat .bcg button:hover { border-color: rgba(255,216,74,.6) } #bldCat .bcg button.on { border-color: #ffd84a; background: #2c2810 }
+#bldCat .bcg span { font-size: 26px; line-height: 1 } #bldHud .pts, #bldCat .pts { display: block; width: 28px; height: 28px; background-size: cover; border: 1px solid rgba(255,255,255,.35) } #bldCat .bcg b { font: 600 12px Rajdhani, sans-serif } #bldCat .bcg em { position: absolute; top: 3px; right: 4px; font-size: 10px; font-style: normal } #bldCat .bcg em + em { right: 18px }
+#bldCat .bcc { display: flex; flex-wrap: wrap; gap: 5px } #bldCat .bcc i { width: 26px; height: 26px; border: 2px solid rgba(255,255,255,.25); cursor: pointer } #bldCat .bcc i.on { border-color: #ffd84a; transform: scale(1.12) } #bldCat .bccu { display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; padding: 0 8px; font: 600 12px Rajdhani, sans-serif; border: 2px solid rgba(255,255,255,.25); cursor: pointer } #bldCat .bccu.on { border-color: #ffd84a } #bldCat .bccu input { width: 30px; height: 22px; padding: 0; border: 0; background: none; cursor: pointer } #bldHud .bdg { color: #ffd84a }
+#bldCat input { width: 100%; box-sizing: border-box; padding: 7px 10px; font: 600 15px Rajdhani, sans-serif; background: #0d131a; color: #fff; border: 1px solid rgba(255,255,255,.25) } #bldCat > div:last-child { text-align: right; margin-top: 10px } #bldCat > div:last-child button { margin: 0 }
 #wlist { position: fixed; right: 26px; bottom: 182px; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; white-space: nowrap } .mob #wlist { display: none }
 #wlist .wl { display: flex; align-items: center; gap: 8px; font: 600 13px 'Barlow Condensed', sans-serif; letter-spacing: .14em; text-transform: uppercase; opacity: .4; padding: 2px 10px 2px 0; border-right: 2px solid transparent }
 #wlist .wl.on { opacity: 1; border-right-color: var(--hl) } #wlist .wl i { font-style: normal; font-size: 10px; opacity: .6 } #wlist .nd { display: flex; gap: 6px } #wlist .nd .wl { padding-right: 6px; font-size: 11px }
@@ -2265,7 +2279,7 @@ body.ex #timer, body.ex #aliveL, body.ex #aliveR, body.ex #money, body.ex #tBuy 
 .glv { display: flex; gap: 5px; width: 64%; margin-bottom: 2px } .glv em { flex: 1; height: 5px; border-radius: 2px; background: rgba(255,255,255,.12) } .glv em.on { background: var(--uc, #8fa3b8); box-shadow: 0 0 6px var(--uc, #8fa3b8) }
 .pv s { display: block; max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; text-align: center; font: 600 9px Rajdhani, sans-serif; letter-spacing: .03em; color: #e8eef5; text-shadow: 0 1px 2px #000; margin-top: 1px }
 .pv .avi.ini { background: #17202b !important; color: var(--pc, #fff); text-shadow: none } .pv.dd s { opacity: .6 }
-.mob .pv s { max-width: 30px; font-size: 7px }
+.mob .pv s { max-width: 30px; font-size: 7px } .pv .pvkit { display: block; font: normal 10px/1 sans-serif; text-align: center; margin-top: 1px; filter: drop-shadow(0 1px 1px #000) } .mob .pv .pvkit { font-size: 8px } /* Kit-Träger */
 .mob #money { left: max(16px, env(safe-area-inset-left)) !important; right: auto !important; bottom: 10px !important }
 .mob #br { right: auto !important; left: 50% !important; bottom: 50px !important; transform: translateX(-50%) scale(.55) !important; transform-origin: bottom center !important; text-align: center }
 .mob #timer, .mob #score, .mob #roundlbl { text-shadow: 0 1px 3px #000, 0 0 8px rgba(0,0,0,.8) }
@@ -3449,6 +3463,73 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
 "Tür":"Door",
 "Türen":"Doors",
 "Fenster":"Window",
+"Abgrund":"Chasm",
+"Fass":"Barrel",
+"Palette":"Pallet",
+"Absperrung":"Barrier",
+"Regal":"Shelf",
+"Tisch":"Table",
+"Pflanze":"Plant",
+"Lampe":"Lamp",
+"Plakat":"Poster",
+"➕ LEERE KARTE":"➕ BLANK MAP",
+"Von Grund auf neu bauen":"Build from scratch",
+"Neu anfangen":"Start fresh",
+"Linksklick bauen · Rechtsklick abreißen · Enter übernehmen · Tab Katalog · Leertaste/Strg hoch/runter · Strg+Z zurück · B fertig":"Left click build · Right click tear down · Enter apply · Tab catalog · Space/Ctrl up/down · Ctrl+Z undo · B done",
+"Linksklick bauen · Rechtsklick abreißen · Mausrad Stufe · Enter übernehmen · Tab Katalog · Leertaste/Strg hoch/runter · Strg+Z zurück · B fertig":"Left click build · Right click tear down · Wheel step · Enter apply · Tab catalog · Space/Ctrl up/down · Ctrl+Z undo · B done",
+"Platten":"Panels",
+"Rauten":"Diamonds",
+"Metallplatten":"Metal plates",
+"Halbwand":"Half wall",
+"Sandsack-Wall":"Sandbag wall",
+"Fass-Gruppe":"Barrel group",
+"Treppe":"Stairs",
+"Bombsite A":"Bombsite A",
+"Bombsite B":"Bombsite B",
+"Spawn T":"Spawn T",
+"Spawn CT":"Spawn CT",
+"Radierer":"Eraser",
+"Bauen (Raster)":"Build (grid)",
+"🎨 Eigene Farbe":"🎨 Custom color",
+"Keine Rasteränderungen zum Übernehmen":"No grid changes to apply",
+"🧱 Übernehmen …":"🧱 Applying …",
+"Karte wird neu gebaut":"Rebuilding map",
+"🧱 Noch nicht übernehmbar":"🧱 Can't apply yet",
+"Linksklick malen · Rechtsklick Muster entfernen · C Farbe · Tab Katalog · Leertaste/Strg hoch/runter · Strg+Z zurück · B fertig":"Left click paint · Right click remove pattern · C color · Tab catalog · Space/Ctrl up/down · Ctrl+Z undo · B done",
+"Putz":"Plaster",
+"Ziegel":"Brick",
+"Beton":"Concrete",
+"Wellblech":"Corrugated metal",
+"Holz":"Wood",
+"Fliesen":"Tiles",
+"Warnstreifen":"Hazard stripes",
+"Riffelblech":"Diamond plate",
+"Holzdielen":"Floorboards",
+"Asphalt":"Asphalt",
+"Betonplatten":"Concrete slabs",
+"Gitterrost":"Grating",
+"Pflaster":"Cobblestone",
+"Wandmuster":"Wall patterns",
+"Bodenmuster":"Floor patterns",
+"Zaun":"Fence",
+"Bank":"Bench",
+"Baum":"Tree",
+"Pylon":"Cone",
+"Auto":"Car",
+"Neon-Schild":"Neon sign",
+"Banner":"Banner",
+"Bildschirm":"Screen",
+"Möbel":"Furniture",
+"Natur & Straße":"Nature & street",
+"Licht":"Light",
+"(Plakat, Banner, Neon-Schild, Bildschirm)":"(poster, banner, neon sign, screen)",
+"Linksklick setzen · Rechtsklick löschen · E aufnehmen · Mittelklick kopieren · R drehen · Mausrad Größe · C Farbe · Tab Katalog · Leertaste/Strg hoch/runter · Strg+Z zurück · B fertig":"Left click place · Right click delete · E pick up · Middle click copy · R rotate · Wheel size · C color · Tab catalog · Space/Ctrl up/down · Ctrl+Z undo · B done",
+"🧱 Speichern & 3D bauen":"🧱 Save & build in 3D",
+"🧱 Baumodus (B)":"🧱 Build mode (B)",
+"🚶 Baumodus beenden":"🚶 Exit build mode",
+"Ins Bild klicken · B = zurück zum Laufen":"Click into the view · B = back to walking",
+"Linksklick setzen · Rechtsklick löschen · E aufnehmen · Mittelklick kopieren · R drehen · Mausrad Größe · C Farbe · Leertaste/Strg hoch/runter · Shift schnell · Strg+Z zurück · B fertig":"Left click place · Right click delete · E pick up · Middle click copy · R rotate · Wheel size · C color · Space/Ctrl up/down · Shift fast · Ctrl+Z undo · B done",
+"Nur auf eigenen Karten – speichere zuerst eine Kopie: Esc → Map-Editor → Speichern & erkunden":"Only on your own maps – save a copy first: Esc → Map editor → Save & explore",
 "Kiste":"Crate",
 "Kisten":"Crates",
 "Waffen-Look:":"Weapon look:",
@@ -5839,13 +5920,14 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         let CARS = {}, AOFF = []; try { CARS = JSON.parse(localStorage.getItem('customarenas') || '{}') || {}; AOFF = JSON.parse(localStorage.getItem('arenaoff') || '[]') || []; } catch (e) { }
         const isArKey = k => /^(myar|puba)_/.test(k);
         // regMap: Karten (my_/pub_, 28×28) → MAPS, Arenen (myar_/puba_, 11×18, ohne Bombsites) → ARENAS
-        const CMAP_INFO = {}, regMap = (k, d) => { const AR = isArKey(k), H = AR ? 18 : 28, RX = AR ? /^[#.cCh=1-6TKsbDW]{11}$/ : /^[#.cCh=1-6ABTKsbDWR]{28}$/; if (!d || !Array.isArray(d.g) || d.g.length !== H || d.g.some(r => typeof r !== 'string' || !RX.test(r)) || !/^(my|pub|myar|puba)_[a-z0-9_]+$/.test(k)) return; if (AR) ARENAS[k] = { theme: k, rows: d.g }; else MAPS[k] = d.g;
+        const DECO_IDS = ['kr', 'fa', 'sb', 'ab', 'za', 'pa', 're', 'ti', 'bk', 'pf', 'bm', 'ke', 'au', 'la', 'ne', 'pl', 'ba', 'sc'], patValid = (a, mx) => !Array.isArray(a) ? [] : a.slice(0, 1600).filter(e => Array.isArray(e) && e.length === mx.length && e.every((v, i) => Number.isInteger(v) && v >= 0 && v <= mx[i])), decoValid = a => !Array.isArray(a) ? [] : a.slice(0, 200).filter(e => Array.isArray(e) && (e.length === 7 || (e.length === 8 && typeof e[7] === 'string')) && DECO_IDS.includes(e[0]) && e.slice(1, 7).every(Number.isFinite)).map(e => { const q = (v, a, b) => Math.round(Math.min(b, Math.max(a, v)) * 1000) / 1000, r = [e[0], q(e[1], -2, 30), q(e[2], -2, 30), q(e[3], 0, 12), e[4] & 7, q(e[5], 0.5, 2), (Number.isInteger(e[6]) && e[6] >= 0 && e[6] < 16777248 ? e[6] : 0)], t = String(e[7] || '').replace(/[<>"'&`]/g, '').slice(0, 18); if (t) r.push(t); return r; }); // 3D-Deko eigener Karten: [Typ, x, z (Felder), Höhe, Drehung ×45°, Größe, Farbe]
+        const CMAP_INFO = {}, regMap = (k, d) => { const AR = isArKey(k), H = AR ? 18 : 28, RX = AR ? /^[#.cCh=1-6TKsbDW]{11}$/ : /^[#.cCh=1-6ABTKsbDWRO]{28}$/; if (!d || !Array.isArray(d.g) || d.g.length !== H || d.g.some(r => typeof r !== 'string' || !RX.test(r)) || !/^(my|pub|myar|puba)_[a-z0-9_]+$/.test(k)) return; if (AR) ARENAS[k] = { theme: k, rows: d.g }; else MAPS[k] = d.g;
             // geprüfte Zusatzdaten: Thema, eigene Farben, Tageszeit (0 Tag, 1 Abend, 2 Nacht), Emblem
             const HEX = /^#[0-9a-f]{6}$/i, th = /^de_/.test(d.th) && THEMES[d.th] ? d.th : 'de_dusty', c = d.col || {}, col = {}, t = Object.assign({}, THEMES[th]);
             for (const f of ['sky', 'fog', 'floor', 'wall']) if (HEX.test(c[f])) col[f] = c[f];
             if (col.sky) t.sky = parseInt(col.sky.slice(1), 16); if (col.fog) t.fog = parseInt(col.fog.slice(1), 16); if (col.floor) t.floor = col.floor;
             if (col.wall) { const hsl = {}; new THREE.Color(col.wall).getHSL(hsl); t.wallBase = col.wall; t.wallHue = Math.round(hsl.h * 360); t.wallSat = Math.round(hsl.s * 100); t.wallLight = Math.round(hsl.l * 100); }
-            THEMES[k] = t; CMAP_INFO[k] = { n: String(d.n || k).replace(/[<>"'&`]/g, '').slice(0, 20) || k, th, col, tod: [0, 1, 2].includes(+d.tod) ? +d.tod : 0, em: Array.from(String(d.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(d.emc) ? d.emc : '' };
+            THEMES[k] = t; CMAP_INFO[k] = { n: String(d.n || k).replace(/[<>"'&`]/g, '').slice(0, 20) || k, th, col, tod: [0, 1, 2].includes(+d.tod) ? +d.tod : 0, em: Array.from(String(d.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(d.emc) ? d.emc : '', dk: decoValid(d.dk), wm: patValid(d.wm, [27, 27, 3, 6, 16777247]), fm: patValid(d.fm, [27, 27, 6, 16777247]) };
         };
         for (const k in CMAPS) regMap(k, CMAPS[k]);
         // Community-Karten (veröffentlicht, für alle sichtbar): sofort aus dem lokalen Zwischenspeicher, danach frisch vom Server
@@ -5858,12 +5940,13 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
             else if ($('arList') && !$('mapctx') && listArgs && !listArgs[1]) gridList(...listArgs); // offene Editor-Liste aktualisieren (nicht die Start-Auswahl)
         }).catch(() => { });
         try { const nm = JSON.parse(sessionStorage.getItem('netmap') || 'null'); if (nm && /^(my|pub)_/.test(nm.k)) regMap(nm.k, nm); } catch (e) { }
-        function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? Object.assign({ k: MAPNAME, g: MAP }, i) : null; }
+        function mapNet() { const i = CMAP_INFO[MAPNAME]; return i ? Object.assign({ k: MAPNAME, g: MAPS[MAPNAME] || MAP }, i) : null; } // Original-Raster (ohne Stadion-Rand)
         function netMapChanged(m) { if (m.cmap) sessionStorage.setItem('netmap', JSON.stringify(m.cmap)); return !!m.map && (m.map !== MAPNAME ? !!(MAPS[m.map] || m.cmap) : !!(m.cmap && m.cmap.g.join() !== MAP.join())); }
         const MAPNAME = (k => MAPS[k] ? k : 'de_dusty')(localStorage.getItem('map') || 'de_dusty');
         const MAP_NAMES = { de_dusty: 'Sienna', de_bazaar: 'Kasbah', de_frost: 'Tundra', de_moisty: 'Mire', de_foundry: 'Ironworks', de_skyway: 'Skyway', de_training: 'Training', ar_dustyard: 'Sienna Yard', ar_frostbox: 'Tundra Box', ar_moistpit: 'Mire Pit', ar_skyline: 'Skyline' }; // Anzeigenamen der eingebauten Karten
         const MAPLABEL = CMAP_INFO[MAPNAME] ? CMAP_INFO[MAPNAME].n : (MAP_NAMES[MAPNAME] || MAPNAME); // Anzeigename (eigene Karten: selbst vergebener Name)
-        const MAP = (m => { if (m.hi || m.isl || !/^de_/.test(MAPNAME)) return m; /* Hauptkarten: runde Plattform – Raster wächst um E Felder je Seite; die Karte selbst bleibt wie im Original (Außenmauern, Wege & Gänge), ringsum bis zum Kreisrand gesperrte Kulisse (off) */
+        const MLOOK = (CMAP_INFO[MAPNAME] || {}).th || MAPNAME; // Look-Tabellen: eigene Karten nutzen ihr Thema
+        const MAP = (m => { if (m.hi || m.isl || !/^(de|my|pub)_/.test(MAPNAME)) return m; /* Hauptkarten: runde Plattform – Raster wächst um E Felder je Seite; die Karte selbst bleibt wie im Original (Außenmauern, Wege & Gänge), ringsum bis zum Kreisrand gesperrte Kulisse (off) */
             const E = 6, R0 = m.length, C0 = m[0].length, N = R0 + 2 * E, M = C0 + 2 * E, off = new Set(), out = [];
             for (let r = 0; r < N; r++) { let row = ''; for (let c = 0; c < M; c++) { const r0 = r - E, c0 = c - E, ins = r0 >= 0 && r0 < R0 && c0 >= 0 && c0 < C0; if (!ins || r0 === 0 || c0 === 0 || r0 === R0 - 1 || c0 === C0 - 1) off.add(r * 1000 + c); /* Außenmauer der Karte: nur unsichtbare Kollision, nach außen offen */ row += ins ? m[r0][c0] || '.' : '#'; } out.push(row); }
             out.off = off; return out; })(MAPS[MAPNAME] || MAPS.de_dusty);
@@ -5873,7 +5956,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         const THEME = THEMES[MAPNAME] || THEMES.de_dusty;
         const S = 4, ROWS = MAP.length, COLS = MAP[0].length, WALL_H = 4, CRATE_H = 1.0, TALL_H = 3;
-        const LAY = !!MAP.hi, HALLMAP = !LAY && /^de_/.test(MAPNAME), REAL = HALLMAP && !!new THREE.MeshLambertMaterial().isMeshStandardMaterial, HOLES = !LAY && MAP.some(r => r.includes('O')), HIG = MAP.hi || null, TOPG = MAP.top || null, CORE = MAP.core || [], MS = LAY ? LMS : S; // Gebäude-Karte: 1,25-m-Raster mit Obergeschoss (HIG) · Arenen & eigene Karten bleiben bei 4 m
+        const LAY = !!MAP.hi, HALLMAP = !LAY && /^(de|my|pub)_/.test(MAPNAME), REAL = HALLMAP && !!new THREE.MeshLambertMaterial().isMeshStandardMaterial, HOLES = !LAY && MAP.some(r => r.includes('O')), HIG = MAP.hi || null, TOPG = MAP.top || null, CORE = MAP.core || [], MS = LAY ? LMS : S; // Gebäude-Karte: 1,25-m-Raster mit Obergeschoss (HIG) · Arenen & eigene Karten bleiben bei 4 m
         const WORLD_W = COLS * MS, WORLD_D = ROWS * MS;
         const RIM_R = WORLD_W / 2, rimCell = (r, c) => HALLMAP && (!!(MAP.off && MAP.off.has(r * 1000 + c)) || Math.max(...[[0, 0], [1, 0], [0, 1], [1, 1]].map(([a, b]) => Math.hypot((c + a) * S - RIM_R, (r + b) * S - RIM_R))) > RIM_R + 0.01); // runde Plattform (oder Sperrfläche am Rand): Feld liegt nicht ganz im Kreis → unsichtbare Wand
         const CFG_DEF = { rounds: 15, roundTime: 115, freeze: 5, bombTime: 40, skill: 1, teamSize: 5, money: 800, bots: 1, agTheme: 0, hsOnly: 0, wpn: 0, grav: 100, jump: 100, speed: 100, infAmmo: 0 };
@@ -6072,7 +6155,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 g.fillStyle = 'rgba(255,255,255,.07)'; if (k === 1) { g.fillRect(2, 0, 3, h); g.fillRect(w / 2 + 1, 0, 3, h); } g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(0, 0, w, 5); });
         }
         if (DSV) { const VW = [0, 1, 2].map(k => vWallTex(THEME, k)); for (const k in WALL_SETS) WALL_SETS[k] = VW; }
-        if (HALLMAP) { const T = THEME, H = T.wallHue, SA = T.wallSat, L = T.wallLight, S2 = Math.max(SA, 18), AC = HS(H, Math.min(58, S2 + 18), Math.max(40, Math.min(56, L - 6))), B0 = [HS(H, S2 * 0.6, 86), HS(H, S2 * 0.6, 82), HS(H, S2 * 0.65, 75)], B1 = [HS(H, S2 * 0.35, 94), HS(H, S2 * 0.35, 91), HS(H, S2 * 0.4, 85)], NAME = (MAP_NAMES[MAPNAME] || '').toUpperCase(), NI = Object.keys(MAP_NAMES).indexOf(MAPNAME) + 1; // Minimal-Architektur (Mirror's Edge) in den Farben der Karte: helle Grundtöne, Farbflächen & Wandgrafiken
+        if (HALLMAP) { const T = THEME, H = T.wallHue, SA = T.wallSat, L = T.wallLight, S2 = Math.max(SA, 18), AC = HS(H, Math.min(58, S2 + 18), Math.max(40, Math.min(56, L - 6))), B0 = [HS(H, S2 * 0.6, 86), HS(H, S2 * 0.6, 82), HS(H, S2 * 0.65, 75)], B1 = [HS(H, S2 * 0.35, 94), HS(H, S2 * 0.35, 91), HS(H, S2 * 0.4, 85)], NAME = (MAP_NAMES[MAPNAME] || (CMAP_INFO[MAPNAME] || {}).n || '').toUpperCase(), NI = Object.keys(MAP_NAMES).indexOf(MAPNAME) + 1; // Minimal-Architektur (Mirror's Edge) in den Farben der Karte: helle Grundtöne, Farbflächen & Wandgrafiken
             const SURF = (g, w, h) => { if (HALLMAP) return; let sd = 7; const rn = () => (sd = (sd * 16807) % 2147483647) / 2147483647, F = (c, x, y, ww, hh) => { g.fillStyle = c; g.fillRect(x, y, ww, hh); }; // Oberfläche je Karte
                 if (MAPNAME === 'de_dusty') { for (let n = 0; n < 900; n++) F('rgba(' + (rn() < 0.5 ? '255,255,255' : '90,60,40') + ',' + (0.04 + rn() * 0.05) + ')', rn() * w, rn() * h, 2, 2); F('rgba(90,60,40,.12)', 0, 0, 2, h); F('rgba(90,60,40,.1)', 0, 84, w, 2); F('rgba(255,255,255,.25)', 0, 86, w, 1); } // Putz mit Scheinfuge
                 else if (MAPNAME === 'de_bazaar') { for (let y = 0, row = 0; y < h; y += 32, row++) for (let x = row % 2 ? -32 : 0; x < w; x += 64) { F('rgba(' + (rn() < 0.5 ? '255,250,235' : '120,90,50') + ',' + (rn() * 0.08) + ')', x + 2, y + 2, 60, 28); F('rgba(110,80,45,.22)', x, y, 2, 32); } for (let y = 0; y < h; y += 32) { F('rgba(110,80,45,.22)', 0, y, w, 2); F('rgba(255,255,255,.18)', 0, y + 2, w, 1); } } // Sandsteinquader
@@ -6499,7 +6582,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         const staticFrom = scene.children.length;
         let rimM = null; function edgeWall(r, c) { const nb = (rr, cc) => { const ch = cell(rr, cc); return !!ch && ch !== '#' && ch !== 'O' && !rimCell(rr, cc); }; /* Nachbar ist Spielfläche (auch mit Kiste/Deckung – man kann daran vorbei) */ if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => nb(r + a, c + b))) { aabbs.push({ minX: c * S, maxX: (c + 1) * S, minZ: r * S, maxZ: (r + 1) * S, top: 40, bot: 0, wall: 1 }); // runder Rand: Wand auf Randfeldern neben begehbaren Feldern
-                if (!rimM) { const H = THEME.wallHue, SA = THEME.wallSat; rimM = { body: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.25), 84)) }), base: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.3), 52)) }), cap: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.15), 94)) }), pil: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.25), 74)) }), led: new THREE.MeshBasicMaterial({ color: new THREE.Color(({ de_dusty: '#c0563a', de_bazaar: '#d08a2e', de_frost: '#3a7fc0', de_moisty: '#3f8a6a', de_foundry: '#9a3b34' })[MAPNAME] || '#8aa1b8') }) }; }
+                if (!rimM) { const H = THEME.wallHue, SA = THEME.wallSat; rimM = { body: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.25), 84)) }), base: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.3), 52)) }), cap: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.15), 94)) }), pil: new THREE.MeshLambertMaterial({ color: new THREE.Color(HS(H, Math.round(SA * 0.25), 74)) }), led: new THREE.MeshBasicMaterial({ color: new THREE.Color(({ de_dusty: '#c0563a', de_bazaar: '#d08a2e', de_frost: '#3a7fc0', de_moisty: '#3f8a6a', de_foundry: '#9a3b34' })[MLOOK] || '#8aa1b8') }) }; }
                 const RH = 2.2, B = (w, h, d, x, y, z, m) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; scene.add(o); return o; }; // Randwand: niedrig (Blick aufs Stadion bleibt), Sockel, Abdeckung, Pfeiler, Leuchtleiste in Kartenfarbe
                 for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { if (!nb(r + dr, c + dc)) continue; // je Seite zu einem begehbaren Feld ein Wandstück an der Feldkante
                     const ex = (c + 0.5 + dc * 0.5) * S - dc * 0.2, ez = (r + 0.5 + dr * 0.5) * S - dr * 0.2, al = !!dr, L = S + 0.4, sx = (a, t) => al ? a : t, sz = (a, t) => al ? t : a;
@@ -6942,7 +7025,8 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         }
         function skyMap() { // Hauptkarten: runde, schwebende Outdoor-Arena (THE FINALS-Stil) – Bodenplatte mit Löchern & Gitterbrücken; Stadion, Stadt & Himmel in stadiumWorld – je Karte eigener Himmel, Sitzfarbe & Anordnung
             const O = ({ de_dusty: { seed: 1, rot: 0.5, name: 'SIENNA', seat: '#c0563a', sky: ['#3f7fcf', '#7fb0e2', '#cfdeea', '#8d9bab'], haze: 0xb4c8dd, sun: 0xfff3e6, clouds: 16 }, de_bazaar: { seed: 2, rot: 1.7, name: 'KASBAH', seat: '#d08a2e', sky: ['#3a78c4', '#86b2dc', '#e2d8c4', '#9c9a90'], haze: 0xbcc4ca, sun: 0xfff0dc, clouds: 10 },
-                de_frost: { seed: 3, rot: 2.9, name: 'TUNDRA', seat: '#3a7fc0', sky: ['#2d6cc8', '#79abe6', '#d6e6f4', '#8fa2b6'], haze: 0xb8cde2, sun: 0xf4f7ff, clouds: 20 }, de_moisty: { seed: 4, rot: 4.1, name: 'MIRE', seat: '#3f8a6a', sky: ['#3e7aa8', '#87b3c8', '#d0e0de', '#8a9c9c'], haze: 0xb2c4c4, sun: 0xf8f8f0, clouds: 24 }, de_foundry: { seed: 5, rot: 5.3, name: 'IRONWORKS', seat: '#9a3b34', sky: ['#3b6fb6', '#8fb0d4', '#e8d4bf', '#9a928c'], haze: 0xb6bfc8, sun: 0xfff4ea, clouds: 14 }, de_skyway: { seed: 6, rot: 0.9, name: 'SKYWAY', seat: '#2f8fa8', sky: ['#2f6fc4', '#7fb2e6', '#d8e8f4', '#8fa2b6'], haze: 0xb8cde2, sun: 0xfff6ec, clouds: 20, islands: 1 } })[MAPNAME] || {};
+                de_frost: { seed: 3, rot: 2.9, name: 'TUNDRA', seat: '#3a7fc0', sky: ['#2d6cc8', '#79abe6', '#d6e6f4', '#8fa2b6'], haze: 0xb8cde2, sun: 0xf4f7ff, clouds: 20 }, de_moisty: { seed: 4, rot: 4.1, name: 'MIRE', seat: '#3f8a6a', sky: ['#3e7aa8', '#87b3c8', '#d0e0de', '#8a9c9c'], haze: 0xb2c4c4, sun: 0xf8f8f0, clouds: 24 }, de_foundry: { seed: 5, rot: 5.3, name: 'IRONWORKS', seat: '#9a3b34', sky: ['#3b6fb6', '#8fb0d4', '#e8d4bf', '#9a928c'], haze: 0xb6bfc8, sun: 0xfff4ea, clouds: 14 }, de_skyway: { seed: 6, rot: 0.9, name: 'SKYWAY', seat: '#2f8fa8', sky: ['#2f6fc4', '#7fb2e6', '#d8e8f4', '#8fa2b6'], haze: 0xb8cde2, sun: 0xfff6ec, clouds: 20, islands: 1 } })[MLOOK] || {};
+            if (CMAP_INFO[MAPNAME] && O.name) O.name = CMAP_INFO[MAPNAME].n.toUpperCase(); /* eigene Karten: eigener Name auf Bannern */
             const grp = skyMap.grp = new THREE.Group(); skyMap.O = O; stadiumWorld(grp, O);
             const K = m => { m.userData.keep = 1; return m; }, slabM = K(new THREE.MeshLambertMaterial({ color: 0x3a414b })), yel = K(HALLMAP ? new THREE.MeshBasicMaterial({ color: new THREE.Color(O.seat || '#8aa1b8').lerp(new THREE.Color(0xffffff), 0.2) }) : new THREE.MeshLambertMaterial({ color: 0xf5b400 })), beam = K(new THREE.MeshLambertMaterial({ color: 0x4a5058 })), shaft = K(new THREE.MeshLambertMaterial({ color: 0x353b42 }));
             const grate = K(new THREE.MeshLambertMaterial({ map: makeTex(64, 64, g => { g.fillStyle = '#5b636b'; g.fillRect(0, 0, 64, 64); g.fillStyle = '#3a4047'; for (let i = 0; i < 64; i += 8) { g.fillRect(i, 0, 2, 64); g.fillRect(0, i, 64, 2); } g.fillStyle = HALLMAP ? (O.seat || '#8aa1b8') : '#f5b400'; g.fillRect(0, 0, 64, 4); g.fillRect(0, 60, 64, 4); }) }));
@@ -7096,7 +7180,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         if (LAY && MAPNAME !== 'de_training') { const avg = new Map(), cv = document.createElement('canvas'); cv.width = cv.height = 8; const cg = cv.getContext('2d'); // Valorant-Look: jede Fläche eine glatte Farbe
             const flat = m => { if (!m || !m.map || m.transparent || !m.map.image || m.userData.keep || KEEPIMG.has(m.map.image)) return; let c = avg.get(m.map.image); if (!c) { cg.clearRect(0, 0, 8, 8); cg.drawImage(m.map.image, 0, 0, 8, 8); const d = cg.getImageData(0, 0, 8, 8).data; let r = 0, gg = 0, b = 0; for (let i = 0; i < 256; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; } c = new THREE.Color(r / 64 / 255, gg / 64 / 255, b / 64 / 255); avg.set(m.map.image, c); } m.color.multiply(c); m.map = null; m.needsUpdate = true; };
             for (const ch of scene.children) if (ch !== camera) ch.traverse(o => { if (o.isMesh) [].concat(o.material).forEach(flat); }); }
-        const texFloor = makeTex(256, 256, (g, w, h2) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h2); g.strokeStyle = 'rgba(0,0,0,.07)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 2); i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h2); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); } }, WORLD_W / 8, WORLD_D / 8); if (HALLMAP) { const g = texFloor.image.getContext('2d'), FC = { de_dusty: '#e0d9d0', de_bazaar: '#e2dacb', de_frost: '#e1e6eb', de_moisty: '#d2d8cf', de_foundry: '#d5d8db' }[MAPNAME] || '#b9bec3'; g.fillStyle = '#' + new THREE.Color(FC).multiplyScalar(0.88).getHexString(); g.fillRect(0, 0, 256, 256); for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) { g.fillStyle = 'rgba(255,255,255,' + ((i + j) % 2 ? 0.05 : 0) + ')'; g.fillRect(i * 128, j * 128, 128, 128); } g.fillStyle = 'rgba(30,40,50,.3)'; for (let k = 0; k <= 256; k += 128) { g.fillRect(k - 1, 0, 2, 256); g.fillRect(0, k - 1, 256, 2); } g.fillStyle = 'rgba(30,40,50,.11)'; for (let k = 64; k < 256; k += 128) { g.fillRect(k, 0, 1, 256); g.fillRect(0, k, 256, 1); } texFloor.needsUpdate = true; } /* Hauptkarten: große Betonplatten */
+        const texFloor = makeTex(256, 256, (g, w, h2) => { g.fillStyle = THEME.floor; g.fillRect(0, 0, w, h2); g.strokeStyle = 'rgba(0,0,0,.07)'; g.lineWidth = 2; for (let i = 0; i <= (DSV ? -1 : 2); i++) { g.beginPath(); g.moveTo(i * 128, 0); g.lineTo(i * 128, h2); g.moveTo(0, i * 128); g.lineTo(w, i * 128); g.stroke(); } }, WORLD_W / 8, WORLD_D / 8); if (HALLMAP) { const g = texFloor.image.getContext('2d'), FC = { de_dusty: '#e0d9d0', de_bazaar: '#e2dacb', de_frost: '#e1e6eb', de_moisty: '#d2d8cf', de_foundry: '#d5d8db' }[MLOOK] || '#b9bec3'; g.fillStyle = '#' + new THREE.Color(FC).multiplyScalar(0.88).getHexString(); g.fillRect(0, 0, 256, 256); for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) { g.fillStyle = 'rgba(255,255,255,' + ((i + j) % 2 ? 0.05 : 0) + ')'; g.fillRect(i * 128, j * 128, 128, 128); } g.fillStyle = 'rgba(30,40,50,.3)'; for (let k = 0; k <= 256; k += 128) { g.fillRect(k - 1, 0, 2, 256); g.fillRect(0, k - 1, 256, 2); } g.fillStyle = 'rgba(30,40,50,.11)'; for (let k = 64; k < 256; k += 128) { g.fillRect(k, 0, 1, 256); g.fillRect(0, k, 256, 1); } texFloor.needsUpdate = true; } /* Hauptkarten: große Betonplatten */
         const SPB = {}, SPBG = { T: [], CT: [] }, spawnBar = new THREE.Group(); // Spawn-Barrieren (Kaufphase): im Spawn bewegen, aber nicht hinaus · SPBG: je Spawn-Zone (Gebäude-Karten: 3 T-Zonen)
         { const bt = makeTex(64, 64, g => { g.fillStyle = 'rgba(79,216,255,.16)'; g.fillRect(0, 0, 64, 64); g.strokeStyle = 'rgba(79,216,255,.5)'; g.lineWidth = 4; for (let i = -64; i < 128; i += 16) { g.beginPath(); g.moveTo(i, 64); g.lineTo(i + 64, 0); g.stroke(); } });
             for (const tm of ['T', 'CT']) for (const cs of (spawnGroups[tm].length ? spawnGroups[tm] : [spawnCells[tm]])) { if (!cs.length) continue; const r0 = Math.min(...cs.map(o => o.r)) - 1, r1 = Math.max(...cs.map(o => o.r)) + 1, c0 = Math.min(...cs.map(o => o.c)) - 1, c1 = Math.max(...cs.map(o => o.c)) + 1;
@@ -7123,7 +7207,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         if (DSV && !LAY) vFloorPaint(texFloor); // Gebäude-Karten: glatter Hallenboden
         const floor = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_W, WORLD_D), new THREE.MeshLambertMaterial({ map: texFloor })); floor.rotation.x = -Math.PI / 2; floor.position.set(WORLD_W / 2, 0, WORLD_D / 2); if (HOLES || HALLMAP) { floor.geometry.dispose(); floor.geometry = holeFloorGeo(); floor.rotation.x = 0; floor.position.set(0, 0, 0); } floor.receiveShadow = true; scene.add(floor); mapMeshes.push(floor); if (TOPG && LMOOD.floorTex) { const t = LMOOD.floorTex.clone(); t.needsUpdate = true; t.repeat.set(WORLD_W / (LMOOD.floorTile || 2 * MS), WORLD_D / (LMOOD.floorTile || 2 * MS)); floor.material.map = t; floor.material.color.setHex(LMOOD.groundC); } else if (TOPG) floor.material.color.setScalar(0.85); // Hallenboden nicht überstrahlt · Ironworks: Asphalt
         if (HALLMAP && !LAY) { // Bodenbeläge je Bereich (im Stil der Betonplatten: gleiche Farbpalette, ruhige Fugen) – Sites: große Steinplatten · Spawns: feines Raster · Gänge: Streifenplatten in Laufrichtung · offene Flächen: Grundboden
-            const FC = new THREE.Color({ de_dusty: '#e0d9d0', de_bazaar: '#e2dacb', de_frost: '#e1e6eb', de_moisty: '#d2d8cf', de_foundry: '#d5d8db' }[MAPNAME] || '#b9bec3'), hx = (k, warm) => '#' + FC.clone().lerp(new THREE.Color(0xc8a888), warm || 0).multiplyScalar(k).getHexString();
+            const FC = new THREE.Color({ de_dusty: '#e0d9d0', de_bazaar: '#e2dacb', de_frost: '#e1e6eb', de_moisty: '#d2d8cf', de_foundry: '#d5d8db' }[MLOOK] || '#b9bec3'), hx = (k, warm) => '#' + FC.clone().lerp(new THREE.Color(0xc8a888), warm || 0).multiplyScalar(k).getHexString();
             const T = { site: makeTex(256, 256, g => { g.fillStyle = hx(0.95); g.fillRect(0, 0, 256, 256); const gl = g.createLinearGradient(0, 0, 256, 256); gl.addColorStop(0, 'rgba(255,255,255,.06)'); gl.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gl; g.fillRect(0, 0, 256, 256); g.fillStyle = 'rgba(30,40,50,.26)'; g.fillRect(0, 0, 256, 2); g.fillRect(0, 0, 2, 256); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(2, 2, 252, 1); g.fillRect(2, 2, 1, 252); }), // eine große Platte je Feld, Lichtkante
                 spawn: makeTex(256, 256, g => { g.fillStyle = hx(0.8); g.fillRect(0, 0, 256, 256); g.fillStyle = 'rgba(30,40,50,.1)'; for (let k = 32; k < 256; k += 32) { g.fillRect(k, 0, 1, 256); g.fillRect(0, k, 256, 1); } g.fillStyle = 'rgba(30,40,50,.28)'; g.fillRect(0, 0, 256, 2); g.fillRect(0, 0, 2, 256); }), // feines Raster (Gitter-Anmutung, hell)
                 corr: makeTex(256, 256, g => { for (let i = 0; i < 4; i++) { g.fillStyle = hx(0.86 + (i % 2) * 0.025, 0.12); g.fillRect(i * 64, 0, 64, 256); } g.fillStyle = 'rgba(30,40,50,.2)'; for (let i = 0; i <= 4; i++) g.fillRect(i * 64 - 1, 0, 2, 256); g.fillStyle = 'rgba(30,40,50,.12)'; for (let i = 0; i < 4; i++) g.fillRect(i * 64, (i * 97) % 256, 64, 1); }) }; // Streifenplatten, leicht wärmer
@@ -8235,14 +8319,231 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const G = { state: 'menu', t: 0, round: 1, score: { CT: 0, T: 0 }, loss: { CT: 0, T: 0 }, timer: ROUND_TIME, bomb: { state: 'carried', x: 0, z: 0, t: BOMB_TIME, carrier: null }, beepT: 0, site: 'A', msgT: 0, spotted: new Map() };
         // ================= DEATHMATCH (Jeder gegen jeden) =================
         const DM = { on: false, limit: 30, time: 600 };
+        // ── 🧱 3D-Baumodus (eigene Karten, nur PC): Deko setzen wie im Kreativmodus · Daten: CMAP_INFO[k].dk = [Typ, x, z (Felder im Original-Raster), Höhe, Drehung ×45°, Größe, Farbe, Text?] ──
+        const DECO = { grp: new THREE.Group(), list: [], lights: 0, tex: {} }; scene.add(DECO.grp);
+        const DECO_OX = MAP.off ? (COLS - (MAPS[MAPNAME] || MAP)[0].length) / 2 : 0; // Stadion-Rand: Versatz zwischen Original-Raster und Welt
+        const DECO_COL = [0xa8743c, 0x8a2b20, 0x3f7bff, 0x2f6b4a, 0xffd84a, 0xe8e8e2, 0x3a3f46, 0xb52222, 0x4fd8ff, 0xe0683a, 0x7a3fa0, 0xff4fa3, 0x5a6e3c, 0x1c1e22, 0xb59a68, 0x8a8f96, 0xffffff, 0xcfc8b8, 0x6a6e76, 0x23324a, 0x1f8f8f, 0x7fc85a, 0x3f8f3f, 0xc9a227, 0xf2a227, 0xd04a2a, 0x8a3a5a, 0xc8a2e0, 0x6f4a8a, 0x2a5aa0, 0x9ad0ff, 0x4a2e1e]; // 32 Farben · Werte ab 32 = eigene Farbe (32 + RGB)
+        const colOf = c => c < 32 ? DECO_COL[c] || 0x888888 : (c - 32) & 0xffffff;
+        const PAT_W = ['Platten', 'Ziegel', 'Beton', 'Wellblech', 'Holz', 'Rauten', 'Warnstreifen'], PAT_F = ['Fliesen', 'Metallplatten', 'Holzdielen', 'Asphalt', 'Betonplatten', 'Gitterrost', 'Pflaster'];
+        const GRID_T = [['#', 'Wand', '#d8cbb0'], ['D', 'Tür', '#5b3b1e'], ['W', 'Fenster', '#9fc7e3'], ['h', 'Halbwand', '#5f9a52'], ['c', 'Kisten', '#a8743c'], ['C', 'Container', '#6b4a2a'], ['s', 'Sandsack-Wall', '#c9b48a'], ['b', 'Fass-Gruppe', '#8a2b20'], ['=', 'Steg', '#8291a0'], ['1', 'Treppe', '#77838e'], ['R', 'Innenraum (Dach)', '#6f6a62'], ['O', 'Abgrund', '#0d1014'], ['A', 'Bombsite A', '#e07a2a'], ['B', 'Bombsite B', '#e0a82a'], ['T', 'Spawn T', '#d9822b'], ['K', 'Spawn CT', '#4a7fd0'], ['.', 'Radierer', '#3a3226']]; // wie im 2D-Editor
+        const DECO_KAT = ['Deckung', 'Möbel', 'Natur & Straße', 'Licht', 'Wand', 'Wandmuster', 'Bodenmuster', 'Bauen (Raster)'], KAT_ORDER = [7, 0, 1, 2, 3, 4, 5, 6];
+        // b: Kollision [½ Breite, ½ Tiefe, Höhe] · w: Wand-Objekt (Höhe) · c: Grundfarbe · k: Kategorie · t: mit Text · pt: Muster-Pinsel · gt: Raster-Feld
+        const DECO_CAT = [{ id: 'kr', n: 'Kiste', ic: '📦', b: [0.5, 0.5, 1], c: 0, k: 0 }, { id: 'fa', n: 'Fass', ic: '🛢️', b: [0.33, 0.33, 0.95], c: 1, k: 0 }, { id: 'sb', n: 'Sandsäcke', ic: '🧱', b: [0.9, 0.35, 0.72], c: 14, k: 0 }, { id: 'ab', n: 'Absperrung', ic: '🚧', b: [1, 0.25, 0.9], c: 4, k: 0 }, { id: 'za', n: 'Zaun', ic: '🥅', b: [1, 0.06, 1.4], c: 15, k: 0 }, { id: 'pa', n: 'Palette', ic: '🟫', b: [0.6, 0.5, 0.15], c: 14, k: 0 },
+            { id: 're', n: 'Regal', ic: '🗄️', b: [0.8, 0.25, 2], c: 6, k: 1 }, { id: 'ti', n: 'Tisch', ic: '🪑', b: [0.7, 0.4, 0.78], c: 14, k: 1 }, { id: 'bk', n: 'Bank', ic: '🛋️', b: [0.8, 0.25, 0.95], c: 14, k: 1 },
+            { id: 'pf', n: 'Pflanze', ic: '🪴', c: 3, k: 2 }, { id: 'bm', n: 'Baum', ic: '🌳', b: [0.2, 0.2, 2.2], c: 3, k: 2 }, { id: 'ke', n: 'Pylon', ic: '🔺', c: 9, k: 2 }, { id: 'au', n: 'Auto', ic: '🚗', b: [0.95, 2.05, 1.4], c: 7, k: 2 },
+            { id: 'la', n: 'Lampe', ic: '💡', c: 13, k: 3 }, { id: 'ne', n: 'Neon-Schild', ic: '🌈', w: 0.7, c: 11, k: 3, t: 1 },
+            { id: 'pl', n: 'Plakat', ic: '🖼️', w: 2.2, c: 2, k: 4, t: 1 }, { id: 'ba', n: 'Banner', ic: '🎌', w: 2.8, c: 7, k: 4, t: 1 }, { id: 'sc', n: 'Bildschirm', ic: '📺', w: 1.1, c: 2, k: 4, t: 1 },
+            ...PAT_W.map((n, p) => ({ id: 'w' + p, n, pt: 'w', p, c: 16, k: 5 })), ...PAT_F.map((n, p) => ({ id: 'f' + p, n, pt: 'f', p, c: 16, k: 6 })), ...GRID_T.map(([ch, n, gc]) => ({ id: 'g' + ch, n, gt: ch, gc, c: 0, k: 7 }))];
+        const decoIc = k => k.pt ? `<span class="pts" style="background-image:url(${patUrl(k.pt, k.p)})"></span>` : k.gt ? `<span class="pts" style="background:${k.gc}"></span>` : `<span>${k.ic}</span>`; // Muster/Raster: Kachel statt Emoji
+        const decoC = id => DECO_CAT.find(k => k.id === id), hexC = ci => '#' + colOf(ci).toString(16).padStart(6, '0');
+        function decoTex(id, ci, txt) { const key = id + ci + '|' + txt; if (DECO.tex[key]) return DECO.tex[key]; // Plakat, Banner, Neon & Bildschirm: Canvas-Textur (zwischengespeichert)
+            const c = document.createElement('canvas'), W = { pl: 256, ba: 192, ne: 512, sc: 320 }[id], H = { pl: 352, ba: 416, ne: 160, sc: 180 }[id]; c.width = W; c.height = H; const g = c.getContext('2d'), col = hexC(ci), cc = new THREE.Color(colOf(ci)), lite = cc.r * 0.3 + cc.g * 0.59 + cc.b * 0.11 > 0.62, fg = lite ? '#16181c' : '#ffffff';
+            const fit = (t, px, maxW) => { g.font = `bold ${px}px Rajdhani, Arial`; const m = g.measureText(t).width; if (m > maxW) g.font = `bold ${Math.floor(px * maxW / m)}px Rajdhani, Arial`; };
+            g.textAlign = 'center'; g.textBaseline = 'middle';
+            if (id === 'pl') { const t = txt || 'CLUTCH'; g.fillStyle = col; g.fillRect(0, 0, W, H); g.fillStyle = lite ? 'rgba(0,0,0,.1)' : 'rgba(255,255,255,.1)'; for (let i = -H; i < W; i += 48) { g.beginPath(); g.moveTo(i, H); g.lineTo(i + 24, H); g.lineTo(i + H + 24, 0); g.lineTo(i + H, 0); g.fill(); }
+                g.strokeStyle = fg; g.lineWidth = 14; g.beginPath(); g.arc(128, 128, 62, 0.6, Math.PI * 2 - 0.6); g.stroke(); g.fillStyle = fg; g.beginPath(); g.arc(128, 128, 20, 0, Math.PI * 2); g.fill(); fit(t, 52, 224); g.fillText(t, 128, 255); g.font = 'bold 20px Rajdhani, Arial'; g.fillText(MAPLABEL.toUpperCase().slice(0, 18), 128, 298); g.fillRect(48, 318, 160, 4); }
+            if (id === 'ba') { const t = txt || MAPLABEL.toUpperCase(); g.fillStyle = col; g.fillRect(0, 0, W, H); g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(0, 0, W, 34); g.fillRect(0, H - 34, W, 34); g.fillStyle = fg; g.fillRect(0, 40, W, 5); g.fillRect(0, H - 45, W, 5); g.save(); g.translate(W / 2, H / 2); g.rotate(-Math.PI / 2); fit(t, 96, H - 110); g.fillText(t, 0, 4); g.restore(); }
+            if (id === 'ne') { const t = txt || 'OPEN'; fit(t, 92, W - 40); g.shadowColor = col; g.fillStyle = col; for (const b of [28, 14]) { g.shadowBlur = b; g.fillText(t, W / 2, H / 2); } g.shadowBlur = 6; g.fillStyle = 'rgba(255,255,255,.85)'; g.fillText(t, W / 2, H / 2); }
+            if (id === 'sc') { const t = txt || 'LIVE'; const gr = g.createLinearGradient(0, 0, W, H); gr.addColorStop(0, col); gr.addColorStop(1, '#0b0f14'); g.fillStyle = gr; g.fillRect(0, 0, W, H); g.fillStyle = 'rgba(255,255,255,.06)'; for (let y = 0; y < H; y += 4) g.fillRect(0, y, W, 1); g.fillStyle = '#fff'; fit(t, 64, W - 40); g.fillText(t, W / 2, H / 2 + 6); g.font = 'bold 16px Rajdhani, Arial'; g.textAlign = 'left'; g.fillStyle = '#ff4a4a'; g.fillText('● LIVE', 14, 18); g.textAlign = 'right'; g.fillStyle = 'rgba(255,255,255,.7)'; g.fillText('CLUTCH TV', W - 14, 18); }
+            const tx = new THREE.CanvasTexture(c); tx.anisotropy = 4; return DECO.tex[key] = tx; }
+        function decoMesh(id, ci, txt) { const g = new THREE.Group(), col = colOf(ci), M = c => new THREE.MeshLambertMaterial({ color: c }), m = M(col), shd = f => M(new THREE.Color(col).multiplyScalar(f).getHex()), dk = shd(0.6);
+            const add = (geo, mt, x, y, z, sc, rx = 0, rz = 0) => { const o = new THREE.Mesh(geo, mt); o.position.set(x, y, z); o.rotation.set(rx, 0, rz); if (sc) o.scale.set(...sc); o.castShadow = o.receiveShadow = true; g.add(o); return o; }, B = (w, h, d, mt, x, y, z) => add(new THREE.BoxGeometry(w, h, d), mt, x, y, z), Cy = (rt, rb, h, n, mt, x, y, z, rx, rz) => add(new THREE.CylinderGeometry(rt, rb, h, n), mt, x, y, z, null, rx, rz), Ico = (r, mt, x, y, z, sc) => add(new THREE.IcosahedronGeometry(r, 0), mt, x, y, z, sc);
+            const flat = (w, h, z, y, mat) => { const p = add(new THREE.PlaneGeometry(w, h), mat, 0, y, z); p.userData.isOut = 1; p.castShadow = false; return p; }; // Bildfläche (ohne Facetten)
+            if (id === 'kr') { B(1, 1, 1, m, 0, 0.5, 0); for (const y of [0.05, 0.95]) B(1.03, 0.1, 1.03, dk, 0, y, 0); B(1.03, 1.03, 0.12, dk, 0, 0.5, 0); }
+            if (id === 'fa') { Cy(0.32, 0.32, 0.95, 9, m, 0, 0.475, 0); for (const y of [0.22, 0.73]) Cy(0.335, 0.335, 0.05, 9, dk, 0, y, 0); Cy(0.27, 0.27, 0.012, 9, dk, 0, 0.956, 0); }
+            if (id === 'sb') { const l = shd(1.12); for (const [x, y, z, mt] of [[-0.6, 0.12, 0, m], [0, 0.12, 0, l], [0.6, 0.12, 0, m], [-0.3, 0.34, 0, l], [0.3, 0.34, 0, m], [0.9, 0.34, 0, l], [-0.9, 0.34, 0, m], [0, 0.56, 0, m], [-0.6, 0.56, 0, l], [0.6, 0.56, 0, l]]) if (!(Math.abs(x) > 0.85 && y > 0.3) || y < 0.4) Ico(0.2, mt, x * 0.92, y, z, [1.6, 0.62, 1.05]); }
+            if (id === 'ab') { B(2, 0.25, 0.5, m, 0, 0.125, 0); B(2, 0.65, 0.24, m, 0, 0.57, 0); const wh = M(0xf2f0ea); for (const x of [-0.6, 0, 0.6]) B(0.3, 0.12, 0.26, wh, x, 0.78, 0); }
+            if (id === 'za') { for (const x of [-0.97, 0.97]) Cy(0.04, 0.04, 1.4, 6, dk, x, 0.7, 0); for (const y of [0.08, 1.36]) Cy(0.025, 0.025, 1.94, 6, m, 0, y, 0, 0, Math.PI / 2); for (let x = -0.85; x < 0.9; x += 0.17) B(0.02, 1.26, 0.02, m, x, 0.72, 0); }
+            if (id === 'pa') { for (const x of [-0.52, 0, 0.52]) B(0.14, 0.1, 1, dk, x, 0.05, 0); for (const z of [-0.41, -0.14, 0.14, 0.41]) B(1.2, 0.04, 0.18, m, 0, 0.12, z); }
+            if (id === 're') { for (const x of [-0.78, 0.78]) B(0.05, 2, 0.5, dk, x, 1, 0); for (const y of [0.1, 0.7, 1.3, 1.95]) B(1.6, 0.05, 0.5, m, 0, y, 0); B(0.4, 0.3, 0.35, M(0xa8743c), -0.4, 0.88, 0); B(0.5, 0.35, 0.4, M(0x8a8f96), 0.35, 1.5, 0); B(0.35, 0.25, 0.3, M(0xb59a68), 0.2, 0.25, 0); }
+            if (id === 'ti') { B(1.4, 0.06, 0.8, m, 0, 0.75, 0); for (const x of [-0.62, 0.62]) for (const z of [-0.33, 0.33]) B(0.07, 0.72, 0.07, dk, x, 0.36, z); }
+            if (id === 'bk') { B(1.6, 0.07, 0.45, m, 0, 0.45, 0.02); B(1.6, 0.36, 0.06, m, 0, 0.75, -0.2); for (const x of [-0.7, 0.7]) { B(0.07, 0.45, 0.4, dk, x, 0.22, 0.02); B(0.07, 0.5, 0.07, dk, x, 0.7, -0.22); } }
+            if (id === 'pf') { Cy(0.3, 0.22, 0.45, 7, M(0x5a4a3e), 0, 0.225, 0); Ico(0.45, m, 0, 0.95, 0, [1, 1.3, 1]); Ico(0.3, shd(1.2), 0.15, 1.38, 0.1); }
+            if (id === 'bm') { Cy(0.12, 0.2, 1.8, 6, M(0x6a4a30), 0, 0.9, 0); Ico(1.0, m, 0, 2.35, 0, [1, 1.15, 1]); Ico(0.7, shd(1.18), 0.45, 2.95, 0.2); Ico(0.6, shd(0.85), -0.5, 2.7, -0.25); }
+            if (id === 'ke') { B(0.42, 0.04, 0.42, M(0x1c1e22), 0, 0.02, 0); Cy(0.03, 0.17, 0.62, 8, m, 0, 0.35, 0); Cy(0.1, 0.12, 0.1, 8, M(0xf2f0ea), 0, 0.36, 0); }
+            if (id === 'au') { B(1.8, 0.55, 4, m, 0, 0.6, 0); B(1.62, 0.5, 2, m, 0, 1.12, -0.25); const gl = M(0x1d2733); B(1.64, 0.36, 1.6, gl, 0, 1.12, -0.25); B(1.5, 0.36, 2.04, gl, 0, 1.12, -0.25); for (const x of [-0.82, 0.82]) for (const z of [-1.3, 1.3]) Cy(0.34, 0.34, 0.26, 10, M(0x16181b), x, 0.34, z, 0, Math.PI / 2);
+                const hl = new THREE.MeshBasicMaterial({ color: 0xfff4d0 }), tl = new THREE.MeshBasicMaterial({ color: 0xff3030 }); for (const x of [-0.6, 0.6]) { B(0.3, 0.12, 0.04, hl, x, 0.7, 2.0).userData.isOut = 1; B(0.3, 0.1, 0.04, tl, x, 0.72, -2.0).userData.isOut = 1; } B(1.82, 0.12, 0.2, dk, 0, 0.4, 2.0); B(1.82, 0.12, 0.2, dk, 0, 0.4, -2.0); }
+            if (id === 'la') { Cy(0.2, 0.25, 0.06, 7, dk, 0, 0.03, 0); Cy(0.035, 0.035, 2.2, 6, dk, 0, 1.13, 0); Cy(0.12, 0.3, 0.25, 7, m, 0, 2.25, 0); Ico(0.11, new THREE.MeshBasicMaterial({ color: 0xfff2c8 }), 0, 2.12, 0).userData.isOut = 1; }
+            if (id === 'ne') { B(2.1, 0.7, 0.05, M(0x14171b), 0, 0.35, 0.025); flat(2.0, 0.62, 0.052, 0.35, new THREE.MeshBasicMaterial({ map: decoTex(id, ci, txt), transparent: true, depthWrite: false })); }
+            if (id === 'pl') { B(1.6, 2.2, 0.04, dk, 0, 1.1, 0.02); flat(1.5, 2.1, 0.041, 1.1, new THREE.MeshLambertMaterial({ map: decoTex(id, ci, txt) })); }
+            if (id === 'ba') { Cy(0.035, 0.035, 1.4, 6, M(0x8a8f96), 0, 2.78, 0.08, 0, Math.PI / 2); flat(1.2, 2.6, 0.08, 1.45, new THREE.MeshLambertMaterial({ map: decoTex(id, ci, txt), side: THREE.DoubleSide })); }
+            if (id === 'sc') { B(1.9, 1.1, 0.08, M(0x16181b), 0, 0.55, 0.04); flat(1.78, 1.0, 0.082, 0.55, new THREE.MeshBasicMaterial({ map: decoTex(id, ci, txt) })); }
+            return g; }
+        function decoBoxes(C, x, y, z, r, s) { // Kollision: gerade gedreht = 1 Box · schräg (45°) = viele kleine Boxen entlang der Form statt einer riesigen Hülle
+            const [hw, hd, h] = C.b.map(v => v * s), a = r * Math.PI / 4, ca = Math.cos(a), sa = Math.sin(a), top = y + h;
+            if (!(r & 1)) { const ex = Math.abs(ca) * hw + Math.abs(sa) * hd, ez = Math.abs(sa) * hw + Math.abs(ca) * hd; return [{ minX: x - ex, maxX: x + ex, minZ: z - ez, maxZ: z + ez, bot: y, top, deco: 1 }]; }
+            const nx = Math.ceil(hw / 0.3), nz = Math.ceil(hd / 0.3), px = hw / nx, pz = hd / nz, e = Math.SQRT1_2 * (px + pz), out = [];
+            for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) { const lx = -hw + px * (2 * i + 1), lz = -hd + pz * (2 * j + 1), wx = x + lx * ca + lz * sa, wz = z - lx * sa + lz * ca; out.push({ minX: wx - e, maxX: wx + e, minZ: wz - e, maxZ: wz + e, bot: y, top, deco: 1 }); }
+            return out; }
+        function decoAdd(d) { const [id, u, v, y, r, s, c, txt = ''] = d, C = decoC(id); if (!C) return null;
+            const g = decoMesh(id, c, txt), x = (u + DECO_OX) * S, z = (v + DECO_OX) * S, a = r * Math.PI / 4; g.position.set(x, y, z); g.rotation.y = a; g.scale.setScalar(s); charPoly(g); DECO.grp.add(g);
+            if (id === 'la' && DECO.lights < 6) { DECO.lights++; const L = new THREE.PointLight(0xffe2b0, 1.1, 10); L.position.set(0, 2.05, 0); g.add(L); g.userData.light = 1; } // max. 6 echte Lichter (Leistung)
+            const bxs = C.b ? decoBoxes(C, x, y, z, r, s) : []; aabbs.push(...bxs);
+            const e = { d, g, bxs }; g.userData.deco = e; DECO.list.push(e); return e; }
+        function decoDel(e) { DECO.grp.remove(e.g); if (e.g.userData.light) DECO.lights--; disposeGroup(e.g); for (const b of e.bxs) { const i = aabbs.indexOf(b); if (i >= 0) aabbs.splice(i, 1); } DECO.list.splice(DECO.list.indexOf(e), 1); }
+        for (const d of (CMAP_INFO[MAPNAME] || {}).dk || []) decoAdd(d);
+        // 🎨 Wand- & Bodenmuster im Poly-Stil: Platten, Ziegel, Rippen, Sechsecke … als echte flache Geometrie mit Facetten (alles in einem Mesh) · wm: [Zeile, Spalte, Seite 0 S/1 O/2 N/3 W, Muster, Farbe] · fm: [Zeile, Spalte, Muster, Farbe]
+        const PAT = { w: new Map(), f: new Map(), mesh: null, mat: new THREE.MeshLambertMaterial({ vertexColors: true }), url: {}, gh: null }; PAT.mat.userData.keep = 1;
+        function clipR(P, W, H) { for (const [ax, lim, s] of [[0, 0, 1], [0, W, -1], [1, 0, 1], [1, H, -1]]) { const o = [], ins = q => (q[ax] - lim) * s >= 0; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; if (ins(a)) o.push(a); if (ins(a) !== ins(b)) { const t = (lim - a[ax]) / (b[ax] - a[ax]); o.push(a.map((v, j) => v + (b[j] - v) * t)); } } P = o; if (!P.length) break; } return P; } // Polygon auf das Rechteck zuschneiden
+        function patPieces(k, p, W, H, seed) { // Teile in Flächen-Koordinaten: { P: [[u, v, d]…], s: Seitenwände?, f: Helligkeit }
+            let sd = (seed | 0) % 2147483646 + 1; const rn = () => (sd = (sd * 16807) % 2147483647) / 2147483647, out = [], add = (P, f, s = 1) => { if (P.length > 2) out.push({ P, s, f }); };
+            const R = (u0, v0, u1, v1, d, f, s = 1) => { u0 = Math.max(0, u0); v0 = Math.max(0, v0); u1 = Math.min(W, u1); v1 = Math.min(H, v1); if (u1 - u0 > 0.01 && v1 - v0 > 0.01) add([[u0, v0, d], [u1, v0, d], [u1, v1, d], [u0, v1, d]], f, s); };
+            const Pyr = (u0, v0, u1, v1, d, dc, f) => { const m = [(u0 + u1) / 2, (v0 + v1) / 2, dc], q = [[u0, v0, d], [u1, v0, d], [u1, v1, d], [u0, v1, d]]; for (let i = 0; i < 4; i++) add([q[i], q[(i + 1) % 4], m], f * (0.94 + 0.04 * i), 0); }; // flache Pyramide = Facetten
+            const base = f => R(0, 0, W, H, 0.004, f, 0), gap = 0.035;
+            if (k === 'w') {
+                if (p === 0) { base(0.62); const rows = Math.max(2, Math.round(H / 1.05)), ph = H / rows; for (let i = 0; i < 2; i++) for (let j = 0; j < rows; j++) Pyr(i * W / 2 + gap, j * ph + gap, (i + 1) * W / 2 - gap, (j + 1) * ph - gap, 0.03, 0.05, (i + j) % 2 ? 0.94 : 1.02); } // Platten
+                if (p === 1) { base(0.6); const rows = Math.round(H / 0.42), bh = H / rows; for (let j = 0; j < rows; j++) for (let u = j % 2 ? -0.4 : 0; u < W; u += 0.8) R(u + gap, j * bh + gap, u + 0.8 - gap, (j + 1) * bh - gap, 0.045 + rn() * 0.02, 0.86 + rn() * 0.18); } // Ziegel
+                if (p === 2) { base(0.66); for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) { const u0 = i * W / 2, v0 = j * H / 2; R(u0 + 0.05, v0 + 0.05, u0 + W / 2 - 0.05, v0 + H / 2 - 0.05, 0.035, 0.96 + rn() * 0.08); for (const a of [0.25, 0.75]) for (const b of [0.25, 0.75]) { const cu = u0 + a * W / 2, cv = v0 + b * H / 2; R(cu - 0.05, cv - 0.05, cu + 0.05, cv + 0.05, 0.04, 0.55, 0); } } } // Beton mit Ankerlöchern
+                if (p === 3) for (let u = 0; u < W - 0.01; u += 0.25) { add([[u, 0, 0.005], [u + 0.125, 0, 0.065], [u + 0.125, H, 0.065], [u, H, 0.005]], 1.04, 0); add([[u + 0.125, 0, 0.065], [u + 0.25, 0, 0.005], [u + 0.25, H, 0.005], [u + 0.125, H, 0.065]], 0.82, 0); } // Wellblech
+                if (p === 4) { base(0.55); for (let v = 0; v < H - 0.05; v += 0.3) { const cut = 0.8 + rn() * 2.4; for (const [a, b] of [[0, cut], [cut, W]]) R(a + 0.02, v + 0.015, b - 0.02, v + 0.285, 0.03 + rn() * 0.02, 0.82 + rn() * 0.22); } } // Holzbretter
+                if (p === 5) for (let u = 0; u < W - 0.01; u += 0.5) for (let v = 0; v < H - 0.01; v += 0.5) { const u1 = Math.min(W, u + 0.5), v1 = Math.min(H, v + 0.5); Pyr(u, v, u1, v1, 0.005, 0.07, 1); } // Rauten
+                if (p === 6) { base(0.2); for (let a = -H; a < W; a += 0.7) add(clipR([[a, 0, 0.03], [a + 0.35, 0, 0.03], [a + 0.35 + H, H, 0.03], [a + H, H, 0.03]], W, H), 1.05); } // Warnstreifen
+            } else {
+                if (p === 0) { base(0.66); for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) R(i + gap, j + gap, i + 1 - gap, j + 1 - gap, 0.02, (i + j) % 2 ? 0.92 : 1.02); } // Fliesen
+                if (p === 1) { base(0.55); for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) { const u0 = i * 2, v0 = j * 2; Pyr(u0 + 0.05, v0 + 0.05, u0 + 1.95, v0 + 1.95, 0.02, 0.04, 0.95 + rn() * 0.1); for (const a of [0.2, 1.8]) for (const b of [0.2, 1.8]) R(u0 + a - 0.05, v0 + b - 0.05, u0 + a + 0.05, v0 + b + 0.05, 0.05, 1.25); } } // Metallplatten mit Nieten
+                if (p === 2) { base(0.5); for (let u = 0; u < 4 - 0.01; u += 0.4) { const cut = 0.6 + rn() * 2.8; for (const [a, b] of [[0, cut], [cut, 4]]) R(u + 0.015, a + 0.02, u + 0.385, b - 0.02, 0.02 + rn() * 0.015, 0.8 + rn() * 0.24); } } // Holzdielen
+                if (p === 3) { const N = 6, st = 4 / N, Z = []; for (let i = 0; i <= N; i++) { Z.push([]); for (let j = 0; j <= N; j++) Z[i].push(0.006 + ((i % N) && (j % N) ? rn() * 0.03 : 0)); } for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { const a = [i * st, j * st, Z[i][j]], b = [(i + 1) * st, j * st, Z[i + 1][j]], c = [(i + 1) * st, (j + 1) * st, Z[i + 1][j + 1]], d = [i * st, (j + 1) * st, Z[i][j + 1]]; add([a, b, c], 0.5 + rn() * 0.08, 0); add([a, c, d], 0.5 + rn() * 0.08, 0); } } // Asphalt (unebene Facetten)
+                if (p === 4) { base(0.6); for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) Pyr(i * 2 + 0.05, j * 2 + 0.05, i * 2 + 1.95, j * 2 + 1.95, 0.02, 0.035, 0.95 + rn() * 0.08); } // Betonplatten
+                if (p === 5) { base(0.22); for (let u = 0.1; u < 4; u += 0.2) R(u - 0.03, 0, u + 0.03, 4, 0.05, 1); for (let v = 0.5; v < 4; v += 1) R(0, v - 0.03, 4, v + 0.03, 0.055, 1.1); } // Gitterrost
+                if (p === 6) { base(0.45); const r = 0.3, hw = Math.sqrt(3) * r / 2; for (let row = 0, v = 0; v < 4 + r; v += 1.5 * r, row++) for (let u = row % 2 ? hw : 0; u < 4 + hw; u += 2 * hw) { const d = 0.03 + rn() * 0.015, P = []; for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + i * Math.PI / 3; P.push([u + Math.cos(a) * r * 0.88, v + Math.sin(a) * r * 0.88, d]); } add(clipR(P, 4, 4), 0.8 + rn() * 0.26); } } // Pflaster (Sechsecke)
+            }
+            return out; }
+        const runHv = (r, c) => { let s = c; while (s > 0 && cell(r, s - 1) === '#' && !rimCell(r, s - 1)) s--; return WALL_H + ((r * 7 + s * 13) % 3) * 0.6; }; // gleiche Höhe wie die Wandreihe
+        function patFrame(k, r, c, sd) { // Ursprung & Achsen (u entlang der Fläche, v hoch bzw. in die Tiefe, d nach außen)
+            const V = (x, y, z) => new THREE.Vector3(x, y, z), e = 0.012;
+            if (k === 'f') return { O: V(c * S, e, r * S), U: V(1, 0, 0), Vv: V(0, 0, 1), D: V(0, 1, 0), W: S, H: S };
+            const H = runHv(r, c) - 1.05, F = [[V(c * S, 1.05, (r + 1) * S + e), V(1, 0, 0), V(0, 0, 1)], [V((c + 1) * S + e, 1.05, (r + 1) * S), V(0, 0, -1), V(1, 0, 0)], [V((c + 1) * S, 1.05, r * S - e), V(-1, 0, 0), V(0, 0, -1)], [V(c * S - e, 1.05, r * S), V(0, 0, 1), V(-1, 0, 0)]][sd];
+            return { O: F[0], U: F[1], Vv: V(0, 1, 0), D: F[2], W: S, H }; }
+        function patGeo(list) { const P = [], C = [], tmp = new THREE.Vector3(), ab = new THREE.Vector3(), ac = new THREE.Vector3(), nn = new THREE.Vector3(); // list: [k, r, c, sd, p, Farbe] → ein Geometrie-Puffer
+            for (const [k, r, c, sd, p, ci] of list) { const fr = patFrame(k, r, c, sd), col = new THREE.Color(colOf(ci)), w = q => fr.O.clone().addScaledVector(fr.U, q[0]).addScaledVector(fr.Vv, q[1]).addScaledVector(fr.D, q[2]);
+                let hs = r * 7919 + c * 104729 + (sd || 0) * 31; const jit = () => ((hs = (hs * 16807 + 3) % 2147483647) / 2147483647 - 0.5) * 0.07;
+                const tri = (a, b, cc, f, want) => { ab.subVectors(b, a); ac.subVectors(cc, a); nn.crossVectors(ab, ac); if (nn.dot(want) < 0) [b, cc] = [cc, b]; const s = Math.max(0, f + jit()); for (const q of [a, b, cc]) { P.push(q.x, q.y, q.z); C.push(Math.min(1, col.r * s), Math.min(1, col.g * s), Math.min(1, col.b * s)); } };
+                for (const pc of patPieces(k, p, fr.W, fr.H, r * 1000 + c * 7 + (sd || 0))) { const Q = pc.P.map(w); for (let i = 1; i + 1 < Q.length; i++) tri(Q[0], Q[i], Q[i + 1], pc.f, fr.D);
+                    if (pc.s) { let ar = 0; for (let i = 0; i < pc.P.length; i++) { const a = pc.P[i], b = pc.P[(i + 1) % pc.P.length]; ar += a[0] * b[1] - b[0] * a[1]; } // Seitenwände (Kanten nach außen)
+                        for (let i = 0; i < pc.P.length; i++) { const a = pc.P[i], b = pc.P[(i + 1) % pc.P.length], du = b[0] - a[0], dv = b[1] - a[1], out = tmp.copy(fr.U).multiplyScalar(ar > 0 ? dv : -dv).addScaledVector(fr.Vv, ar > 0 ? -du : du).clone();
+                            const A = w(a), B = w(b), A0 = w([a[0], a[1], 0]), B0 = w([b[0], b[1], 0]); tri(A, B, B0, pc.f * 0.78, out); tri(A, B0, A0, pc.f * 0.78, out); } } } }
+            const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(C, 3)); g.computeVertexNormals(); return g; }
+        function patUrl(k, p) { if (PAT.url[k + p]) return PAT.url[k + p]; const cv = document.createElement('canvas'); cv.width = cv.height = 64; const g = cv.getContext('2d'); // Katalog-Vorschau aus denselben Teilen
+            for (const pc of patPieces(k, p, 4, 4, 77)) { const v = Math.round(Math.min(255, 150 * pc.f + pc.P.reduce((a, q) => a + q[2], 0) / pc.P.length * 900)); g.fillStyle = `rgb(${v},${v},${v})`; g.beginPath(); pc.P.forEach((q, i) => g[i ? 'lineTo' : 'moveTo'](q[0] * 16, 64 - q[1] * 16)); g.fill(); }
+            return PAT.url[k + p] = cv.toDataURL(); }
+        const patOK = (k, r, c, sd) => { if (k === 'f') { const ch = cell(r, c); return !!ch && ch !== '#' && ch !== 'O' && !rimCell(r, c) && !(ch >= '1' && ch <= '6'); } const n = cell(r + [1, 0, -1, 0][sd], c + [0, 1, 0, -1][sd]); return cell(r, c) === '#' && !rimCell(r, c) && !!n && n !== '#'; }; // nur echte, freie Wandseiten / Bodenfelder
+        function patBuild() { if (PAT.mesh) { scene.remove(PAT.mesh); PAT.mesh.geometry.dispose(); PAT.mesh = null; } const L = []; for (const k of ['w', 'f']) for (const [key, [p, ci]] of PAT[k]) { const [r, c, sd] = key.split(',').map(Number); L.push([k, r, c, sd, p, ci]); }
+            if (!L.length) return; PAT.mesh = new THREE.Mesh(patGeo(L), PAT.mat); PAT.mesh.receiveShadow = PAT.mesh.castShadow = true; scene.add(PAT.mesh); }
+        let PAT_DROP = 0; { const I = CMAP_INFO[MAPNAME] || {}; for (const [r, c, sd, p, ci] of I.wm || []) { const R = r + DECO_OX, C = c + DECO_OX; if (patOK('w', R, C, sd)) PAT.w.set([R, C, sd].join(), [p, ci]); else PAT_DROP++; } for (const [r, c, p, ci] of I.fm || []) { const R = r + DECO_OX, C = c + DECO_OX; if (patOK('f', R, C)) PAT.f.set([R, C].join(), [p, ci]); else PAT_DROP++; } patBuild(); } // Muster an entfernten Wänden fallen weg
+        function patGhost() { if (!PAT.gh) { PAT.gh = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.75, depthWrite: false })); scene.add(PAT.gh); } return PAT.gh; }
+        const BLD = { on: false, cat: false, sel: 0, rot: 0, sc: 1, stl: 1, txt: '', bar: ['kr', 'fa', 'sb', 'ab', 're', 'bk', 'bm', 'la', 'pl'], col: Object.fromEntries(DECO_CAT.map(k => [k.id, k.c])), ghost: null, gk: '', tgt: null, hov: null, undo: [], ge: new Map(), gpg: new THREE.Group(), gpv: new Map(), gmiss: '', gg: null }, BRC = new THREE.Raycaster(), BV = new THREE.Vector3(); scene.add(BLD.gpg);
+        try { const b = JSON.parse(localStorage.getItem('bldbar') || 'null'); if (Array.isArray(b) && b.length === 9 && b.every(decoC)) BLD.bar = b; } catch (e) { } // Schnellleiste merken
+        const bldCur = () => decoC(BLD.bar[BLD.sel]), bldOwn = () => /^my_/.test(MAPNAME) && !!CMAPS[MAPNAME];
+        // ── Raster-Bauen (wie im 2D-Editor): Änderungen sofort als Vorschau-Blöcke, die echte Karte (Kollision, Wege, Bots) nach „Übernehmen“ (lädt neu) ──
+        const gKey = (r, c) => r + ',' + c, gCh = (r, c) => { const k = gKey(r, c); return BLD.ge.has(k) ? BLD.ge.get(k) : cell(r, c); };
+        const G_H = { '#': 4, W: 4, D: 4, h: 1.2, c: 2, C: 3, s: 1, b: 1 }, gColor = ch => ch === '#' || ch === 'W' || ch === 'D' ? new THREE.Color(THEME.wallBase).getHex() : parseInt((GRID_T.find(t => t[0] === (ch >= '1' && ch <= '6' ? '1' : ch)) || [0, 0, '#888888'])[2].slice(1), 16);
+        function gBlock(ch, x, z, op) { const g = new THREE.Group(), m = new THREE.MeshLambertMaterial(Object.assign({ color: gColor(ch) }, op ? { transparent: true, opacity: op, depthWrite: false } : {})), B = (w, h, d, y0, mx = m, ox = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mx); o.position.set(x + ox, y0 + h / 2, z); o.castShadow = o.receiveShadow = !op; g.add(o); return o; }; // Block eines Rasterfelds (Vorschau)
+            if (ch === 'D') { B(0.5, 4, S, 0, m, -S / 2 + 0.25); B(0.5, 4, S, 0, m, S / 2 - 0.25); B(S - 1, 1.8, S, 2.2); }
+            else if (ch === 'W') { B(S, 4, S, 0); B(S - 0.6, 1.1, S + 0.06, 1.5, new THREE.MeshLambertMaterial({ color: 0x9fc7e3, transparent: !!op, opacity: op || 1 })); }
+            else if (G_H[ch]) B(ch === 'c' ? 2.8 : S, G_H[ch], ch === 'c' ? 2.8 : S, 0);
+            else if (ch >= '1' && ch <= '6') B(S, +ch * 0.47, S, 0);
+            else if (ch === '=') B(S, 0.35, S, 2.45);
+            else { const f = new THREE.Mesh(new THREE.PlaneGeometry(S, S), new THREE.MeshBasicMaterial({ color: gColor(ch), transparent: true, opacity: ch === 'O' ? 0.92 : 0.5, depthWrite: false })); f.rotation.x = -Math.PI / 2; f.position.set(x, 0.03, z); f.userData.noHit = 1; g.add(f); if (ch === 'R') B(S, 0.3, S, 3.7); } // Boden-Markierung (Site, Spawn, Abgrund, leer)
+            if (!op) charPoly(g); return g; }
+        function gPrev(k) { const old = BLD.gpv.get(k); if (old) { BLD.gpg.remove(old); disposeGroup(old); BLD.gpv.delete(k); } if (!BLD.ge.has(k)) return; const [r, c] = k.split(',').map(Number), x = (c + 0.5) * S, z = (r + 0.5) * S, ch = BLD.ge.get(k), o0 = cell(r, c), g = gBlock(ch, x, z);
+            if (solid(o0) && !solid(ch)) { const del = gBlock(o0 === '#' || o0 === 'W' || o0 === 'D' ? '#' : o0, x, z, 0.3); del.traverse(m => { if (m.material) { m.material.color.setHex(0xff3030); m.userData.noHit = 1; } }); g.add(del); } // wird abgerissen
+            BLD.gpg.add(g); BLD.gpv.set(k, g); }
+        function gRows() { const N = CMAPS[MAPNAME].g.length, M = CMAPS[MAPNAME].g[0].length, rows = []; for (let r = 0; r < N; r++) { let s = ''; for (let c = 0; c < M; c++) s += gCh(r + DECO_OX, c + DECO_OX) || '.'; rows.push(s); } return rows; }
+        function gSave() { const rows = gRows(), flat = rows.join(''), miss = [['T', 'Spawn T'], ['K', 'Spawn CT'], ['A', 'Bombsite A'], ['B', 'Bombsite B']].filter(([ch]) => !flat.includes(ch)).map(x => x[1]); BLD.gmiss = miss.join(', ');
+            if (!miss.length) { CMAPS[MAPNAME].g = rows; MAPS[MAPNAME] = rows; saveCMaps(); } bldHud(); } // nur gültige Karten speichern (Spawns & Sites nötig)
+        function gSet(k, ch, noUndo) { const [r, c] = k.split(',').map(Number), prev = BLD.ge.has(k) ? BLD.ge.get(k) : null; if (gCh(r, c) === ch) return; if (!noUndo) BLD.undo.push(['g', k, prev]); ch === cell(r, c) || ch === null ? BLD.ge.delete(k) : BLD.ge.set(k, ch); gPrev(k); gSave(); }
+        function bldApply() { if (!BLD.ge.size) return false; if (BLD.gmiss) { toast('🧱 Noch nicht übernehmbar', 'Es fehlt: ' + BLD.gmiss); return true; } // Karte neu laden → Änderungen werden echt (Kollision, Wege, Bots)
+            const p = player; sessionStorage.setItem('explore', 'map'); sessionStorage.setItem('bld3d', '1'); sessionStorage.setItem('bldpos', JSON.stringify({ x: p.x, y: p.y, z: p.z, yaw: p.yaw, pitch: p.pitch, sel: BLD.sel, stl: BLD.stl })); msg('🧱 Übernehmen …', 'Karte wird neu gebaut', 3); setTimeout(() => location.reload(), 120); return true; }
+        function bldToggle() {
+            if (!BLD.on && !bldOwn()) { toast('🧱 Baumodus', 'Nur auf eigenen Karten – speichere zuerst eine Kopie: Esc → Map-Editor → Speichern & erkunden'); return; }
+            if (BLD.on && bldApply()) return; // Raster geändert → erst übernehmen
+            BLD.on = !BLD.on; document.body.classList.toggle('bld', BLD.on); const p = player; if (BLD.cat) bldCatClose(true);
+            if (BLD.on) { for (const k in vmModels) vmModels[k].visible = false; bldHud(); } else { updateVM(); for (const o of [BLD.ghost, PAT.gh, BLD.gg]) if (o) o.visible = false; BLD.tgt = BLD.hov = null; p.onGround = false; }
+            p.vx = p.vz = p.vy = 0;
+        }
+        function bldHud() { let h = $('bldHud'); if (!h) { h = document.createElement('div'); h.id = 'bldHud'; $('hud').appendChild(h); } const C = bldCur(), gn = BLD.ge.size;
+            const info = C.gt ? (C.gt === '1' ? 'Stufe ' + BLD.stl : '') : C.pt ? '' : `${BLD.rot * 45}° · ×${BLD.sc}`, sw = C.gt ? '' : ` <i style="background:${hexC(BLD.col[C.id])}"></i>`;
+            const hint = C.gt ? 'Linksklick bauen · Rechtsklick abreißen' + (C.gt === '1' ? ' · Mausrad Stufe' : '') + ' · Enter übernehmen · Tab Katalog · Leertaste/Strg hoch/runter · Strg+Z zurück · B fertig' : C.pt ? 'Linksklick malen · Rechtsklick Muster entfernen · C Farbe · Tab Katalog · Leertaste/Strg hoch/runter · Strg+Z zurück · B fertig' : 'Linksklick setzen · Rechtsklick löschen · E aufnehmen · Mittelklick kopieren · R drehen · Mausrad Größe · C Farbe · Tab Katalog · Leertaste/Strg hoch/runter · Strg+Z zurück · B fertig';
+            h.innerHTML = `<div class="bdtop">🧱 BAUMODUS · ${DECO.list.length}/200 · <b>${C.n}</b>${info ? ' · ' + info : ''}${sw}${C.t && BLD.txt ? ' · „' + escH(BLD.txt) + '“' : ''}${gn ? ` · <span class="bdg">${gn} Rasteränderung${gn > 1 ? 'en' : ''} · ${BLD.gmiss ? '⚠ fehlt: ' + BLD.gmiss : 'Enter = übernehmen'}</span>` : ''}</div><div class="bdhint">${hint}</div><div class="bdbar">${BLD.bar.map((id, i) => { const k = decoC(id); return `<div class="${i === BLD.sel ? 'on' : ''}"><u>${i + 1}</u>${decoIc(k)}<s>${k.n}</s>${k.gt ? '' : `<i style="background:${hexC(BLD.col[id])}"></i>`}</div>`; }).join('')}</div>`; }
+        function bldCat() { // Katalog (Tab): Objekt auf den gewählten Leistenplatz legen, Farbe & Text
+            BLD.cat = true; if (document.pointerLockElement) document.exitPointerLock(); let el = $('bldCat'); if (!el) { el = document.createElement('div'); el.id = 'bldCat'; document.body.appendChild(el); }
+            const cur = BLD.bar[BLD.sel], cc = BLD.col[cur];
+            el.innerHTML = `<h3>🧱 KATALOG<small>Objekt wählen → Platz ${BLD.sel + 1} der Leiste · Tab/Enter schließt</small></h3>${KAT_ORDER.map(ki => `<h4>${DECO_KAT[ki]}</h4><div class="bcg">${DECO_CAT.filter(k => k.k === ki).map(k => `<button data-bc="${k.id}" class="${k.id === cur ? 'on' : ''}">${decoIc(k)}<b>${k.n}</b>${k.b ? '<em title="Kollision">⛔</em>' : ''}${k.w ? '<em title="an die Wand">🧲</em>' : ''}</button>`).join('')}</div>`).join('')}
+ <h4>Farbe</h4><div class="bcc">${DECO_COL.map((c, i) => `<i data-cc="${i}" class="${i === cc ? 'on' : ''}" style="background:${hexC(i)}"></i>`).join('')}<label class="bccu${cc >= 32 ? ' on' : ''}">🎨 Eigene Farbe <input type="color" id="bldCol" value="${hexC(cc)}"></label></div>
+ <h4>Text <small>(Plakat, Banner, Neon-Schild, Bildschirm)</small></h4><input id="bldTxt" maxlength="18" placeholder="z. B. CLUTCH" value="${escH(BLD.txt)}"><div><button id="bldCatX">✓ Fertig</button></div>`;
+            el.querySelectorAll('[data-bc]').forEach(b => b.onclick = () => { BLD.bar[BLD.sel] = b.dataset.bc; try { localStorage.setItem('bldbar', JSON.stringify(BLD.bar)); } catch (e) { } bldCat(); });
+            el.querySelectorAll('[data-cc]').forEach(b => b.onclick = () => { BLD.col[BLD.bar[BLD.sel]] = +b.dataset.cc; bldCat(); });
+            $('bldCol').oninput = e => { BLD.col[BLD.bar[BLD.sel]] = 32 + parseInt(e.target.value.slice(1), 16); el.querySelectorAll('[data-cc].on').forEach(x => x.classList.remove('on')); el.querySelector('.bccu').classList.add('on'); bldHud(); };
+            const ti = $('bldTxt'); ti.oninput = () => { BLD.txt = ti.value.replace(/[<>"'&`]/g, '').slice(0, 18); }; ti.onkeydown = e => { e.stopPropagation(); if (e.key === 'Enter' || e.key === 'Escape') bldCatClose(); };
+            $('bldCatX').onclick = () => bldCatClose(); bldHud(); }
+        function bldCatClose(noLock) { BLD.cat = false; const el = $('bldCat'); if (el) el.remove(); bldHud(); if (!noLock) renderer.domElement.requestPointerLock(); }
+        function bldMove(dt) { // Fliegen ohne Kollision
+            const p = player, sp = (down('walk') ? 20 : 9) * dt, f = (down('fwd') ? 1 : 0) - (down('back') ? 1 : 0), s = (down('right') ? 1 : 0) - (down('left') ? 1 : 0);
+            p.x = clamp(p.x + (-Math.sin(p.yaw) * f + Math.cos(p.yaw) * s) * sp, 0, WORLD_W); p.z = clamp(p.z + (-Math.cos(p.yaw) * f - Math.sin(p.yaw) * s) * sp, 0, WORLD_D); p.y = clamp(p.y + ((down('jump') ? 1 : 0) - (down('crouch') ? 1 : 0)) * sp, 0, 30);
+            p.vx = p.vz = p.vy = 0; p.speed = 0; p.moving = false; p.crouch = false; p.eyeH = 1.65; p.camY = p.y;
+            camera.position.set(p.x, p.y + 1.65, p.z); camera.rotation.set(p.pitch, p.yaw, 0); bldAim(); }
+        function bldAim() { // Ziel unterm Fadenkreuz: Deko & Vorschau-Blöcke (Raycaster) bzw. Boden/Wände/Kisten (Kollisionsboxen abtasten) → Vorschau
+            const o = camera.position, dir = camera.getWorldDirection(BV), C = bldCur(), ci = BLD.col[C.id], txt = C.t ? BLD.txt : ''; let hit = null;
+            BRC.set(o, dir); BRC.far = 30; const di = BRC.intersectObject(DECO.grp, true)[0]; let de = null; if (di) { let q = di.object; while (q && !q.userData.deco) q = q.parent; de = q && q.userData.deco; }
+            let px = o.x, py = o.y, pz = o.z; for (let t = 0; t < 30; t += 0.04) { const x = o.x + dir.x * t, y = o.y + dir.y * t, z = o.z + dir.z * t;
+                if (y <= 0.001) { if (!voidAt(x, z)) hit = { x, y: 0, z, nx: 0, ny: 1, nz: 0, t }; break; }
+                let b0 = null; for (const b of aabbsNear(x, z)) if (x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ && y > (b.bot || 0) && y < b.top) { b0 = b; break; }
+                if (b0 && !b0.deco && BLD.ge.size) { const g2 = BLD.ge.get(gKey(Math.floor(z / S), Math.floor(x / S))); if (g2 !== undefined && !solid(g2)) b0 = null; } // abgerissene Felder: durchlässig
+                if (b0) { const n = py >= b0.top ? 1 : px <= b0.minX ? 2 : px >= b0.maxX ? 3 : pz <= b0.minZ ? 4 : pz >= b0.maxZ ? 5 : 0; if (!n) break;
+                    hit = { x: n === 2 ? b0.minX : n === 3 ? b0.maxX : x, y: n === 1 ? b0.top : y, z: n === 4 ? b0.minZ : n === 5 ? b0.maxZ : z, nx: n === 2 ? -1 : n === 3 ? 1 : 0, ny: n === 1 ? 1 : 0, nz: n === 4 ? -1 : n === 5 ? 1 : 0, t, b: b0 }; break; }
+                px = x; py = y; pz = z; }
+            const gi = BLD.gpg.children.length ? BRC.intersectObject(BLD.gpg, true).find(i => !i.object.userData.noHit && i.face) : null; // neue Blöcke (Vorschau) sind auch Ziele
+            if (gi && (!hit || gi.distance < hit.t)) { const n = gi.face.normal; hit = { x: gi.point.x, y: gi.point.y, z: gi.point.z, nx: Math.abs(n.x) > 0.5 ? Math.sign(n.x) : 0, ny: n.y > 0.5 ? 1 : 0, nz: Math.abs(n.z) > 0.5 ? Math.sign(n.z) : 0, t: gi.distance, pv: 1 }; }
+            BLD.hov = de && (!hit || di.distance < hit.t + 0.05) ? de : null;
+            for (const ob of [BLD.ghost, PAT.gh, BLD.gg]) if (ob) ob.visible = false; BLD.tgt = null; if (BLD.cat || !hit) return;
+            if (C.gt) { // 🧱 Raster: seitlich auf einen Block zielen = daneben bauen · Radierer/Rechtsklick = den Block selbst
+                const at = (inside) => { let x = hit.x, z = hit.z; if (!hit.ny) { x += hit.nx * (inside ? -0.1 : 0.1); z += hit.nz * (inside ? -0.1 : 0.1); } const r = Math.floor(z / S), c = Math.floor(x / S), r0 = r - DECO_OX, c0 = c - DECO_OX, N = CMAPS[MAPNAME].g.length; return { r, c, ok: r0 >= 1 && c0 >= 1 && r0 <= N - 2 && c0 <= N - 2 && !rimCell(r, c) }; };
+                const er = C.gt === '.', P = at(er), E = at(true), ch = C.gt === '1' ? String(BLD.stl) : C.gt;
+                if (!BLD.gg || BLD.gg.userData.ch !== ch) { if (BLD.gg) { scene.remove(BLD.gg); disposeGroup(BLD.gg); } BLD.gg = gBlock(er ? '#' : ch, 0, 0, 0.45); BLD.gg.userData.ch = ch; scene.add(BLD.gg); }
+                const T = er ? E : P; BLD.gg.position.set((T.c + 0.5) * S, 0.01, (T.r + 0.5) * S); BLD.gg.visible = true; BLD.gg.traverse(m => { if (m.material) m.material.color.setHex(!T.ok ? 0xff3030 : er ? 0xff7a50 : gColor(ch)); });
+                BLD.tgt = { ok: P.ok, grid: { key: gKey(P.r, P.c), ch: er ? '.' : ch }, gridE: E.ok ? gKey(E.r, E.c) : null }; return; }
+            if (C.pt) { let r, c, sd; // 🎨 Muster-Pinsel: Bodenfeld bzw. Wandseite unterm Fadenkreuz
+                if (C.pt === 'f') { if (!hit.ny || hit.y > 0.01 || hit.pv) return; r = Math.floor(hit.z / S); c = Math.floor(hit.x / S); if (!patOK('f', r, c)) return; }
+                else { if (hit.ny || !hit.b || !hit.b.wall) return; r = Math.floor((hit.z - hit.nz * 0.1) / S); c = Math.floor((hit.x - hit.nx * 0.1) / S); sd = hit.nz > 0 ? 0 : hit.nx > 0 ? 1 : hit.nz < 0 ? 2 : 3; if (!patOK('w', r, c, sd)) return; }
+                const pg = patGhost(); pg.geometry.dispose(); pg.geometry = patGeo([[C.pt, r, c, sd, C.p, ci]]); pg.visible = true; BLD.tgt = { ok: true, pat: { k: C.pt, key: C.pt === 'f' ? r + ',' + c : r + ',' + c + ',' + sd, v: [C.p, ci] } }; return; }
+            const k = C.id + ci + '|' + txt; if (BLD.gk !== k) { if (BLD.ghost) { scene.remove(BLD.ghost); disposeGroup(BLD.ghost); } const g = BLD.ghost = decoMesh(C.id, ci, txt); g.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); Object.assign(m.material, { transparent: true, opacity: 0.55, depthWrite: false }); m.castShadow = false; } }); scene.add(g); BLD.gk = k; }
+            const g = BLD.ghost; if (BLD.hov && !BLD.hov.bxs.length) return; // zeigt auf Deko ohne Kollision → nur Löschen/Aufnehmen
+            const snap = v => Math.round(v * 4) / 4, s = BLD.sc; let x, y, z, r = BLD.rot;
+            if (C.w) { if (hit.ny) return; x = hit.nx ? hit.x + hit.nx * 0.03 : snap(hit.x); z = hit.nz ? hit.z + hit.nz * 0.03 : snap(hit.z); y = Math.max(0, snap(hit.y - C.w / 2 * s)); if (hit.b) y = Math.max(0, Math.min(y, hit.b.top - C.w * s)); r = hit.nx ? (hit.nx > 0 ? 2 : 6) : (hit.nz > 0 ? 0 : 4); } // Wand-Objekte flach an die Wand
+            else { if (!hit.ny) return; x = snap(hit.x); z = snap(hit.z); y = hit.y; }
+            let ok = !rimCell(Math.floor(z / S), Math.floor(x / S)) && DECO.list.length < 200;
+            if (ok && C.b) for (const p of decoBoxes(C, x, y, z, r, s)) for (const [qx, qz] of [[p.minX, p.minZ], [p.maxX, p.minZ], [p.minX, p.maxZ], [p.maxX, p.maxZ]]) for (const b of aabbsNear(qx, qz)) if (b !== hit.b && p.minX + 0.02 < b.maxX && p.maxX - 0.02 > b.minX && p.minZ + 0.02 < b.maxZ && p.maxZ - 0.02 > b.minZ && (b.bot || 0) < p.top - 0.02 && b.top > y + 0.02) ok = false; // nicht in Wände/andere Objekte
+            g.position.set(x, y, z); g.rotation.y = r * Math.PI / 4; g.scale.setScalar(s); g.visible = true; g.traverse(m => { if (!m.isMesh) return; m.material.opacity = ok ? 0.55 : 0.25; if (m.material.emissive) m.material.emissive.setHex(ok ? 0x002a10 : 0x6a0000); });
+            const q = v => Math.round(v * 1000) / 1000, d = [C.id, q(x / S - DECO_OX), q(z / S - DECO_OX), q(y), r, s, ci]; if (txt) d.push(txt); BLD.tgt = { ok, d }; }
+        function bldSave() { AGRID.delete(aabbs); const I = CMAP_INFO[MAPNAME], un = k => k.split(',').map(Number), o = DECO_OX; I.dk = DECO.list.map(e => e.d); // automatisch speichern
+            I.wm = [...PAT.w].map(([k, v]) => { const [r, c, sd] = un(k); return [r - o, c - o, sd, ...v]; }); I.fm = [...PAT.f].map(([k, v]) => { const [r, c] = un(k); return [r - o, c - o, ...v]; });
+            if (CMAPS[MAPNAME]) { Object.assign(CMAPS[MAPNAME], { dk: I.dk, wm: I.wm, fm: I.fm }); saveCMaps(); } bldHud(); }
+        if (PAT_DROP && bldOwn()) bldSave(); // schwebende Muster dauerhaft entfernen
+        function bldUndo() { const u = BLD.undo.pop(); if (!u) return; if (u[0] === 'g') { gSet(u[1], u[2] === null ? cell(...u[1].split(',').map(Number)) : u[2], true); return; } if (u[0] === 'p') { u[3] ? PAT[u[1]].set(u[2], u[3]) : PAT[u[1]].delete(u[2]); patBuild(); } else if (u[0] === 'a') { const e = DECO.list.find(e => e.d === u[1]); if (e) decoDel(e); } else decoAdd(u[1]); bldSave(); }
+        function bldPick(e, del) { const [id, , , , r, s, c, txt] = e.d; let i = BLD.bar.indexOf(id); if (i < 0) BLD.bar[i = BLD.sel] = id; BLD.sel = i; BLD.rot = r; BLD.sc = s; BLD.col[id] = c; if (txt) BLD.txt = txt; if (del) { decoDel(e); BLD.undo.push(['d', e.d]); bldSave(); } else bldHud(); }
+        addEventListener('mousedown', e => { if (!BLD.on || paused) return; if (BLD.cat && e.target.closest && e.target.closest('#bldCat')) { e.stopImmediatePropagation(); return; } if (!locked) return; e.stopImmediatePropagation(); e.preventDefault(); // Katalog-Klicks fangen die Maus nicht
+            const T = BLD.tgt;
+            if (T && T.grid) { if (e.button === 0) { if (!T.ok) { sfx('empty'); return; } gSet(T.grid.key, T.grid.ch); sfx('buy'); } else if (e.button === 2 && T.gridE) gSet(T.gridE, '.'); return; } // Raster bauen / abreißen
+            if (T && T.pat) { const t = T.pat, M = PAT[t.k], prev = M.get(t.key) || null; if (e.button === 0) { if (prev && prev[0] === t.v[0] && prev[1] === t.v[1]) return; M.set(t.key, t.v.slice()); sfx('buy'); } else if (e.button === 2) { if (!prev) return; M.delete(t.key); } else return; BLD.undo.push(['p', t.k, t.key, prev]); patBuild(); bldSave(); return; } // malen / Muster entfernen
+            if (e.button === 0 && T) { if (!T.ok) { sfx('empty'); return; } const d = T.d; decoAdd(d); BLD.undo.push(['a', d]); bldSave(); sfx('buy'); }
+            else if (e.button === 2 && BLD.hov) { const h = BLD.hov; decoDel(h); BLD.undo.push(['d', h.d]); bldSave(); BLD.hov = null; }
+            else if (e.button === 1 && BLD.hov) bldPick(BLD.hov, false); }, true);
+        addEventListener('wheel', e => { if (!BLD.on || !locked) return; e.stopImmediatePropagation(); const up = e.deltaY < 0; if (bldCur().gt === '1') BLD.stl = clamp(BLD.stl + (up ? 1 : -1), 1, 6); else BLD.sc = clamp(BLD.sc + (up ? 0.25 : -0.25), 0.5, 2); bldHud(); }, true);
+        addEventListener('keydown', e => { if (!started || paused || !EX.on || EX.ar || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+            if (e.code === 'KeyB') { e.stopImmediatePropagation(); if (!e.repeat) bldToggle(); return; }
+            if (!BLD.on) return; const n = /^Digit[1-9]$/.test(e.code) ? +e.code[5] - 1 : -1, C = bldCur(); let used = true;
+            if (e.code === 'Tab' || (BLD.cat && (e.code === 'Enter' || e.code === 'Escape'))) { if (!e.repeat) BLD.cat ? bldCatClose() : bldCat(); }
+            else if (e.code === 'Enter') { if (!e.repeat && !bldApply()) msg('', 'Keine Rasteränderungen zum Übernehmen', 2); }
+            else if (n >= 0) { BLD.sel = n; if (BLD.cat) bldCat(); } else if (e.code === 'KeyR') BLD.rot = (BLD.rot + (e.shiftKey ? 7 : 1)) % 8; else if (e.code === 'KeyC') { const v = BLD.col[C.id]; BLD.col[C.id] = v >= 32 ? 0 : (v + (e.shiftKey ? 31 : 1)) % 32; }
+            else if (e.code === 'KeyZ' && (e.ctrlKey || e.metaKey)) bldUndo(); else if (e.code === 'KeyE') { if (BLD.hov) { bldPick(BLD.hov, true); BLD.hov = null; } } else used = false;
+            if (used) { e.stopImmediatePropagation(); e.preventDefault(); if (!e.repeat) bldHud(); } }, true);
         const EX = { on: false, ar: null }; // Erkunden: allein, ohne Bots & Zeitlimit (läuft technisch über den Deathmatch-Ablauf)
         function exStart(ak) {
             EX.on = true; EX.ar = ak && ARENAS[ak] ? ak : null; DM.on = true; DM.time = 1e9; DM.limit = 1e9; document.body.classList.add('ex'); startGame('CT');
             if (EX.ar) { setArena(EX.ar); buildArenaRadar(); const A = GA.cur, sp = A.spawnK[0] || A.spawnT[0]; Object.assign(player, { x: sp.x, z: sp.z, y: 0, vx: 0, vz: 0, vy: 0 }); }
-            msg('🧭 Erkunden', IS_TOUCH ? 'Map-Editor: ☰ antippen' : 'Map-Editor: Esc drücken', 5);
+            msg('🧭 Erkunden', IS_TOUCH ? 'Map-Editor: ☰ antippen' : 'Map-Editor: Esc drücken' + (!EX.ar && /^my_/.test(MAPNAME) ? ' · 🧱 Baumodus: B' : ''), 5);
         }
         function exEdit() { // aus dem Erkunden direkt in den Editor (eingebaute Karten werden als Kopie gespeichert)
-            if (!EX.ar) { toast('🛠 Map-Editor pausiert', 'Die Karten haben ein neues Raster mit Stockwerken – der Editor folgt später.'); return; } // Karten-Editor vorübergehend aus
             const ar = !!EX.ar, k = EX.ar || MAPNAME, own = ar ? CARS[k] : CMAPS[k]; sessionStorage.setItem('exret', '1'); paused = true; showMapEditor(k, own ? k : null, ar ? 1 : 0);
         }
         function exPickArena() {
@@ -8703,7 +9004,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             // Dynamischer Joystick: Tippen irgendwo links setzt den Stick unter den Finger
             $('tzone').addEventListener('touchstart', e => { if (EDITB.on || sid !== null) return; e.preventDefault(); const t = e.changedTouches[0], st = $('tstick'); if (!stHome) stHome = { l: st.style.left, t: st.style.top, b: st.style.bottom }; st.style.left = (t.clientX - st.offsetWidth / 2) + 'px'; st.style.top = (t.clientY - st.offsetHeight / 2) + 'px'; st.style.bottom = 'auto'; sid = t.identifier; scx = t.clientX; scy = t.clientY; }, { passive: false });
             $('tlook').addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; lid = t.identifier; lx = t.clientX; ly = t.clientY; if (started && !player.alive && !FC.on) cycleSpec(); }, { passive: false });
-            function mobPause() { if (!started || gameEnded || paused || buyOpen || EDITB.on || (GL.on && GL.phase !== 'duel')) return; paused = true; mouseDown = false; lid = null; TOUCH.f = TOUCH.s = 0; showOverlay(`<h1>PAUSE</h1><p>Tippe auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on && !AL.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => { paused = false; $('overlay').style.display = 'none'; }; $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; }
+            function mobPause() { if (!started || gameEnded || paused || buyOpen || EDITB.on || (GL.on && GL.phase !== 'duel')) return; paused = true; mouseDown = false; lid = null; TOUCH.f = TOUCH.s = 0; showOverlay(`<h1>PAUSE</h1><p>Tippe auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on && !AL.on && !EX.ar && !IS_TOUCH ? '<button id="pBld">' + (BLD.on ? '🚶 Baumodus beenden' : '🧱 Baumodus (B)') + '</button>' : ''}${EX.on && !AL.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; if ($('pBld')) $('pBld').onclick = () => { bldToggle(); $('resume').click(); }; $('resume').onclick = () => { paused = false; $('overlay').style.display = 'none'; }; $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; }
             addEventListener('touchmove', e => {
                 for (const t of e.changedTouches) {
                     if (t.identifier === sid) {
@@ -8754,6 +9055,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
             p.yaw += bY * Math.min(1, k); p.pitch = clamp(p.pitch + bP * Math.min(1, k), -1.5, 1.5);
         }
         function updatePlayer(dt) {
+            if (BLD.on) return bldMove(dt); // 🧱 Baumodus: fliegen statt laufen
             const p = player; if (p.vx === undefined) { p.vx = 0; p.vz = 0; } const frz = G.state === 'freeze' && barrierOn(), ctFree = frz && p.team === 'CT' && coreOn(); spawnBar.visible = frz; coreBar.visible = frz && coreOn(); for (const B of SPBG.CT) if (coreOn()) B.grp.visible = false; // Kaufphase: T hinter dem Tor, CT frei im Gebäude
             if (ctFree) coreClamp(p); else if (frz) { const B = SPB[p.team]; p.x = clamp(p.x, B.x0, B.x1); p.z = clamp(p.z, B.z0, B.z1); } const canMove = p.alive && (G.state !== 'freeze' || barrierOn()); // Kaufphase: Bewegung im Spawn erlaubt
             const f = canMove ? ((down('fwd') ? 1 : 0) - (down('back') ? 1 : 0) + TOUCH.f) : 0;
@@ -8994,7 +9296,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
                     el.innerHTML = [1, 2, 3].filter(i => p.weapons[i]).map(i => row(i, p.weapons[i], cur === p.weapons[i].def.key)).join('') + (nk.some(k => p.nades[k] > 0) ? '<div class="nd">' + nk.filter(k => p.nades[k] > 0).map(k => `<div class="wl${cur === k ? ' on' : ''}">${NN[k]}${p.nades[k] > 1 ? ' ×' + p.nades[k] : ''}</div>`).join('') + '<i style="font-style:normal;font-size:10px;opacity:.4;align-self:center">4</i></div>' : '') + (p.weapons[5] ? `<div class="wl${cur === 'c4' ? ' on' : ''}">C4<i>5</i></div>` : ''); } }
             setT('ammo', !w ? '' : w.def.melee ? '—' : w.def.plant ? 'C4' : w.def.nade ? '×' + p.nades[w.def.key] : `${w.ammo}<span style="font-size:22px;opacity:.7">| ${w.res}</span>`);
             const sec = Math.max(0, Math.ceil(G.timer)); setT('timer', G.bomb.state === 'planted' ? '⚡' : `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`);
-            const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}${e.isPlayer ? ' me' : ''}" style="border-color:${col};--pc:${col}">${avH(e.name || '?', e.isPlayer ? myAv() : e.av, 30)}<u><i style="width:${e.alive ? Math.round(Math.max(0, Math.min(1, e.health / (e.maxHP || 100))) * 100) : 0}%;background:${col}"></i></u><s>${escH(String(e.name || '?').slice(0, 8))}</s></div>`).join(''); // Teamleiste oben: Profilbilder mit Lebensbalken (wie CS)
+            const pvs = (list, col) => list.map(e => `<div class="pv${e.alive ? '' : ' dd'}${e.isPlayer ? ' me' : ''}" style="border-color:${col};--pc:${col}">${avH(e.name || '?', e.isPlayer ? myAv() : e.av, 30)}<u><i style="width:${e.alive ? Math.round(Math.max(0, Math.min(1, e.health / (e.maxHP || 100))) * 100) : 0}%;background:${col}"></i></u><s>${escH(String(e.name || '?').slice(0, 8))}</s>${e.kit && e.alive && e.team === 'CT' && !DM.on ? '<em class="pvkit" title="Hack-Stopp-Kit">🔧</em>' : ''}</div>`).join(''); // Teamleiste oben: Profilbilder mit Lebensbalken (wie CS)
             let avL = '', avR = '';
             if (GL.on) {
                 if (GL.duel && (GL.phase === 'duel' || GL.phase === 'duelend')) {
@@ -9138,7 +9440,7 @@ ${RK.cur ? `<div class="panel" style="min-width:320px;text-align:left">
         });
         addEventListener('keyup', e => { keys[e.code] = false; if (e.code === BIND.board) $('board').style.display = 'none'; }); addEventListener('mousedown', e => { if (GL.on && GL.phase !== 'duel') return; if (started && !paused && !gameEnded && NET.spec && e.button === 2) { specToggle(); return; } if (started && !paused && !gameEnded && !player.alive) { if (FC.on) { if (!locked) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) cycleSpec(); return; } if (!locked) { if (started && !paused && !buyOpen && !gameEnded && player.alive) renderer.domElement.requestPointerLock(); return; } if (e.button === 0) { mouseDown = true; clickQueued = true; } if (e.button === 2) toggleScope(); }); addEventListener('mouseup', e => { if (e.button === 0) mouseDown = false; }); addEventListener('contextmenu', e => e.preventDefault());
         addEventListener('wheel', e => { if (!locked) return; const order = [1, 2, 3, 4, 5].filter(s => player.weapons[s]); let i = order.indexOf(player.slot); i = (i + (e.deltaY > 0 ? 1 : -1) + order.length) % order.length; selectSlot(order[i]); });
-        addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on && !AL.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
+        addEventListener('mousemove', e => { if (!locked) return; vmSwX += e.movementX; vmSwY += e.movementY; const s = 0.0022 * OPT.sens * (player.scoped ? 0.4 : 1); if (FC.on) { FC.yaw -= e.movementX * s; FC.pitch = clamp(FC.pitch - e.movementY * s, -1.5, 1.5); return; } player.yaw -= e.movementX * s; player.pitch = clamp(player.pitch - e.movementY * s, -1.5, 1.5); }); document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === renderer.domElement; if (!started || gameEnded) return; if (locked) { paused = false; if (!(GL.on && GL.phase === 'draft')) $('overlay').style.display = 'none'; if (buyOpen) document.exitPointerLock(); } else if (buyOpen || BLD.cat || (GL.on && GL.phase !== 'duel')) { mouseDown = false; } else { paused = true; mouseDown = false; showOverlay(`<h1>PAUSE</h1><p>Klicke auf „Weiter", um ins Spiel zurückzukehren.</p><button id="resume">Weiter</button>${EX.on && !AL.on && !EX.ar && !IS_TOUCH ? '<button id="pBld">' + (BLD.on ? '🚶 Baumodus beenden' : '🧱 Baumodus (B)') + '</button>' : ''}${EX.on && !AL.on ? '<button id="pEd">🛠 Map-Editor</button>' : ''}<button id="pSet">⚙️ Einstellungen</button><button id="quit" style="border-color:#c66;color:#c66">Verlassen</button>`); if ($('pEd')) $('pEd').onclick = exEdit; if ($('pBld')) $('pBld').onclick = () => { bldToggle(); $('resume').click(); }; $('resume').onclick = () => renderer.domElement.requestPointerLock(); $('pSet').onclick = showSettings; $('quit').onclick = leaveGame; } });
         document.addEventListener('click', e => { if (e.target.closest && e.target.closest('button,.mapc,[data-cat],.subnav b,#cstabs a,.inv,.gltb')) { initAudio(); sfx('ui'); } }, true);
         addEventListener('beforeunload', e => { if (!window.cswoApp && started && !gameEnded && NET.on && !NET.inLobby) { e.preventDefault(); e.returnValue = ''; } }); // Browser: Strg+W / Neuladen mitten im Online-Match erst nachfragen (Verlassen-Knopf setzt NET.on = false → keine Frage)
         function showOverlay(html, trans) { const o = $('overlay'); o.classList.remove('oldui'); o.innerHTML = html; o.style.display = 'flex'; o.style.background = trans ? 'none' : started && gameEnded ? 'rgba(8,11,15,.55)' : 'rgba(8,11,15,.82)'; } /* Endscreen: TV-Studio scheint durch */ function leaveGame() {
@@ -9689,7 +9991,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         // =====================================================================
         const ME_TOOLS = [['.', '🧽 Radierer', '#3a3226'], ['#', 'Wand', '#d8cbb0'], ['c', 'Kiste', '#a8743c'], ['C', 'Container', '#6b4a2a'], ['h', 'Halbe Wand / Pflanzinsel', '#5f9a52'], ['=', 'Steg', '#8291a0'],
         ['1', 'Stufe 1', '#56606a'], ['2', 'Stufe 2', '#66717c'], ['3', 'Stufe 3', '#77838e'], ['4', 'Stufe 4', '#8995a0'], ['5', 'Stufe 5', '#9ba7b2'], ['6', 'Stufe 6', '#adb9c4'],
-        ['s', 'Sandsäcke', '#c9b48a'], ['b', 'Fässer', '#8a2b20'], ['D', 'Tür', '#5b3b1e'], ['W', 'Fenster', '#9fc7e3'], ['R', 'Innenraum (Dach)', '#6f6a62'],
+        ['s', 'Sandsäcke', '#c9b48a'], ['b', 'Fässer', '#8a2b20'], ['D', 'Tür', '#5b3b1e'], ['W', 'Fenster', '#9fc7e3'], ['R', 'Innenraum (Dach)', '#6f6a62'], ['O', 'Abgrund', '#0d1014'],
         ['A', 'Bombsite A', '#e07a2a'], ['B', 'Bombsite B', '#e0a82a'], ['T', 'Spawn T', '#d9822b'], ['K', 'Spawn CT', '#4a7fd0']];
         let edFrom = 'play'; // wohin Karten-Aktionen zurückkehren: Spielen-Tab oder Map-Editor-Liste
         function saveCMaps() { localStorage.setItem('custommaps', JSON.stringify(CMAPS)); }
@@ -9772,12 +10074,12 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function showMapList() { gridList(false); }
         function pickArenas(go, back) { gridList(true, { go, back }); }
         function showMapEditor(src, editKey, ar, blank) {
-            if (!ar) { toast('🛠 Map-Editor pausiert', 'Die Karten haben ein neues Raster mit Stockwerken – der Editor folgt später.'); if (EX.on || started) return; return showMenu(); } // vorübergehend aus (neues Kartenformat)
             setTimeout(() => $('overlay').classList.add('oldui')); /* Editor in Originalgröße */
             const ST = ar ? CARS : CMAPS, W = ar ? 11 : 28, H = ar ? 18 : 28, N = H; // ar: Arena-Modus (11×18, ohne Bombsites)
             const grid = (ar ? ARENAS[src].rows : MAPS[src]).map(r => r.split('')); let tool = '#', name = editKey ? ST[editKey].n : blank ? (ar ? 'Neue Arena' : 'Neue Karte') : ((CMAP_INFO[src] ? CMAP_INFO[src].n : src.replace(/^(de|ar)_/, '')) + ' Kopie').slice(0, 20);
             if (grid.length > H) grid.splice(H - 1, grid.length - H); // z.B. ar_moistpit (19 Zeilen) → auf 11×18 kürzen, Außenwand bleibt
             if (blank) for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) grid[r][c] = (r === 0 || c === 0 || r === H - 1 || c === W - 1) ? '#' : '.';
+            if (blank) { const put = (ch, r0, c0, h, w) => { for (let r = r0; r < r0 + h; r++) for (let c = c0; c < c0 + w; c++) grid[r][c] = ch; }; if (ar) { put('K', 1, 3, 2, 5); put('T', H - 3, 3, 2, 5); } else { put('K', 2, 11, 2, 6); put('T', W - 4, 11, 2, 6); put('A', 12, 3, 3, 3); put('B', 12, W - 6, 3, 3); } } // leere Karte: Start-Spawns & Sites, damit sie sofort speicher- und in 3D baubar ist
             let th = editKey ? ST[editKey].th : (CMAP_INFO[src] ? CMAP_INFO[src].th : ar ? ARENAS[src].theme : src); if (!/^de_/.test(th) || !THEMES[th]) th = 'de_dusty';
             const col = Object.fromEntries(ME_TOOLS.map(t => [t[0], t[2]])), inf = CMAP_INFO[src] || {}, hx = v => '#' + v.toString(16).padStart(6, '0');
             const thCol = t => ({ sky: hx(THEMES[t].sky), fog: hx(THEMES[t].fog), floor: THEMES[t].floor, wall: THEMES[t].wallBase });
@@ -9789,15 +10091,15 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <canvas id="meCv" width="${CW}" height="560" ${ar ? 'style="width:min(342px,92vw,calc((100vh - 60px) * 11 / 18))"' : ''}></canvas>
  <div id="meSide">
  <input id="meName" maxlength="20" value="${name.replace(/"/g, '')}" placeholder="Name">
- <select id="meTheme">${Object.keys(THEMES).filter(t => /^de_/.test(t)).map(t => `<option value="${t}" ${t === th ? 'selected' : ''}>Thema: ${MAP_NAMES[t] || t.replace('de_', '')}</option>`).join('')}</select>
+ <select id="meTheme">${Object.keys(THEMES).filter(t => /^de_/.test(t) && !HIDE_MAPS.includes(t)).map(t => `<option value="${t}" ${t === th ? 'selected' : ''}>Thema: ${MAP_NAMES[t] || t.replace('de_', '')}</option>`).join('')}</select>
  <div class="merow">${cin('meSky', 'Himmel')}${cin('meFog', 'Nebel')}${cin('meFloor', 'Boden')}${cin('meWall', 'Wände')}</div>
  <div class="merow"><select id="meTod" ${ar ? 'style="display:none"' : ''}>${['☀️ Tag', '🌅 Abend', '🌙 Nacht'].map((l, i) => `<option value="${i}" ${i === tod ? 'selected' : ''}>${l}</option>`).join('')}</select>
  <label>Emblem<input id="meEm" maxlength="4" placeholder="🛠" value="${(inf.em || '').replace(/"/g, '')}"></label><label>Farbe<input type="color" id="meEmc" value="${inf.emc || '#2b5d8a'}"></label></div>
- <div id="meTools">${ME_TOOLS.filter(t => !ar || !'AB'.includes(t[0])).map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
+ <div id="meTools">${ME_TOOLS.filter(t => !ar || !'ABRO'.includes(t[0])).map(t => `<button data-t="${t[0]}"><i style="background:${t[2]}"></i>${t[1]}</button>`).join('')}</div>
  <div class="merow" style="flex-wrap:wrap;gap:4px;align-items:center"><button id="meUndo" style="padding:3px 8px;font-size:12px;margin:0" title="Rückgängig (Strg+Z)">↶</button><button id="meRedo" style="padding:3px 8px;font-size:12px;margin:0" title="Wiederholen (Strg+Y)">↷</button><select id="meSym" style="font-size:12px;padding:3px"><option value="0">Symmetrie: aus</option><option value="1">↔ Links/Rechts</option><option value="2">↕ Oben/Unten</option><option value="3">⟲ Punkt</option></select><button id="meSelB" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit der Maus aufziehen">▭ Bereich</button><button id="meCopy" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich kopieren">📋</button><button id="mePaste" style="padding:3px 8px;font-size:12px;margin:0" title="Einfügen: danach auf die Zielstelle klicken">📥</button><button id="meFlipH" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich waagrecht spiegeln">↔</button><button id="meFlipV" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich senkrecht spiegeln">↕</button><button id="meFill" style="padding:3px 8px;font-size:12px;margin:0" title="Bereich mit dem gewählten Werkzeug füllen">🪣</button><button id="meRand" style="padding:3px 8px;font-size:12px;margin:0" title="Zufällige Karte als Startvorlage">🎲 Zufall</button></div>
  <p id="meMsg"></p>
  <p class="mehint">Malen mit Maus/Finger · Rand bleibt immer Wand · Nötig: Spawn T, Spawn CT${ar ? '' : ', Bombsite A & B'}</p>
- <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay" ${ar ? 'style="display:none"' : ''}>▶ Speichern & spielen</button>${sessionStorage.getItem('exret') ? '<button id="meExSave">💾 Speichern & erkunden</button><button id="meExBack">🧭 Zurück zum Erkunden</button>' : ''}<button id="meShare">📤 Teilen</button><button id="meFill" title="Große freie Flächen mit Pflanzinseln füllen">🌿 Auto-Füllen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
+ <div class="mebtns"><button id="meSave">💾 Speichern</button><button id="mePlay" ${ar ? 'style="display:none"' : ''}>▶ Speichern & spielen</button><button id="me3d" ${ar || IS_TOUCH ? 'style="display:none"' : ''}>🧱 Speichern & 3D bauen</button>${sessionStorage.getItem('exret') ? '<button id="meExSave">💾 Speichern & erkunden</button><button id="meExBack">🧭 Zurück zum Erkunden</button>' : ''}<button id="meShare">📤 Teilen</button><button id="meFill" title="Große freie Flächen mit Pflanzinseln füllen">🌿 Auto-Füllen</button><button id="meClear" style="border-color:#c66;color:#c66">🧹 Leeren</button><button id="meBack">Zurück</button></div>
  </div></div>`);
             const cv = $('meCv'), g = cv.getContext('2d');
             const draw = () => { g.fillStyle = cols.floor; g.fillRect(0, 0, CW, 560); for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) { const ch = grid[r][c]; if (ch !== '.') { g.fillStyle = col[ch] || '#f0f'; g.fillRect(c * cs, r * cs, cs, cs); if (/[ABTK1-6]/.test(ch)) { g.fillStyle = '#000'; g.font = 'bold 12px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch === 'K' ? 'CT' : ch, c * cs + cs / 2, r * cs + cs / 2); } } } g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.beginPath(); for (let i = 0; i <= W; i++) { g.moveTo(i * cs, 0); g.lineTo(i * cs, 560); } for (let i = 0; i <= H; i++) { g.moveTo(0, i * cs); g.lineTo(CW, i * cs); } g.stroke(); };
@@ -9854,7 +10156,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             for (const id in CIN) $(id).oninput = e => { cols[CIN[id]] = e.target.value; if (id === 'meFloor') draw(); };
             $('meTheme').onchange = e => { th = e.target.value; Object.assign(cols, thCol(th)); syncCols(); draw(); }; syncCols(); draw(); // Thema-Wechsel setzt die Farben auf das Thema zurück
             $('meTod').onchange = e => tod = +e.target.value;
-            const mapData = () => ({ n: $('meName').value.trim().slice(0, 20), th, col: Object.assign({}, cols), tod, em: $('meEm').value.trim(), emc: $('meEmc').value, g: grid.map(r => r.join('')) });
+            const mapData = () => ({ n: $('meName').value.trim().slice(0, 20), th, col: Object.assign({}, cols), tod, em: $('meEm').value.trim(), emc: $('meEmc').value, g: grid.map(r => r.join('')), dk: (CMAP_INFO[editKey || src] || {}).dk, wm: (CMAP_INFO[editKey || src] || {}).wm, fm: (CMAP_INFO[editKey || src] || {}).fm });  // 3D-Deko bleibt beim Speichern im 2D-Editor erhalten
             $('meShare').onclick = () => shareMap(mapData());
             let saved = false; // nach dem Speichern beim Zurückgehen neu laden, damit die Karte im Menü erscheint
             $('meBack').onclick = () => { if (sessionStorage.getItem('exret')) return exGo(editKey || src); if (ar) return showArenaList(); sessionStorage.setItem('opentab', edFrom); if (saved) location.reload(); else if (edFrom === 'maps') showMapList(); else showMenu(); };
@@ -9874,6 +10176,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             $('meSave').onclick = save;
             $('mePlay').onclick = () => { const k = save(); if (!k) return; localStorage.setItem('map', k); sessionStorage.setItem('opentab', 'play'); location.reload(); };
             function exGo(k) { sessionStorage.removeItem('exret'); sessionStorage.setItem('explore', ar ? 'ar:' + k : 'map'); if (!ar) localStorage.setItem('map', k); location.reload(); } // neu laden und direkt weiter erkunden
+            $('me3d').onclick = () => { const k = save(); if (k) { sessionStorage.setItem('bld3d', '1'); exGo(k); } }; // direkt in den 3D-Baumodus
             if ($('meExSave')) { $('meExSave').onclick = () => { const k = save(); if (k) exGo(k); }; $('meExBack').onclick = () => exGo(editKey || src); }
         }
         // News im Kachel-Stil: Banner (Version + Name), Kategorie, Titel, Kurzinhalt – Klick öffnet den Patch im Vollbild
@@ -9899,9 +10202,10 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
             showOverlay(`<h1 style="font-size:34px">🛠 EDITOR<small>WAS MÖCHTEST DU BAUEN?</small></h1>
  <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:10px 0">
  <div class="mcard" id="edPickMap" style="min-width:250px;cursor:pointer"><h2>🗺️ KARTEN</h2><p>Große Karten mit Bombsites<br>für Customs & Deathmatch</p><button>Karten öffnen</button></div>
- <div class="mcard" id="edPickAr" style="min-width:250px;cursor:pointer"><h2>🏟 ARENEN</h2><p>Kleine Arenen<br>für Gauntlet & 1v1</p><button>Arenen öffnen</button></div></div>
+ <div class="mcard" id="edPickAr" style="min-width:250px;cursor:pointer"><h2>🏟 ARENEN</h2><p>Kleine Arenen<br>für Gauntlet & 1v1</p><button>Arenen öffnen</button></div>
+ <div class="mcard" id="edPickNew" style="min-width:250px;cursor:pointer"><h2>➕ LEERE KARTE</h2><p>Von Grund auf neu bauen<br>in 2D & 3D</p><button>Neu anfangen</button></div></div>
  <div><button id="edPickBack">Zurück</button></div>`);
-            $('edPickMap').onclick = showMapList; $('edPickAr').onclick = showArenaList; $('edPickBack').onclick = showMenu;
+            $('edPickMap').onclick = showMapList; $('edPickAr').onclick = showArenaList; $('edPickNew').onclick = () => { edFrom = 'maps'; showMapEditor('de_dusty', null, 0, true); }; $('edPickBack').onclick = showMenu;
         }
         // 🗺️ Luftbild der geladenen Karte (schräg von oben, wie im Hauptmenü) – einmal aufnehmen, für die Kartenkacheln speichern
         const shotSig = k => { const m = MAPS[k] || []; let h = 0; for (const r of m) for (let i = 0; i < r.length; i++) h = (h * 31 + r.charCodeAt(i)) | 0; return 's3' + h + (THEMES[k] ? THEMES[k].floor : ''); };
@@ -9940,7 +10244,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
  <a data-nav="shop">SHOP</a>
  <a data-nav="career">KARRIERE</a>
  <a data-nav="news">NEWS</a>
- <a data-nav="editor" style="display:none">EDITOR</a>
+ <a data-nav="editor">EDITOR</a>
  </nav>
  <div class="ctprof" id="ctAcc" style="cursor:pointer" title="${ACC ? 'Account: ' + ACC.u : 'Login'}"><span class="lvchip" title="${rankOf(lvlOf(PRG.xp))}">Lv ${lvlOf(PRG.xp)}</span>${ACC ? `<b>Eingeloggt als <span style="color:var(--hl)">${ACC.u}</span></b><span>☁️</span>` : `<b id="profName">${savedName || 'Spieler'}</b><span>👤</span>`}</div>
  </div>
@@ -12652,7 +12956,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 case 'over': if (!NET.host) { G.score = m.sc; gameOver(); } break; case 'st': {
                     const rp = NET.players.get(m.pid); if (!rp) break;
                     rp.tx = m.x; rp.ty = m.y; rp.tz = m.z; rp.tyaw = m.yaw;
-                    rp.kills = m.k || 0; rp.deaths = m.d || 0; rp.money = m.mo || 0;
+                    rp.kills = m.k || 0; rp.deaths = m.d || 0; rp.money = m.mo || 0; rp.kit = !!m.kt;
                     if (rp.alive && !m.al) { rp.mesh.rotation.x = -Math.PI / 2; if (NET.host && G.bomb.carrier === rp && G.bomb.state === 'carried') { G.bomb.state = 'dropped'; G.bomb.x = rp.x; G.bomb.z = rp.z; G.bomb.y = rp.y || 0; G.bomb.carrier = null; bombMesh.visible = true; bombMesh.position.set(rp.x, G.bomb.y, rp.z); } } if (!rp.alive && m.al) rp.mesh.rotation.set(0, 0, 0);
                     rp.alive = m.al; rp.mesh.scale.y = m.c ? 0.72 : 1; if (m.h !== undefined) rp.health = m.h; break;
                 }
@@ -12830,7 +13134,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
         function netTick(dt) {
             NET.sendT -= dt; if (NET.sendT <= 0) {
                 NET.sendT = 1 / 15; const p = player;
-                if (!NET.spec) netSend({ type: 'st', pid: NET.pid, x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), yaw: +p.yaw.toFixed(2), al: p.alive, k: p.kills, d: p.deaths, mo: p.money, c: p.crouch ? 1 : 0, h: Math.round(p.health) });
+                if (!NET.spec) netSend({ type: 'st', pid: NET.pid, x: +p.x.toFixed(2), y: +p.y.toFixed(2), z: +p.z.toFixed(2), yaw: +p.yaw.toFixed(2), al: p.alive, k: p.kills, d: p.deaths, mo: p.money, c: p.crouch ? 1 : 0, h: Math.round(p.health), kt: p.kit ? 1 : 0 });
             }
             if (NET.host) {
                 NET.snapT -= dt; if (NET.snapT <= 0) {
@@ -12888,7 +13192,7 @@ Ist die Taste schon belegt, werden beide Aktionen getauscht.</p>
                 if (G.state !== 'menu') { const md = EX.on ? 'Erkunden' : DH.on ? 'Entenjagd' : GL.on ? (GL.v1 ? '1v1' : 'Gauntlet') : DM.on ? 'Deathmatch' : 'Competitive', mp = EX.ar ? (CMAP_INFO[EX.ar] ? CMAP_INFO[EX.ar].n : MAP_NAMES[EX.ar] || EX.ar) : GL.on || DH.on ? '' : MAPLABEL;
                     a = { d: md + (mp ? ' · ' + mp : '') + (NET.on ? ' · Online' : ''), s: EX.on || DH.on || GL.on ? '' : DM.on ? (player.kills || 0) + ' Kills' : 'Runde ' + G.round + ' · ' + G.score[player.team] + ':' + G.score[player.team === 'T' ? 'CT' : 'T'] }; }
                 const k = JSON.stringify(a); if (k !== rpLast) { rpLast = k; window.cswoApp.presence(a); } }; rpTick(); setInterval(rpTick, 5000); }
-        showMenu(); if (!sessionStorage.getItem('mpjoin')) brBoot(); { const xq = sessionStorage.getItem('explore'); sessionStorage.removeItem('exret'); if (xq) { sessionStorage.removeItem('explore'); setTimeout(() => exStart(xq.startsWith('ar:') ? xq.slice(3) : null), 300); } } if (window.cswoApp && window.cswoApp.offline) toast('📴 Offline-Modus', 'Kein Internet – Spiele gegen Bots gehen, Online & Account nicht. F5 = erneut verbinden');
+        showMenu(); if (!sessionStorage.getItem('mpjoin')) brBoot(); { const xq = sessionStorage.getItem('explore'); sessionStorage.removeItem('exret'); if (xq) { sessionStorage.removeItem('explore'); setTimeout(() => { exStart(xq.startsWith('ar:') ? xq.slice(3) : null); if (sessionStorage.getItem('bld3d')) { sessionStorage.removeItem('bld3d'); if (bldOwn()) { try { const bp = JSON.parse(sessionStorage.getItem('bldpos') || 'null'); if (bp) { Object.assign(player, { x: bp.x, y: bp.y, z: bp.z, yaw: bp.yaw, pitch: bp.pitch }); BLD.sel = bp.sel | 0; BLD.stl = bp.stl || 1; } } catch (e) { } sessionStorage.removeItem('bldpos'); bldToggle(); msg('🧱 Baumodus', 'Ins Bild klicken · B = zurück zum Laufen', 5); } /* nach „Übernehmen“: gleiche Stelle */ } }, 300); } } if (window.cswoApp && window.cswoApp.offline) toast('📴 Offline-Modus', 'Kein Internet – Spiele gegen Bots gehen, Online & Account nicht. F5 = erneut verbinden');
         // Ladebildschirm ausblenden, sobald das Menü steht
         { const ld = $('loader'); if (ld) { ld.classList.add('done'); setTimeout(() => ld.remove(), 600); } }
         // App-Gefühl: kein Browser-Rechtsklickmenü (außer in Eingabefeldern), kein Pinch-Zoom (iOS)

@@ -80,6 +80,7 @@ async function dcStatus(off) { // eine Status-Nachricht, die alle 5 Min bearbeit
 { const w = setInterval(() => { if (!loaded) return; clearInterval(w); dcNews(); dcStatus(); setInterval(dcStatus, 5 * 60 * 1000); }, 1000); }
 const SEEN = new Map(), INVS = new Map(); // Freunde: zuletzt online (Name → Zeit) & offene Einladungen (Name → Liste) – nur im Speicher
 const tries = new Map(); // einfache Bremse gegen Passwort-Raten: max. 10 Versuche pro Minute und IP
+const DECO_IDS = ['kr', 'fa', 'sb', 'ab', 'za', 'pa', 're', 'ti', 'bk', 'pf', 'bm', 'ke', 'au', 'la', 'ne', 'pl', 'ba', 'sc'], patOK = (a, mx) => !Array.isArray(a) ? [] : a.slice(0, 1600).filter(e => Array.isArray(e) && e.length === mx.length && e.every((v, i) => Number.isInteger(v) && v >= 0 && v <= mx[i])), decoOK = a => !Array.isArray(a) ? [] : a.slice(0, 200).filter(e => Array.isArray(e) && (e.length === 7 || (e.length === 8 && typeof e[7] === 'string')) && DECO_IDS.includes(e[0]) && e.slice(1, 7).every(Number.isFinite)).map(e => { const q = (v, lo, hi) => Math.round(Math.min(hi, Math.max(lo, v)) * 1000) / 1000, r = [e[0], q(e[1], -2, 30), q(e[2], -2, 30), q(e[3], 0, 12), e[4] & 7, q(e[5], 0.5, 2), (Number.isInteger(e[6]) && e[6] >= 0 && e[6] < 16777248 ? e[6] : 0)], t = String(e[7] || '').replace(/[<>"'&`]/g, '').slice(0, 18); if (t) r.push(t); return r; }); // 3D-Deko eigener Karten (wie im Spiel geprüft)
 function limited(ip) { const now = Date.now(), t = (tries.get(ip) || []).filter(x => now - x < 60000); t.push(now); tries.set(ip, t); return t.length > 10; }
 function api(p, b, ip) {
  if (!loaded) return { err: 'Server startet gerade – bitte in ein paar Sekunden nochmal.' };
@@ -176,10 +177,10 @@ function api(p, b, ip) {
  const k = String(b.k || ''); if (!/^puba?_[a-z0-9_]{1,40}$/.test(k)) return { err: 'Ungültige Karte.' }; const AR = k.startsWith('puba_'); // puba_ = Arena (11×18, ohne Bombsites)
  if (p === '/api/unpublish') { const cu = PUB[k] && PUB[k].off && USERS[PUB[k].cr]; if (cu && cu.cr && cu.cr.maps[k]) cu.cr.maps[k].out = Date.now(); delete PUB[k]; persist(); return { ok: 1 }; }
  const m = b.map || {}, HEX = /^#[0-9a-f]{6}$/i;
- if (!Array.isArray(m.g) || m.g.length !== (AR ? 18 : 28) || !m.g.every(r => typeof r === 'string' && (AR ? /^[#.cCh=1-6TKsbDW]{11}$/ : /^[#.cCh=1-6ABTKsbDWR]{28}$/).test(r))) return { err: 'Ungültige Kartendaten.' };
+ if (!Array.isArray(m.g) || m.g.length !== (AR ? 18 : 28) || !m.g.every(r => typeof r === 'string' && (AR ? /^[#.cCh=1-6TKsbDW]{11}$/ : /^[#.cCh=1-6ABTKsbDWRO]{28}$/).test(r))) return { err: 'Ungültige Kartendaten.' };
  if (!PUB[k] && Object.keys(PUB).length >= 50) return { err: 'Maximal 50 Community-Karten.' };
  const col = {}; for (const f of ['sky', 'fog', 'floor', 'wall']) if (m.col && HEX.test(m.col[f])) col[f] = m.col[f];
- const was = PUB[k]; PUB[k] = { n: String(m.n || 'Karte').replace(/[<>"'&`]/g, '').slice(0, 20), th: /^de_[a-z]+$/.test(m.th) ? m.th : 'de_dusty', col, tod: [0, 1, 2].includes(+m.tod) ? +m.tod : 0, em: Array.from(String(m.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(m.emc) ? m.emc : '', by: String(b.by || '').replace(/[<>"'&`]/g, '').slice(0, 16), g: m.g };
+ const was = PUB[k]; PUB[k] = { n: String(m.n || 'Karte').replace(/[<>"'&`]/g, '').slice(0, 20), th: /^de_[a-z]+$/.test(m.th) ? m.th : 'de_dusty', col, tod: [0, 1, 2].includes(+m.tod) ? +m.tod : 0, em: Array.from(String(m.em || '').replace(/[<>"'&`]/g, '')).slice(0, 2).join(''), emc: HEX.test(m.emc) ? m.emc : '', by: String(b.by || '').replace(/[<>"'&`]/g, '').slice(0, 16), g: m.g, dk: decoOK(m.dk), wm: patOK(m.wm, [27, 27, 3, 6, 16777247]), fm: patOK(m.fm, [27, 27, 6, 16777247]) };
  if (was && was.off) { PUB[k].off = 1; PUB[k].cr = was.cr; } // Neu-Veröffentlichen hält eine Karte im Ranked-Pool
  persist(); return { ok: 1 };
  }
