@@ -7634,9 +7634,9 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
         const ULT_KEYS = ['scan', 'heal', 'strike', 'rush', 'ward'], freeLook = () => DM.on || GL.on; // DM, Gauntlet & 1v1: Bots mit zufälliger Kleidung
         const myLook = () => AGENTS.some(a => a.duck && a.id === store.agent) ? store.agent : store.agent === 'fit' ? fitStr(effFit()) : 'std';
         function rollLook() { const f = freeLook(); for (const b of bots) b.ag = f ? rndFit() : undefined; dropMenuChar(); if (NET.on) netSend({ type: 'ag', pid: NET.pid, ag: myLook(), hat: duckHat() || 0 }); }
-        function fitDeco(F, T, mk, M, sh, col, hipL, hipR, ab = [-0.43, 1.32, 0.06], poly) { // Kleidung, Frisur & Gesicht auf das Block-Modell (Trefferzonen bleiben unverändert)
+        function fitDeco(F, T, mk, M, sh, col, hipL, hipR) { // Kleidung, Frisur & Gesicht auf das Block-Modell (Trefferzonen bleiben unverändert)
             const tc = fitC(F.top[1]), hm = M(fitC(F.hairC)), hc = M(fitC(F.head[1])), H = F.head[0], sc = M(fitC(F.shoes[1])), wh = M(0xeeeeea), S = F.shoes[0];
-            mk(0.17, 0.11, 0.19, M(T ? 0xd04040 : 0x4a7dff), ...ab); // Team-Armbinde: Team bleibt immer erkennbar
+            mk(0.17, 0.11, 0.19, M(T ? 0xd04040 : 0x4a7dff), -0.43, 1.32, 0.06); // Team-Armbinde: Team bleibt immer erkennbar
             mk(0.1, 0.025, 0.01, M(sh(col.h, 0.55)), 0, 1.6, 0.175); if (F.hair !== 'bald') for (const x of [-0.07, 0.07]) mk(0.07, 0.02, 0.01, hm, x, 1.725, 0.175); // Mund, Augenbrauen
             if (F.hair === 'short') { mk(0.36, 0.08, 0.36, hm, 0, 1.84, -0.01); mk(0.36, 0.16, 0.06, hm, 0, 1.74, -0.16); }
             if (F.hair === 'buzz') mk(0.35, 0.04, 0.35, hm, 0, 1.82, 0);
@@ -7656,7 +7656,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 if (S === 'hightop') { mk(0.3, 0.22, 0.38, sc, 0, -0.55, 0.04, 0, hp); mk(0.31, 0.04, 0.39, wh, 0, -0.645, 0.04, 0, hp); }
                 else if (S === 'sneaker') { mk(0.3, 0.11, 0.38, sc, 0, -0.6, 0.04, 0, hp); mk(0.31, 0.04, 0.39, wh, 0, -0.645, 0.04, 0, hp); }
                 else mk(0.3, 0.13, 0.38, sc, 0, -0.595, 0.04, 0, hp);
-                if (F.legs[0] === 'shorts' && !poly) mk(0.285, 0.25, 0.305, M(col.h), 0, -0.42, 0, 0, hp); // Beine unter den Shorts (Poly-Körper: Unterschenkel in Hautfarbe)
+                if (F.legs[0] === 'shorts') mk(0.285, 0.25, 0.305, M(col.h), 0, -0.42, 0, 0, hp); // Beine unter den Shorts
                 if (F.legs[0] === 'cargo') mk(0.04, 0.16, 0.16, M(sh(col.l, 0.75)), side * 0.16, -0.25, 0, 0, hp);
                 if (F.legs[0] === 'jeans') mk(0.29, 0.05, 0.31, M(sh(col.l, 0.7)), 0, -0.5, 0, 0, hp); }
         }
@@ -7739,7 +7739,7 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 const legL = mk(0.28, 0.65, 0.3, hitM, 0, -0.51, 0, 'legs', hipL), legR = mk(0.28, 0.65, 0.3, hitM, 0, -0.51, 0, 'legs', hipR); legL.castShadow = legR.castShadow = false;
                 // Rumpf: Becken, Oberkörper (nach oben breiter), Weste/Jacke, Gürtel, Hals, Kopf
                 P(cyl(0.22, 0.21, 0.22), pan, 0, 0.84, 0, g, [1.3, 1, 0.85]); P(cyl(0.27, 0.25, 0.54), jac, 0, 1.15, 0, g, [1.3, 1, 0.85]); P(cyl(0.285, 0.24, 0.36), vest, 0, 1.2, 0, g, [1.28, 1, 0.9]); P(cyl(0.225, 0.225, 0.05), blk, 0, 0.95, 0, g, [1.2, 1, 0.9]); /* kräftiger Körperbau */
-                P(cyl(0.075, 0.085, 0.1, 6), blk, 0, 1.46, 0); if (F) { P(ball(0.17, 1), skn, 0, 1.65, 0.01, g, [1, 1.05, 1.02]); for (const x of [-0.065, 0.065]) P(new THREE.BoxGeometry(0.05, 0.035, 0.014), blk, x, 1.69, 0.18); } else P(ball(0.15, 1), blk, 0, 1.62, 0.01, g, [1, 1.1, 1.05]); /* eigener Agent: Poly-Kopf mit Gesicht · sonst Helm */
+                P(cyl(0.075, 0.085, 0.1, 6), blk, 0, 1.46, 0); P(ball(F ? 0.17 : 0.15, 1), F ? skn : blk, 0, F ? 1.65 : 1.62, 0.01, g, F ? [1, 1.05, 1.02] : [1, 1.1, 1.05]); /* eigener Agent: Poly-Kopf ohne Gesicht · sonst Helm */
                 // Arme halten das Gewehr (rechts Griff, links Vorderschaft)
                 const sL = V(-0.32, 1.37, 0), sR = V(0.32, 1.37, 0), eL = V(-0.08, 1.02, 0.34), eR = V(0.38, 1.02, 0.08), hL = V(0.24, 1.11, 0.68), hR = V(0.28, 1.08, 0.32);
                 for (const [sh0, el, hd] of [[sL, eL, hL], [sR, eR, hR]]) { P(ball(0.115), jac, sh0.x, sh0.y, sh0.z, g, [1.1, 0.85, 1.1]); limb(sh0, el, 0.11, 0.095, jac); limb(el, hd, 0.09, 0.075, F && F.top[0] === 'tee' ? skn : jac); P(ball(0.065), gl, hd.x, hd.y, hd.z, g, [1, 0.9, 1.2]); }
@@ -7749,7 +7749,28 @@ html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-l
                 for (const [hp, sx] of [[hipL, -1], [hipR, 1]]) { limb(V(0, 0, 0), V(0, -0.38, 0.03), 0.14, 0.12, pan, hp); P(ball(0.12), T ? pan : blk, 0, -0.38, 0.04, hp); limb(V(0, -0.38, 0.03), V(0, -0.74, 0), 0.115, 0.1, F && F.legs[0] === 'shorts' ? skn : pan, hp);
                     if (!F) { P(new THREE.BoxGeometry(0.18, 0.1, 0.28), boot, 0, -0.79, 0.045, hp); P(cyl(0.1, 0.105, 0.06), T ? blk : boot, 0, -0.72, 0, hp); }
                     if (!T && !F) { P(new THREE.BoxGeometry(0.06, 0.16, 0.15), PM(0x2a2d32), sx * 0.125, -0.2, 0, hp); P(new THREE.BoxGeometry(0.062, 0.025, 0.06), PM(0xb3243a), sx * 0.125, -0.12, 0.045, hp); } } // Defender: Cargotaschen
-                if (F) { const fL = new THREE.Group(), fR = new THREE.Group(); fL.position.y = fR.position.y = -0.18; fL.scale.set(0.78, 1, 0.8); fR.scale.set(0.78, 1, 0.8); hipL.add(fL); hipR.add(fR); fitDeco(F, T, mk, PM, sh, col, fL, fR, [-0.26, 1.28, 0.085], true); } /* Kleidung & Frisur; Schuhe auf Poly-Hüfthöhe umgerechnet */ else if (T) { const wh = PM(0xf2f0ea), gold = new THREE.MeshPhongMaterial({ color: 0xd4a537, specular: 0xffe9a0, shininess: 90, flatShading: true }), lap = PM(sh(col.b, 1.35)); // Attacker im THE FINALS-Stil: dunkelblauer Anzug, weißes Hemd, Krawatte, goldene Poly-Maske
+                if (F) { const tc = fitC(F.top[1]), H = F.head[0], S = F.shoes[0], hm = PM(fitC(F.hairC)), hc = PM(fitC(F.head[1])), hd = PM(sh(fitC(F.head[1]), 0.8)), sc = PM(fitC(F.shoes[1])), wh = PM(0xeeeeea), dk = f => PM(sh(tc, f)), Bx = (w, h, d) => new THREE.BoxGeometry(w, h, d), Sp = (r, tl) => new THREE.SphereGeometry(r, 8, 4, 0, Math.PI * 2, 0, tl); // Kleidung & Frisur als Poly-Formen (ohne Gesicht)
+                    limb(sL.clone().lerp(eL, 0.3), sL.clone().lerp(eL, 0.55), 0.122, 0.116, PM(T ? 0xd04040 : 0x4a7dff)); // Team-Armbinde am Oberarm
+                    const cone = (r, h, x, y, z, rx, rz = 0) => P(new THREE.ConeGeometry(r, h, 4), hm, x, y, z, g, null, rx, 0, rz); // Haarzacke
+                    if (F.hair === 'short' || F.hair === 'buzz' || F.hair === 'long') P(Sp(F.hair === 'buzz' ? 0.183 : 0.19, F.hair === 'buzz' ? 1.45 : 1.7), hm, 0, 1.66, 0, g, [1, 1.05, 1.03], -0.5);
+                    if (F.hair === 'short' && H === 'none') { for (const x of [-0.08, 0, 0.08]) cone(0.06, 0.14, x, 1.82, 0.07, 0.95, -x * 2); cone(0.07, 0.13, 0, 1.85, -0.04, 0.3); } // kleine Tolle
+                    if (F.hair === 'long') { P(cyl(0.16, 0.2, 0.36), hm, 0, 1.52, -0.08, g, [1.15, 1, 0.6]); for (const x of [-0.165, 0.165]) P(ball(0.09), hm, x, 1.58, -0.02, g, [0.5, 1.7, 0.9]); } // Nacken & Strähnen
+                    if (F.hair === 'mohawk' && (H === 'none' || H === 'band')) for (const z of [0.11, 0.03, -0.05, -0.13]) cone(0.05, 0.17, 0, 1.66 + Math.sqrt(0.032 - z * z) * 1.05, z, -z * 4); // Irokesen-Kamm
+                    if (H === 'band') P(cyl(0.188, 0.188, 0.05, 8), hc, 0, 1.71, 0);
+                    if (H === 'cap') { P(Sp(0.192, 1.6), hc, 0, 1.67, 0, g, [1, 1, 1.03]); P(cyl(0.13, 0.13, 0.02), hc, 0, 1.7, 0.15, g, [1, 1, 1.15]); }
+                    if (H === 'beanie') { P(Sp(0.198, 1.65), hc, 0, 1.68, 0, g, [1, 1.15, 1.03]); P(cyl(0.2, 0.2, 0.07, 8), hd, 0, 1.7, 0, g, [1, 1, 1.03]); }
+                    if (H === 'boonie') { P(cyl(0.3, 0.3, 0.025, 8), hc, 0, 1.76, 0); P(cyl(0.16, 0.19, 0.14, 8), hc, 0, 1.83, 0); }
+                    if (H === 'bucket') { P(cyl(0.21, 0.27, 0.06, 8), hd, 0, 1.75, 0); P(cyl(0.165, 0.2, 0.15, 8), hc, 0, 1.84, 0); }
+                    if (H === 'helmet') P(Sp(0.205, 1.75), hc, 0, 1.66, -0.01, g, [1, 1, 1.08], -0.3);
+                    if (F.top[0] === 'hoodie') { P(ball(0.17), dk(0.85), 0, 1.47, -0.2, g, [1.25, 0.75, 0.65]); P(Bx(0.32, 0.13, 0.03), dk(0.8), 0, 1.0, 0.215); } // Kapuze, Bauchtasche
+                    if (F.top[0] === 'jacket' || F.top[0] === 'parka') { P(Bx(0.03, 0.5, 0.02), dk(0.55), 0, 1.15, 0.262); if (F.top[0] === 'jacket') P(cyl(0.15, 0.17, 0.08), dk(0.8), 0, 1.44, 0, g, [1.2, 1, 1.05]); } // Reißverschluss, Kragen
+                    if (F.top[0] === 'parka') { P(ball(0.18), dk(0.85), 0, 1.48, -0.21, g, [1.3, 0.8, 0.7]); P(new THREE.TorusGeometry(0.16, 0.045, 4, 8), PM(0xc9b48a), 0, 1.5, -0.06, g, [1.15, 1, 1], Math.PI / 2 - 0.3); P(cyl(0.31, 0.34, 0.26, 8), dk(0.92), 0, 0.82, 0, g, [1.3, 1, 0.9]); for (const x of [-0.15, 0.15]) P(Bx(0.12, 0.09, 0.03), dk(0.75), x, 0.86, 0.295); } // Kapuze mit Fellrand, langer Saum, Taschen
+                    if (F.top[0] === 'vest') for (const x of [-0.15, 0.15]) P(Bx(0.13, 0.12, 0.04), dk(0.75), x, 1.15, 0.27); // Magazintaschen
+                    for (const [hp, sx] of [[hipL, -1], [hipR, 1]]) {
+                        if (F.legs[0] === 'cargo') P(Bx(0.05, 0.15, 0.14), PM(sh(col.l, 0.75)), sx * 0.135, -0.2, 0, hp);
+                        if (F.legs[0] === 'jeans') P(cyl(0.11, 0.11, 0.035), PM(sh(col.l, 0.7)), 0, -0.7, 0.005, hp);
+                        if (S === 'sneaker') P(Bx(0.17, 0.08, 0.28), sc, 0, -0.8, 0.05, hp); else { P(Bx(0.18, 0.1, 0.28), sc, 0, -0.79, 0.045, hp); P(cyl(0.1, 0.105, S === 'hightop' ? 0.12 : 0.07), sc, 0, S === 'hightop' ? -0.71 : -0.72, 0, hp); }
+                        P(Bx(0.19, 0.035, 0.3), S === 'boots' ? blk : wh, 0, -0.845, 0.045, hp); } } /* Sohle */ else if (T) { const wh = PM(0xf2f0ea), gold = new THREE.MeshPhongMaterial({ color: 0xd4a537, specular: 0xffe9a0, shininess: 90, flatShading: true }), lap = PM(sh(col.b, 1.35)); // Attacker im THE FINALS-Stil: dunkelblauer Anzug, weißes Hemd, Krawatte, goldene Poly-Maske
                     P(ball(0.15, 1), PM(0x2a1d14), 0, 1.69, -0.06, g, [1, 1.05, 1]); P(ball(0.185), gold, 0, 1.66, 0.05, g, [0.98, 1.15, 0.95]); /* Haare hinten, facettierte Goldmaske */
                     P(cyl(0.088, 0.1, 0.09, 6), wh, 0, 1.47, 0.01); P(new THREE.ConeGeometry(0.11, 0.3, 3), wh, 0, 1.3, 0.255, g, [1, 1, 0.15], Math.PI); P(new THREE.BoxGeometry(0.05, 0.27, 0.015), PM(0x14182a), 0, 1.26, 0.268); P(new THREE.BoxGeometry(0.06, 0.05, 0.03), PM(0x14182a), 0, 1.4, 0.262); /* Kragen, Hemd, Krawatte */
                     for (const sx of [-1, 1]) P(new THREE.BoxGeometry(0.07, 0.3, 0.02), lap, sx * 0.09, 1.3, 0.262, g, null, 0, 0, sx * 0.32); P(new THREE.BoxGeometry(0.06, 0.035, 0.012), wh, -0.15, 1.32, 0.264); P(new THREE.BoxGeometry(0.03, 0.09, 0.012), PM(0xf2bd1d), 0.14, 1.36, 0.266, g, null, 0, 0, -0.3); /* Revers, Einstecktuch, gelbes Abzeichen */
