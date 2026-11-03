@@ -1,0 +1,139 @@
+/* Design-System „Low-Poly Clean" */
+        /* ───── Design-System „Low-Poly Clean" ───── */
+        :root {
+            --panel: rgba(16, 23, 32, .93);
+            --panel2: #1a2430;
+            --line: #36465a;
+            --text: #e2e9f0;
+            --mut: #8da0b5;
+            --acc: #d99a3d;
+            --hl: #e8c98a;
+            --hl-rgb: 232, 201, 138;
+        }
+
+        #overlay,
+        #overlay *,
+        #hud,
+        #hud * {
+            font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-top: 3px solid var(--acc);
+            clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+            padding: 18px 22px;
+            color: var(--text);
+        }
+
+        .ptitle {
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            margin: 0 0 4px;
+        }
+
+        .psub {
+            font-size: 12px;
+            color: var(--mut);
+            letter-spacing: .28em;
+            text-transform: uppercase;
+            margin: 0 0 16px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 7px 0;
+            padding: 11px 16px;
+            font: 700 17px Rajdhani, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            text-align: left;
+            background: var(--panel2);
+            color: var(--text);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--line);
+            cursor: pointer;
+            transition: border-color .12s, background .12s, transform .12s;
+        }
+
+        .btn:hover {
+            border-left-color: var(--acc);
+            background: #243348;
+            transform: translateX(4px);
+        }
+
+        .btn.primary {
+            border-left-color: var(--acc);
+            color: var(--acc);
+        }
+
+        .btn.small {
+            font-size: 13px;
+            padding: 7px 12px;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        #overlay input[type=text],
+        #overlay select {
+            border-radius: 0;
+        }
+
+        #overlay input:focus {
+            border-color: var(--acc) !important;
+            outline: none;
+        }
+
+        /* Low-Poly-Pass: Glow raus, Ecken eckig */
+        #overlay button {
+            font-family: Rajdhani, sans-serif;
+            border-radius: 0;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        #cstabs a.on:after {
+            box-shadow: none;
+            background: var(--acc);
+        }
+
+        .mapc,
+        .mcard,
+        .cspanel,
+        .lobp,
+        .card,
+        .glw,
+        .glu,
+        #csplayview,
+        #buy {
+            border-radius: 0;
+        }
+
+        .mapc.sel {
+            outline-color: var(--acc);
+            box-shadow: none;
+        }
+
+        .glu.sel,
+        .glw.sel,
+        .glc.sel {
+            box-shadow: none;
+        }
+
+        #marker {
+            box-shadow: none;
+            background: var(--acc);
+        }
+
+        #radar {
+            border-color: var(--line);
+        }
+

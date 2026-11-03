@@ -29,7 +29,8 @@ if (SET.fpsUnlock) { app.commandLine.appendSwitch('disable-frame-rate-limit'); a
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }]);
 const BUNDLED = app.isPackaged ? path.join(process.resourcesPath, 'game') : path.join(__dirname, '..', 'public');
 const VENDOR = app.isPackaged ? path.join(process.resourcesPath, 'vendor') : path.join(__dirname, 'vendor');
-const CACHE = path.join(app.getPath('userData'), 'game-cache'); // neueste Online-Version (nur index.html ändert sich bei Updates)
+const CACHE = path.join(app.getPath('userData'), 'game-cache'); // neueste Online-Version (index.html + css/ + js/ ändern sich bei Updates)
+const GAME_FILES = ['css/base.css', 'css/lowpoly.css', 'css/hud.css', 'css/mobile.css', 'css/theme-v.css', 'js/i18n.js', 'js/game.js'];
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.css': 'text/css', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
 
 if (!app.requestSingleInstanceLock()) app.quit();
@@ -38,12 +39,15 @@ let win = null, offline = false;
 const waitPage = msg => 'data:text/html;charset=utf-8,' + encodeURIComponent(`<!doctype html><html><body style="margin:0;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#0a0e13;color:#e8c98a;font:bold 20px Arial">
 <div>CLUTCH</div><div style="margin-top:12px;font:14px Arial;color:#8fa3b8">${msg}</div></body></html>`);
 
-// Neueste index.html vom Server für den Offline-Modus sichern
+// Neueste index.html + css/ + js/ vom Server für den Offline-Modus sichern (nur komplett, damit alles zusammenpasst)
 async function cacheLatest() {
   try {
-    const r = await net.fetch(GAME_URL + '/index.html', { cache: 'no-store' }); if (!r.ok) return;
-    const html = await r.text(); if (html.length < 10000 || !html.includes('<script')) return;
-    fs.mkdirSync(CACHE, { recursive: true }); fs.writeFileSync(path.join(CACHE, 'index.html'), html);
+    const get = async f => { const r = await net.fetch(GAME_URL + '/' + f, { cache: 'no-store' }); if (!r.ok) throw 0; return r.text(); };
+    const html = await get('index.html'); if (html.length < 1000 || !html.includes('<script')) return;
+    const files = await Promise.all(GAME_FILES.map(get)); if (files.some(t => t.length < 100)) return;
+    for (const d of ['css', 'js']) fs.mkdirSync(path.join(CACHE, d), { recursive: true });
+    GAME_FILES.forEach((f, i) => fs.writeFileSync(path.join(CACHE, f), files[i]));
+    fs.writeFileSync(path.join(CACHE, 'index.html'), html);
   } catch (e) { }
 }
 

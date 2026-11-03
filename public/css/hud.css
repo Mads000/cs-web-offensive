@@ -1,0 +1,371 @@
+/* HUD 2.0 */
+        /* ───── HUD 2.0 ───── */
+        .hud-num {
+            font: 700 32px Rajdhani, sans-serif;
+            letter-spacing: .02em;
+        }
+
+        #timer {
+            font: 700 26px Rajdhani, sans-serif;
+        }
+
+        #score {
+            font: 700 16px Rajdhani, sans-serif;
+        }
+
+        #money {
+            font: 700 24px Rajdhani, sans-serif;
+        }
+
+        #wname {
+            font: 700 15px Rajdhani, sans-serif;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        #msg {
+            font: 700 30px Rajdhani, sans-serif;
+            letter-spacing: .08em;
+        }
+
+        #killfeed div {
+            border-radius: 0;
+            border-left: 3px solid var(--line);
+        }
+
+        .slabel {
+            font: 600 11px Rajdhani;
+            letter-spacing: .3em;
+            color: #cdd8e4;
+        }
+
+        .sbar {
+            width: 150px;
+            height: 7px;
+            background: rgba(0, 0, 0, .55);
+            border: 1px solid var(--line);
+            margin: 4px 0 2px;
+        }
+
+        .sbar i {
+            display: block;
+            height: 100%;
+            width: 100%;
+            background: #dde6ef;
+            transition: width .15s;
+        }
+
+        #hpwrap.low .hud-num {
+            color: #ff4d4d;
+            animation: lowhp 1s infinite;
+        }
+
+        #hpwrap.low .sbar i {
+            background: #ff4d4d;
+        }
+
+        @keyframes lowhp {
+            50% {
+                opacity: .45;
+            }
+        }
+
+        .abw {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .abr {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: conic-gradient(var(--acc) var(--f, 0deg), rgba(255, 255, 255, .14) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .abr span {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(10, 15, 20, .88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .abw b {
+            font: 700 13px Rajdhani;
+            letter-spacing: .1em;
+            color: var(--text);
+        }
+
+        .abw.rdy .abr {
+            animation: abpulse 1.2s infinite;
+        }
+
+        @keyframes abpulse {
+            50% {
+                filter: brightness(1.4);
+            }
+        }
+
+        #killpop {
+            position: absolute;
+            left: 50%;
+            top: 56%;
+            transform: translateX(-50%);
+            font: 700 17px Rajdhani;
+            letter-spacing: .18em;
+            color: var(--acc);
+            opacity: 0;
+            text-align: center;
+        }
+
+        #killpop span {
+            display: block;
+            font-size: 12px;
+            color: var(--mut);
+            letter-spacing: .1em;
+        }
+
+        #killpop.on {
+            animation: kpop 1.1s ease-out forwards;
+        }
+
+        @keyframes kpop {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(.6);
+            }
+
+            12% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.08);
+            }
+
+            20% {
+                transform: translateX(-50%) scale(1);
+            }
+
+            75% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes msgin { /* Texte fliegen ein: aus der Unschärfe, groß und weit gesperrt → sitzt mit kurzem Nachfedern */
+            0% { opacity: 0; transform: translateX(-50%) translateY(-22px) scale(1.6); letter-spacing: .5em; filter: blur(8px) }
+            55% { opacity: 1; transform: translateX(-50%) translateY(2px) scale(.96); letter-spacing: .02em; filter: blur(0) }
+            75% { transform: translateX(-50%) translateY(0) scale(1.03) }
+            100% { opacity: 1; transform: translateX(-50%) scale(1); letter-spacing: .08em; filter: blur(0) }
+        }
+        @keyframes subin { 0% { opacity: 0; transform: translateX(-50%) translateY(14px); clip-path: inset(0 50% 0 50%) } 100% { opacity: 1; transform: translateX(-50%); clip-path: inset(0 0 0 0) } }
+        @keyframes deadin { 0% { opacity: 0; transform: translateX(-50%) translateY(30px) scale(.9) } 70% { opacity: 1; transform: translateX(-50%) translateY(-3px) scale(1.02) } 100% { opacity: 1; transform: translateX(-50%) } }
+        #dead > div { animation: deadin .45s cubic-bezier(.2, .9, .3, 1.2) both }
+
+        .strow {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 7px 10px;
+            border-left: 3px solid transparent;
+            font: 600 15px Rajdhani;
+        }
+
+        .strow b:first-child {
+            width: 26px;
+            color: var(--mut);
+        }
+
+        .strow span {
+            flex: 1;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        .strow i {
+            font-style: normal;
+            letter-spacing: 3px;
+            color: #dde6ef;
+        }
+
+        .strow b:last-child {
+            width: 30px;
+            text-align: right;
+        }
+
+        .strow.me {
+            border-left-color: var(--acc);
+            background: rgba(var(--hl-rgb), .07);
+            color: var(--acc);
+        }
+
+        .strow.me i {
+            color: var(--acc);
+        }
+
+        .strow.out {
+            opacity: .35;
+        }
+
+        .glnext {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--line);
+            text-align: center;
+            color: var(--mut);
+            font: 600 13px Rajdhani;
+            letter-spacing: .2em;
+        }
+
+        .gldraft {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-top: 3px solid var(--acc);
+            padding: 20px 26px;
+            clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+        }
+
+        .glhead b {
+            color: var(--acc);
+        }
+
+        .glsec {
+            color: var(--mut);
+        }
+
+        #touch {
+            position: absolute;
+            inset: 0;
+            display: none;
+        }
+
+        #tzone { position: absolute; left: 0; top: 0; width: 35%; bottom: 0; pointer-events: auto; }
+        body.edit #tzone { pointer-events: none; }
+        #tlook {
+            position: absolute;
+            left: 35%;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: auto;
+        }
+
+        #tstick {
+            position: absolute;
+            left: 26px;
+            bottom: 90px;
+            width: 124px;
+            height: 124px;
+            border: 2px solid rgba(255, 255, 255, .25);
+            border-radius: 50%;
+            background: rgba(0, 0, 0, .25);
+            pointer-events: auto;
+        }
+
+        #tnub {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 54px;
+            height: 54px;
+            margin: -27px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .3);
+        }
+
+        .tb {
+            position: absolute;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, .45);
+            border: 1px solid rgba(255, 255, 255, .35);
+            color: #fff;
+            font: 700 20px Rajdhani;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            z-index: 3;
+        }
+
+        .tb:active {
+            background: rgba(var(--hl-rgb), .45);
+        }
+
+        #tFire {
+            right: 26px;
+            bottom: 86px;
+            width: 92px;
+            height: 92px;
+            font-size: 34px;
+            background: rgba(216, 90, 60, .4);
+        }
+
+        #tFire2 {
+            left: 30px;
+            bottom: 230px;
+            width: 72px;
+            height: 72px;
+            font-size: 26px;
+            background: rgba(216, 90, 60, .4);
+        }
+
+        #tJump {
+            right: 136px;
+            bottom: 60px;
+        }
+
+        #tCrouch {
+            right: 40px;
+            bottom: 196px;
+        }
+
+        #tReload {
+            right: 136px;
+            bottom: 150px;
+        }
+
+        #tScope {
+            right: 216px;
+            bottom: 86px;
+        }
+
+        #tUse {
+            right: 120px;
+            bottom: 240px;
+        }
+
+        #tNext {
+            right: 26px;
+            bottom: 300px;
+        }
+
+        #tAbil {
+            left: 170px;
+            bottom: 100px;
+        }
+
+        #tBuy {
+            right: 16px;
+            top: 70px;
+            width: 46px;
+            height: 46px;
+        }
+
+        #tBoard {
+            right: 16px;
+            top: 126px;
+            width: 46px;
+            height: 46px;
+        }
+

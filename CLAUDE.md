@@ -1,7 +1,10 @@
 # Projektregeln für mein Spiel
 
 ## Allgemein
-- Das Spiel besteht aus einer einzigen HTML-Datei.
+- Das Spiel liegt in public/: index.html (Markup), css/ (Styles, Reihenfolge der
+  <link>-Tags = Kaskade) und js/ (i18n.js = Übersetzung, game.js = Spiellogik).
+- game.js ist bewusst EINE Funktion (Anti-Cheat-Closure) – nicht in mehrere
+  Dateien zerlegen.
 - Die bestehende Struktur muss erhalten bleiben.
 - Funktionierender Code darf nicht unnötig verändert werden.
 - Keine unnötigen neuen Dateien erstellen.

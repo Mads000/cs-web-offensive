@@ -1,8 +1,8 @@
-// Patchnotes aus den News im Spiel (public/index.html) lesen → Discord-Markdown.
+// Patchnotes aus den News im Spiel (public/js/game.js) lesen → Discord-Markdown.
 // Genutzt von server.js (Auto-Post nach Deploy) und discord/setup.js (Nachtragen).
 const fs = require('fs'), path = require('path');
 function patchnotes(minV = 0) {
-    const html = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8'), out = [];
+    const html = fs.readFileSync(path.join(__dirname, 'public', 'js', 'game.js'), 'utf8'), out = [];
     const re = /<div class="cspanel newscard"><h3>([^<]*)<\/h3>([\s\S]*?)<\/div><\/div>/g; let m;
     while ((m = re.exec(html))) {
         const k = m[1].match(/PATCH\s*([\d.]+)\s*„?([^"“”]*)/i); if (!k || +k[1] < minV) continue;

@@ -1,0 +1,196 @@
+/* Design-System „V" (Standard-Design, aktiv über html.dsV) */
+/* ═══ DESIGN-SYSTEM „V" (ganzes Spiel) – Graublau = Akzent (--hl), Creme = Text/Buttons, Navy = Flächen; Schrift Barlow ═══ */
+html.dsV { --hl: #8aa1b8; --hl-rgb: 138, 161, 184; --cream: #ece8e1; --navy: #0f1923; --acc: #8aa1b8; --panel: rgba(15,25,35,.9); --panel2: rgba(236,232,225,.06); --line: rgba(236,232,225,.16); --text: #ece8e1; --mut: rgba(236,232,225,.6) }
+html.dsV body, html.dsV body *:not(#fpsBox) { font-family: 'Barlow', 'Noto Emoji', 'Segoe UI', sans-serif !important }
+/* Grundfarben */
+html.dsV #overlay { color: var(--cream) }
+html.dsV #overlay h1 { color: var(--cream); font-weight: 800; letter-spacing: .08em }
+html.dsV #overlay h1 small { color: var(--hl) }
+html.dsV #hud { text-shadow: 0 1px 3px rgba(0,0,0,.85) }
+html.dsV .hud-num { font-weight: 700 }
+html.dsV #radar { border: 1px solid rgba(236,232,225,.16); background: rgba(15,25,35,.6) }
+#radar { border-radius: 50% } /* drehende Minimap: rund */
+/* Buttons: Navy mit heller Kante links, Hover = rote Kante; Haupt-Buttons creme mit roter Kante */
+html.dsV #overlay button, html.dsV #overlay #playbar button, html.dsV #overlay .csbtns button, html.dsV .btn, html.dsV #tut button { color: var(--cream); background: rgba(15,25,35,.72); border: 1px solid rgba(236,232,225,.22); border-left: 3px solid rgba(236,232,225,.5); border-radius: 0; box-shadow: none; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; transition: background .15s, color .15s, border-color .15s }
+html.dsV #overlay button:hover, html.dsV #overlay #playbar button:hover, html.dsV #overlay .csbtns button:hover, html.dsV .btn:hover, html.dsV #tut button:hover { color: #fff; background: rgba(236,232,225,.14); border-color: rgba(236,232,225,.4); border-left-color: var(--hl) }
+html.dsV #overlay #playbar #btnCT, html.dsV #overlay #playbar #btnT, html.dsV #overlay #btnGl, html.dsV #overlay #btnV1, html.dsV #overlay button.primary, html.dsV .btn.primary { color: var(--navy); background: var(--cream); border: 1px solid var(--cream); border-left: 4px solid var(--hl); font-weight: 700; outline: none }
+html.dsV #overlay #playbar #btnCT:hover, html.dsV #overlay #playbar #btnT:hover, html.dsV #overlay #btnGl:hover, html.dsV #overlay #btnV1:hover, html.dsV #overlay button.primary:hover, html.dsV .btn.primary:hover { color: var(--navy); background: #fff; border-color: #fff; border-left-color: var(--hl) }
+html.dsV #overlay button:disabled { opacity: .45 }
+html.dsV .btn:hover { transform: none }
+/* Eingaben */
+html.dsV #overlay input:not([type=color]):not([type=range]):not([type=checkbox]):not([type=radio]), html.dsV #overlay select, html.dsV #overlay textarea { background-color: rgba(15,25,35,.78); color: var(--cream); border: 1px solid rgba(236,232,225,.24); border-radius: 0 }
+html.dsV input[type=range], html.dsV input[type=checkbox], html.dsV input[type=radio] { accent-color: var(--hl) }
+html.dsV #overlay select { color: var(--cream) !important }
+html.dsV #overlay input:focus, html.dsV #overlay select:focus, html.dsV #overlay textarea:focus { border-color: var(--hl) !important; outline: none }
+/* Flächen: Navy, eckig */
+html.dsV :is(.panel, .mcard, .cfgpanel, .profbox, .ach, .arc, .invw, .wrapc, .invpanel, .lobrow, .toast, .lobteam, .glu, .glw, .glc, .card, .wrap, #reelbox, .lobrules, .lobp, .dhlb, .ntile, .invtabs b, .rchips span) { border-radius: 0 }
+html.dsV :is(.panel, .mcard, .cfgpanel, .profbox, .wrap, #reelbox) { background: rgba(15,25,35,.86) }
+html.dsV :is(.ach, .arc, .invw, .wrapc) { background: rgba(15,25,35,.8) }
+html.dsV .panel { color: var(--cream); clip-path: none; border: 1px solid var(--line); border-top: 3px solid var(--hl) }
+html.dsV .mcard { border-color: rgba(236,232,225,.18) }
+html.dsV .mcard h2 { color: var(--cream) }
+html.dsV .toast { background: rgba(15,25,35,.95); border: 1px solid rgba(236,232,225,.18); border-left: 4px solid var(--hl); color: var(--cream) }
+html.dsV .toast b { color: var(--cream) }
+html.dsV .invtabs b { background: rgba(15,25,35,.8); border-color: rgba(236,232,225,.2); color: rgba(236,232,225,.75) }
+html.dsV .invtabs b.on { background: var(--cream); color: var(--navy); border-color: var(--cream); box-shadow: inset 4px 0 0 var(--hl) }
+html.dsV .lvchip { background: var(--hl); color: #fff; border-radius: 0 }
+
+/* ── HUD (nur PC): schlicht – Leben/Weste unten mittig, Zeit oben mit Teamleisten, Munition unten rechts ── */
+html.dsV body:not(.mob) #bl { left: 50%; transform: translateX(-50%); bottom: 18px; gap: 0; align-items: flex-end }
+html.dsV body:not(.mob) #bl > div { display: flex; flex-direction: column; align-items: center; padding: 0 22px }
+html.dsV body:not(.mob) #bl > div + div { border-left: 1px solid rgba(236,232,225,.22) }
+html.dsV #bl .slabel { order: 0; font-size: 10px; letter-spacing: .3em; opacity: .85 }
+html.dsV #bl, html.dsV #br, html.dsV #money { text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 10px rgba(0,0,0,.55) }
+html.dsV #bl .hud-num { order: 1; font-weight: 600; line-height: 1.05 }
+html.dsV body:not(.mob) #bl .hud-num { font-size: 40px }
+html.dsV #bl .sbar { order: 2; height: 3px; border: 0; background: rgba(236,232,225,.18); margin: 4px 0 0 }
+html.dsV body:not(.mob) #bl .sbar { width: 120px }
+html.dsV .sbar i { background: var(--cream) }
+html.dsV #arbar { background: var(--hl) }
+html.dsV body:not(.mob) #abil { bottom: 104px } .mob #abil { pointer-events: auto }
+html.dsV body:not(.mob) #br { right: 26px; bottom: 18px }
+html.dsV #wname { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; opacity: .7 }
+html.dsV #ammo { font-weight: 600 }
+html.dsV body:not(.mob) #ammo { font-size: 40px }
+html.dsV body:not(.mob) #money { right: 26px; bottom: 92px; font-size: 18px; font-weight: 600; color: var(--cream); opacity: .85 }
+/* Handy: Leben/Weste unten mittig, Kaufmenü kompakt */
+html.dsV body.mob #bl { left: 50%; transform: translateX(-50%) scale(.6); transform-origin: bottom center; bottom: 4px; gap: 0; align-items: flex-end }
+html.dsV body.mob #bl > div { display: flex; flex-direction: column; align-items: center; padding: 0 16px }
+html.dsV body.mob #bl > div + div { border-left: 1px solid rgba(236,232,225,.22) }
+html.dsV body.mob .card { min-height: 0; padding: 4px 8px }
+html.dsV body.mob .card b { font-size: 11px }
+html.dsV body.mob .cprice { font-size: 11px }
+html.dsV body.mob .cstats { margin: 3px 0 }
+html.dsV body.mob .bgrid { gap: 6px; padding: 6px 8px }
+html.dsV body.mob .bcol { gap: 4px }
+html.dsV body.mob .bcol h4 { padding: 3px 0; font-size: 10px }
+html.dsV body.mob .bhead { padding: 6px 12px }
+html.dsV body.mob .bhead h3 { font-size: 13px } html.dsV body.mob .bmoney { font-size: 15px }
+/* Oben: Zeit-Kasten, Teamleisten mit dezentem Teamfarbton */
+html.dsV body:not(.mob) #timer { min-width: 92px; padding: 3px 20px; font-size: 26px; font-weight: 700; background: rgba(15,25,35,.78); border: 1px solid rgba(236,232,225,.16); border-bottom: 2px solid var(--hl) }
+html.dsV body:not(.mob) #score { font-size: 13px; letter-spacing: .14em; margin-top: 4px }
+html.dsV body:not(.mob) #roundlbl { font-size: 11px; letter-spacing: .1em; opacity: .7 }
+html.dsV body:not(.mob) #aliveL, html.dsV body:not(.mob) #aliveR { top: 10px; padding: 5px 10px; height: 38px; box-sizing: border-box; align-items: center }
+html.dsV body:not(.mob) #aliveL { background: linear-gradient(270deg, rgba(110,150,200,.42), rgba(15,25,35,.0)) }
+html.dsV body:not(.mob) #aliveR { background: linear-gradient(90deg, rgba(220,140,90,.42), rgba(15,25,35,.0)) }
+html.dsV .pv { border-radius: 0; background: rgba(15,25,35,.65) }
+.pv { width: auto; height: auto; padding: 0; flex-direction: column; border-top: 2px solid; background: none !important } .pv .avi { border-radius: 0; box-shadow: 0 1px 4px rgba(0,0,0,.5) } .pv u { display: block; height: 3px; background: rgba(0,0,0,.6) } .pv u i { display: block; height: 100% } .pv.dd { opacity: .35; filter: grayscale(1) } .pv.me .avi { outline: 1px solid rgba(255,255,255,.85); outline-offset: -1px }
+.mob .pv .avi { width: 22px !important; height: 22px !important; font-size: 11px !important }
+/* Kaufmenü: Spalten mit Kopfleiste, große Kacheln, gekauft = Akzent */
+html.dsV #buy { background: rgba(15,25,35,.55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(236,232,225,.12); border-top: 1px solid rgba(236,232,225,.12); box-shadow: 0 10px 40px rgba(0,0,0,.5) }
+html.dsV .bhead, html.dsV .bfoot { border-color: rgba(236,232,225,.1) }
+html.dsV .bhead h3 { letter-spacing: .2em; font-weight: 700 }
+html.dsV .bmoney { color: var(--cream); font-weight: 700 }
+html.dsV .bgrid { gap: 10px; background: none; padding: 10px 12px }
+html.dsV .bcol { background: none; padding: 0; gap: 6px }
+html.dsV .bcol h4 { margin: 0 0 2px; padding: 5px 0; background: rgba(var(--hl-rgb),.5); color: var(--cream); font-size: 11px; font-weight: 700; letter-spacing: .2em; border-bottom: 1px solid rgba(236,232,225,.35) }
+html.dsV .card { min-height: 70px; display: flex; flex-direction: column; justify-content: flex-end; border-radius: 0; border: 1px solid rgba(236,232,225,.12); background: rgba(15,25,35,.6); padding: 8px 10px }
+html.dsV .card:hover { border-color: rgba(236,232,225,.55); background: rgba(236,232,225,.12) }
+html.dsV .card b { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase }
+html.dsV .cprice { font-size: 12px; font-weight: 600; color: rgba(236,232,225,.75) }
+html.dsV .bbar { height: 3px; border-radius: 0 } html.dsV .bbar i { background: rgba(236,232,225,.55) }
+html.dsV .card.no { opacity: .35 } html.dsV .card.no .cprice { color: rgba(236,232,225,.6) }
+html.dsV .card.own { background: rgba(var(--hl-rgb),.38); border-color: var(--hl) } html.dsV .card.own .cprice { color: var(--cream) }
+/* ── Hauptmenü ── */
+html.dsV #csmenu { background: linear-gradient(180deg, rgba(15,25,35,.35), transparent 22%, transparent 72%, rgba(15,25,35,.55)) }
+html.dsV #cstop { background: rgba(15,25,35,.72); border-bottom: 1px solid rgba(236,232,225,.14); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) }
+html.dsV #csmenu .ctic span { border-radius: 0; opacity: .6; filter: grayscale(1) brightness(1.5) }
+html.dsV #csmenu .ctic span:hover { opacity: 1; background: rgba(236,232,225,.08) }
+html.dsV #cstabs a { color: rgba(236,232,225,.68); transition: color .15s, background .15s }
+html.dsV body:not(.mob) #cstabs a { font-weight: 600; font-size: 13px; letter-spacing: .14em; padding: 19px 22px }
+html.dsV #cstabs a:hover { color: #fff; background: none }
+html.dsV #cstabs a.on { color: #fff }
+html.dsV #cstabs a.on:after { left: 30%; right: 30%; bottom: 10px; height: 2px; background: var(--cream); box-shadow: none }
+html.dsV #cstabs a[data-nav="inv"] { order: 1 } html.dsV #cstabs a[data-nav="store"] { order: 2 } html.dsV #cstabs a[data-nav="shop"] { order: 3 }
+html.dsV #cstabs a[data-nav="play"] { order: 3 } html.dsV #cstabs a[data-nav="ranked"] { order: 4 } html.dsV #cstabs a[data-nav="unranked"] { order: 4 } html.dsV #cstabs a[data-nav="news"] { order: 5 } html.dsV #cstabs a[data-nav="maps"], html.dsV #cstabs a[data-nav="editor"] { order: 6 } html.dsV #cstabs a[data-nav="arenas"] { order: 7 }
+/* SPIELEN: breiter Block mit roter Linie unten, ohne Trapez */
+html.dsV body:not(.mob) #cstabs a[data-nav="play"] { margin: 0 20px; padding: 17px 54px 16px; font-size: 18px; font-weight: 800; letter-spacing: .2em; color: var(--cream); background: linear-gradient(180deg, rgba(236,232,225,.04), rgba(236,232,225,.12)); border-left: 1px solid rgba(236,232,225,.14); border-right: 1px solid rgba(236,232,225,.14) }
+html.dsV body:not(.mob) #cstabs a[data-nav="play"]:hover, html.dsV body:not(.mob) #cstabs a[data-nav="play"].on { color: #fff; background: linear-gradient(180deg, rgba(var(--hl-rgb),.06), rgba(var(--hl-rgb),.24)) }
+html.dsV body:not(.mob) #cstabs a[data-nav="play"]:after { content: ''; display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--hl); box-shadow: none }
+html.dsV body.mob #cstabs a[data-nav="play"] { color: #fff; font-weight: 800; box-shadow: inset 0 -3px 0 var(--hl) }
+html.dsV #csmenu .ctprof b { font-weight: 500 }
+/* Logo mittig, nur Schriftzug mit kurzer roter Linie */
+html.dsV #cslogo { left: 50% !important; top: 25% !important; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-align: center }
+html.dsV #cslogo div:nth-child(1) { display: none }
+html.dsV #cslogo div:nth-child(2) { font-weight: 800 !important; font-size: 124px !important; line-height: .95 !important; letter-spacing: .05em; color: var(--cream) !important; text-shadow: 0 4px 30px rgba(0,0,0,.45) }
+html.dsV #cslogo div:nth-child(2) span { color: inherit !important }
+html.dsV #cslogo div:nth-child(3) { width: 90px !important; height: 4px !important; margin-top: 14px !important; background: var(--hl) !important }
+html.dsV #cslogo, html.dsV #cschar, #csmenu #csGo { display: none !important } /* Logo & Name stehen jetzt in der Werbetafel im Hintergrund · kein Agent im Menü · Spielen nur über den Tab oben */
+html.dsV body.mob #cslogo div:nth-child(2) { font-size: 56px !important } html.dsV body.mob #cslogo div:nth-child(3) { width: 48px !important; height: 3px !important; margin-top: 8px !important }
+/* Menü-Panels */
+html.dsV #csmenu .cspanel { background: rgba(15,25,35,.78); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 1px solid rgba(236,232,225,.14); border-radius: 0 }
+html.dsV #csmenu .cspanel h3 { font-family: 'Barlow Condensed', 'Noto Emoji', sans-serif !important; font-weight: 700; font-size: 16px; letter-spacing: .16em; color: var(--cream); background: rgba(236,232,225,.08); border-bottom: 1px solid rgba(236,232,225,.12); margin: -16px -18px 12px; padding: 10px 18px }
+html.dsV #csmenu .cspanel label { color: rgba(236,232,225,.55); letter-spacing: .12em }
+html.dsV #csnews .newscard:first-child { border-color: rgba(var(--hl-rgb),.6) }
+html.dsV #csplayview { background: linear-gradient(180deg, rgba(15,25,35,.62), rgba(15,25,35,.42)); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); border: 1px solid rgba(236,232,225,.22); border-radius: 0 }
+html.dsV #csmenu .mcard { background: rgba(15,25,35,.6) }
+html.dsV #csmenu .mcard p { color: rgba(236,232,225,.6) }
+html.dsV #playbar { border-top-color: rgba(236,232,225,.15) }
+/* Modus-Reiter */
+html.dsV #csmenu .subnav b { color: rgba(236,232,225,.6); border-radius: 0; transition: color .15s, background .15s }
+html.dsV body:not(.mob) #csmenu .subnav b { letter-spacing: .14em; font-weight: 600 }
+html.dsV #csmenu .subnav b:hover { color: #fff; background: none }
+html.dsV #csmenu #catnav b { border-bottom: 2px solid transparent }
+/* ── SPIELEN: Kachelwand „Modus wählen“ ── */
+#csplayview.qp > :not(#qpick) { display: none !important } #csplayview:not(.qp) > #qpick { display: none }
+#qpick { width: 100% } .qhead { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 2px 0 14px } .qhead span { flex: 0 1 180px; height: 1px; background: rgba(236,232,225,.45) } .qhead b { font: 700 26px Rajdhani; letter-spacing: 3px; color: #fff }
+.qgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px }
+.qtile { position: relative; width: 100%; height: 132px; min-height: 0; margin: 0; padding: 0; overflow: hidden; text-align: left; font: inherit; text-transform: none; border: 1px solid rgba(236,232,225,.22); border-radius: 3px; background: var(--qb); cursor: pointer; transition: transform .12s, box-shadow .12s, border-color .12s }
+.qtile.big { height: 176px } .qtile::before { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.72), rgba(0,0,0,0) 65%); }
+.qtile:hover, .qtile:focus-visible { border-color: var(--qc); box-shadow: inset 0 0 0 2px var(--qc); transform: translateY(-2px); outline: none }
+.qtile i { position: absolute; right: -8px; top: -18px; font-size: 118px; font-style: normal; line-height: 1; opacity: .28; transform: rotate(-10deg); transition: opacity .15s, transform .15s } .qtile:hover i { opacity: .45; transform: rotate(-4deg) scale(1.05) }
+.qtile b { position: absolute; z-index: 1; left: 14px; bottom: 28px; font: 700 24px Rajdhani; letter-spacing: 1px; color: #fff; text-transform: uppercase; text-shadow: 0 2px 6px #000 }
+.qtile small { position: absolute; z-index: 1; left: 14px; right: 14px; bottom: 10px; font-size: 11px; color: #cfd8e3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.qtile .qtag { position: absolute; z-index: 1; left: 10px; top: 10px; padding: 2px 8px; font: 700 11px Arial; letter-spacing: 1px; color: #111; background: var(--qc); border-radius: 2px }
+.qtile.big::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--qc) }
+#csplayview.rkv > :not(#rkview):not(#qback) { display: none !important } #csplayview:not(.rkv) > #rkview { display: none }
+#rkview { width: 100%; text-align: left } #rkview .subnav { margin-bottom: 4px } .rkdesc { margin: 2px 0 10px; font-size: 12px; color: #8fa3b8 } .rkdesc a { color: var(--hl); cursor: pointer; text-decoration: underline }
+.rkgrid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 12px; align-items: stretch } .rkgrid.one { grid-template-columns: minmax(0, 1fr) } #rkview .mcard { margin: 0; padding: 14px 16px; text-align: left; min-width: 0 }
+.rkhd { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap } .rkrank { font: 700 28px Rajdhani; color: var(--acc); text-transform: uppercase; line-height: 1.1 } .rkr { font: 700 20px Rajdhani } .rkr small, .rksub { font-size: 12px; color: var(--mut) }
+.rkbar { height: 6px; background: rgba(255,255,255,.1); margin: 10px 0 4px; overflow: hidden } .rkbar i { display: block; height: 100%; background: var(--acc) } .rkst { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: #cfd8e3 }
+.rkgo { display: block; width: 100%; margin: 14px 0 0; padding: 12px; font: 700 18px Rajdhani; letter-spacing: 2px; border-color: var(--acc); color: var(--acc) }
+.rkbox { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 14px 0 0; padding: 10px 14px; border: 1px solid var(--line); text-align: center } .rkbox.found { border-color: #9fe08a; background: rgba(159,224,138,.06) } .rkbox button { margin: 2px 4px }
+.rkmaps { display: flex; flex-wrap: nowrap; gap: 8px; align-self: stretch; overflow-x: auto; overflow-y: hidden; padding: 2px 2px 8px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch } .rkmaps button { flex: 0 0 132px; margin: 0; padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 12px; scroll-snap-align: start } .rkmaps canvas { width: 118px; height: 118px; display: block } .rkmaps button.ban canvas { opacity: .35; filter: grayscale(1) } .rkmaps button span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 118px } .rkmaps button.on { border-color: #9fe08a; color: #9fe08a } .rkmaps button.ban { border-color: #c66; color: #c66; text-decoration: line-through }
+#rkview .rkside .ptmem { flex-direction: column } #rkview .ptm { min-width: 0 } .ptm.solo { border-style: dashed } #rkview .rkside > button { margin: 6px 0 0 }
+.rklist { margin-top: 12px !important; max-height: 30vh; overflow-y: auto } .rkh { display: grid; grid-template-columns: 110px 54px 1fr 1.4fr 70px; gap: 8px; font-size: 12px; padding: 5px 6px; border-left: 3px solid #556; margin: 3px 0; align-items: center }
+.rkh.w { border-color: #9fe08a } .rkh.l { border-color: #ff6b6b } .rkh.d { border-color: #ffd84a } .rkh .rkd { text-align: right; font-weight: 700 } .rkh small { grid-column: 1/-1; color: var(--mut); font-size: 11px } .rkh.lb { grid-template-columns: 44px 1fr 1fr 60px 60px } .rkh.w .rkd { color: #9fe08a } .rkh.l .rkd { color: #ff6b6b }
+.rkmsg { min-height: 16px; margin: 6px 0 0 } .mob .rkh { grid-template-columns: 90px 44px 1fr 60px } .mob .rkh span:nth-child(4) { display: none }
+@media (max-width: 800px) { .rkgrid { grid-template-columns: minmax(0, 1fr) } }
+#rkfound { position: fixed; inset: 0; z-index: 9400; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(4, 7, 10, .74); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px) }
+.rkf { width: min(780px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; box-sizing: border-box; padding: 22px 26px; text-align: center; color: #e8eef5; background: linear-gradient(180deg, rgba(20, 32, 44, .98), rgba(10, 16, 23, .98)); border: 1px solid rgba(159, 224, 138, .45); border-top: 3px solid #9fe08a; box-shadow: 0 24px 70px rgba(0, 0, 0, .65); animation: rkfIn .22s ease-out }
+@keyframes rkfIn { from { transform: scale(.94); opacity: 0 } } .rkfh { font: 700 42px Rajdhani; letter-spacing: 7px; color: #9fe08a; text-shadow: 0 0 26px rgba(159, 224, 138, .35); line-height: 1.1 }
+.rkfs { font: 600 14px Rajdhani; letter-spacing: 2px; text-transform: uppercase; color: #cfd8e3; margin: 4px 0 16px } .rkft { height: 4px; background: rgba(255, 255, 255, .1); overflow: hidden } .rkft i { display: block; height: 100%; background: #9fe08a; transition: width .5s linear }
+.rkfn { font: 700 22px Rajdhani; margin: 6px 0 10px } .rkfm { font: 700 13px Rajdhani; letter-spacing: 3px; color: #8fa3b8; text-align: left; margin: 6px 0 6px } .rkfm small { font: 11px Arial; letter-spacing: 0; margin-left: 8px }
+#rkfound .rkmaps { justify-content: safe center } .rkfp { display: flex; gap: 6px; justify-content: center; margin: 14px 0 } .rkfp i { width: 26px; height: 6px; background: rgba(255, 255, 255, .15) } .rkfp i.on { background: #9fe08a }
+.rkfb { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap } .rkfb button { margin: 0; padding: 12px 34px; font: 700 18px Rajdhani; letter-spacing: 3px } #rkAcc { background: #9fe08a; color: #0b1a0b; border-color: #9fe08a } #rkDec { color: #ff8080; border-color: #a04a4a } .rkfw { font: 700 15px Rajdhani; letter-spacing: 2px; color: #9fe08a }
+@media (max-width: 600px) { .rkfh { font-size: 28px; letter-spacing: 4px } .rkf { padding: 16px } .rkfb button { padding: 10px 20px; font-size: 16px } }
+#qback { display: flex; align-items: center; gap: 12px; margin: 0 0 6px } #qback button { margin: 0; padding: 4px 12px; font-size: 12px } #qback b { font: 700 20px Rajdhani; letter-spacing: 2px }
+@media (max-width: 700px) { .qgrid { grid-template-columns: repeat(2, 1fr); gap: 8px } .qtile, .qtile.big { height: 104px } .qtile b { font-size: 18px; bottom: 24px } .qtile i { font-size: 84px } .qhead b { font-size: 20px } }
+html.dsV #csmenu #catnav b.on { color: #fff; background: none; border-bottom-color: var(--hl) }
+html.dsV #csmenu .subnav:not(#catnav) b { border: 1px solid rgba(236,232,225,.25); margin: 0 3px }
+html.dsV #csmenu .subnav:not(#catnav) b.on { color: #fff; background: rgba(236,232,225,.16); border-color: rgba(236,232,225,.6) }
+/* Kartenwahl: gedämpftes Vorschaubild, Name unten im dunklen Verlauf, Auswahl = Akzent-Rahmen + Linie */
+html.dsV #csmenu .mapc { border: 1px solid rgba(236,232,225,.16); border-radius: 0; background: #0f1923; transition: transform .15s, border-color .15s }
+html.dsV #csmenu .mapc canvas { filter: saturate(.45) brightness(.62); transform: scale(1.45); transform-origin: 50% 50%; transition: filter .2s, transform .3s }
+html.dsV #csmenu .mapc:hover canvas { transform: scale(1.5) }
+html.dsV #csmenu .mapc:hover { transform: translateY(-3px); border-color: rgba(236,232,225,.5) }
+html.dsV #csmenu .mapc:hover canvas, html.dsV #csmenu .mapc.sel canvas { filter: saturate(.8) brightness(.85) }
+html.dsV #csmenu .mapc.sel { outline: 2px solid var(--hl); outline-offset: -2px; box-shadow: none }
+html.dsV #csmenu .mapc .emb, html.dsV #csmenu .mapc .chk { display: none }
+html.dsV #csmenu .mapc b { bottom: 0; padding: 70px 14px 32px; text-align: left; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--cream); text-shadow: none; background: linear-gradient(180deg, transparent, rgba(15,25,35,.82) 45%, rgba(15,25,35,.97)) }
+html.dsV body:not(.mob) #csmenu .mapc b { font-size: 17px }
+html.dsV #csmenu .mapc span { z-index: 1; left: 14px; right: auto; bottom: 12px; text-align: left; color: rgba(236,232,225,.55); letter-spacing: .04em }
+html.dsV #csmenu .mapc.sel b { box-shadow: inset 0 -3px 0 var(--hl) }
+html.dsV #csmenu .mapc.sel span { color: var(--hl) }
+html.dsV body.mob #csmenu .mapc b { padding: 40px 8px 22px }
+html.dsV body.mob #csmenu .mapc span { left: 8px; bottom: 6px }
+html.dsV #csmenu .mapc.shot canvas { filter: saturate(.85) brightness(.78); transform: scale(1.06) } html.dsV #csmenu .mapc.shot:hover canvas { filter: saturate(1) brightness(.95) } html.dsV #csmenu .mapc canvas { z-index: 0 } html.dsV #csmenu .mapc b, html.dsV #csmenu .mapc span { z-index: 2; -webkit-transform: translateZ(0); transform: translateZ(0) } /* iOS: Text über dem gezoomten Vorschaubild halten */
+html.dsV #csmenu .mapc.clean canvas, html.dsV #csmenu .mapc.clean:hover canvas { filter: none; transform: none } /* Kachel ohne Kartenbild */
+html.dsV #csmenu .mapc.custom::after { color: #0f1923; border-radius: 0; z-index: 1 }
+/* Seitenleiste, Name, Fußzeile */
+html.dsV #csfriends { background: rgba(15,25,35,.82); border-left: 1px solid rgba(236,232,225,.1) }
+html.dsV #csfriends .fr { border-radius: 0; background: rgba(236,232,225,.06); border-color: rgba(236,232,225,.18) }
+html.dsV #cschar b { background: rgba(15,25,35,.7); border-bottom: 2px solid var(--hl); border-radius: 0; color: var(--cream); letter-spacing: .1em }
+html.dsV #csver { color: rgba(236,232,225,.4); letter-spacing: .1em }
+html.dsV #csApp { color: var(--cream); background: rgba(15,25,35,.72); border: 1px solid rgba(236,232,225,.22); border-left: 3px solid rgba(236,232,225,.5); border-radius: 0; letter-spacing: .1em; text-transform: uppercase; font-weight: 600 }
+html.dsV #csApp:hover { color: #fff; background: rgba(236,232,225,.14); border-left-color: var(--hl) }

@@ -44,6 +44,8 @@
         "to": "game",
         "filter": [
           "index.html",
+          "css/*.css",
+          "js/*.js",
           "manifest.json",
           "sw.js",
           "icon-*.png"
