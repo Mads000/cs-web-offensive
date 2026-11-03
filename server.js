@@ -205,7 +205,8 @@ function api(p, b, ip) {
  if (p === '/api/mkskin') {
  const k = b.s || {}, W = ['knife', 'awp', 'scout', 'ak47', 'm4a1', 'pump', 'mp5', 'deagle', 'usp', 'glock', 'he', 'flash', 'smoke', 'molly', 'c4'], P = ['solid', 'fade', 'stripes', 'tiger', 'carbon', 'neon', 'camo', 'doppler', 'gold', 'dragon', 'asiimov', 'paint'], col = v => Math.max(0, Math.min(0xffffff, Math.floor(+v) || 0));
  if (!W.includes(k.w) || !P.includes(k.p) || ![1, 2, 3, 4].includes(+k.r)) return { err: 'Ungültiger Skin.' };
- const img = k.p === 'paint' ? String(k.img || '') : ''; if (k.p === 'paint' && (img.length > 16000 || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(img))) return { err: 'Bild ungültig oder zu groß.' };
+ const img = k.p === 'paint' ? String(k.img || '') : '', fmt = (/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.exec(img) || [])[1]; // PNG = 64×64-Pixelart (16 KB), WebP/JPEG = importiertes 1000×1000-Bild (160 KB)
+ if (k.p === 'paint' && (!fmt || img.length > (fmt === 'png' ? 16000 : 160000))) return { err: 'Bild ungültig oder zu groß.' };
  const name = String(k.n || '').replace(/[<>"'&`|]/g, '').trim().slice(0, 20); if (name.length < 2) return { err: 'Name: mindestens 2 Zeichen.' };
  const all = Object.values(CSK); if (all.filter(x => x.by === u.name && !x.off).length >= 10) return { err: 'Maximal 10 eigene Skins.' }; if (all.length >= 300) return { err: 'Der Shop ist voll (300 Skins).' };
  const id = 'u_' + crypto.randomBytes(5).toString('hex'); CSK[id] = { id, w: k.w, km: k.w === 'knife' && ['butterfly', 'karambit'].includes(k.km) ? k.km : undefined, n: name, c: col(k.c), c2: col(k.c2), c3: col(k.c3), p: k.p, img: img || undefined, r: +k.r, by: u.name, sold: 0, t: Date.now() }; persist(); return { ok: 1, skin: CSK[id] };
